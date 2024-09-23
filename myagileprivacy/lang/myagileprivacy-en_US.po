@@ -1,0 +1,1792 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MyAgilePrivacy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-29 22:26+0000\n"
+"PO-Revision-Date: 2023-10-24 10:48+0000\n"
+"Last-Translator: \n"
+"Language-Team: English (United States)\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.3; wp-6.2.2\n"
+"X-Domain: my-agile-privacy"
+
+#: admin/views/inc/inc.advanced_tab.php:60
+msgid ""
+" By enabling this feature, you will allow for automatic updates of settings "
+"related to the preemptive blocking of cookies, and you will achieve greater "
+"compliance in case of regulatory adjustments."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:307
+#, php-format
+msgid ""
+"-you have a business with an annual gross revenue exceeding $25 million, or "
+"50% of the revenue comes from selling personal data, or you buy, receive, "
+"sell, or share personal information of 50000 or more consumers annually for "
+"commercial purposes"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:308
+msgid "-you target California residents."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4242
+msgid ""
+"<b>Blocked without notification</b>: represents a Cookie that you want to "
+"block without it appearing in the list of Cookies for which you are "
+"requesting consent."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4241
+msgid ""
+"<b>Draft</b>: represents a Cookie or a software that you are not currently "
+"using, and is available as a \"library\"."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4240
+msgid ""
+"<b>Published</b>: the Cookie configuration is active according to the "
+"specified settings."
+msgstr ""
+
+#: admin/views/admin_page_html.php:122
+msgid ""
+"<b>Warning</b>: You are using a PHP.wasm environment. Due to the limitations "
+"of this stack, which emulates a real web server, some functionalities may "
+"not work as expected."
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:769
+msgid ""
+"<div class=\"map-area-container\"><div data-nosnippet "
+"class=\"map_notification-message\">This website uses technical and profiling "
+"cookies. Clicking on \"Accept\" authorises all profiling cookies. Clicking "
+"on \"Refuse\" or the X will refuse all profiling cookies. By clicking on "
+"\"Customise\" you can select which profiling cookies to activate."
+"[myagileprivacy_extra_info]</div><div class=\"map_notification_container\">"
+"[myagileprivacy_cookie_accept][myagileprivacy_cookie_reject]"
+"[myagileprivacy_cookie_customize]</div></div>"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:776
+#: frontend/my-agile-privacy-frontend.php:335
+msgid "Accept"
+msgstr "Accept"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:476
+msgid "Accept button"
+msgstr "Accept button"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:742
+msgid "Accept button detailed preview"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:196
+msgid "Activate IAB TCF"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:181
+msgid "Activate IAB Transparency and Consent Framework"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4933
+msgid "Add custom code anyway."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1243
+#: frontend/my-agile-privacy-frontend.php:1244
+msgid "Add New Cookie"
+msgstr "Add New Cookie"
+
+#: frontend/my-agile-privacy-frontend.php:1306
+#: frontend/my-agile-privacy-frontend.php:1307
+msgid "Add New Policy"
+msgstr "Add New Policy"
+
+#: admin/my-agile-privacy-admin.php:5517
+msgid "Additional code installation type"
+msgstr ""
+
+#: admin/views/admin_page_html.php:190
+msgid "Advanced"
+msgstr "Advanced"
+
+#: admin/views/inc/inc.advanced_tab.php:7
+#, fuzzy
+#| msgid "Advanced settings."
+msgid "Advanced Settings"
+msgstr "Advanced settings."
+
+#: frontend/views/my-agile-privacy-notify.php:333
+msgid "Advertising preferences"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4707 admin/my-agile-privacy-admin.php:5516
+#: admin/my-agile-privacy-admin.php:5708
+msgid "Allow automatic updates ?"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4587 admin/my-agile-privacy-admin.php:4592
+msgid "Allow updates?"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:26
+msgid "Always Enabled"
+msgstr "Always Enabled"
+
+#: frontend/my-agile-privacy-frontend.php:616
+msgid "and the Privacy Policy"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:503
+msgid "Animate accept button"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:580
+msgid "Animation delay"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:561
+msgid "Animation effect"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:597
+msgid "Animation repeating times"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:416
+#: admin/views/inc/inc.cookieshield_tab.php:429
+msgid "Auto Close Blocked Content Notification Bar"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:444
+msgid "Auto Close Timeout"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5512
+msgid "Auto Detected"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4237
+msgid ""
+"Available cookies to use are under Draft. Just edit them accordingly to your "
+"neeedings, and publish in order to make them active. "
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:494
+#: admin/views/inc/inc.cookie_banner_tab.php:636
+#: admin/views/inc/inc.cookie_banner_tab.php:665
+msgid "Background colour"
+msgstr "Background colour"
+
+#. page_title
+#: admin/my-agile-privacy-admin.php:4357 admin/my-agile-privacy-admin.php:4358
+#: admin/views/backup_restore_html.php:32
+#: admin/views/inc/inc.backup_restore_tab.php:7
+msgid "Backup & Restore"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:21
+msgid "Backup and restore your cookie list configuration."
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:162
+msgid "Banner Animation Effect"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:63
+msgid "Banner Size"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:232
+msgid "Banner title"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:68
+msgid "Big"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:389
+msgid "Blocked Content Notification Bar"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:462
+msgid "Blocked content widget"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:484
+msgid "Blocked Content Widget background colour"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:468
+msgid "Blocked Content Widget text colour"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4271 admin/my-agile-privacy-admin.php:4300
+msgid "Blocked without notification"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:83
+msgid "Bottom"
+msgstr "Bottom"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:69
+msgid "Boxed"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:421
+msgid "Buttons Customization"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:257
+msgid ""
+"By activating the management of Swiss LPD, you declare to be familiar with "
+"Swiss privacy legislation and to fall within its scope of application."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:298
+msgid ""
+"By enabling the Cookie Block technology for enhanced YouTube privacy, you "
+"will further reduce the number of cookies used by YouTube. However, please "
+"note that in some cases, videos may not be displayed correctly"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:170
+msgid ""
+"By enabling this feature, the textual content of the policies will become "
+"targetable by a CSS selector. The selector is .myagileprivacy_text_wrapper"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:594
+msgid ""
+"By giving your consent, the data will be sent anonymously, thus protecting "
+"your privacy."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:299
+msgid "CCPA Privacy Regulation"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:82
+#: admin/views/inc/inc.cookie_banner_tab.php:97
+msgid "Center"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:109
+msgid "Change license code"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:206
+#: admin/views/inc/inc.cookieshield_tab.php:220
+msgid "Change this only if asked by customer support. (Default value: -10000)."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4564
+msgid "Changelog"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:146
+msgid "Check this if you see page loading error or no cookies detected"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:150
+msgid ""
+"Check this option to remove My Agile Privacy logo on the consent review "
+"widget"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:223
+msgid "Choose if the banner title should be visible"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:53
+msgid "Choose if the cookie banner should be visible on the website"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:82
+#: admin/views/inc/inc.policies_tab.php:201
+msgid "Choose Page"
+msgstr "Choose Page"
+
+#: admin/views/inc/inc.backup_restore_tab.php:74
+msgid "Clean All Cookie"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:309
+msgid "Close"
+msgstr "Close"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:321
+msgid "Color Preset"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:50
+msgid "Company Address"
+msgstr "Company Address"
+
+#: admin/views/inc/inc.identity_tab.php:80
+msgid "Company E-mail"
+msgstr "Company E-mail"
+
+#: admin/views/inc/inc.identity_tab.php:35
+msgid "Company Name / Site Holder"
+msgstr "Company Name / Site Holder"
+
+#. page_title
+#: admin/my-agile-privacy-admin.php:4368 admin/my-agile-privacy-admin.php:4369
+#: admin/views/compliance_report_html.php:24
+#: admin/views/inc/inc.compliance_report_tab.php:7
+msgid "Compliance Report"
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:60
+msgid "Compliance total"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4806
+msgid "Compliance with Marketing Consent"
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:19
+#: admin/views/inc/inc.compliance_report_tab.php:44
+msgid "Compliant"
+msgstr ""
+
+#: admin/views/admin_page_html.php:151
+msgid "Consent"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:7
+msgid "Consent Widget"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1242
+msgid "Cookie"
+msgstr "Cookie"
+
+#: admin/views/admin_page_html.php:144
+#: admin/views/inc/inc.cookie_banner_tab.php:9
+#: admin/views/inc/inc.compliance_report_tab.php:40
+msgid "Cookie Banner"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:343
+#, fuzzy
+#| msgid "Cookie Bar Color"
+msgid "Cookie Banner Color"
+msgstr "Cookie Bar Color"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:285
+msgid "Cookie Banner Font Size"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:303
+msgid "Cookie Banner Line Height"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:125
+msgid "Cookie Banner Shadow"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4582
+msgid "Cookie ID"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1241
+msgid "Cookie List"
+msgstr "Cookie List"
+
+#: admin/views/inc/inc.advanced_tab.php:40
+msgid "Cookie metadata Sync"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4583 admin/my-agile-privacy-admin.php:5511
+msgid "Cookie Name"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:7
+msgid "Cookie Policy"
+msgstr "Cookie Policy"
+
+#: admin/views/admin_page_html.php:179
+#: admin/views/inc/inc.cookieshield_tab.php:30
+#: admin/views/inc/inc.cookieshield_tab.php:51
+msgid "Cookie Shield"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:332
+msgid "Cookies and third-party software"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:128
+msgid "Custom Css"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5026
+msgid "Custom Javascript Code"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:786
+#: frontend/my-agile-privacy-frontend.php:431
+msgid "Customize"
+msgstr "Customize"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:647
+msgid "Customize button"
+msgstr "Customize button"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:328
+msgid "Dark"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:58
+msgid ""
+"Default is off. Put the Shield to Learning Mode and start visiting your own "
+"site. That is mandatory in order to detect software and widget. Do navigate "
+"as much pages as you can. "
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4822
+msgid "described here"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:60
+msgid "Detecting a cookie makes it automatically available in the Cookie Bar."
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:144
+msgid "Disable logo on Cookie Bar"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:130
+msgid "Disable My Agile Privacy logo"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:28
+msgid "Disabled"
+msgstr "Disabled"
+
+#: admin/views/inc/inc.cookieshield_tab.php:332
+#: admin/views/inc/inc.cookieshield_tab.php:344
+msgid "Do block Captcha"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:306
+#: admin/views/inc/inc.cookieshield_tab.php:319
+msgid "Do block Maps widget"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:243
+msgid "Do reset given consent"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:19
+msgid "Domain list"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:111
+#: admin/views/inc/inc.policies_tab.php:232
+msgid ""
+"Don't forget to associate the right page: we suggest you to create a new "
+"page, put the right shortcode in the page editor, and associate the new "
+"created page here."
+msgstr ""
+"Don't forget to associate the right page: we suggest you to create a new "
+"page, put the right shortcode in the page editor, and associate the new "
+"created page here."
+
+#: admin/views/inc/inc.identity_tab.php:169
+msgid "DPO Address"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:141
+msgid "DPO Email"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:157
+msgid "DPO Name / Company name"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:104
+msgid "DPO settings"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1245
+msgid "Edit Cookie"
+msgstr "Edit Cookie"
+
+#: frontend/my-agile-privacy-frontend.php:1308
+msgid "Edit Policy"
+msgstr "Edit Policy"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:145
+msgid "Elements Border Radius"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:176
+msgid "Enable banner heading"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:367
+msgid "Enable Blocked Content Notification Bar"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:349
+msgid "Enable Captcha block"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:314
+msgid "Enable CCPA notice"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:128
+#: admin/views/inc/inc.cookieshield_tab.php:140
+msgid "Enable compatibility mode"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:15
+#, fuzzy
+#| msgid "Enable cookie bar"
+msgid "Enable Cookie Banner"
+msgstr "Enable cookie bar"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:551
+msgid "Enable it to animate the accept button with the effect select below"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:266
+msgid "Enable LPD notice"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:324
+msgid "Enable Maps block"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:379
+msgid "Enable Notification Bar"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:13
+msgid "Enable plugin auto update"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:151
+msgid "Enable policy wrapping for CSS customization purposes"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:13
+#: admin/views/inc/inc.consent_widget_tab.php:27
+msgid "Enable revisit consent widget"
+msgstr "Enable revisit consent widget"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:266
+#: admin/views/inc/inc.cookie_banner_tab.php:275
+msgid "Enable shadows and rounding effects"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:202
+msgid ""
+"Enable this if you have a custom theme with deactivated jQuery, and loading "
+"issues."
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:165
+msgid "Enable wrapping"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:27
+msgid "Enabled"
+msgstr "Enabled"
+
+#: admin/views/inc/inc.consent_widget_tab.php:190
+msgid ""
+"Enabling the IAB TCF is highly recommended if you utilize advertising "
+"channels such as Google Adsense, Ad Manager, AdMob or similar platforms on "
+"your website."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:273
+msgid ""
+"Enabling this setting, YouTube and Vimeo videos will be made GDPR compliant "
+"by modifying the embedding URLs"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:281
+#: admin/views/inc/inc.cookieshield_tab.php:293
+msgid "Enforce Youtube Privacy"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:83
+msgid "English"
+msgstr "English"
+
+#: admin/views/inc/inc.policies_tab.php:65
+#: admin/views/inc/inc.policies_tab.php:184
+msgid "Enter URL"
+msgstr "Enter URL"
+
+#: admin/views/inc/inc.advanced_tab.php:143
+msgid "Enter your custom css"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:42
+msgid "Enter your license key here"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:254
+msgid "Example code:"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:46
+msgid "Export Cookie Settings"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:582
+msgid "Facebook Remarketing"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:168
+msgid "Fade"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:110
+msgid "Floating Banner"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:98
+msgid "For further information you can check:"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:211
+#: admin/views/inc/inc.advanced_tab.php:223
+msgid "Force Cookies and Policy syncronization"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:182
+#: admin/views/inc/inc.advanced_tab.php:196
+msgid "Force jQuery reinject"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4584
+msgid "Free Available"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:87
+msgid "French"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:89
+msgid "German"
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:50
+msgid "Google Analytics consistency"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:577
+msgid "Google Analytics in version 4 (GA4)"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:364
+msgid "Heading background Color"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:380
+msgid "Heading text Color"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5513
+msgid "Help link"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4239
+msgid "Here is the mapping of the possible states of the Cookies:"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:12
+msgid ""
+"Here you can enter the company details or the site older informations. This "
+"is used for populating the privacy data controller section."
+msgstr ""
+"Here you can enter the company details or the site older informations. This "
+"is used for populating the privacy data controller section."
+
+#: admin/views/inc/inc.identity_tab.php:109
+msgid "Here you can enter the DPO data for your organization, if applicable."
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:12
+msgid "Here you can find the compliance report for your website."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4226
+msgid ""
+"Here you will find a list of all the available policies. You can modify "
+"specific options by clicking on the policy."
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:92
+msgid "Horizontal Banner Position"
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:14
+msgid ""
+"However, if you have any doubts, we invite you to contact our support team."
+msgstr ""
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://www.myagileprivacy.com/"
+msgstr "http://www.myagileprivacy.com/"
+
+#: admin/my-agile-privacy-admin.php:4822
+msgid ""
+"I declare that I have read, understood and adapted the forms on my site "
+"according to the specifications"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:116
+msgid "I have a DPO (Data Protection Officer)"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4845
+msgid ""
+"I request consent for functional marketing activities including the sending "
+"of newsletters, paper mail, sms, mms and messaging apps."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:241
+msgid "I still have issues, enable \"legacy mode\""
+msgstr ""
+
+#: admin/views/admin_page_html.php:165
+msgid "Identity"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:7
+msgid "Identity Settings"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4721
+msgid ""
+"If enabled, this will auto update this element text. Disable it if you would "
+"to change the text and keep it unchanged."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4681
+msgid ""
+"If this setting is enabled, the first-time activation by the user will "
+"trigger a page reload."
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:104
+msgid "Import Cookie Settings"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:594
+msgid "In addition, this site installs"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:247
+msgid ""
+"In some cases, specific or older themes may require the activation of this "
+"setting. Enable this option if you continue to experience a failure in the "
+"preventive blocking of cookies"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:161
+msgid "Init / Shutdown"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:57
+msgid "Insert here the address of the company or person who owns the website."
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:148
+msgid "Insert here the email of your DPO"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:87
+msgid ""
+"Insert here the email where the user can contact you for questions about "
+"privacy and personal data use"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:42
+msgid ""
+"Insert here the name of the company or the person who is the owner of the "
+"website."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:72
+msgid "Insert here the URL to the cookie policy page."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:191
+msgid "Insert here the URL to the personal data policy page."
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:154
+msgid "Insert the border radius value for cookie banner and buttons, in pixel"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:295
+msgid ""
+"Insert the font size for the cookie banner heading, text buttons and for the "
+"blocked content notification bar text, in pixel <small>(suggested value: 18)"
+"</small>"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:313
+msgid ""
+"Insert the line height for the cookie banner heading, text buttons and for "
+"the blocked content notification bar text, in pixel <small>(suggested value: "
+"30)</small>"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4585 admin/my-agile-privacy-admin.php:4745
+msgid "Is necessary?"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:189
+msgid ""
+"It serves as a mechanism that allows websites and digital advertising "
+"platforms to effectively obtain and manage user consent for the processing "
+"of personal data."
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:85
+msgid "Italian"
+msgstr "Italian"
+
+#: admin/my-agile-privacy-admin.php:4959 admin/my-agile-privacy-admin.php:5567
+msgid "Javascript-Noscript code"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:70
+msgid "Language"
+msgstr "Language"
+
+#: admin/views/inc/inc.license_tab.php:120
+msgid "Last cookies sync"
+msgstr "Last cookies sync"
+
+#: admin/my-agile-privacy-admin.php:5519 admin/my-agile-privacy-admin.php:5709
+msgid "Last update"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:260
+msgid ""
+"Lastly, you declare that you have reviewed the <a href=\"https://www.bj."
+"admin.ch/bj/en/home/state/data-protection/international/recognition-states."
+"html\" target=\"_blank\">list of States</a> where, according to the LPD, you "
+"may possibly transfer the data subject to processing."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:87
+msgid "Learning Mode"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:72
+#, fuzzy
+#| msgid "Leave it blank, If not applicabile"
+msgid "Leave it blank, if not applicabile"
+msgstr "Leave it blank, If not applicabile"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:98
+#: admin/views/inc/inc.consent_widget_tab.php:54
+msgid "Left"
+msgstr "Left"
+
+#: admin/views/inc/inc.cookieshield_tab.php:229
+msgid "Legacy mode"
+msgstr ""
+
+#: admin/views/admin_page_html.php:172
+msgid "License"
+msgstr "License"
+
+#: admin/views/inc/inc.license_tab.php:34
+msgid "License code"
+msgstr "License code"
+
+#: admin/views/inc/inc.license_tab.php:72
+msgid "License summary"
+msgstr "License summary"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:327
+msgid "Light"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:68
+msgid ""
+"Limitation: the Shield is regularly updated in order to detect as much "
+"cookie / thirdy part software as possible. That means that it can fail to "
+"detect everything that your Country requires you to identify and block. For "
+"any doubt, ask help@myagileprivacy.com ."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:606
+msgid "List of some possible advertising permissions"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:90
+msgid "Live Mode"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:250
+msgid "LPD Privacy Regulation"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:809
+#: frontend/my-agile-privacy-frontend.php:1030
+#: frontend/views/my-agile-privacy-notify.php:229
+msgid "Manage consent"
+msgstr "Manage consent"
+
+#: admin/my-agile-privacy-admin.php:4589
+msgid "Marketing Policy"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:243
+msgid "Message"
+msgstr "Message"
+
+#: frontend/my-agile-privacy-frontend.php:1240
+msgid "My Agile Privacy"
+msgstr "My Agile Privacy"
+
+#. Name of the plugin
+#. Author of the plugin
+msgid "MyAgilePrivacy"
+msgstr "MyAgilePrivacy"
+
+#: admin/my-agile-privacy-admin.php:5014
+msgid "Need help ? See this cookie installation guide"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1246
+msgid "New Cookie"
+msgstr "New Cookie"
+
+#: frontend/my-agile-privacy-frontend.php:1309
+msgid "New Policy"
+msgstr "New Policy"
+
+#: admin/my-agile-privacy-admin.php:4674 admin/my-agile-privacy-admin.php:4713
+#: admin/my-agile-privacy-admin.php:5603 admin/my-agile-privacy-admin.php:5622
+#: admin/my-agile-privacy-admin.php:5686 admin/my-agile-privacy-admin.php:5748
+#: admin/views/inc/inc.cookie_banner_tab.php:456
+#: admin/views/inc/inc.cookie_banner_tab.php:464
+msgid "No"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:129
+#: admin/views/inc/inc.cookie_banner_tab.php:166
+msgid "None"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5034
+msgid "Noscript Code"
+msgstr ""
+
+#: admin/views/inc/inc.compliance_report_tab.php:54
+msgid "Not Compliant"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1249
+#: frontend/my-agile-privacy-frontend.php:1312
+msgid "Nothing found"
+msgstr "Nothing found"
+
+#: frontend/my-agile-privacy-frontend.php:1250
+#: frontend/my-agile-privacy-frontend.php:1313
+msgid "Nothing found in Trash"
+msgstr "Nothing found in Trash"
+
+#: admin/views/inc/inc.cookieshield_tab.php:361
+msgid "Notification bar"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:41
+#: admin/views/inc/inc.cookie_banner_tab.php:46
+#: admin/views/inc/inc.cookie_banner_tab.php:209
+#: admin/views/inc/inc.cookie_banner_tab.php:216
+#: admin/views/inc/inc.cookie_banner_tab.php:535
+#: admin/views/inc/inc.cookie_banner_tab.php:543
+msgid "Off"
+msgstr "Off"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:25
+#: admin/views/inc/inc.cookie_banner_tab.php:31
+#: admin/views/inc/inc.cookie_banner_tab.php:187
+#: admin/views/inc/inc.cookie_banner_tab.php:196
+#: admin/views/inc/inc.cookie_banner_tab.php:513
+#: admin/views/inc/inc.cookie_banner_tab.php:522
+msgid "On"
+msgstr "On"
+
+#: admin/views/inc/inc.compliance_report_tab.php:62
+msgid "out of"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:54
+#: admin/views/inc/inc.policies_tab.php:173
+msgid "Page"
+msgstr "Page"
+
+#: admin/views/inc/inc.compliance_report_tab.php:34
+msgid "Partially Compliant"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:122
+msgid "Personal Data Policy"
+msgstr "Personal Data Policy"
+
+#: admin/my-agile-privacy-admin.php:5790
+msgid "Please add the following shortcode to the right page:"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:129
+msgid ""
+"Please remember also to ask user consent, adjusting your forms, adding the "
+"link to the selected page. You have got a shortcode for helping you to "
+"insert the right link."
+msgstr ""
+"Please remember also to ask user consent, adjusting your forms, adding the "
+"link to the selected page. You have got a shortcode for helping you to "
+"insert the right link."
+
+#: admin/views/inc/inc.backup_restore_tab.php:13
+msgid "Please wait: page loading."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1303
+msgid "Policies"
+msgstr "Policies"
+
+#: admin/views/admin_page_html.php:158
+msgid "Policies and Regulations"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4349 admin/my-agile-privacy-admin.php:4350
+#: frontend/my-agile-privacy-frontend.php:1304
+msgid "Policies List"
+msgstr "Policies List"
+
+#: frontend/my-agile-privacy-frontend.php:1305
+#: admin/views/inc/inc.compliance_report_tab.php:30
+msgid "Policy"
+msgstr "Policy"
+
+#: admin/my-agile-privacy-admin.php:4801 admin/views/admin_page_html.php:182
+#: admin/views/inc/inc.policies_tab.php:243
+#: admin/views/inc/inc.policies_tab.php:292
+#: admin/views/inc/inc.consent_widget_tab.php:174
+#: admin/views/inc/inc.cookieshield_tab.php:24
+#: admin/views/inc/inc.identity_tab.php:97
+msgid "Premium Feature"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:56
+msgid ""
+"Pressing the following button will clean up your cookie configuration. "
+"Warning: do export first, and full page reload before importing again."
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:29
+msgid "Pressing the following button will download your cookie configuration."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5654
+msgid "Preventive blocking <strong>is active</strong>."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5650
+msgid "Preventive blocking is not active"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5514
+msgid "Preventive blocking status"
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:316
+msgid "Privacy Setting"
+msgstr "Privacy Setting"
+
+#: admin/my-agile-privacy-admin.php:4340 admin/my-agile-privacy-admin.php:4341
+msgid "Privacy Settings"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4961 admin/my-agile-privacy-admin.php:5570
+msgid "Raw code"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5046
+msgid "Raw Html Code"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:783
+#: frontend/my-agile-privacy-frontend.php:388
+msgid "Refuse"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:618
+msgid "Refuse button"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5792
+msgid "Remember also associate in the Privacy Settings -> Policies tab."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5518
+msgid "Requires page reload on user acceptance"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4586 admin/my-agile-privacy-admin.php:4668
+msgid "Requires page reload on user acceptance?"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:88
+msgid "Reseller info"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:105
+msgid "Reseller Mail:"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:101
+msgid "Reseller Website:"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:238
+#: admin/views/inc/inc.advanced_tab.php:250
+msgid "Reset all settings"
+msgstr "Reset settings"
+
+#: admin/views/inc/inc.consent_widget_tab.php:224
+#: admin/views/inc/inc.consent_widget_tab.php:231
+msgid "Reset given consent"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:84
+msgid ""
+"Restore your previously saved configuration. Please wait page fully loaded "
+"before importing."
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:99
+#: admin/views/inc/inc.consent_widget_tab.php:52
+msgid "Right"
+msgstr "Right"
+
+#: admin/views/admin_page_html.php:201 admin/views/admin_page_html.php:241
+msgid "Saving in progress"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:76
+msgid "Scanner / Blocker Mode"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:85
+msgid "Scanner / Blocker OFF"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:214
+msgid "Scanner End Priority"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:155
+msgid "Scanner Hook Type"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:200
+msgid "Scanner Start Priority"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4588
+msgid "Script Installation"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4950
+msgid "Script Installation type"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1248
+msgid "Search Cookies"
+msgstr "Search Cookies"
+
+#: frontend/my-agile-privacy-frontend.php:1311
+msgid "Search Policy"
+msgstr "Search Policy"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:585
+msgid "seconds"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:333
+msgid "Select a color preset for the cookie banner, or customize by your own"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:326
+msgid "Select a preset"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:88
+#: admin/views/inc/inc.policies_tab.php:207
+msgid "Select One"
+msgstr "Select One"
+
+#: admin/views/inc/inc.cookieshield_tab.php:492
+msgid "Select the background color of the blocked content inline widget"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:354
+msgid "Select the background color of the cookie banner"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:86
+msgid "Select the horizontal position where to show the consent again widget "
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:137
+msgid "Select the shadow effect for the cookie banner"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:476
+msgid "Select the text color of the blocked content inline widget"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:372
+#: admin/views/inc/inc.cookie_banner_tab.php:388
+#: admin/views/inc/inc.cookie_banner_tab.php:408
+msgid "Select the text color of the cookie banner"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:573
+msgid "Set the animation effect for the accept button"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:590
+msgid "Set the number of seconds before the animation starts"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:607
+msgid ""
+"Set the number of times the animation repeats (the counter resets every page "
+"load)"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4755
+msgid ""
+"Setting the cookie as \"necessary\" will disable the preventive blocking, "
+"making the tool always active regardless of user consent."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4756
+msgid ""
+"Setting the cookie as \"not necessary\" will activate the cookie only upon "
+"user consent."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4559
+msgid "Settings"
+msgstr ""
+
+#: admin/views/admin_page_html.php:52 admin/views/backup_restore_html.php:3
+msgid ""
+"Settings saved successfully, but some mandatory data is missing. Please "
+"check the required fields"
+msgstr ""
+
+#: admin/views/admin_page_html.php:51 admin/views/backup_restore_html.php:2
+msgid "Settings updated."
+msgstr "Settings updated."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:426
+msgid "Show Buttons icon"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:107
+#: admin/views/inc/inc.consent_widget_tab.php:119
+msgid "Show Cookie Policy link"
+msgstr "Show Cookie Policy link"
+
+#: admin/views/inc/inc.cookieshield_tab.php:401
+msgid "Show the bar even if there is no consent choice"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:407
+msgid ""
+"Show the Blocked Content Notification Bar even if the user has not yet "
+"expressed a consent choice"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:167
+msgid "Slide"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:131
+msgid "Soft"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:91
+msgid "Spanish"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:28
+msgid "STEP 1"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:55
+msgid "STEP 2"
+msgstr ""
+
+#: admin/views/inc/inc.backup_restore_tab.php:83
+msgid "STEP 3"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:133
+msgid "Strong"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5515
+msgid "Suggested setting"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4763
+msgid "Suggested value for this Cookie"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4560
+msgid "Support"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:44
+msgid "Tab Position"
+msgstr "Tab Position"
+
+#: admin/views/inc/inc.cookieshield_tab.php:163
+msgid "Template Redirect / Shutdown"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:482
+#: admin/views/inc/inc.cookie_banner_tab.php:624
+#: admin/views/inc/inc.cookie_banner_tab.php:653
+msgid "Text"
+msgstr "Text"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:398
+msgid "Text Color"
+msgstr "Text Color"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:487
+#: admin/views/inc/inc.cookie_banner_tab.php:629
+#: admin/views/inc/inc.cookie_banner_tab.php:658
+msgid "Text colour"
+msgstr "Text colour"
+
+#: admin/my-agile-privacy-admin.php:4999
+msgid "The API KEY for this cookie is"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:305
+msgid "The CCPA is the California Privacy regulation."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:612
+msgid "the Cookie Policy"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:12
+msgid ""
+"The cookie policy page is the place where you tell user about how cookies "
+"works and what are the cookies used by the website."
+msgstr ""
+"The cookie policy page is the place where you tell user about how cookies "
+"works and what are the cookies used by the website."
+
+#: admin/views/inc/inc.license_tab.php:62
+msgid "The email address linked to the license key"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:187
+msgid ""
+"The IAB TCF, which stands for Interactive Advertising Bureau Transparency "
+"and Consent Framework, is a standardized framework specifically developed to "
+"help businesses comply with data protection regulations."
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:128
+msgid "The last time cookies and policy were syncronized with remote db"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:256
+msgid "The LPD is Switzerland's Privacy regulation."
+msgstr ""
+
+#. Description of the plugin
+msgid "The only GDPR solution for WordPress that you can truly trust."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:127
+msgid ""
+"The personal data page is the place where you tell user about how do you use "
+"personal data, for example for answering back a user form submission."
+msgstr ""
+"The personal data page is the place where you tell user about how do you use "
+"personal data, for example for answering back a user form submission."
+
+#: admin/views/inc/inc.compliance_report_tab.php:13
+msgid ""
+"The report is automatically generated based on the plugin configuration "
+"status, therefore its reliability is extremely high."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:14
+msgid "The shortcode for the Cookie Policy text is:"
+msgstr "The shortcode for the Cookie Policy text is:"
+
+#: admin/views/inc/inc.policies_tab.php:134
+msgid "The shortcode for the Personal Data Policy page URL is:"
+msgstr "The shortcode for the Personal Data Policy page URL is:"
+
+#: admin/views/inc/inc.policies_tab.php:131
+msgid "The shortcode for the Personal Data Policy text is:"
+msgstr "The shortcode for the Personal Data Policy text is:"
+
+#: admin/views/inc/inc.license_tab.php:21
+msgid "The status of your license"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:190
+msgid ""
+"The type of hook is the technology used to \"hook\" and insert the functions "
+"of My Agile Privacy for the preventive blocking. Change this setting only if "
+"requested by support"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:450
+msgid "The value is in milliseconds. (Default value: 3000)."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4897
+msgid ""
+"This Cookie is reserved by the system and it is not possible to associate "
+"other scripts with its execution."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:36
+msgid ""
+"This feature allows you to automatically detect cookies and third-party "
+"software on your website, enabling you to be compliant with the requirement "
+"of prior consent."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:56
+msgid ""
+"This is an advanced functionality useful for automatic detecting and "
+"blocking common cookies / thirdy part software."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4682
+msgid "This setting does not apply if the cookie is set as 'necessary'."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4725
+msgid "This setting is unavailable on custom added cookie"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:601
+msgid ""
+"This site complies with the Data Protection Act (LPD), Swiss Federal Law of "
+"September 25, 2020, and the GDPR, EU Regulation 2016/679, regarding the "
+"protection of personal data as well as the free movement of such data."
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:320
+msgid ""
+"This website uses cookies to improve your experience while you navigate "
+"through the website."
+msgstr ""
+"This website uses cookies to improve your experience while you navigate "
+"through the website."
+
+#: includes/my-agile-privacy-class.php:770
+#: frontend/views/my-agile-privacy-notify.php:105
+#: admin/views/inc/inc.cookie_banner_tab.php:256
+msgid ""
+"This website uses technical and profiling cookies. Clicking on \"Accept\" "
+"authorises all profiling cookies. Clicking on \"Refuse\" or the X will "
+"refuse all profiling cookies. By clicking on \"Customise\" you can select "
+"which profiling cookies to activate.[myagileprivacy_extra_info]"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:435
+msgid ""
+"This will close automatically the blocked content notification bar after "
+"some second"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:229
+msgid "This will sync Cookies And Policy in the next five minute"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:587
+msgid "TikTok Pixel"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:602
+msgid "times"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:95
+msgid "Title for show again policy"
+msgstr "Title for show again policy"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:81
+msgid "Top"
+msgstr "Top"
+
+#: admin/views/admin_page_html.php:53 admin/views/backup_restore_html.php:4
+msgid "Unable to update Settings."
+msgstr "Unable to update Settings."
+
+#: admin/views/admin_page_html.php:199 admin/views/admin_page_html.php:239
+msgid "Update Settings"
+msgstr "Update Settings"
+
+#: admin/views/inc/inc.policies_tab.php:38
+#: admin/views/inc/inc.policies_tab.php:158
+msgid "Url"
+msgstr "Url"
+
+#: admin/views/inc/inc.policies_tab.php:22
+#: admin/views/inc/inc.policies_tab.php:142
+msgid "Url or Page ?"
+msgstr "Url or Page ?"
+
+#: admin/views/inc/inc.cookieshield_tab.php:66
+msgid "Use this Shield as a fast way to detect and configure My Agile Privacy."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:916
+msgid "Vat ID"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:65
+msgid "Vat Id"
+msgstr "Vat Id"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:76
+msgid "Vertical Banner Position"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:256
+#: admin/views/inc/inc.cookieshield_tab.php:268
+msgid "Video advanced privacy"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1247
+msgid "View Cookie"
+msgstr "View Cookie"
+
+#: frontend/my-agile-privacy-frontend.php:1310
+msgid "View Policy"
+msgstr "View Policy"
+
+#: frontend/views/my-agile-privacy-notify.php:206
+msgid "View the Cookie Policy"
+msgstr "View the Cookie Policy"
+
+#: frontend/views/my-agile-privacy-notify.php:211
+msgid "View the Personal Data Policy"
+msgstr ""
+
+#: admin/views/admin_page_html.php:55 admin/views/backup_restore_html.php:5
+msgid "Warning! Unsaved changes. Are you sure you want to leave?"
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:33
+msgid ""
+"Warning: if you disable this, add the proper link for consent revisit in the "
+"foote area, in order to stay GDPR compliant. You can use the "
+"[myagileprivacy_showconsent] shortcode."
+msgstr ""
+
+#: frontend/views/my-agile-privacy-notify.php:29
+msgid ""
+"Warning: some page functionalities could not work due to your privacy choices"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:1041
+msgid ""
+"Warning: some page functionalities could not work due to your privacy "
+"choices. Click here to review consent."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:64
+msgid ""
+"Warning: the Shield could not work with minify script and caching system: "
+"turn them off if you use it in your system configuration."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4916
+msgid ""
+"Warning: this cookie has been detected automatically and usually you "
+"shouldn't need to install other code."
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:256
+msgid "Warning: this will reset all the plugin settings."
+msgstr "Warning: this will reset the customized plugin settings."
+
+#: admin/views/inc/inc.consent_widget_tab.php:249
+msgid ""
+"Warning: this will reset all the user consent given. Use this only if you "
+"change your cookie list and you would like to ask consent again."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:606
+msgid ""
+"We and our selected ad partners can store and/or access information on your "
+"device, such as cookies, unique identifiers, browsing data."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4226
+msgid "Welcome to the policy list! "
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4237
+msgid "Welcome to your Cookie list!"
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:62
+msgid ""
+"When you finished, just remember to put the Shield to Live Mode, in order to "
+"not slow your website."
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:67
+msgid "Wide"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:594
+msgid "with anonymous data transmission via proxy."
+msgstr ""
+
+#: admin/views/inc/inc.cookieshield_tab.php:37
+msgid ""
+"Without this feature, <b>you might not be compliant with the GDPR "
+"regulations.</b> "
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:4673 admin/my-agile-privacy-admin.php:4712
+#: admin/my-agile-privacy-admin.php:5599 admin/my-agile-privacy-admin.php:5618
+#: admin/my-agile-privacy-admin.php:5682 admin/my-agile-privacy-admin.php:5744
+#: admin/views/inc/inc.cookie_banner_tab.php:116
+#: admin/views/inc/inc.cookie_banner_tab.php:437
+#: admin/views/inc/inc.cookie_banner_tab.php:444
+msgid "Yes"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:55
+msgid "Yes, enable Cookie metadata synchronization."
+msgstr ""
+
+#: admin/views/inc/inc.consent_widget_tab.php:210
+msgid ""
+"Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on "
+"my website and I would to activate the IAB Transparency and Consent Framework"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:328
+msgid ""
+"Yes, I fall under the scope of CCPA and I want to display the corresponding "
+"notice."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:280
+msgid ""
+"Yes, I fall under the scope of LPD and I want to display the corresponding "
+"notice."
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:129
+msgid "Yes, I have a DPO"
+msgstr ""
+
+#: admin/views/inc/inc.advanced_tab.php:28
+msgid "Yes, I would like to turn on automatic plugin updates."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:258
+msgid ""
+"You acknowledge that, depending on the personal data processing activities "
+"you will undertake, you will need to comply with both GDPR and LPD as well "
+"as other local regulations where applicable."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:606
+msgid ""
+"You can always choose the specific purposes related to profiling by "
+"accessing the <a href=\"#\" class=\"map-triggerGotoIABTCF\">advertising "
+"preferences panel</a>, and you can always withdraw your consent at any time "
+"by clicking on \"Manage consent\" at the bottom of the page."
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:608
+msgid ""
+"You can consult: our list of <span id=\"map-vendor-number-count\"></span> <a "
+"href=\"#\" class=\"map-triggerGotoIABTCFVendors\">advertising partners</a>"
+msgstr ""
+
+#: admin/views/inc/inc.identity_tab.php:26
+msgid "You can enter multiple domain linked to this website."
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:306
+msgid "You fall under the scope of CCPA when both of these conditions apply:"
+msgstr ""
+
+#: admin/views/inc/inc.policies_tab.php:259
+msgid ""
+"You have also considered the potential appointment of a Data Protection "
+"Advisor as provided by Swiss LPD."
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:5001
+msgid "You will need this only for advanced installation"
+msgstr ""
+
+#: frontend/my-agile-privacy-frontend.php:1055
+msgid ""
+"Your cookie choices may not allow the form to be submitted. You can review "
+"your choices by <a role=\"button\" href=\"#\" class=\"showConsentAgain\">"
+"clicking here</a>."
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:54
+msgid "Your e-mail"
+msgstr "Your e-mail"
+
+#: admin/views/inc/inc.license_tab.php:7
+msgid "Your license details"
+msgstr "Your license details"
+
+#: admin/views/inc/inc.license_tab.php:94
+msgid "Your license key is provided by"
+msgstr ""
+
+#: admin/views/inc/inc.license_tab.php:13
+msgid "Your license status"
+msgstr "Your license status"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:695
+msgid "Your website preview"
+msgstr ""

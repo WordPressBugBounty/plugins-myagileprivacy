@@ -1,0 +1,615 @@
+body {
+	background: #F0F0F1 !important;
+}
+
+/*fix for js composer*/
+.fade {
+    opacity: unset !important;
+}
+
+
+#adminmenu li.menu-icon-my-agile-privacy-c,
+#adminmenu li.menu-icon-my-agile-privacy-c:hover,
+#adminmenu li.menu-icon-my-agile-privacy-c:focus {
+	background-color: #1d2327;
+	color: #fff;
+}
+
+#adminmenu li.menu-icon-my-agile-privacy-c > a {
+	/* box-shadow: inset 16px 0 0 0 #eabb13; */
+	color: #fff;
+	background-color: #1d2327;
+}
+
+#adminmenu li.menu-icon-my-agile-privacy-c > a.wp-has-current-submenu,
+#adminmenu li.menu-icon-my-agile-privacy-c > a:hover,
+#adminmenu li.menu-icon-my-agile-privacy-c > a:focus {
+	box-shadow: inset 6px 0 0 0 #FF2000;
+	background-color: #eabb13;
+	color: #1d2327;
+}
+
+
+#adminmenu li.menu-icon-my-agile-privacy-c img {
+	opacity: 1;
+	width: 20px;
+	height: 20px;
+	padding: 6px 0 0 0;
+}
+
+
+#my_agile_privacy_backend .nav-link {
+    color: #525252;
+}
+#my_agile_privacy_backend .nav-link.active {
+    background-color: #F93F02;
+    color: #fff;
+}
+
+#my_agile_privacy_backend .alert-light {
+    background-color: #e1f1f5;
+    border-color: #baebf5;
+    color: #055160;
+}
+
+#my_agile_privacy_backend .btn-lg {
+    padding: 0.2rem 0.8rem !important;
+    font-size: 1rem !important;
+}
+
+#my_agile_privacy_backend .button-agile,
+.my_agile_privacy_component_backend .button-agile {
+    color: #f6f7f7;
+    border-color: #2C2C68;
+    background: #2C2C68;
+    vertical-align: top;
+    appearance: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 2.15385;
+    margin: 0;
+    min-height: 30px;
+    padding: 0 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 300ms;
+    -webkit-transition: all 300ms;
+    -moz-transition: all 300ms;
+    -ms-transition: all 300ms;
+    -o-transition: all 300ms;
+}
+#my_agile_privacy_backend .button-agile:hover,
+.my_agile_privacy_component_backend .button-agile:hover {
+    color: #2C2C68;
+    background: #f6f7f7;
+}
+
+#my_agile_privacy_backend .button-agile-outline,
+.my_agile_privacy_component_backend .button-agile-outline {
+    vertical-align: top;
+    appearance: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 2.15385;
+    margin: 0;
+    min-height: 30px;
+    padding: 0 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 300ms;
+    -webkit-transition: all 300ms;
+    -moz-transition: all 300ms;
+    -ms-transition: all 300ms;
+    -o-transition: all 300ms;
+
+    color: #2C2C68;
+    border-color: #2C2C68;
+    background: none;
+}
+
+#my_agile_privacy_backend .button-agile-outline:hover,
+.my_agile_privacy_component_backend .button-agile-outline:hover {
+    color: #f6f7f7;
+    border-color: #2C2C68;
+    background: #2C2C68;
+}
+
+
+#my_agile_privacy_backend .map_wait {
+	display: none;
+}
+
+#my_agile_privacy_backend .form-select-lg {
+    padding-top: 0 !important;
+    padding-bottom: 0  !important;
+    padding-left: .5rem !important;
+    font-size: 1.25rem !important;
+    border-radius:.3rem !important;
+    -webkit-border-radius:.3rem !important;
+    -moz-border-radius:.3rem !important;
+    -ms-border-radius:.3rem !important;
+    -o-border-radius:.3rem !important;
+    -webkit-border-radius: .3rem !important;
+}
+
+#my_agile_privacy_backend .range-wrap {
+    position: relative;
+}
+
+#my_agile_privacy_backend .preset-input-range {
+    width: 100%;
+}
+
+#my_agile_privacy_backend div.disabled { position:relative; }
+#my_agile_privacy_backend div.disabled::after {
+    content: '';
+    position:absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+#my_agile_privacy_backend div.disabled input,
+#my_agile_privacy_backend div.disabled select {
+    opacity: .5;
+}
+
+#my_agile_privacy_backend .consistent-box {
+    padding: 20px 15px;
+    margin-bottom: 30px;
+    background: #fff;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+#my_agile_privacy_backend #sidebar .consistent-box {
+    font-size: .8rem;
+}
+
+#my_agile_privacy_backend .consistent-box h5 {
+    color: #F93F02;
+}
+
+#my_agile_privacy_backend .consistent-box ul {
+    list-style: unset;
+}
+
+#my_agile_privacy_backend .displayBlock,
+.my_agile_privacy_component_backend .displayBlock{
+    display: block;
+}
+
+#my_agile_privacy_backend .displayNone,
+.my_agile_privacy_component_backend .displayNone{
+    display: none;
+}
+
+
+#my_agile_privacy_backend .warning_style{
+    background: #F8D7DA!important;
+    color:#842029!important;
+}
+
+#my_agile_privacy_backend .success_style{
+    background: #d1e7dd!important;
+    color: #0f5132!important;
+}
+
+#my_agile_privacy_backend .grace_period_style{
+    background: #FFF3CD!important;
+    color: #664D03!important;
+}
+
+/*bof styled radio formatting*/
+#my_agile_privacy_backend .styled_radio .round {
+    position: relative;
+    box-sizing: border-box;
+    --background-color: #fff;
+    --checkbox-height: 20px;
+}
+
+@-moz-keyframes map_anim_checkbox_bottom {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+}
+}
+
+@-webkit-keyframes map_anim_checkbox_bottom {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+    }
+}
+
+@keyframes map_anim_checkbox_bottom {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) / 2);
+    }
+}
+
+@keyframes map_anim_checkbox_top {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+@-webkit-keyframes map_anim_checkbox_top {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+@-moz-keyframes map_anim_checkbox_top {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: calc(var(--checkbox-height) * 1.2);
+    }
+}
+
+
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"],
+#my_agile_privacy_backend .styled_radio .round input[type="radio"] {
+    display: none;
+}
+
+#my_agile_privacy_backend .styled_radio .round .label-checkbox,
+#my_agile_privacy_backend .styled_radio .round .label-radio {
+    height: var(--checkbox-height)  !important;
+    width: var(--checkbox-height) !important;
+    background-color: transparent;
+    border: calc(var(--checkbox-height) * .1) solid #000;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+    position: relative;
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-transition: border-color ease 0.2s;
+    -o-transition: border-color ease 0.2s;
+    -webkit-transition: border-color ease 0.2s;
+    transition: border-color ease 0.2s;
+    cursor: pointer;
+}
+
+#my_agile_privacy_backend .styled_radio .round .label-radio {
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+#my_agile_privacy_backend .styled_radio .round .label-checkbox::before,
+#my_agile_privacy_backend .styled_radio .round .label-checkbox::after,
+#my_agile_privacy_backend .styled_radio .round .label-radio::before,
+#my_agile_privacy_backend .styled_radio .round .label-radio::after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    height: 0;
+    width: calc(var(--checkbox-height) * .2);
+    background-color: #34b93d;
+    display: inline-block;
+    -moz-transform-origin: left top;
+    -ms-transform-origin: left top;
+    -o-transform-origin: left top;
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+    content: " ";
+    -webkit-transition: opacity ease 0.5;
+    -moz-transition: opacity ease 0.5;
+    transition: opacity ease 0.5;
+}
+
+#my_agile_privacy_backend .styled_radio .round .label-checkbox::before,
+#my_agile_privacy_backend .styled_radio .round .label-radio::before {
+    top: calc(var(--checkbox-height) * .72);
+    left: calc(var(--checkbox-height) * .41);
+    box-shadow: 0 0 0 calc(var(--checkbox-height) * .05) var(--background-color);
+    -moz-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    -o-transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}
+
+#my_agile_privacy_backend .styled_radio .round .label-checkbox::after,
+#my_agile_privacy_backend .styled_radio .round .label-radio::after {
+    top: calc(var(--checkbox-height) * .37);
+    left: calc(var(--checkbox-height) * .05);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox,
+#my_agile_privacy_backend .styled_radio .round .label-checkbox.checked,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio,
+#my_agile_privacy_backend .styled_radio .round .label-radio.checked {
+  border-color: #34b93d;
+}
+
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox::after,
+#my_agile_privacy_backend .styled_radio .round .label-checkbox.checked::after,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio::after,
+#my_agile_privacy_backend .styled_radio .round .label-radio.checked::after {
+    height: calc(var(--checkbox-height) / 2);
+    -moz-animation: map_anim_checkbox_bottom 0.2s ease 0s forwards;
+    -o-animation: map_anim_checkbox_bottom 0.2s ease 0s forwards;
+    -webkit-animation: map_anim_checkbox_bottom 0.2s ease 0s forwards;
+    animation: map_anim_checkbox_bottom 0.2s ease 0s forwards;
+}
+
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox::before,
+#my_agile_privacy_backend .styled_radio .round .label-checkbox.checked::before,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio::before,
+#my_agile_privacy_backend .styled_radio .round .label-radio.checked::before {
+    height: calc(var(--checkbox-height) * 1.2);
+    -moz-animation: map_anim_checkbox_top 0.4s ease 0s forwards;
+    -o-animation: map_anim_checkbox_top 0.4s ease 0s forwards;
+    -webkit-animation: map_anim_checkbox_top 0.4s ease 0s forwards;
+    animation: map_anim_checkbox_top 0.4s ease 0s forwards;
+}
+
+
+#my_agile_privacy_backend .label-checkbox{
+    min-width: 20px;
+}
+
+/*eof styled radio formatting*/
+
+
+#my_agile_privacy_backend .card.fullwidth {
+    max-width: 100%;
+}
+
+
+.map_notify_popup{
+    position:fixed;
+    width:250px;
+    padding:12px;
+    color:#fff;
+    right:30px;
+    top:0px;
+    opacity:0;
+}
+
+
+/* fix wordpress select css */
+.wp-core-ui #my_agile_privacy_backend select {
+    max-width: 100%;
+    padding: 0.375rem 0.75rem;
+    height:40px;
+}
+
+/* fix notification message cookie list */
+.map_infobox {
+    position: relative;
+    padding: 1rem 1rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    line-height: 1.6rem;
+    border: 1px solid #b6d4fe;
+    background-color: #cfe2ff;
+    color: #084298;
+    border-radius: 0.25rem;
+    -webkit-border-radius: 0.25rem;
+    -moz-border-radius: 0.25rem;
+    -ms-border-radius: 0.25rem;
+    -o-border-radius: 0.25rem;
+}
+.map_infobox code {
+    color: #333 !important;
+    font-weight: bold;
+    background: #fff !important;
+}
+
+#animation-preview-button {
+    cursor: pointer;
+}
+
+
+#my_agile_privacy_backend .forbiddenArea {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+
+.metabox-pill {
+    top: -52px;
+    left: -12px;
+}
+
+.compliance-report-row div.badge.rounded-pill {
+    font-size: 15px;
+    min-width: 250px;
+    padding: 10px 35px 10px 35px;
+    position: relative;
+}
+.compliance-report-row div.badge.rounded-pill i {
+    position: absolute;
+    left: 10px;
+}
+
+.compliance-report-row div[data-bs-toggle="tooltip"] {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.compliance-report-row .progress {
+    height: 40px;
+    font-size: 18px;
+}
+
+.map_highlight {
+    display: inline-block;
+    padding-block: 2px;
+    padding-inline: 5px;
+    background: #FFF3CD;
+    color: #7b5e04;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+
+
+/* code editor */
+
+.code-block-container, .code-editor, .code-viewer {
+    all: unset;
+    font-family: monospace;
+    display: block;
+    border: 0;
+    width: 100%;
+    height: 250px;
+    box-sizing: border-box;
+}
+.code-block-container-small, .code-editor-small, .code-viewer-small {
+    height: 150px !important;
+} 
+
+.code-editor, .code-viewer {
+    margin: 0 !important;
+    padding: 10px 10px 10px 3.8em !important;
+    overflow: auto;
+    white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    resize: none;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+
+#my_agile_privacy_backend .code-viewer code {
+    padding:0;
+}
+
+#my_agile_privacy_backend .code-editor, 
+#my_agile_privacy_backend .code-viewer, 
+#my_agile_privacy_backend .code-viewer * {
+    font-family: monospace !important;
+    font-size: 18px !important;
+    line-height: 20px !important;
+    tab-size: 3 !important;
+}
+
+#my_agile_privacy_backend .code-editor {
+    z-index: 1;
+    color: transparent;
+    background: transparent;
+    caret-color: #111;
+}
+
+#my_agile_privacy_backend .code-viewer {
+    z-index: 0;
+}
+
+#my_agile_privacy_backend.helpdeskWrapper .orange-icon {
+    color: #F95722 !important;
+}
+
+#my_agile_privacy_backend.helpdeskWrapper .btn-outline-orange {
+    border-color: #F95722;
+    color: #F95722;
+}
+
+#my_agile_privacy_backend.helpdeskWrapper .btn-outline-orange:hover {
+    background-color: #f95722;
+    color: #fff;
+}
+
+#my_agile_privacy_backend .map_js_dependencies_wrapper .map-dependency-entry select {
+    margin-right: 1%;
+    width:29% !important;
+}
+#my_agile_privacy_backend .map_js_dependencies_wrapper .map-dependency-entry input {
+    width: 65% !important; 
+}
+#my_agile_privacy_backend .map_js_dependencies_wrapper .map-dependency-entry button {
+    min-width: 5%;
+}
+
+
+/*map policy quickview*/
+
+.my_agile_privacy_component_backend{
+
+}
+
+.my_agile_privacy_component_backend .map-custom-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+.my_agile_privacy_component_backend .map-custom-card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1.25rem;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+.my_agile_privacy_component_backend .map-custom-card-body {
+    padding: 1.25rem;
+    background: white;
+}
+.my_agile_privacy_component_backend .map-custom-content {
+    pointer-events: none;
+}
+
+.my_agile_privacy_component_backend #map_buttons_background_alert p {
+    font-size: 16px;
+}

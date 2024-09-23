@@ -1,0 +1,30 @@
+<wpml-config>
+  <custom-types>
+    <custom-type translate="1">my-agile-privacy-c</custom-type>
+    <custom-type translate="1">my-agile-privacy-p</custom-type>
+  </custom-types>
+  <custom-fields>
+    <custom-field action="ignore">_map_remote_id</custom-field>
+    <custom-field action="ignore">_map_name</custom-field>
+    <custom-field action="ignore">_map_is_free</custom-field>
+    <custom-field action="ignore">_map_is_necessary</custom-field>
+    <custom-field action="ignore">_map_is_readonly</custom-field>
+    <custom-field action="ignore">_map_code</custom-field>
+    <custom-field action="ignore">_map_allow_sync</custom-field>
+    <custom-field action="ignore">_map_installation_type</custom-field>
+    <custom-field action="ignore">_map_raw_code</custom-field>
+    <custom-field action="ignore">_map_noscript</custom-field>
+    <custom-field action="ignore">_map_help_url</custom-field>
+    <custom-field action="ignore">_map_suggested_is_necessary</custom-field>
+    <custom-field action="ignore">_map_page_reload_on_user_consent</custom-field>
+  </custom-fields>
+  <admin-texts>
+    <key name="MyAgilePrivacy-1.0.0">
+    <key name="notify_message"/>
+    <key name="button_accept_text"/>
+    <key name="button_reject_text"/>
+    <key name="button_customize_text"/>
+    <key name="showagain_text"/>
+    </key>
+  </admin-texts>
+</wpml-config>

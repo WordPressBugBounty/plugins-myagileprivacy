@@ -1,0 +1,37 @@
+#my-agile-privacy-notification-area,
+#map-blocked-content-notification-area {
+    all: initial;
+}
+
+#my-agile-privacy-consent-again,
+#my-agile-privacy-notification-content,
+#map-blocked-content-notification-area,
+#my-agile-privacy-notification-area,
+#my-agile-privacy-notification-area .map_notify_title,
+#my-agile-privacy-notification-area .map_notify_title .banner-title-logo,
+#my-agile-privacy-notification-area .map-closebutton-right,
+#my-agile-privacy-notification-area .map-area-container,
+#my-agile-privacy-notification-area .map_notification_container
+.map-modal,
+.map-modal h4,
+.map-modal-body .modal_credits,
+.map-modal-body a,
+.map-modal-body img,
+.map-modal-backdrop,
+.map-modal-open,
+.map-modal-content,
+.map-modal-content .map-modal-body,
+.map-switch,
+.map-switch input[type="checkbox"],
+.map-switch .map-slider,
+.map-tab-section,
+.map-tab-content,
+.map-nav-pills,
+.map-tab-header,
+.map_settings_button,
+.map_inline_notify,
+.map_custom_notify,
+.map-cookielist-overflow-container
+ {
+    all: revert;
+}
