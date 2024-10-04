@@ -1,3 +1,4 @@
+/* COLOR PREVEW */
 #my_agile_privacy_backend #live-preview {
     position: sticky;
     position: -webkit-sticky;
@@ -342,6 +343,256 @@
 }
 
 
+/* TEXT AND TRANSLATIONS PREVIEW */
+
+#my_agile_privacy_backend.translationsWrapper {
+    font-size: 16px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .browser {
+    position: relative;
+    box-shadow: 0 0.1em 1em 0 rgba(0, 0, 0, 0.4);
+    min-height: 550px;
+    margin-top: 10px;
+    background: #fefefe;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .browser.with_overlay {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* #my_agile_privacy_backend.translationsWrapper .text-preview .browser:before {
+    display: block;
+    position: absolute;
+    content: '';
+    top: 0.75em;
+    left: 1em;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background-color: #f44;
+    box-shadow: 0 0 0 2px #f44, 1.5em 0 0 2px #9b3, 3em 0 0 2px #fb5;
+} */
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-cookiebanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    overflow: hidden;
+    min-height: 210px;
+    padding-bottom: 16px;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+}
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-title {
+    padding: 5px 20px;
+    background: #3D3D3D;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-text-container {
+    grid-area: 1 / 1 / 2 / 2;
+    padding: 0 20px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-text-container input,
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-text-container textarea {
+    background: none;
+    padding: 0;
+    border: none;
+    resize: none;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-button-container {
+    grid-area: 1 / 2 / 2 / 3;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-button-container .preview-button {
+    height: 40px;
+    width: 30%;
+    background: #3D3D3D;
+    color: #fff;
+    line-height: 40px;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+
+#my_agile_privacy_backend.translationsWrapper [data-edit] {
+    position: relative;
+    padding: 2px;
+    margin: 1px 0;
+    border-bottom: 1px dotted #664d03;
+    transition: background-color 0.3s ease;
+    -webkit-transition: background-color 0.3s ease;
+    -moz-transition: background-color 0.3s ease;
+    -ms-transition: background-color 0.3s ease;
+    -o-transition: background-color 0.3s ease;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-button-container [data-edit] {
+    display: block;
+}
+
+#my_agile_privacy_backend.translationsWrapper [data-edit]:hover {
+    background-color: #fff3cd !important;
+    cursor: pointer;
+
+}
+
+#my_agile_privacy_backend.translationsWrapper .preview-title [data-edit]:hover,
+#my_agile_privacy_backend.translationsWrapper .text-preview .preview-button-container [data-edit]:hover {
+    color: #000 !important;
+}
+
+/* #my_agile_privacy_backend.translationsWrapper .text-preview [data-edit]:hover::after {
+    position: absolute;
+    content: '✏️';
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    padding: 4px 4px 4px 30px;
+    background: linear-gradient(to right, transparent 0%, #fff3cd 40%);
+    font-size: 13px;
+} */
+
+
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .my-agile-privacy-consent-again {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: #fff;
+    font-size: 12px;
+    padding: 6px 15px 6px 40px;
+    color: #444;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+#my_agile_privacy_backend.translationsWrapper .text-preview .map_logo_container {
+    position: absolute;
+	top: -1px;
+    display: block;
+	left: 6px;
+    width: 25px;
+	height: 100%;
+	background-color: #F93F00;
+    -webkit-mask-image: url('../img/fox-black.svg');
+    mask-image: url('../img/fox-black.svg');
+	mask-repeat: no-repeat;
+	mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .second-layer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 650px;
+    height: 400px;
+    padding: 20px 25px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .second-layer .cookie-placeholder-list div {
+    margin-bottom: 5px;
+    background: #F2F2F2;
+    padding: 12px 15px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .second-layer .second-layer-tab {
+    display: block;
+    padding: 4px 12px;
+    background-color: #f2f2f2;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .second-layer .second-layer-tab:first-child {
+    background-color: #0092baa8;
+}
+
+
+
+.modal-backdrop {
+    opacity: 0.5 !important;
+    z-index: 99998 !important;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal {
+    z-index: 99999 !important;
+}
+/* Stile per la modale */
+#my_agile_privacy_backend.translationsWrapper .modal-dialog {
+    width: 80%;
+    max-width: 800px !important;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-content {
+    min-height: 200px;
+    max-height: 600px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-body {
+    overflow-y: auto;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-body textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-footer .btn-primary {
+    background-color: #F93F02;
+    border-color: #F93F02;
+}
+
+#my_agile_privacy_backend.translationsWrapper .modal-footer .btn-primary:hover,
+#my_agile_privacy_backend.translationsWrapper .modal-footer .btn-primary:focus,
+#my_agile_privacy_backend.translationsWrapper .modal-footer .btn-primary:active {
+    background-color: #d93500;
+    border-color: #d93500;
+}
 
 
 

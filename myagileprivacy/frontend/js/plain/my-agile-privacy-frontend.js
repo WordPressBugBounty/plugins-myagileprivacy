@@ -4,7 +4,7 @@
 */
 
 var MAP_SYS = {
-	'internal_version' : "2.0006",
+	'internal_version' : "2.0007",
 	'technology' : "plain",
 	'maplog' : "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
 	'map_initted' : false,
@@ -2667,14 +2667,32 @@ var MAP =
 			if( !!MAP?.settings.scan_mode &&
 				MAP.settings.scan_mode == 'learning_mode' )
 			{
+				const this_blocked_friendly_name = [];
 
-				if( this.blocked_friendly_name_string )
+				if( map_full_config?.cookie_api_key_remote_id_map_active &&
+					typeof map_full_config.cookie_api_key_remote_id_map_active === 'object')
 				{
-					this.showNotificationBar( 'The Cookie Shield has detected the following cookies on this page:: ' + this.blocked_friendly_name_string + '.', null );
+				    Object.entries( map_full_config.cookie_api_key_remote_id_map_active).
+				    forEach( ([key, value] ) => {
+
+				        const friendlyName = map_full_config?.cookie_api_key_friendly_name_map?.[key];
+
+				        if( friendlyName?.desc )
+				        {
+				        	this_blocked_friendly_name.push( friendlyName?.desc );
+				        }
+				    });
+				}
+
+				const this_blocked_friendly_name_unique = this_blocked_friendly_name.filter((v, i, a) => a.indexOf(v) === i);
+
+				if( this_blocked_friendly_name_unique.length )
+				{
+					this.showNotificationBar( 'The Cookie Shield has detected the following cookies so far: ' +this_blocked_friendly_name_unique.join( ', ' ) + '.', null );
 				}
 				else
 				{
-					this.showNotificationBar( 'The Cookie Shield has not detected new cookies on this page.', null );
+					this.showNotificationBar( 'The Cookie Shield has not detected any cookies.', null );
 				}
 			}
 
@@ -2685,6 +2703,7 @@ var MAP =
 			}
 		}
 	},
+
 	//slideUp equivalent function (hide)
 	slideUp: function( target, duration=500, callback=null )
 	{

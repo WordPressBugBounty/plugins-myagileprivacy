@@ -1,14 +1,19 @@
 <?php
 
-if( $css_compatibility_fix ):
+	if( !defined( 'MAP_PLUGIN_NAME' ) )
+	{
+		exit('Not allowed.');
+	}
+
+	if( $css_compatibility_fix ):
 
 ?>
 
 <style type="text/css">
 
 .tab-content>.active {
-    display: block;
-    opacity: 1;
+	display: block;
+	opacity: 1;
 }
 
 </style>
@@ -16,16 +21,16 @@ if( $css_compatibility_fix ):
 
 <?php
 
-endif;
+	endif;
 
 ?>
 
-<div class="wrap genericOptionsWrapper" id="my_agile_privacy_backend">
-	<h2>My Agile Privacy: <?php _e( 'Compliance Report', 'myagileprivacy' ); ?></h2>
+<div class="wrap complianceReportWrapper" id="my_agile_privacy_backend">
+	<h2>My Agile Privacy: <?php _e('Compliance Report', 'MAP_txt'); ?></h2>
 
-    <div class="container-fluid mt-5">
-        <?php include 'inc/inc.compliance_report_tab.php'; ?>
-    </div> <!-- ./container-fluid -->
+	<div class="container-fluid mt-5">
+		<?php include 'inc/inc.compliance_report_tab.php'; ?>
+	</div> <!-- ./container-fluid -->
 </div> <!-- ./wrap -->
 
 

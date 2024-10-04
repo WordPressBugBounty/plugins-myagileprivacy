@@ -901,7 +901,7 @@ My Agile Privacy Main Css
     color: #000;
     font-size: 12px;
     text-align: right;
-    min-width: 60px;
+    min-width: 70px;
     top:4px;
     text-transform: none;
 }
@@ -1218,6 +1218,8 @@ span.map-necessary-caption {
 #my-agile-privacy-notification-area.mapSizeWide .map_notification_container.map-iab-context{
     flex-basis: 20%!important;
     flex-direction: column!important;
+    display: flex;
+    gap: 10px;
 }
 
 

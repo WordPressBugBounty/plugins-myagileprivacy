@@ -5,18 +5,18 @@
  * Plugin Name:       MyAgilePrivacy
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       The only GDPR solution for WordPress that you can truly trust.
- * Version:           3.0.9
+ * Version:           3.1.0
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
  * Author URI:        https://www.myagileprivacy.com/
  * License:           GPLv3
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain:       myagileprivacy
+ * Text Domain:       MAP_txt
  * Domain Path:       /lang
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.0.9' );
+define( 'MAP_PLUGIN_VERSION', '3.1.0' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_PLUGIN_FILENAME', __FILE__ );

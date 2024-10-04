@@ -1,7 +1,7 @@
 <wpml-config>
   <custom-types>
-    <custom-type translate="1">my-agile-privacy-c</custom-type>
-    <custom-type translate="1">my-agile-privacy-p</custom-type>
+    <custom-type translate="0">my-agile-privacy-c</custom-type>
+    <custom-type translate="0">my-agile-privacy-p</custom-type>
   </custom-types>
   <custom-fields>
     <custom-field action="ignore">_map_remote_id</custom-field>
@@ -20,11 +20,6 @@
   </custom-fields>
   <admin-texts>
     <key name="MyAgilePrivacy-1.0.0">
-    <key name="notify_message"/>
-    <key name="button_accept_text"/>
-    <key name="button_reject_text"/>
-    <key name="button_customize_text"/>
-    <key name="showagain_text"/>
     </key>
   </admin-texts>
 </wpml-config>

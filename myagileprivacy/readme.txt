@@ -1,20 +1,19 @@
 === My Agile Privacy - The only GDPR solution for WordPress that you can truly trust ===
 Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/
-Tags: CMP, GDPR DSGVO LPD and CCPA compliance, Cookie Banner, Consent Mode v2, Consent Management Platform
+Tags: CMP, GDPR RGPD UAVG RODO DSGVO LPD and CCPA compliance, Cookie Banner, Consent Mode v2, Consent Management Platform
 Requires at least: 4.4.0
 Tested up to: 6.6
-Stable tag: 3.0.9
+Stable tag: 3.1.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Ensure GDPR / DSGVO cookie compliance with this plugin: set up cookie notices, policies, and personal data policies for GDPR, LPD, and CCPA rules.
+Ensure cookie compliance with GDPR, RGPD, UAVG, RODO, DSGVO, LPD, and CCPA using this plugin: effortlessly set up cookie notices, privacy policies, and personal data policies. Avoid penalties and fines by staying compliant.
 
 == Description ==
 
-My Agile Privacy is the solution for handling GDPR, LPD and CCPA compliance, with support for English, Spanish, French, German, and Italian languages.
-This plugin is one of the best Wordpress GDPR, LPD, CCPA cookie & personal data compliance plugin, with a lot of easy to use features listed below.
+My Agile Privacy is the solution for managing privacy regulations compliance, with support for English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek languages. This plugin is one of the best WordPress cookie and personal data compliance plugins for privacy regulations, offering a wide range of easy-to-use features listed below. My Agile Privacy natively supports multilingual sites using WPML, Polylang, TranslatePress, or Weglot.
 
 [youtube https://youtu.be/2lphC4YTUfM]
 
@@ -23,9 +22,9 @@ This plugin is one of the best Wordpress GDPR, LPD, CCPA cookie & personal data 
 
 - 🚀 Highly customizable
 
-- ⭐ Option to accept, reject & revisit consent
+- ⭐ Options to accept, reject & revisit consent
 
-- ⚡️ Granularity of user consent
+- ⚡️ Granular user consent
 
 - ⭐ Cookie Consent and Personal Data Consent management
 
@@ -36,6 +35,8 @@ This plugin is one of the best Wordpress GDPR, LPD, CCPA cookie & personal data 
 - ⭐ IAB TCF 2.2 Support
 
 - ⭐ Consent Mode v2 Support
+
+- ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot)
 
 == Frequently Asked Questions ==
 
@@ -64,10 +65,19 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 == Changelog ==
 
+= 3.1.0
+* Multilang global refactoring
+* Added support for TranslatePress
+* Added support for Weglot
+* Polylang fix
+* Added support for language text translations
+* Added support for Portuguese, Dutch, Polish, and Greek
+* Removed jQuery dependency from the frontend version
+
 = 3.0.9
 * Consent Mode v2 fix
 * Added support for explicitly turning off Advanced Consent Mode
-* IAB - Google Consent Mode v2 TCData.enableAdvertiserConsentModeand implementation
+* IAB - Google Consent Mode v2 TCData.enableAdvertiserConsentMode implementation
 
 = 3.0.8
 * Better url skip regexp check condition

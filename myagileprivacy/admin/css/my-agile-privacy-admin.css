@@ -58,7 +58,7 @@ body {
 }
 
 #my_agile_privacy_backend .button-agile,
-.my_agile_privacy_component_backend .button-agile {
+.my_agile_privacy_backend_inline .button-agile {
     color: #f6f7f7;
     border-color: #2C2C68;
     background: #2C2C68;
@@ -84,13 +84,13 @@ body {
     -o-transition: all 300ms;
 }
 #my_agile_privacy_backend .button-agile:hover,
-.my_agile_privacy_component_backend .button-agile:hover {
+.my_agile_privacy_backend_inline .button-agile:hover {
     color: #2C2C68;
     background: #f6f7f7;
 }
 
 #my_agile_privacy_backend .button-agile-outline,
-.my_agile_privacy_component_backend .button-agile-outline {
+.my_agile_privacy_backend_inline .button-agile-outline {
     vertical-align: top;
     appearance: none;
     border-radius: 3px;
@@ -118,7 +118,7 @@ body {
 }
 
 #my_agile_privacy_backend .button-agile-outline:hover,
-.my_agile_privacy_component_backend .button-agile-outline:hover {
+.my_agile_privacy_backend_inline .button-agile-outline:hover {
     color: #f6f7f7;
     border-color: #2C2C68;
     background: #2C2C68;
@@ -184,12 +184,12 @@ body {
 }
 
 #my_agile_privacy_backend .displayBlock,
-.my_agile_privacy_component_backend .displayBlock{
+.my_agile_privacy_backend_inline .displayBlock{
     display: block;
 }
 
 #my_agile_privacy_backend .displayNone,
-.my_agile_privacy_component_backend .displayNone{
+.my_agile_privacy_backend_inline .displayNone{
     display: none;
 }
 
@@ -430,19 +430,19 @@ body {
 
 /* fix notification message cookie list */
 .map_infobox {
-    position: relative;
-    padding: 1rem 1rem;
-    margin-bottom: 0;
-    font-size: 1rem;
-    line-height: 1.6rem;
-    border: 1px solid #b6d4fe;
-    background-color: #cfe2ff;
-    color: #084298;
-    border-radius: 0.25rem;
-    -webkit-border-radius: 0.25rem;
-    -moz-border-radius: 0.25rem;
-    -ms-border-radius: 0.25rem;
-    -o-border-radius: 0.25rem;
+    position: relative!important;
+    padding: 1rem 1rem!important;
+    margin-bottom: 0!important;
+    font-size: 1rem!important;
+    line-height: 1.6rem!important;
+    border: 1px solid #b6d4fe!important;
+    background-color: #cfe2ff!important;
+    color: #084298!important;
+    border-radius: 0.25rem!important;
+    -webkit-border-radius: 0.25rem!important;
+    -moz-border-radius: 0.25rem!important;
+    -ms-border-radius: 0.25rem!important;
+    -o-border-radius: 0.25rem!important;
 }
 .map_infobox code {
     color: #333 !important;
@@ -583,33 +583,107 @@ body {
 }
 
 
-/*map policy quickview*/
+/*bof map policy quickview*/
 
-.my_agile_privacy_component_backend{
+.my_agile_privacy_backend_inline{
 
 }
 
-.my_agile_privacy_component_backend .map-custom-card {
+.my_agile_privacy_backend_inline .map-custom-card {
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     margin: 1rem 0;
 }
-.my_agile_privacy_component_backend .map-custom-card-header {
+.my_agile_privacy_backend_inline .map-custom-card-header {
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
     padding: 0.75rem 1.25rem;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
 }
-.my_agile_privacy_component_backend .map-custom-card-body {
+.my_agile_privacy_backend_inline .map-custom-card-body {
     padding: 1.25rem;
     background: white;
 }
-.my_agile_privacy_component_backend .map-custom-content {
+.my_agile_privacy_backend_inline .map-custom-content {
     pointer-events: none;
 }
 
-.my_agile_privacy_component_backend #map_buttons_background_alert p {
+.my_agile_privacy_backend_inline #map_buttons_background_alert p {
     font-size: 16px;
 }
+
+/*eof map policy quickview*/
+
+/*bof map cookies translations-list */
+
+.my_agile_privacy_backend_inline .map-translations-list {
+    border: 1px solid #ccd0d4;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+.my_agile_privacy_backend_inline .map-translations-list h3 {
+    margin: 0;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ccd0d4;
+    background: #f5f5f5;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .nav-tabs {
+    display: flex;
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+    background: #f1f1f1;
+    border-bottom: 1px solid #ccd0d4;
+}
+.my_agile_privacy_backend_inline .map-translations-list .nav-tabs .nav-item {
+    margin-bottom: -1px;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #555;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .nav-tabs .nav-link.active {
+    color: #000;
+    background-color: #fff;
+    border-color: #ccd0d4 #ccd0d4 #fff;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .tab-content {
+    background: #fff;
+    padding: 20px;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .tab-pane {
+    display: none;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .tab-pane.active {
+    display: block;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .tab-pane label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .tab-pane input[type="text"] {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.my_agile_privacy_backend_inline .map-translations-list .mce-edit-area iframe {
+    height: 300px !important;
+}
+
+/*eof map cookies translations-list */
