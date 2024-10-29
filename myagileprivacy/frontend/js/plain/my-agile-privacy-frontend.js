@@ -4,24 +4,27 @@
 */
 
 var MAP_SYS = {
-	'internal_version' : "2.0007",
-	'technology' : "plain",
-	'maplog' : "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
-	'map_initted' : false,
-	'map_document_load' : false,
-	'map_debug' : false,
-	'map_cookie_expire' : 180,
-	'map_skip_regexp' : [/.*oxygen_iframe=true.*$/, /.*ct_builder=true.*$/],
-	'map_missing_cookie_shield' : null,
-	'map_detectableKeys' : null,
-	'map_detectedKeys' : null,
-	'in_iab_context' : false,
-	'dependencies' : [],
-	'cmode_v2' : null,
-	'cmode_v2_implementation_type' : null,
-	'cmode_v2_forced_off_ga4_advanced' : null,
-	'starting_gconsent' : [],
-	'current_gconsent': [],
+	'plugin_version' 					: null,
+	'internal_version' 					: "2.0010",
+	'cookie_shield_version' 			: null,
+	'technology' 						: "plain",
+	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
+	'map_initted' 						: false,
+	'map_document_load' 				: false,
+	'map_debug' 						: false,
+	'map_cookie_expire' 				: 180,
+	'map_skip_regexp' 					: [/.*oxygen_iframe=true.*$/, /.*ct_builder=true.*$/],
+	'map_missing_cookie_shield' 		: null,
+	'map_detectableKeys' 				: null,
+	'map_detectedKeys' 					: null,
+	'in_iab_context' 					: false,
+	'dependencies' 						: [],
+	'cmode_v2' 							: null,
+	'cmode_v2_implementation_type' 		: null,
+	'cmode_v2_forced_off_ga4_advanced' 	: null,
+	'cmode_v2_js_on_error'				: null,
+	'starting_gconsent' 				: [],
+	'current_gconsent'					: [],
 };
 
 if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
@@ -126,6 +129,18 @@ var MAP =
 			this.settings = args.settings;
 		}
 
+		if( !!this?.settings?.plugin_version )
+		{
+			MAP_SYS.plugin_version = this?.settings?.plugin_version;
+		}
+
+		if( typeof CookieShield !== 'undefined' &&
+			CookieShield
+		)
+		{
+			MAP_SYS.cookie_shield_version = CookieShield.getVersion();
+		}
+
 		if( ( !!this?.settings?.scan_mode &&
 			this.settings.scan_mode == 'learning_mode' ) ||
 			( !!this?.settings?.verbose_remote_log &&
@@ -191,8 +206,6 @@ var MAP =
 		}
 
 		this.loadDependencies();
-
-		this.setupConsentModeV2();
 
 		this.toggleBar();
 		this.createInlineNotify();
@@ -432,77 +445,83 @@ var MAP =
 
 		if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupConsentModeV2' );
 
-		if( typeof map_full_config === 'undefined' )
-		{
-			return false;
-		}
+		try{
 
-		MAP_SYS.cmode_v2 = map_full_config?.enable_cmode_v2;
-		MAP_SYS.cmode_v2_implementation_type = map_full_config?.cmode_v2_implementation_type;
-		MAP_SYS.cmode_v2_forced_off_ga4_advanced = map_full_config?.cmode_v2_forced_off_ga4_advanced;
-
-		if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'gtm' )
-		{
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
-
-			var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
-
-			if( cookieValue )
+			if( typeof map_full_config === 'undefined' )
 			{
-				var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
-				//setting initial current_gconsent value (deep copy using spread operator)
-				MAP_SYS.current_gconsent = {...this_gconsent};
+				return false;
 			}
-		}
 
-		if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'native' )
-		{
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
+			MAP_SYS.cmode_v2 = map_full_config?.enable_cmode_v2;
+			MAP_SYS.cmode_v2_implementation_type = map_full_config?.cmode_v2_implementation_type;
+			MAP_SYS.cmode_v2_forced_off_ga4_advanced = map_full_config?.cmode_v2_forced_off_ga4_advanced;
+			MAP_SYS.cmode_v2_js_on_error = map_full_config?.cmode_v2_js_on_error;
 
-			//save starting consent
-			MAP_SYS.starting_gconsent = map_full_config?.cmode_v2_default_consent_obj;
-
-			var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
-
-			if( cookieValue )
+			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'gtm' )
 			{
-				var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
 
-				//setting initial current_gconsent value (deep copy using spread operator)
-				MAP_SYS.current_gconsent = { ...this_gconsent };
+				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
 
-				try {
-					gtag( 'consent', 'default', { ...MAP_SYS.current_gconsent } );
-				}
-				catch( error )
+				if( cookieValue )
 				{
-				  console.error( error );
+					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = {...this_gconsent};
 				}
 			}
-			else
+
+			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'native' )
 			{
-				//no cookie value case
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+				//save starting consent
+				MAP_SYS.starting_gconsent = map_full_config?.cmode_v2_default_consent_obj;
 
-				//setting initial current_gconsent value (deep copy using spread operator)
-				MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
+				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
 
-				try {
-					gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
-
-				}
-				catch( error )
+				if( cookieValue )
 				{
-				  console.error( error );
+					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = { ...this_gconsent };
+
+					try {
+						gtag( 'consent', 'default', { ...MAP_SYS.current_gconsent } );
+					}
+					catch( error )
+					{
+					  console.error( error );
+					}
 				}
+				else
+				{
+					//no cookie value case
 
-				that.saveGoogleConsentStatusToCookie( MAP_SYS.current_gconsent );
+					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
+
+					try {
+						gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
+					}
+					catch( error )
+					{
+					  console.error( error );
+					}
+
+					that.saveGoogleConsentStatusToCookie( MAP_SYS.current_gconsent );
+				}
 			}
+
+			return true;
 		}
-
-		return true;
-
+		catch( error )
+		{
+			console.error( error );
+		}
 	},
 
 	toggleBar: function()
@@ -1367,7 +1386,15 @@ var MAP =
 
 					if( v )
 					{
-						blocked_friendly_name.push( v );
+						if( v?.desc )
+						{
+							blocked_friendly_name.push( v.desc );
+						}
+						else
+						{
+							blocked_friendly_name.push( v );
+						}
+
 					}
 				});
 			}
@@ -1958,6 +1985,8 @@ var MAP =
 		//for preserving scope
 		var that = this;
 
+		console.log( dataLayer );
+
 		var once_functions_to_execute = [];
 
 		var $map_cookie_description_wrapper = that.settingsModal.querySelectorAll( '.map_cookie_description_wrapper' );
@@ -2092,7 +2121,6 @@ var MAP =
 					var $css_href_blocked = document.querySelectorAll( 'link.my_agile_privacy_activate.autoscan_mode.css_href_blocked[data-cookie-api-key="'+api_key+'"]' );
 
 					var $img_src_blocked = document.querySelectorAll( 'img.my_agile_privacy_activate.autoscan_mode.img_src_blocked[data-cookie-api-key="'+api_key+'"]' );
-
 
 					if( !!$map_src_script_blocked && $map_src_script_blocked?.length )
 					{
@@ -2917,6 +2945,12 @@ var MAP =
 
 	checkJsShield: function()
 	{
+		if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+		{
+			console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkJsShield function' );
+			return;
+		}
+
 		if( typeof CookieShield === 'undefined' ||
 			(
 				typeof cookie_api_key_remote_id_map_active === 'undefined' ||
@@ -2950,11 +2984,146 @@ var MAP =
 		.then( response => response.text() )
 		.then( responseText => {
 			console.debug( MAP_SYS.maplog, responseText );
-		});
+		})
+		.catch( error => console.error( 'Error sending data running checkJsShield function:', error ) );
+	},
+
+	checkConsentModeStatus: function()
+	{
+		if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+		{
+			console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkConsentModeStatus function' );
+			return;
+		}
+
+		const googleTagRegex = /^G-/;
+		let is_consent_valid = false;
+		let has_valid_google_tag = false;
+		let error_motivation = '';
+		let error_code = null;
+
+		// Check if Consent Mode is enabled
+		if( !MAP_SYS?.cmode_v2 )
+		{
+			error_motivation = 'Consent Mode V2 not enabled';
+			error_code = 10;
+		}
+		// Check if dataLayer is defined and not null
+		else if( typeof dataLayer === 'undefined' || dataLayer === null )
+		{
+			error_motivation = 'missing dataLayer';
+			error_code = 20;
+		}
+		else
+		{
+			for( let i = 0; i < dataLayer.length; i++ )
+			{
+				const item = dataLayer[i];
+
+				if( item && ( Array.isArray( item ) || typeof item === 'object' ) )
+				{
+					const firstArg = item[0];
+					const secondArg = item[1];
+
+					// Check for consent set
+					if( firstArg === 'consent' && secondArg === 'default' )
+					{
+						is_consent_valid = true;
+					}
+
+					// Check for Google Tag config
+					if( firstArg === 'config' && googleTagRegex.test( secondArg ) )
+					{
+						has_valid_google_tag = true;
+					}
+
+					// Validate that Google Tag configs aren't set before consent
+					if( !is_consent_valid )
+					{
+						if( ( firstArg === 'config' && googleTagRegex.test( secondArg ) ) || firstArg === 'event' )
+						{
+							error_motivation = `Consent is set after Google tag ${secondArg} `;
+							error_code = 30;
+							break;
+						}
+					}
+				}
+			}
+
+			// Check if consent was never set
+			if( !is_consent_valid && error_code === null && MAP_SYS?.cmode_v2_implementation_type != 'gtm' )
+			{
+				error_motivation = 'No consent set before Google tags';
+				error_code = 40;
+			}
+
+			// Check if no Google Tag was validated
+			if( !has_valid_google_tag && MAP_SYS?.cmode_v2_implementation_type != 'gtm' )
+			{
+				error_motivation = 'Google Tag seems missing';
+				error_code = 50;
+			}
+		}
+
+		const result = {
+			isValid: ( error_code === null ) ? true : false,
+			reason: error_motivation,
+			code: error_code
+		};
+
+		if( result.isValid )
+		{
+			let the_message = 'The Consent Mode V2 is set up correctly.';
+
+			console.log( MAP_SYS.maplog + the_message  );
+
+			//this.showNotificationBar( the_message, 1 );
+		}
+		else
+		{
+			let the_message = 'The sending of consent is not set up correctly - ' + result.reason + '.';
+
+			console.error( MAP_SYS.maplog + the_message );
+
+			//this.showNotificationBar( the_message, 2 );
+		}
+
+		// Prepare data to be sent to the server
+		const data = {
+			action: 'map_check_consent_mode_status',
+			is_consent_valid: ( result.isValid ) ? 1 : 0,
+			error_motivation: result.reason,
+			error_code: result.code
+		};
+
+		// Logic for sending data based on the conditions
+		if( ( MAP_SYS.cmode_v2_js_on_error === true && result.isValid ) ||
+			( MAP_SYS.cmode_v2_js_on_error === false && !result.isValid )
+		)
+		{
+			fetch( map_ajax.ajax_url, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					body: new URLSearchParams(data)
+				})
+				.then(response => response.text())
+				.then(responseText => {
+					console.debug( MAP_SYS.maplog, responseText );
+				})
+				.catch( error => console.error( 'Error sending data running checkConsentModeStatus function:', error ) );
+		}
 	},
 
 	sendDetectedKeys: function( key )
 	{
+		if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+		{
+			console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running sendDetectedKeys function' );
+			return;
+		}
+
 		if( typeof CookieShield !== 'undefined' &&
 			CookieShield )
 		{
@@ -3077,7 +3246,6 @@ var MAP =
 
 		});
 
-
 		return list;
 	},
 
@@ -3142,7 +3310,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		return false;
 	}
 
-	if( typeof map_cookiebar_settings !== undefined )
+	if( typeof map_cookiebar_settings !== 'undefined' )
 	{
 		MAP_SYS.map_initted = true;
 
@@ -3161,7 +3329,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			return false;
 		}
 
-		if( !MAP_SYS.map_initted )
+		if( !MAP_SYS.map_initted &&
+			typeof map_cookiebar_settings !== 'undefined' )
 		{
 			MAP_SYS.map_initted = true;
 
@@ -3173,9 +3342,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				});
 
 			}
-			catch (error)
+			catch( error )
 			{
-			  console.error(error);
+				console.error( error );
 			}
 		}
 
@@ -3199,7 +3368,8 @@ window.addEventListener('load', function() {
 		return false;
 	}
 
-	if( !MAP_SYS.map_initted )
+	if( !MAP_SYS.map_initted &&
+			typeof map_cookiebar_settings !== 'undefined' )
 	{
 		MAP_SYS.map_initted = true;
 
@@ -3211,9 +3381,9 @@ window.addEventListener('load', function() {
 			});
 
 		}
-		catch (error)
+		catch( error )
 		{
-		  console.error(error);
+			console.error( error );
 		}
 	}
 
@@ -3223,6 +3393,10 @@ window.addEventListener('load', function() {
 	)
 	{
 		MAP.checkJsShield();
+
+		setTimeout( function(){
+			MAP.checkConsentModeStatus();
+		}, 800 );
 	}
 
 	if( typeof CookieShield !== 'undefined' &&
@@ -3246,7 +3420,6 @@ window.addEventListener('load', function() {
 		{
 			MAP.sendDetectedKeys( null );
 		}
-
 
 		if( typeof URLSearchParams !== 'undefined' &&
 			URLSearchParams )
@@ -3345,16 +3518,6 @@ function map_trigger_custom_patch_2()
 
 }
 
-//page reload
-/*
-function map_trigger_custom_patch_3()
-{
-	console.debug( 'map_trigger_custom_patch_3' );
-
-	location.reload();
-}
-*/
-
 //octorate
 function map_trigger_custom_patch_3()
 {
@@ -3365,3 +3528,10 @@ function map_trigger_custom_patch_3()
 		console.debug( e );
 	}
 }
+
+//consent mode early as possible initialization
+if( typeof MAP !== 'undefined' && typeof MAP.setupConsentModeV2 !== 'undefined' )
+{
+	MAP.setupConsentModeV2();
+}
+

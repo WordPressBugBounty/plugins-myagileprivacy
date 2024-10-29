@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: CMP, GDPR RGPD UAVG RODO DSGVO LPD and CCPA compliance, Cookie Banner, Consent Mode v2, Consent Management Platform
 Requires at least: 4.4.0
 Tested up to: 6.6
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -64,6 +64,10 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.1
+* JavaScript code security optimization
+* Backend code security optimization
 
 = 3.1.0
 * Multilang global refactoring

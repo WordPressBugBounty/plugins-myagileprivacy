@@ -13,6 +13,7 @@
     font-size: 14px;
     line-height: 18px;
     border-top: 2px black solid;
+    box-sizing: border-box;
 }
 
 .mapx_close_notification_bar{

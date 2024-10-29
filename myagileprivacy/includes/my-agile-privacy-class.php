@@ -303,6 +303,8 @@ class MyAgilePrivacy {
 		add_action( 'wp_ajax_map_save_detected_keys', array( $plugin_frontend, 'map_save_detected_keys_callback' ) );
 		add_action( 'wp_ajax_nopriv_map_missing_cookie_shield', array( $plugin_frontend, 'map_missing_cookie_shield_callback' ) );
 		add_action( 'wp_ajax_map_missing_cookie_shield', array( $plugin_frontend, 'map_missing_cookie_shield_callback' ) );
+		add_action( 'wp_ajax_nopriv_map_check_consent_mode_status', array( $plugin_frontend, 'map_check_consent_mode_status_callback' ) );
+		add_action( 'wp_ajax_map_check_consent_mode_status', array( $plugin_frontend, 'map_check_consent_mode_status_callback' ) );
 		add_action( 'wp_ajax_nopriv_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 		add_action( 'wp_ajax_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 
@@ -649,6 +651,7 @@ class MyAgilePrivacy {
 			case 'enable_cmode_v2':
 			case 'enable_cmode_url_passthrough':
 			case 'cmode_v2_forced_off_ga4_advanced':
+			case 'cmode_v2_js_on_error':
 				if ( $value === 'true' || $value === true )
 				{
 					$ret = true;
@@ -667,6 +670,8 @@ class MyAgilePrivacy {
 			case 'scanner_end_hook_prio':
 			case 'blocked_content_notify_auto_shutdown_time':
 			case 'floating_banner':
+			case 'cmode_v2_js_error_code':
+			case 'cmode_v2_js_on_error_first_relevation':
 				$ret = intval( $value );
 				break;
 			// hex colors
@@ -708,6 +713,25 @@ class MyAgilePrivacy {
 				break;
 			case 'custom_css':
 				$ret = esc_html( $value );
+				break;
+			//no processing
+			case 'last_scan_date_internal':
+			case 'cmode_v2_js_error_motivation':
+			case 'cookie_banner_vertical_position':
+			case 'cookie_banner_horizontal_position':
+			case 'cookie_banner_size':
+			case 'customer_email':
+			case 'summary_text':
+			case 'last_sync':
+			case 'last_legit_sync':
+			case 'parse_config':
+			case 'alt_accepted_all_cookie_name':
+			case 'alt_accepted_something_cookie_name':
+			case 'learning_mode_last_active_timestamp':
+			case 'missing_cookie_shield_timestamp':
+			case 'cookie_shield_running_timestamp':
+			case 'fixed_translations_encoded':
+				$ret = $value;
 				break;
 			// Basic sanitisation for other fields
 			default:
@@ -1009,7 +1033,6 @@ class MyAgilePrivacy {
 			'scanner_hook_type'							=>	'init-shutdown',
 			'scanner_start_hook_prio'					=>	-10000,
 			'scanner_end_hook_prio'						=>	-10000,
-			'scanner_log'								=>	null,
 			'alt_accepted_all_cookie_name'				=>	null,
 			'alt_accepted_something_cookie_name'		=>	null,
 			'learning_mode_last_active_timestamp'		=>	null,
@@ -1036,9 +1059,15 @@ class MyAgilePrivacy {
 			'cmode_v2_gtag_ad_user_data'				=> 	'denied',
 			'cmode_v2_gtag_ad_personalization'			=> 	'denied',
 			'cmode_v2_gtag_analytics_storage'			=> 	'denied',
+			'cmode_v2_js_on_error'						=>	false,
+			'cmode_v2_js_on_error_first_relevation'		=>	false,
+			'cmode_v2_js_error_code'					=>	0,
+			'cmode_v2_js_error_motivation'				=>	null,
 
 			'fixed_translations_encoded'				=>	null,
 			'cmode_v2_forced_off_ga4_advanced'			=>	false,
+
+			'last_scan_date_internal'					=>	null,
 		);
 
 		$settings = apply_filters( 'map_plugin_settings', $settings);
@@ -1252,6 +1281,7 @@ class MyAgilePrivacy {
 			'enable_cmode_v2'							=> 	$settings['enable_cmode_v2'],
 			'enable_cmode_url_passthrough'				=>	$settings['enable_cmode_url_passthrough'],
 			'cmode_v2_forced_off_ga4_advanced'			=>	$settings['cmode_v2_forced_off_ga4_advanced'],
+			'plugin_version'							=>	MAP_PLUGIN_VERSION,
 		);
 
 		return $return_settings;

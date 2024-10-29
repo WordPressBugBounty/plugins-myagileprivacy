@@ -1536,6 +1536,9 @@ class MyAgilePrivacyFrontend {
 			if( $this->scan_mode == 'learning_mode' )
 			{
 				$post_status_to_search = array( 'publish', 'draft' );
+
+				$the_settings['last_scan_date_internal'] = strtotime( "now" );
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 			}
 
 			$parse_config = array();
@@ -1948,7 +1951,7 @@ class MyAgilePrivacyFrontend {
 			}
 			else
 			{
-				$map_js_basedirectory = "https://cdn.myagileprivacy.com/MyAgilePrivacyIabTCF/";
+				$map_js_basedirectory = "https://localcdn.myagileprivacy.com/MyAgilePrivacyIabTCF/";
 			}
 		}
 
@@ -2042,7 +2045,7 @@ class MyAgilePrivacyFrontend {
 
 					if( !$local_file_exists )
 					{
-						$base_ref = "https://cdn.myagileprivacy.com/";
+						$base_ref = "https://localcdn.myagileprivacy.com/";
 
 						MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 					}
@@ -2121,7 +2124,7 @@ class MyAgilePrivacyFrontend {
 
 					if( !$local_file_exists )
 					{
-						$base_ref = "https://cdn.myagileprivacy.com/MyAgilePrivacyIabTCF/";
+						$base_ref = "https://localcdn.myagileprivacy.com/MyAgilePrivacyIabTCF/";
 					}
 
 					$script_filename = 'MyAgilePrivacyIabTCF.js';
@@ -2190,6 +2193,7 @@ class MyAgilePrivacyFrontend {
 			'enable_cmode_url_passthrough'								=>	null,
 			'cmode_v2_forced_off_ga4_advanced'							=>	null,
 			'cmode_v2_default_consent_obj'								=> 	null,
+			'cmode_v2_js_on_error'										=>	null,
 			'shield_added_pattern'										=>	$shield_added_pattern,
 		);
 
@@ -2235,6 +2239,11 @@ class MyAgilePrivacyFrontend {
 			}
 		}
 
+		if( isset( $settings['cmode_v2_js_on_error'] ) )
+		{
+			$map_full_config['cmode_v2_js_on_error'] = $settings['cmode_v2_js_on_error'];
+		}
+
 		$map_full_config['cookie_api_key_not_to_block'] = $cookie_api_key_not_to_block;
 
 		$base_config_script .= 'var map_full_config='.json_encode( $map_full_config ).';'.PHP_EOL;
@@ -2257,8 +2266,9 @@ class MyAgilePrivacyFrontend {
 							'caller'						=>	'MAP',
 							'map_ga_consent_checker'		=>	true,
 						)).';'.PHP_EOL;
-						$base_config_script .= "setTimeout(function(){
-												window.MyAgilePixelProxyBeacon( alt_mpx_settings );}, 500);".PHP_EOL;
+						$base_config_script .= "setTimeout( function() {
+												if( typeof window.MyAgilePixelProxyBeacon !== 'undefined ') window.MyAgilePixelProxyBeacon( alt_mpx_settings );
+											}, 500 );".PHP_EOL;
 					}
 				}
 
@@ -2282,7 +2292,6 @@ class MyAgilePrivacyFrontend {
 
 				$base_config_script .= 'var gTagManagerConsentListeners = [];'.PHP_EOL;
 			}
-
 		}
 
 		$blocks['inline'][] = $base_config_script;
@@ -2486,7 +2495,6 @@ class MyAgilePrivacyFrontend {
 		}
 
 		die();
-
 	}
 
 	/**
@@ -2496,9 +2504,6 @@ class MyAgilePrivacyFrontend {
 	 */
 	public function map_missing_cookie_shield_callback()
 	{
-		//check security param
-		//check_ajax_referer( 'map_js_shield_callback', 'security' );
-
 		$referral_url = wp_get_referer();
 
 		$valid_referral_url = wp_validate_redirect( $referral_url );
@@ -2559,15 +2564,64 @@ class MyAgilePrivacyFrontend {
 
 
 	/**
+	 * Consent Mode Status Check callback
+	 *
+	 * @since    1.3.0
+	 */
+	public function map_check_consent_mode_status_callback()
+	{
+		$referral_url = wp_get_referer();
+
+		$valid_referral_url = wp_validate_redirect( $referral_url );
+
+		if( $valid_referral_url )
+		{
+			$success = false;
+
+			// check form submit
+			if( isset( $_POST['action'] ) && $_POST['action'] == 'map_check_consent_mode_status' )
+			{
+				$the_options = MyAgilePrivacy::get_settings();
+
+				$cmode_v2_js_on_error = ( $_POST['is_consent_valid'] ) ? false : true;
+
+				if( $the_options['cmode_v2_js_on_error'] && !$cmode_v2_js_on_error )
+				{
+					$the_options['cmode_v2_js_on_error_first_relevation'] = 0;
+				}
+
+				if( !$the_options['cmode_v2_js_on_error'] && $cmode_v2_js_on_error )
+				{
+					$the_options['cmode_v2_js_on_error_first_relevation'] = strtotime( "now" );
+				}
+
+				$the_options['cmode_v2_js_on_error'] = $cmode_v2_js_on_error;
+				$the_options['cmode_v2_js_error_code'] = intval( $_POST['error_code'] );
+				$the_options['cmode_v2_js_error_motivation'] = esc_attr( $_POST['error_motivation'] );
+
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+
+				$success = true;
+			}
+
+			$answer = array(
+				'success'				=>	$success,
+			);
+
+			wp_send_json( $answer );
+		}
+
+		die();
+	}
+
+
+	/**
 	 * Save detected keys callback function
 	 *
 	 * @since    1.3.0
 	 */
 	public function map_save_detected_keys_callback()
 	{
-		//check security param
-		//check_ajax_referer( 'map_js_shield_callback', 'security' );
-
 		$referral_url = wp_get_referer();
 
 		$valid_referral_url = wp_validate_redirect( $referral_url );
@@ -3668,7 +3722,6 @@ class MyAgilePrivacyFrontend {
 				}
 
 				$this->scan_log .= "Scanner finished.\n";
-				$the_options['scanner_log'] = htmlentities( stripslashes( html_entity_decode( $the_options['scanner_log'] )."<br>".$this->scan_log ) );
 
 				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'END' );
 			}

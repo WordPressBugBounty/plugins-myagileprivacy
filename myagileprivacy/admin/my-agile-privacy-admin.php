@@ -626,16 +626,6 @@ class MyAgilePrivacyAdmin {
 
 			//eof adjust last_sync data
 
-			//log reset
-			if( $the_options['scanner_log'] )
-			{
-				$log = substr( $the_options['scanner_log'], -200 );
-				$the_options['scanner_log'] = $log;
-
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-				$the_options = MyAgilePrivacy::get_settings();
-			}
-
 			//learning mode auto turn to live
 			if( $the_options['scan_mode'] == 'learning_mode' )
 			{
@@ -672,7 +662,6 @@ class MyAgilePrivacyAdmin {
 						//auto turn to live after 1 week
 						$the_options['learning_mode_last_active_timestamp'] = null;
 						$the_options['scan_mode'] = 'config_finished';
-						$the_options['scanner_log'] = null;
 
 						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
 						$the_options = MyAgilePrivacy::get_settings();
@@ -2173,7 +2162,6 @@ class MyAgilePrivacyAdmin {
 			if( isset( $_POST['scan_mode_field'] ) &&
 				( $_POST['scan_mode_field'] == 'turned_off' || $_POST['scan_mode_field'] == 'config_finished' ) )
 			{
-				$the_options['scanner_log'] = null;
 				MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, null );
 			}
 
