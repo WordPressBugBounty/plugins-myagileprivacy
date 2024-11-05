@@ -1,19 +1,19 @@
-=== My Agile Privacy - The only GDPR solution for WordPress that you can truly trust ===
+=== My Agile Privacy - The only GDPR solution for WP that you can truly trust ===
 Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/
-Tags: CMP, GDPR RGPD UAVG RODO DSGVO LPD and CCPA compliance, Cookie Banner, Consent Mode v2, Consent Management Platform
+Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.6
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Ensure cookie compliance with GDPR, RGPD, UAVG, RODO, DSGVO, LPD, and CCPA using this plugin: effortlessly set up cookie notices, privacy policies, and personal data policies. Avoid penalties and fines by staying compliant.
+**Ensure cookie compliance** with GDPR, RGPD, UAVG, RODO, DSGVO, LPD, and CCPA using this plugin: effortlessly set up **cookie notices**, **privacy policies**, and **personal data policies**. **Avoid penalties and fines** by staying compliant.
 
 == Description ==
 
-My Agile Privacy is the solution for managing privacy regulations compliance, with support for English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek languages. This plugin is one of the best WordPress cookie and personal data compliance plugins for privacy regulations, offering a wide range of easy-to-use features listed below. My Agile Privacy natively supports multilingual sites using WPML, Polylang, TranslatePress, or Weglot.
+**My Agile Privacy** is the solution for managing **privacy regulations compliance**, with support for **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek** languages. This plugin is one of the **best WordPress cookie and personal data compliance plugins** for privacy regulations, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress,** or **Weglot**.
 
 [youtube https://youtu.be/2lphC4YTUfM]
 
@@ -64,6 +64,9 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.2
+* JavaScript code security optimization
 
 = 3.1.1
 * JavaScript code security optimization
