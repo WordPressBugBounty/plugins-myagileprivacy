@@ -1068,7 +1068,6 @@ class MyAgilePrivacyFrontend {
 		}
 	}
 
-
 	/**
 	 * Register the js for the frontend area.
 	 * @since    1.0.12
@@ -1160,17 +1159,17 @@ class MyAgilePrivacyFrontend {
 		}
 
 		$labels = array(
-			'name'					=> __('My Agile Privacy', 'MAP_txt'),
-			'all_items'             => __('Cookie List', 'MAP_txt'),
-			'singular_name'			=> __('Cookie', 'MAP_txt'),
-			'add_new'				=> __('Add New Cookie', 'MAP_txt'),
-			'add_new_item'			=> __('Add New Cookie', 'MAP_txt'),
-			'edit_item'				=> __('Edit Cookie', 'MAP_txt'),
-			'new_item'				=> __('New Cookie', 'MAP_txt'),
-			'view_item'				=> __('View Cookie', 'MAP_txt'),
-			'search_items'			=> __('Search Cookies', 'MAP_txt'),
-			'not_found'				=> __('Nothing found', 'MAP_txt'),
-			'not_found_in_trash'	=> __('Nothing found in Trash', 'MAP_txt'),
+			'name'					=> wp_kses_post( __( 'My Agile Privacy', 'MAP_txt' ) ),
+			'all_items'             => wp_kses_post( __( 'Cookie List', 'MAP_txt' ) ),
+			'singular_name'			=> wp_kses_post( __( 'Cookie', 'MAP_txt' ) ),
+			'add_new'				=> wp_kses_post( __( 'Add New Cookie', 'MAP_txt' ) ),
+			'add_new_item'			=> wp_kses_post( __( 'Add New Cookie', 'MAP_txt' ) ),
+			'edit_item'				=> wp_kses_post( __( 'Edit Cookie', 'MAP_txt' ) ),
+			'new_item'				=> wp_kses_post( __( 'New Cookie', 'MAP_txt' ) ),
+			'view_item'				=> wp_kses_post( __( 'View Cookie', 'MAP_txt' ) ),
+			'search_items'			=> wp_kses_post( __( 'Search Cookies', 'MAP_txt' ) ),
+			'not_found'				=> wp_kses_post( __( 'Nothing found', 'MAP_txt' ) ),
+			'not_found_in_trash'	=> wp_kses_post( __( 'Nothing found in Trash', 'MAP_txt' ) ),
 			'parent_item_colon'		=> ''
 		);
 
@@ -1203,7 +1202,7 @@ class MyAgilePrivacyFrontend {
 		register_post_type( MAP_POST_TYPE_COOKIES, $args );
 
 		register_post_status( '__expired', array(
-			'label'                     => _x( 'Expired', MAP_POST_TYPE_COOKIES ),
+			'label'                     => _x( 'Expired', MAP_POST_TYPE_COOKIES, 'MAP_txt' ),
 			'public'                    => false,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => true,
@@ -1212,35 +1211,35 @@ class MyAgilePrivacyFrontend {
 		) );
 
 		register_post_status( '__blocked', array(
-			'label'                     => _x( 'Blocked without notification', MAP_POST_TYPE_COOKIES ),
+			'label'                     => _x( 'Blocked without notification', MAP_POST_TYPE_COOKIES, 'MAP_txt' ),
 			'public'                    => true,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
-			'label_count'               => _n_noop( __('Blocked without notification', 'MAP_txt').' <span class="count">(%s)</span>', __('Blocked without notification', 'MAP_txt').' <span class="count">(%s)</span>' ),
+			'label_count'               => _n_noop( wp_kses_post( __( 'Blocked without notification', 'MAP_txt' ) ).' <span class="count">(%s)</span>', wp_kses_post( __( 'Blocked without notification', 'MAP_txt' ) ).' <span class="count">(%s)</span>' ),
 		) );
 
 		register_post_status( '__always_allowed', array(
-			'label'                     => _x( 'Allowed without notification', MAP_POST_TYPE_COOKIES ),
+			'label'                     => _x( 'Allowed without notification', MAP_POST_TYPE_COOKIES, 'MAP_txt' ),
 			'public'                    => true,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
-			'label_count'               => _n_noop( __('Allowed without notification', 'MAP_txt').' <span class="count">(%s)</span>', __('Allowed without notification', 'MAP_txt').' <span class="count">(%s)</span>' ),
+			'label_count'               => _n_noop( wp_kses_post( __( 'Allowed without notification', 'MAP_txt' ) ).' <span class="count">(%s)</span>', wp_kses_post( __( 'Allowed without notification', 'MAP_txt' ) ).' <span class="count">(%s)</span>' ),
 		) );
 
 		$labels = array(
-			'name'					=> __('Policies', 'MAP_txt'),
-			'all_items'             => __('Policies List', 'MAP_txt'),
-			'singular_name'			=> __('Policy', 'MAP_txt'),
-			'add_new'				=> __('Add New Policy', 'MAP_txt'),
-			'add_new_item'			=> __('Add New Policy', 'MAP_txt'),
-			'edit_item'				=> __('Edit Policy', 'MAP_txt'),
-			'new_item'				=> __('New Policy', 'MAP_txt'),
-			'view_item'				=> __('View Policy', 'MAP_txt'),
-			'search_items'			=> __('Search Policy', 'MAP_txt'),
-			'not_found'				=> __('Nothing found', 'MAP_txt'),
-			'not_found_in_trash'	=> __('Nothing found in Trash', 'MAP_txt'),
+			'name'					=> wp_kses_post( __( 'Policies', 'MAP_txt' ) ),
+			'all_items'             => wp_kses_post( __( 'Policies List', 'MAP_txt' ) ),
+			'singular_name'			=> wp_kses_post( __( 'Policy', 'MAP_txt' ) ),
+			'add_new'				=> wp_kses_post( __( 'Add New Policy', 'MAP_txt' ) ),
+			'add_new_item'			=> wp_kses_post( __( 'Add New Policy', 'MAP_txt' ) ),
+			'edit_item'				=> wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ),
+			'new_item'				=> wp_kses_post( __( 'New Policy', 'MAP_txt' ) ),
+			'view_item'				=> wp_kses_post( __( 'View Policy', 'MAP_txt' ) ),
+			'search_items'			=> wp_kses_post( __( 'Search Policy', 'MAP_txt' ) ),
+			'not_found'				=> wp_kses_post( __( 'Nothing found', 'MAP_txt' ) ),
+			'not_found_in_trash'	=> wp_kses_post( __( 'Nothing found in Trash', 'MAP_txt' ) ),
 			'parent_item_colon'		=> ''
 		);
 
@@ -1273,7 +1272,7 @@ class MyAgilePrivacyFrontend {
 		register_post_type( MAP_POST_TYPE_POLICY, $args );
 
 		register_post_status( '__expired', array(
-			'label'                     => _x( 'Expired', MAP_POST_TYPE_POLICY ),
+			'label'                     => _x( 'Expired', MAP_POST_TYPE_POLICY, 'MAP_txt' ),
 			'public'                    => false,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => true,
@@ -1554,6 +1553,65 @@ class MyAgilePrivacyFrontend {
 				$parse_config = array();
 			}
 
+			//bof _map_js_dependencies inject
+			$cookies_categories_data = $this->get_cookie_categories_description( 'publish' );
+
+			foreach( $cookies_categories_data as $k => $v )
+			{
+				foreach( $v as $key => $value )
+				{
+					$the_remote_id = $value['remote_id'];
+					$the_post_api_key = isset( $value['post_meta']['_map_api_key'][0] ) ? $value['post_meta']['_map_api_key'][0] : null;
+
+					$_map_js_dependencies = ( isset( $value['post_meta']["_map_js_dependencies"][0] ) ) ? $value['post_meta']["_map_js_dependencies"][0] : '';
+
+					$_map_js_dependencies_array = json_decode( $_map_js_dependencies , true );
+
+
+					if( $the_post_api_key &&
+						is_array( $_map_js_dependencies_array ) &&
+						!empty( $_map_js_dependencies_array ) )
+					{
+						foreach( $_map_js_dependencies_array as $single_map_js_dependencies )
+						{
+							if(
+								isset( $single_map_js_dependencies['type'] ) &&
+								$single_map_js_dependencies['type'] &&
+								$single_map_js_dependencies['type'] != '' &&
+
+								isset( $single_map_js_dependencies['value'] ) &&
+								$single_map_js_dependencies['value'] &&
+								$single_map_js_dependencies['value'] != '' )
+							{
+								switch( $single_map_js_dependencies['type'] )
+								{
+									case 'js_patterns_src':
+										$item = array(
+											"active"				=> 	false,
+											'plain_js' 				=> 	null,
+											"src" 					=> 	$single_map_js_dependencies['value'],
+											"key" 					=> 	$the_post_api_key,
+											"to_detect" 			=> 	true,
+											"to_block"				=> 	true,
+											"detected" 				=> 	null,
+											"blocked" 				=> 	null,
+											"on_block_add_classes" 	=> 	'mapWait',
+										);
+
+										$parse_config['scripts_src_block'][] = $item;
+
+										break;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			//bof _map_js_dependencies inject
+
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $parse_config );
+
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
 			//check if exists
@@ -1671,6 +1729,11 @@ class MyAgilePrivacyFrontend {
 
 				}
 			}
+
+
+
+
+
 
 			$this->scan_config = $parse_config;
 
@@ -2008,7 +2071,7 @@ class MyAgilePrivacyFrontend {
 			{
 				$the_script = plugin_dir_url(__FILE__).'js/youtube_enforced_privacy.js';
 
-				$head_script .= '<script data-cfasync="false" class="map_advanced_shield_youtube_enforced_privacy" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+				$head_script .= '<script class="map_advanced_shield_youtube_enforced_privacy" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 				$blocks['enqueue'][] = $the_script;
 			}
@@ -2021,7 +2084,7 @@ class MyAgilePrivacyFrontend {
 				{
 					$the_script = plugin_dir_url(__FILE__).'../dev/dev.cookie-shield.js';
 
-					$head_script .= '<script data-cfasync="false" class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+					$head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 					$blocks['enqueue'][] = $the_script;
 
@@ -2065,7 +2128,7 @@ class MyAgilePrivacyFrontend {
 					{
 						$the_script = $base_ref.'test.cookie-shield.js';
 
-						$head_script .= '<script data-cfasync="false" class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+						$head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 						$blocks['enqueue'][] = $the_script;
 
@@ -2085,7 +2148,7 @@ class MyAgilePrivacyFrontend {
 
 						$the_script = $base_ref.$script_filename;
 
-						$head_script .= '<script data-cfasync="false" class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+						$head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 						$blocks['enqueue'][] = $the_script;
 
@@ -2100,7 +2163,7 @@ class MyAgilePrivacyFrontend {
 				{
 					$the_script = plugin_dir_url(__FILE__).'../dev/MyAgilePrivacyIabTCF/dev.MyAgilePrivacyIabTCF.js';
 
-					$head_script .= '<script data-cfasync="false" class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+					$head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 					$blocks['enqueue'][] = $the_script;
 
@@ -2139,7 +2202,7 @@ class MyAgilePrivacyFrontend {
 
 					$the_script = $base_ref.$script_filename;
 
-					$head_script .= '<script data-cfasync="false" class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1"></script>'.PHP_EOL;
+					$head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 					$blocks['enqueue'][] = $the_script;
 
@@ -2296,7 +2359,7 @@ class MyAgilePrivacyFrontend {
 
 		$blocks['inline'][] = $base_config_script;
 
-		$start_config_script = '<script data-cfasync="false" class="map_advanced_shield" type="text/javascript" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1">'.PHP_EOL.$base_config_script.PHP_EOL.'</script>'.PHP_EOL;
+		$start_config_script = '<script class="map_advanced_shield" type="text/javascript" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'>'.PHP_EOL.$base_config_script.PHP_EOL.'</script>'.PHP_EOL;
 
 		if( $block_mode )
 		{
@@ -2583,7 +2646,7 @@ class MyAgilePrivacyFrontend {
 			{
 				$the_options = MyAgilePrivacy::get_settings();
 
-				$cmode_v2_js_on_error = ( $_POST['is_consent_valid'] ) ? false : true;
+				$cmode_v2_js_on_error = ( isset( $_POST['is_consent_valid'] ) && $_POST['is_consent_valid'] ) ? false : true;
 
 				if( $the_options['cmode_v2_js_on_error'] && !$cmode_v2_js_on_error )
 				{

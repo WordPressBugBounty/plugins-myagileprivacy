@@ -24,7 +24,7 @@
 ?>
 
 <div class="wrap helpdeskWrapper" id="my_agile_privacy_backend">
-	<h2>My Agile Privacy: <?php _e('Helpdesk','MAP_txt'); ?></h2>
+	<h2>My Agile Privacy: <?php echo wp_kses_post( __( 'Helpdesk', 'MAP_txt' ) ); ?></h2>
 
 	<div class="container-fluid mt-5">
 		<?php include 'inc/inc.helpdesk_tab.php'; ?>

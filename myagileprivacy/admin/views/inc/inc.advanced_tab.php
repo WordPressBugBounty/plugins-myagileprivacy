@@ -13,13 +13,13 @@
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-solid fa-sliders-up"></i>
-				<?php _e('Advanced Settings', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Advanced Settings', 'MAP_txt' ) ); ?>
 			</h4>
 
 
 			<div class="row mb-4">
 				<label for="forced_auto_update_field" class="col-sm-5 col-form-label">
-					<?php _e('Enable plugin auto update', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Enable plugin auto update', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-6">
@@ -34,7 +34,7 @@
 							<label for="forced_auto_update_field" class="me-3 label-checkbox"></label>
 
 							<label for="forced_auto_update_field">
-								<?php _e('Yes, I would like to turn on automatic plugin updates.', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Yes, I would like to turn on automatic plugin updates.', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -46,7 +46,7 @@
 
 			<div class="row mb-4">
 				<label for="enable_metadata_sync_field" class="col-sm-5 col-form-label">
-					<?php  _e('Cookie metadata Sync', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Cookie metadata Sync', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-6">
@@ -61,12 +61,12 @@
 							<label for="enable_metadata_sync_field" class="me-3 label-checkbox"></label>
 
 							<label for="enable_metadata_sync_field">
-								<?php  _e('Yes, enable Cookie metadata synchronization.', 'MAP_txt'); ?>
+								<?php  echo wp_kses_post( __( 'Yes, enable Cookie metadata synchronization.', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 					<div class="form-text">
-						<?php  _e('By enabling this feature, you will allow for automatic updates of settings related to the preemptive blocking of cookies, and you will achieve greater compliance in case of regulatory adjustments.', 'MAP_txt'); ?>
+						<?php  echo wp_kses_post( __( 'By enabling this feature, you will allow for automatic updates of settings related to the preemptive blocking of cookies, and you will achieve greater compliance in case of regulatory adjustments.', 'MAP_txt' ) ); ?>
 					</div>
 
 				</div>
@@ -85,7 +85,7 @@
 
 			<div class="row mb-4 <?php echo esc_attr( $this_added_class ) ; ?>">
 				<label for="default_locale_field" class="col-sm-5 col-form-label">
-					<?php  _e('Language', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Language', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -94,8 +94,6 @@
 						<?php
 
 							$valid_options = array();
-
-
 
 							foreach( $currentAndSupportedLanguages['supported_languages'] as $this_language_key => $this_language_value )
 							{
@@ -116,13 +114,13 @@
 								if( $data['selected'] )
 								{
 									?>
-									<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 								else
 								{
 									?>
-									<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 							}
@@ -137,22 +135,19 @@
 			<!-- wrapping css textarea -->
 			<div class="row mb-4">
 				<label for="custom_css_field" class="col-sm-5 col-form-label">
-					<?php  _e('Custom Css', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Custom Css', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
 
 					<div class="position-relative code-block-container">
-						<textarea id="custom_css_field" name="custom_css_field" class="code-editor text_style" spellcheck="false"><?php echo apply_filters( 'format_to_edit', esc_attr($the_options['custom_css'])); ?></textarea>
+						<textarea id="custom_css_field" name="custom_css_field" class="code-editor text_style" spellcheck="false"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_options['custom_css'] ) ); ?></textarea>
 
-						<pre class="line-numbers code-viewer"><code class="language-css"><?php echo apply_filters( 'format_to_edit', esc_attr($the_options['custom_css'])); ?></code></pre>
+						<pre class="line-numbers code-viewer"><code class="language-css"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_options['custom_css'] ) ); ?></code></pre>
 					</div>
 
-
-
-
 					<div class="form-text">
-						<?php  _e('Enter your custom css', 'MAP_txt'); ?>.
+						<?php  echo wp_kses_post( __( 'Enter your custom css', 'MAP_txt' ) ); ?>.
 					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -160,7 +155,7 @@
 			<!-- wrapping css checkbox -->
 			<div class="row mb-4">
 				<label for="wrap_shortcodes_field" class="col-sm-5 col-form-label">
-					<?php  _e('Enable policy wrapping for CSS customization purposes', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Enable policy wrapping for CSS customization purposes', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -174,12 +169,12 @@
 							<label for="wrap_shortcodes_field" class="me-2 label-checkbox"></label>
 
 							<label for="wrap_shortcodes_field">
-								<?php echo esc_html__('Enable wrapping', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Enable wrapping', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 					<div class="form-text">
-						<?php  _e('By enabling this feature, the textual content of the policies will become targetable by a CSS selector. The selector is .myagileprivacy_text_wrapper', 'MAP_txt'); ?>.
+						<?php  echo wp_kses_post( __( 'By enabling this feature, the textual content of the policies will become targetable by a CSS selector. The selector is .myagileprivacy_text_wrapper', 'MAP_txt' ) ); ?>.
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
@@ -191,7 +186,7 @@
 			<!-- force sync checkbox -->
 			<div class="row mb-4">
 				<label for="force_sync" class="col-sm-5 col-form-label">
-					<?php  _e('Force Cookies and Policy syncronization', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Force Cookies and Policy syncronization', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -203,13 +198,13 @@
 							<label for="force_sync" class="me-2 label-checkbox"></label>
 
 							<label for="force_sync">
-								<?php  _e('Force Cookies and Policy syncronization', 'MAP_txt'); ?>
+								<?php  echo wp_kses_post( __( 'Force Cookies and Policy syncronization', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
 					<div class="form-text">
-						<?php echo esc_html__( 'This will sync Cookies And Policy in the next five minute', 'MAP_txt' ); ?>.
+						<?php echo wp_kses_post( __( 'This will sync Cookies And Policy in the next five minute', 'MAP_txt' ) ); ?>.
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
@@ -218,7 +213,7 @@
 			<!-- reset settings checkbox -->
 			<div class="row mb-4">
 				<label for="reset_settings" class="col-sm-5 col-form-label">
-					<?php  _e('Reset all settings', 'MAP_txt'); ?>
+					<?php  echo wp_kses_post( __( 'Reset all settings', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -230,13 +225,13 @@
 							<label for="reset_settings" class="me-2 label-checkbox"></label>
 
 							<label for="reset_settings">
-								<?php  _e('Reset all settings', 'MAP_txt'); ?>
+								<?php  echo wp_kses_post( __( 'Reset all settings', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
 					<div class="form-text">
-						<?php echo esc_html__( 'Warning: this will reset all the plugin settings.', 'MAP_txt' ); ?>
+						<?php echo wp_kses_post( __( 'Warning: this will reset all the plugin settings.', 'MAP_txt' ) ); ?>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->

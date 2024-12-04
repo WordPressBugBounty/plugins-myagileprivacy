@@ -3,8 +3,8 @@ Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
-Tested up to: 6.6
-Stable tag: 3.1.2
+Tested up to: 6.7
+Stable tag: 3.1.3
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,6 +47,41 @@ This plugin will:
 2. Makes your visitor to enable or disable cookies
 3. Help you to be GDPR, LPD and CCPA compliant, blocking unwantend cookies and third-party software as per GDPR specifications
 
+== Certified with Industry Standards ==
+My Agile Privacy is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest standards of the industry. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
+
+== Designed for Web Agencies ==
+
+[youtube https://youtu.be/5mw3xq0zEpI]
+
+== Features ==
+**This tool allows you to make your website privacy-compliant** through a guided procedure that is simple to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy scans your website, informing you about cookies/third-party services that need to be reported.
+**Our solution is responsive** and tested on desktop computers, tablets, and mobile devices.
+
+== Privacy and Cookie Policy Generator ==
+Through a **simple and guided interface**, you can use pre-written policy texts to ensure compliance.
+**The texts are auto-updated** in case of regulatory changes or updates to references, and they are **written by recognized and certified privacy professionals**.
+
+== Languages ==
+Our services are currently available in the following languages:
+- English
+- Spanish
+- French
+- German
+- Italian
+- Portuguese
+- Dutch
+- Polish
+- Greek
+
+== Support and Updates ==
+**My Agile Privacy is regularly updated** and maintained to ensure regulatory compliance.
+Our support, provided **exclusively by humans** and not chatbots or artificial intelligence, can be reached [here](https://www.myagileprivacy.com/en/contact-us/).
+
+**Other links:**
+* [Facebook Reviews](https://www.facebook.com/MyAgilePrivacy/reviews)
+* [TrustPilot Reviews](https://trustpilot.com/review/myagileprivacy.com)
+
 == Installation ==
 
 Installation is quick and easy. Just go to your WordPress dashboard, then Plugins > Add New.
@@ -64,6 +99,13 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.3
+* Cookie Shield dependency fix
+* WP Rocket better ignore mechanism
+* LCP frontend metric speed up
+* JavaScript code security optimization
+* Backend code security optimization
 
 = 3.1.2
 * JavaScript code security optimization

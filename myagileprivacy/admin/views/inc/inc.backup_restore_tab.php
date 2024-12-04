@@ -13,13 +13,13 @@
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-cloud-arrow-down"></i>
-				<?php _e('Backup & Restore', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ); ?>
 			</h4>
 
 
 			<div class="row mb-5 loadingMessage">
 				<div class="col-sm-12">
-					<?php _e('Please wait: page loading.', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Please wait: page loading.', 'MAP_txt' ) ); ?>
 				</div>
 			</div>
 
@@ -27,15 +27,15 @@
 
 				<div class="row mb-5">
 					<div class="col-sm-12">
-					<?php _e('Backup and restore your cookie list configuration.', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Backup and restore your cookie list configuration.', 'MAP_txt' ) ); ?>
 					</div>
 				</div>
 
 				<div class="card fullwidth">
 					<div class="row mb-3">
 						<div class="col-sm-12">
-							<h4><?php _e('STEP 1', 'MAP_txt'); ?></h4>
-							<?php _e('Pressing the following button will download your cookie configuration.', 'MAP_txt'); ?>
+							<h4><?php echo wp_kses_post( __( 'STEP 1', 'MAP_txt' ) ); ?></h4>
+							<?php echo wp_kses_post( __( 'Pressing the following button will download your cookie configuration.', 'MAP_txt' ) ); ?>
 						</div>
 					</div>
 
@@ -52,7 +52,7 @@
 									}
 								?>
 
-								<input type="submit" name="backup_admin_settings_form" value="<?php _e('Export Cookie Settings', 'MAP_txt'); ?>" class="btn-lg button-agile" />
+								<input type="submit" name="backup_admin_settings_form" value="<?php esc_attr_e('Export Cookie Settings', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
 							</form>
 						</div>
 					</div>
@@ -61,8 +61,8 @@
 				<div class="card fullwidth">
 					<div class="row mb-3">
 						<div class="col-sm-12">
-							<h4><?php _e('STEP 2', 'MAP_txt'); ?></h4>
-							<?php _e('Pressing the following button will clean up your cookie configuration. Warning: do export first, and full page reload before importing again.', 'MAP_txt'); ?>
+							<h4><?php echo wp_kses_post( __( 'STEP 2', 'MAP_txt' ) ); ?></h4>
+							<?php echo wp_kses_post( __( 'Pressing the following button will clean up your cookie configuration. Warning: do export first, and full page reload before importing again.', 'MAP_txt' ) ); ?>
 						</div>
 					</div>
 
@@ -80,7 +80,7 @@
 								?>
 
 
-								<input type="submit" name="update_admin_settings_form" value="<?php _e('Clean All Cookie', 'MAP_txt'); ?>" class="btn-lg button-agile" />
+								<input type="submit" name="update_admin_settings_form" value="<?php esc_attr_e('Clean All Cookie', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
 							</form>
 						</div>
 					</div>
@@ -89,8 +89,8 @@
 				<div class="card fullwidth">
 					<div class="row mb-3">
 						<div class="col-sm-12">
-							<h4><?php _e('STEP 3', 'MAP_txt'); ?></h4>
-							<?php _e('Restore your previously saved configuration. Please wait page fully loaded before importing.', 'MAP_txt'); ?>
+							<h4><?php echo wp_kses_post( __( 'STEP 3', 'MAP_txt' ) ); ?></h4>
+							<?php echo wp_kses_post( __( 'Restore your previously saved configuration. Please wait page fully loaded before importing.', 'MAP_txt' ) ); ?>
 						</div>
 					</div>
 
@@ -110,7 +110,7 @@
 							</div>
 
 							<div class="col-sm-6">
-								<input type="submit" name="import_admin_settings_form" value="<?php _e('Import Cookie Settings', 'MAP_txt'); ?>" class="btn-lg button-agile" />
+								<input type="submit" name="import_admin_settings_form" value="<?php esc_attr_e('Import Cookie Settings', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
 							</div>
 						</div>
 					</form>

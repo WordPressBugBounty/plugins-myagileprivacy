@@ -13,13 +13,13 @@
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-tablet-screen"></i>
-				<?php _e('Consent Widget', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Consent Widget', 'MAP_txt' ) ); ?>
 			</h4>
 
 			<!-- widget review consent show -->
 			<div class="row mb-4">
 				<label for="showagain_tab_field" class="col-sm-5 col-form-label">
-					<?php _e('Enable revisit consent widget', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Enable revisit consent widget', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -33,13 +33,13 @@
 							<label for="showagain_tab_field" class="me-2 label-checkbox"></label>
 
 							<label for="showagain_tab_field">
-								<?php _e('Enable revisit consent widget', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Enable revisit consent widget', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
 					<div class="form-text">
-						<?php echo esc_html__('Warning: if you disable this, add the proper link for consent revisit in the foote area, in order to stay GDPR compliant. You can use the [myagileprivacy_showconsent] shortcode.', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'Warning: if you disable this, add the proper link for consent revisit in the foote area, in order to stay GDPR compliant. You can use the [myagileprivacy_showconsent] shortcode.', 'MAP_txt' ) ); ?>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
@@ -50,7 +50,7 @@
 				<!-- widget position -->
 				<div class="row mb-4">
 					<label for="notify_position_horizontal_field" class="col-sm-5 col-form-label">
-						<?php _e('Tab Position', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'Tab Position', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -58,9 +58,9 @@
 						<?php
 
 						$valid_options = array(
-							'right'	=>	array(  'label' => __('Right', 'MAP_txt'),
+							'right'	=>	array(  'label' => esc_attr( __( 'Right', 'MAP_txt' ) ),
 																	'selected' => false ),
-							'left'	=>	array(  'label' => __('Left', 'MAP_txt'),
+							'left'	=>	array(  'label' => esc_attr( __( 'Left', 'MAP_txt' ) ),
 																	'selected' => false ),
 						);
 
@@ -76,7 +76,7 @@
 							if( $data['selected'] )
 							{
 								?>
-								<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+								<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 								<?php
 
 							}
@@ -92,7 +92,7 @@
 
 						<div class="form-text">
 							<?php
-								_e("Select the horizontal position where to show the consent again widget ", 'MAP_txt');
+								echo wp_kses_post( __( "Select the horizontal position where to show the consent again widget ", 'MAP_txt' ) );
 							?>.
 						</div>
 					</div> <!-- /.col-sm-6 -->
@@ -101,8 +101,8 @@
 				<!-- widget review consent text -->
 				<div class="row mb-4">
 					<label for="showagain_text" class="col-sm-5 col-form-label">
-						<?php _e('Title for show again policy', 'MAP_txt'); ?>
-						<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php _e('You can edit this text from the Texts and Translations section.', 'MAP_txt'); ?>"></i></a>
+						<?php echo wp_kses_post( __( 'Title for show again policy', 'MAP_txt' ) ); ?>
+						<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
 					</label>
 
 					<div class="col-sm-7">
@@ -114,7 +114,7 @@
 				<!-- widget show cookie policy link -->
 				<div class="row mb-4">
 					<label for="cookie_policy_link_field" class="col-sm-5 col-form-label">
-						<?php _e('Show Cookie Policy link', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -126,7 +126,7 @@
 								<label for="cookie_policy_link_field" class="me-2 label-checkbox"></label>
 
 								<label for="cookie_policy_link_field">
-									<?php _e('Show Cookie Policy link', 'MAP_txt'); ?>
+									<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
 								</label>
 
 							</div>
@@ -137,7 +137,7 @@
 				<!-- widget logo show / hide -->
 				<div class="row mb-4">
 					<label for="disable_logo_field" class="col-sm-5 col-form-label">
-						<?php _e('Disable My Agile Privacy logo', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'Disable My Agile Privacy logo', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -151,13 +151,13 @@
 								<label for="disable_logo_field" class="me-2 label-checkbox"></label>
 
 								<label for="disable_logo_field">
-									<?php echo esc_html__('Disable logo on Cookie Bar', 'MAP_txt'); ?>
+									<?php echo wp_kses_post( __( 'Disable logo on Cookie Bar', 'MAP_txt' ) ); ?>
 								</label>
 							</div>
 						</div> <!-- ./ styled_radio -->
 
 						<div class="form-text">
-							<?php echo esc_html__('Check this option to remove My Agile Privacy logo on the consent review widget', 'MAP_txt'); ?>.
+							<?php echo wp_kses_post( __( 'Check this option to remove My Agile Privacy logo on the consent review widget', 'MAP_txt' ) ); ?>.
 						</div>
 
 					</div> <!-- /.col-sm-6 -->
@@ -181,18 +181,18 @@
 		?>
 
 		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $display_cmode_v2 ){echo 'd-none';} ?>">
-			<small><?php _e('Premium Feature', 'MAP_txt'); ?></small>
+			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
 		<div class="consistent-box <?php if( !$display_cmode_v2 ){echo 'forbiddenArea';} ?>">
 			<h4 class="mb-4">
 				<i class="fa-brands fa-google"></i>
-				<?php _e('Google Consent Mode v2', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Google Consent Mode v2', 'MAP_txt' ) ); ?>
 			</h4>
 
 			<!-- widget review consent show -->
 			<div class="row mb-4">
 				<label for="showagain_tab_field" class="col-sm-5 col-form-label">
-					<?php _e('Enable Google Consent Mode v2', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Enable Google Consent Mode v2', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -215,7 +215,7 @@
 								?>
 
 							<label for="enable_cmode_v2_field">
-								<?php echo sprintf( __('Enable Google Consent Mode v2 - %1$sOnline Help%2$s', 'MAP_txt'), '<a href="'.esc_attr( $cmode_link ).'" target="_blank">','</a>' ); ?>
+								<?php echo sprintf( __( 'Enable Google Consent Mode v2 - %1$sOnline Help%2$s', 'MAP_txt' ), '<a href="'.esc_attr( $cmode_link ).'" target="_blank">','</a>' ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -227,7 +227,7 @@
 
 				<div class="row mb-4">
 					<label for="cmode_v2_implementation_type_field" class="col-sm-5 col-form-label">
-						<?php _e('Select the type of implementation', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'Select the type of implementation', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -236,9 +236,9 @@
 							<?php
 
 							$valid_options = array(
-								'native'	  =>	array(  'label' => __('via My Agile Privacy', 'MAP_txt'),
+								'native'	  =>	array(  'label' => esc_attr( __( 'via My Agile Privacy', 'MAP_txt' ) ),
 																		'selected' => false ),
-								'gtm'	      =>	array(  'label' => __('via Google Tag Manager', 'MAP_txt'),
+								'gtm'	      =>	array(  'label' => esc_attr( __( 'via Google Tag Manager', 'MAP_txt' ) ),
 																		'selected' => false ),
 							);
 
@@ -254,7 +254,7 @@
 								if( $data['selected'] )
 								{
 									?>
-									<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 								else
@@ -274,15 +274,15 @@
 				<div class="cmode_v2_implementation_type_options displayNone mt-4" data-value="native">
 					<div class="row mb-3">
 						<div class="col-12">
-						<strong><?php _e('Native implementation via My Agile Privacy', 'MAP_txt'); ?></strong>
-						<p><?php _e("Select the initial configuration of the parameters necessary for the operation of Consent Mode v2. The standard configuration, as required by regulations, precedes all parameters set to 'denied'.", 'MAP_txt'); ?></p>
+						<strong><?php echo wp_kses_post( __( 'Native implementation via My Agile Privacy', 'MAP_txt' ) ); ?></strong>
+						<p><?php echo wp_kses_post( __( "Select the initial configuration of the parameters necessary for the operation of Consent Mode v2. The standard configuration, as required by regulations, precedes all parameters set to 'denied'.", 'MAP_txt' ) ); ?></p>
 						</div>
 					</div>
 					<div class="row m-0 p-0 alert">
 						<label for="enable_cmode_url_passthrough_field" class="col-sm-5 col-form-label">
-							<?php _e('Url Passthrough', 'MAP_txt'); ?><br>
+							<?php echo wp_kses_post( __( 'Url Passthrough', 'MAP_txt' ) ); ?><br>
 							<span class="form-text">
-								<?php echo esc_html__("This option is useful if you do not want to lose the data related to the user, in case they do not immediately accept cookies but decide to do so later.", 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( "This option is useful if you do not want to lose the data related to the user, in case they do not immediately accept cookies but decide to do so later.", 'MAP_txt' ) ); ?>
 							</span>
 						</label>
 
@@ -293,7 +293,7 @@
 									<input name="enable_cmode_url_passthrough_field" type="checkbox" value="true" id="enable_cmode_url_passthrough_field" class="hideShowInput" data-hide-show-ref="enable_cmode_url_passthrough_options" <?php checked( $the_options['enable_cmode_url_passthrough'], true); ?>>
 									<label for="enable_cmode_url_passthrough_field" class="me-2 label-checkbox"></label>
 									<label for="enable_cmode_url_passthrough_field">
-										<?php _e('Enable Url Passthrough', 'MAP_txt'); ?>
+										<?php echo wp_kses_post( __( 'Enable Url Passthrough', 'MAP_txt' ) ); ?>
 									</label>
 								</div>
 							</div> <!-- ./ styled_radio -->
@@ -303,9 +303,9 @@
 
 					<div class="m-0 p-0 row alert">
 						<label for="cmode_v2_gtag_ad_storage_field" class="col-sm-5 col-form-label">
-							<?php _e('Ad Storage', 'MAP_txt'); ?><br>
+							<?php echo wp_kses_post( __( 'Ad Storage', 'MAP_txt' ) ); ?><br>
 							<span class="form-text">
-								<?php echo esc_html__('Defines whether cookies related to advertising can be read or written by Google.', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Defines whether cookies related to advertising can be read or written by Google.', 'MAP_txt' ) ); ?>
 							</span>
 						</label>
 
@@ -315,9 +315,9 @@
 								<?php
 
 								$valid_options = array(
-									'denied'    =>  array(  'label' => __('Denied', 'MAP_txt'),
+									'denied'    =>  array(  'label' => esc_attr( __( 'Denied', 'MAP_txt' ) ),
 																			'selected' => false ),
-									'granted'   =>  array(  'label' => __('Granted', 'MAP_txt'),
+									'granted'   =>  array(  'label' => esc_attr( __( 'Granted', 'MAP_txt' ) ),
 																			'selected' => false ),
 								);
 
@@ -333,7 +333,7 @@
 									if( $data['selected'] )
 									{
 										?>
-										<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+										<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 										<?php
 									}
 									else
@@ -351,7 +351,7 @@
 
 								<strong>
 									<?php
-										_e('Suggested value for compliance:', 'MAP_txt');
+										echo wp_kses_post( __( 'Suggested value for compliance:', 'MAP_txt' ) );
 									?>
 								</strong> denied
 
@@ -362,9 +362,9 @@
 
 					<div class="m-0 p-0 row alert">
 						<label for="cmode_v2_gtag_ad_user_data_field" class="col-sm-5 col-form-label">
-							<?php _e('Ad User Data', 'MAP_txt'); ?><br>
+							<?php echo wp_kses_post( __( 'Ad User Data', 'MAP_txt' ) ); ?><br>
 							<span class="form-text">
-								<?php echo esc_html__('Determines whether user data can be sent to Google for advertising purposes.', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Determines whether user data can be sent to Google for advertising purposes.', 'MAP_txt' ) ); ?>
 							</span>
 						</label>
 
@@ -373,9 +373,9 @@
 								<?php
 
 								$valid_options = array(
-									'denied'    =>  array(  'label' => __('Denied', 'MAP_txt'),
+									'denied'    =>  array(  'label' => esc_attr( __( 'Denied', 'MAP_txt' ) ),
 																			'selected' => false ),
-									'granted'   =>  array(  'label' => __('Granted', 'MAP_txt'),
+									'granted'   =>  array(  'label' => esc_attr( __( 'Granted', 'MAP_txt' ) ),
 																			'selected' => false ),
 								);
 
@@ -391,7 +391,7 @@
 									if( $data['selected'] )
 									{
 										?>
-										<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+										<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 										<?php
 									}
 									else
@@ -408,7 +408,7 @@
 							<div class="suggested-value-alert d-none">
 								<strong>
 									<?php
-										_e('Suggested value for compliance:', 'MAP_txt');
+										echo wp_kses_post( __( 'Suggested value for compliance:', 'MAP_txt' ) );
 									?>
 								</strong> denied
 							</div>
@@ -418,9 +418,9 @@
 
 					<div class="m-0 p-0 row alert">
 						<label for="cmode_v2_gtag_ad_personalization_field" class="col-sm-5 col-form-label">
-							<?php _e('Ad Personalization', 'MAP_txt'); ?><br>
+							<?php echo wp_kses_post( __( 'Ad Personalization', 'MAP_txt' ) ); ?><br>
 							<span class="form-text">
-								<?php echo esc_html__('Controls whether personalized advertising (for example, remarketing) can be enabled.', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Controls whether personalized advertising (for example, remarketing) can be enabled.', 'MAP_txt' ) ); ?>
 							</span>
 						</label>
 
@@ -430,9 +430,9 @@
 								<?php
 
 								$valid_options = array(
-									'denied'    =>  array(  'label' => __('Denied', 'MAP_txt'),
+									'denied'    =>  array(  'label' => esc_attr( __( 'Denied', 'MAP_txt' ) ),
 																			'selected' => false ),
-									'granted'   =>  array(  'label' => __('Granted', 'MAP_txt'),
+									'granted'   =>  array(  'label' => esc_attr( __( 'Granted', 'MAP_txt' ) ),
 																			'selected' => false ),
 								);
 
@@ -448,7 +448,7 @@
 									if( $data['selected'] )
 									{
 										?>
-										<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+										<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 										<?php
 									}
 									else
@@ -465,7 +465,7 @@
 							<div class="suggested-value-alert d-none">
 								<strong>
 									<?php
-										_e('Suggested value for compliance:', 'MAP_txt');
+										echo wp_kses_post( __( 'Suggested value for compliance:', 'MAP_txt' ) );
 									?>
 								</strong> denied
 							</div>
@@ -474,9 +474,9 @@
 
 					<div class="m-0 p-0 row alert">
 						<label for="cmode_v2_gtag_analytics_storage_field" class="col-sm-5 col-form-label">
-							<?php _e('Analytics Storage', 'MAP_txt'); ?><br>
+							<?php echo wp_kses_post( __( 'Analytics Storage', 'MAP_txt' ) ); ?><br>
 							<span class="form-text">
-								<?php echo esc_html__('Defines whether cookies associated with Google Analytics can be read or written.', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Defines whether cookies associated with Google Analytics can be read or written.', 'MAP_txt' ) ); ?>
 							</span>
 						</label>
 
@@ -486,9 +486,9 @@
 								<?php
 
 								$valid_options = array(
-									'denied'    =>  array(  'label' => __('Denied', 'MAP_txt'),
+									'denied'    =>  array(  'label' => esc_attr( __( 'Denied', 'MAP_txt' ) ),
 																			'selected' => false ),
-									'granted'   =>  array(  'label' => __('Granted', 'MAP_txt'),
+									'granted'   =>  array(  'label' => esc_attr( __( 'Granted', 'MAP_txt' ) ),
 																			'selected' => false ),
 								);
 
@@ -504,7 +504,7 @@
 									if( $data['selected'] )
 									{
 										?>
-										<option value="<?php echo esc_attr($key)?>" selected><?php echo esc_attr($data['label'])?></option>
+										<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
 										<?php
 									}
 									else
@@ -521,7 +521,7 @@
 							<div class="suggested-value-alert d-none">
 								<strong>
 									<?php
-										_e('Suggested value for compliance:', 'MAP_txt');
+										echo wp_kses_post( __( 'Suggested value for compliance:', 'MAP_txt' ) );
 									?>
 								</strong> denied
 							</div>
@@ -530,7 +530,7 @@
 
 					<div class="row">
 						<label for="cmode_v2_forced_off_ga4_advanced_field" class="col-sm-5 col-form-label">
-							<?php _e( 'Disable Advanced Consent Mode', 'MAP_txt' ); ?><br>
+							<?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?><br>
 						</label>
 
 						<div class="col-sm-7">
@@ -540,14 +540,14 @@
 									<input name="cmode_v2_forced_off_ga4_advanced_field" type="checkbox" value="true" id="cmode_v2_forced_off_ga4_advanced_field" class="hideShowInput" data-hide-show-ref="cmode_v2_forced_off_ga4_advanced_description" <?php checked( $the_options['cmode_v2_forced_off_ga4_advanced'], true); ?>>
 									<label for="cmode_v2_forced_off_ga4_advanced_field" class="me-2 label-checkbox"></label>
 									<label for="cmode_v2_forced_off_ga4_advanced_field">
-										<?php _e( 'Disable Advanced Consent Mode', 'MAP_txt' ); ?>
+										<?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?>
 									</label>
 								</div>
 							</div> <!-- ./ styled_radio -->
 						</div>
 
 						<p class="form-text cmode_v2_forced_off_ga4_advanced_description">
-							<?php echo esc_html__( "By disabling this mode of operation, you will minimize the data sent to Google servers in case of a lack of user consent, achieving greater compliance. However, you may receive warnings from Google regarding the non-detection of Consent Mode V2.", 'MAP_txt' ); ?>
+							<?php echo wp_kses_post( __( "By disabling this mode of operation, you will minimize the data sent to Google servers in case of a lack of user consent, achieving greater compliance. However, you may receive warnings from Google regarding the non-detection of Consent Mode V2.", 'MAP_txt' ) ); ?>
 						</p>
 
 					</div> <!-- /row-->
@@ -558,10 +558,10 @@
 				<div class="cmode_v2_implementation_type_options mt-4 displayNone" data-value="gtm">
 					<div class="row mb-3">
 						<div class="col-12">
-							<strong><?php _e('Configuration via Google Tag Manager', 'MAP_txt'); ?></strong>
+							<strong><?php echo wp_kses_post( __( 'Configuration via Google Tag Manager', 'MAP_txt' ) ); ?></strong>
 							<p class="mt-3">
 								<?php
-									echo sprintf(__('You can save the settings and continue the configuration on Google Tag Manager.<br>You can follow the setup steps in the guide we have created. %1$sClick here%2$s to go to the guide.', 'MAP_txt'),'<a href="https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy" target="_blank">','</a>');
+									echo sprintf(__( 'You can save the settings and continue the configuration on Google Tag Manager.<br>You can follow the setup steps in the guide we have created. %1$sClick here%2$s to go to the guide.', 'MAP_txt' ),'<a href="https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy" target="_blank">','</a>');
 
 								?>
 							</p>
@@ -601,11 +601,11 @@
 					isset( $the_options['pa'] ) &&
 					$the_options['pa'] == 1 )
 					{
-						_e('Feature not available for your license', 'MAP_txt');
+						echo wp_kses_post( __( 'Feature not available for your license', 'MAP_txt' ) );
 					}
 					else
 					{
-						_e('Premium Feature', 'MAP_txt');
+						echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) );
 					}
 				?>
 
@@ -616,22 +616,22 @@
 
 			<h4 class="mb-4">
 				<i class="fa-regular fa-tablet-screen"></i>
-				<?php _e('Activate IAB Transparency and Consent Framework', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Activate IAB Transparency and Consent Framework', 'MAP_txt' ) ); ?>
 			</h4>
 
 			<div class="row mb-4">
 				<div class="col-sm-12">
 
-					<p><?php _e('The IAB TCF, which stands for Interactive Advertising Bureau Transparency and Consent Framework, is a standardized framework specifically developed to help businesses comply with data protection regulations.', 'MAP_txt'); ?>
+					<p><?php echo wp_kses_post( __( 'The IAB TCF, which stands for Interactive Advertising Bureau Transparency and Consent Framework, is a standardized framework specifically developed to help businesses comply with data protection regulations.', 'MAP_txt' ) ); ?>
 
-					<?php _e('It serves as a mechanism that allows websites and digital advertising platforms to effectively obtain and manage user consent for the processing of personal data.', 'MAP_txt'); ?><br>
-					<b><?php _e('Enabling the IAB TCF is highly recommended if you utilize advertising channels such as Google Adsense, Ad Manager, AdMob or similar platforms on your website.', 'MAP_txt'); ?></b></p>
+					<?php echo wp_kses_post( __( 'It serves as a mechanism that allows websites and digital advertising platforms to effectively obtain and manage user consent for the processing of personal data.', 'MAP_txt' ) ); ?><br>
+					<b><?php echo wp_kses_post( __( 'It is highly recommended to enable the IAB TCF if you use ad channel banners such as Google Adsense, Ad Manager, AdMob, or similar platforms on your website.', 'MAP_txt' ) ); ?></b></p>
 				</div>
 			</div>
 
 			<div class="row mb-4">
 				<label for="display_ccpa_field" class="col-sm-5 col-form-label">
-					<?php _e('Activate IAB TCF', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Activate IAB TCF', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -645,7 +645,7 @@
 							<label for="enable_iab_tcf_field" class="me-2 label-checkbox"></label>
 
 							<label for="enable_iab_tcf_field">
-								<?php _e('Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on my website and I would to activate the IAB Transparency and Consent Framework', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on my website and I would to activate the IAB Transparency and Consent Framework', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -659,14 +659,14 @@
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-tablet-screen"></i>
-				<?php _e('Reset given consent', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Reset given consent', 'MAP_txt' ) ); ?>
 			</h4>
 
 
 			<!-- reset consent checkbox -->
 			<div class="row mb-4">
 				<label for="reset_consent" class="col-sm-5 col-form-label">
-					<?php _e('Reset given consent', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Reset given consent', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -678,13 +678,13 @@
 							<label for="reset_consent" class="me-2 label-checkbox"></label>
 
 							<label for="reset_consent">
-								<?php _e('Do reset given consent', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'Do reset given consent', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
 					<div class="form-text">
-					<?php echo esc_html__('Warning: this will reset all the user consent given. Use this only if you change your cookie list and you would like to ask consent again.', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Warning: this will reset all the user consent given. Use this only if you change your cookie list and you would like to ask consent again.', 'MAP_txt' ) ); ?>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->

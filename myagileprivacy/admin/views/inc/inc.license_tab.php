@@ -13,13 +13,13 @@
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-key"></i>
-				<?php _e('Your license details', 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( 'Your license details', 'MAP_txt' ) ); ?>
 			</h4>
 
 			<!-- stato licenza -->
 			<div class="row mb-4">
 				<label for="license_user_status_field" class="col-sm-5 col-form-label">
-					<?php _e('Your license status', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Your license status', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -27,7 +27,7 @@
 
 					<div class="form-text">
 						<?php
-							_e("The status of your license", 'MAP_txt');
+							echo wp_kses_post( __( "The status of your license", 'MAP_txt' ) );
 						?>.
 					</div>
 
@@ -40,7 +40,7 @@
 				<!-- chiave di licenza -->
 				<div class="row mb-4">
 					<label for="license_code_field" class="col-sm-5 col-form-label">
-						<?php _e('License code', 'MAP_txt'); ?>
+						<?php echo wp_kses_post( __( 'License code', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -48,7 +48,7 @@
 
 						<div class="form-text">
 							<?php
-								_e("Enter your license key here", 'MAP_txt');
+								echo wp_kses_post( __( "Enter your license key here", 'MAP_txt' ) );
 							?>.
 
 							<?php
@@ -58,10 +58,10 @@
 
 							<br>
 							<?php
-								_e("Would you like to verify the status of your subscription, download invoices, or carry out other administrative tasks?", 'MAP_txt');
+								echo wp_kses_post( __( "Would you like to verify the status of your subscription, download invoices, or carry out other administrative tasks?", 'MAP_txt' ) );
 							?><br>
 
-							<a href="https://areaprivata.myagileprivacy.com/" target="blank"><?php _e("Click here to access your user area.", 'MAP_txt');?></a>
+							<a href="https://areaprivata.myagileprivacy.com/" target="blank"><?php echo wp_kses_post( __( "Click here to access your user area.", 'MAP_txt' ) ); ?></a>
 
 							<?php
 								endif;
@@ -77,7 +77,7 @@
 					<!-- email associata -->
 					<div class="row mb-4 d-none">
 						<label for="customer_email_field" class="col-sm-5 col-form-label">
-							<?php _e('Your e-mail', 'MAP_txt'); ?>
+							<?php echo wp_kses_post( __( 'Your e-mail', 'MAP_txt' ) ); ?>
 						</label>
 
 						<div class="col-sm-7">
@@ -85,7 +85,7 @@
 
 							<div class="form-text">
 								<?php
-									_e("The email address linked to the license key", 'MAP_txt');
+									echo wp_kses_post( __( "The email address linked to the license key", 'MAP_txt' ) );
 								?>.
 							</div>
 
@@ -95,11 +95,11 @@
 					<!-- sommario licenza -->
 					<div class="row mb-4 d-none">
 						<label for="summary_text_field" class="col-sm-5 col-form-label">
-							<?php _e('License summary', 'MAP_txt'); ?>
+							<?php echo wp_kses_post( __( 'License summary', 'MAP_txt' ) ); ?>
 						</label>
 
 						<div class="col-sm-7">
-							<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr(stripslashes($the_options['summary_text']));?></textarea>
+							<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr( stripslashes( $the_options['summary_text'] ) ); ?></textarea>
 						</div>
 					</div> <!-- row -->
 
@@ -111,31 +111,31 @@
 
 				<div class="row mb-4">
 					<label for="license_code_field" class="col-sm-5 col-form-label">
-						<?php _e('Reseller info', 'MAP_txt'); ?>:
+						<?php echo wp_kses_post( __( 'Reseller info', 'MAP_txt' ) ); ?>:
 					</label>
 
 					<div class="col-sm-7">
 
 						<h6>
-							<?php _e('Your license key is provided by', 'MAP_txt'); ?> <span class="lc_owner_description"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_description'] ) ) echo esc_html( $rconfig['lc_owner_description'] ); ?></span> .
+							<?php echo wp_kses_post( __( 'Your license key is provided by', 'MAP_txt' ) ); ?> <span class="lc_owner_description"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_description'] ) ) echo esc_html( $rconfig['lc_owner_description'] ); ?></span> .
 						</h6>
 
 						<div class="my-3">
 							<strong>
-								<?php _e('For further information you can check:', 'MAP_txt'); ?>
+								<?php echo wp_kses_post( __( 'For further information you can check:', 'MAP_txt' ) ); ?>
 							</strong>
 							<br>
 
 							<span class="d-block lc_owner_website_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) ) echo 'd-none'; ?>">
-								<?php _e('Reseller Website:', 'MAP_txt'); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_attr( $rconfig['lc_owner_website'] ).'">'.$rconfig['lc_owner_website'].'</a>'; ?></span>
+								<?php echo wp_kses_post( __( 'Reseller Website:', 'MAP_txt' ) ); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_attr( $rconfig['lc_owner_website'] ).'">'.$rconfig['lc_owner_website'].'</a>'; ?></span>
 							</span>
 
 							<span class="d-block lc_owner_email_wrapper  <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) ) echo 'd-none'; ?>">
-								<?php _e('Reseller Mail:', 'MAP_txt'); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) echo  '<a href="mailto:'.esc_attr( $rconfig['lc_owner_email'] ).'">'.$rconfig['lc_owner_email'].'</a>'; ?></span>
+								<?php echo wp_kses_post( __( 'Reseller Mail:', 'MAP_txt' ) ); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) echo  '<a href="mailto:'.esc_attr( $rconfig['lc_owner_email'] ).'">'.$rconfig['lc_owner_email'].'</a>'; ?></span>
 							</span>
 						</div>
 
-						<button class="button-agile-outline btn-md changeLicenseCode"><?php _e('Change license code', 'MAP_txt'); ?></button>
+						<button class="button-agile-outline btn-md changeLicenseCode"><?php echo wp_kses_post( __( 'Change license code', 'MAP_txt' ) ); ?></button>
 
 					</div>
 				</div> <!-- row -->
@@ -146,7 +146,7 @@
 			<!-- ultima data di sync -->
 			<div class="row mb-4">
 				<label for="last_sync_field" class="col-sm-5 col-form-label">
-					<?php _e('Last cookies sync', 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( 'Last cookies sync', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
@@ -154,7 +154,7 @@
 
 					<div class="form-text">
 						<?php
-							_e("The last time cookies and policy were syncronized with remote db", 'MAP_txt');
+							echo wp_kses_post( __( "The last time cookies and policy were syncronized with remote db", 'MAP_txt' ) );
 						?>.
 					</div>
 

@@ -31,6 +31,7 @@ define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
 define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
 define( 'MAP_SCANNER', true );
 define( 'MAP_IAB_TCF', true );
+define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
 define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
 define( 'MAP_PLUGIN_ACTIVATION_DATE', MAP_PLUGIN_DB_KEY_PREFIX.'-activation_date' );
@@ -758,8 +759,8 @@ class MyAgilePrivacy {
 		   return true;
 		}
 
-		$ABSPATH_MY = str_replace(array( '\\','/' ), DIRECTORY_SEPARATOR, ABSPATH);
-		return ((in_array($ABSPATH_MY.'wp-login.php', get_included_files()) || in_array($ABSPATH_MY.'wp-register.php', get_included_files()) ) || (isset($_GLOBALS['pagenow']) && $GLOBALS['pagenow'] === 'wp-login.php' ) || $_SERVER['PHP_SELF']== '/wp-login.php' );
+		$ABSPATH_MY = str_replace( array( '\\','/' ), DIRECTORY_SEPARATOR, ABSPATH );
+		return (( in_array($ABSPATH_MY.'wp-login.php', get_included_files()) || in_array( $ABSPATH_MY.'wp-register.php', get_included_files() ) ) || ( isset( $_GLOBALS ) && isset( $_GLOBALS['pagenow'] ) && $GLOBALS['pagenow'] === 'wp-login.php' ) || $_SERVER['PHP_SELF'] == '/wp-login.php' );
 	}
 
 
@@ -958,18 +959,18 @@ class MyAgilePrivacy {
 
 		$settings = array(
 			'is_on' 									=> 	true,
-			'is_bottom'									=>	'',
+			'is_bottom'									=>	true,
 			'cookie_banner_vertical_position'			=> 	null,
 			'cookie_banner_horizontal_position'			=> 	null,
 			'cookie_banner_size'						=> 	null,
 			'cookie_banner_shadow'						=> 	false,
 			'cookie_banner_animation'					=> 	'none',
-			'floating_banner'							=> 	0,
+			'floating_banner'							=> 	1,
 			'elements_border_radius'					=> 	15,
 			'heading_background_color'					=> 	'#F14307',
 			'heading_text_color'						=> 	'#ffffff',
 			'close_icon_color'							=> 	'#ffffff',
-			'title_is_on'								=> 	false,
+			'title_is_on'								=> 	true,
 			'bar_heading_text'							=>	'',
 			'background' 								=> 	'#ffffff',
 			'text' 										=> 	'#333333',
@@ -1865,7 +1866,8 @@ class MyAgilePrivacy {
 		$default_txt['it_IT']['is_enabled'] = 'Abilitato';
 		$default_txt['it_IT']['is_disabled'] = 'Disabilitato';
 		$default_txt['it_IT']['blocked_content'] = 'Attenzione: alcune funzionalità di questa pagina potrebbero essere bloccate a seguito delle tue scelte privacy';
-		$default_txt['it_IT']['notify_message_v2'] = 'Questo sito utilizza cookie tecnici e di profilazione. Cliccando su accetta si autorizzano tutti i cookie di profilazione. Cliccando su rifiuta o la X si rifiutano tutti i cookie di profilazione. Cliccando su personalizza è possibile selezionare quali cookie di profilazione attivare.';
+		$default_txt['it_IT']['notify_message_v2'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
+		$default_txt['it_IT']['notify_message_v2_short'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
 		$default_txt['it_IT']['view_the_cookie_policy'] = 'Visualizza la Cookie Policy';
 		$default_txt['it_IT']['view_the_personal_data_policy'] = "Visualizza l'Informativa Privacy";
 		$default_txt['it_IT']['manage_consent'] = 'Gestisci il consenso';
@@ -1913,7 +1915,8 @@ class MyAgilePrivacy {
 		$default_txt['en_US']['is_enabled'] = 'Enabled';
 		$default_txt['en_US']['is_disabled'] = 'Disabled';
 		$default_txt['en_US']['blocked_content'] = 'Warning: some page functionalities could not work due to your privacy choices';
-		$default_txt['en_US']['notify_message_v2'] = 'This website uses technical and profiling cookies. Clicking on "Accept" authorizes all profiling cookies. Clicking on "Refuse" or the "X" will refuse all profiling cookies. By clicking on "Customize" you can select which profiling cookies to activate.';
+		$default_txt['en_US']['notify_message_v2'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
+		$default_txt['en_US']['notify_message_v2_short'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
 		$default_txt['en_US']['view_the_cookie_policy'] = 'View the Cookie Policy';
 		$default_txt['en_US']['view_the_personal_data_policy'] = 'View the Personal Data Policy';
 		$default_txt['en_US']['manage_consent'] = 'Manage consent';
@@ -1960,7 +1963,8 @@ class MyAgilePrivacy {
 		$default_txt['fr_FR']['is_enabled'] = 'Activé';
 		$default_txt['fr_FR']['is_disabled'] = 'Désactivé';
 		$default_txt['fr_FR']['blocked_content'] = 'Avertissement: certaines fonctionnalités de la page pourraient ne pas fonctionner en raison de vos choix de confidentialité';
-		$default_txt['fr_FR']['notify_message_v2'] = 'Ce site utilise des cookies techniques et de profilage. En cliquant sur "Accepter", vous autorisez tous les cookies de profilage. En cliquant sur "Refuser" ou sur le "X", vous refusez tous les cookies de profilage. En cliquant sur Personnaliser, vous pouvez sélectionner les cookies de profilage à activer.';
+		$default_txt['fr_FR']['notify_message_v2'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
+		$default_txt['fr_FR']['notify_message_v2_short'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
 		$default_txt['fr_FR']['view_the_cookie_policy'] = 'Politique relative aux cookies';
 		$default_txt['fr_FR']['view_the_personal_data_policy'] = 'Consultez la politique de données personnelles';
 		$default_txt['fr_FR']['manage_consent'] = 'Consentement à la politique de confidentialité';
@@ -2007,7 +2011,8 @@ class MyAgilePrivacy {
 		$default_txt['es_ES']['is_enabled'] = 'Activado';
 		$default_txt['es_ES']['is_disabled'] = 'Deshabilitado';
 		$default_txt['es_ES']['blocked_content'] = 'Advertencia: algunas funciones de esta página pueden estar bloqueadas como resultado de sus opciones de privacidad';
-		$default_txt['es_ES']['notify_message_v2'] = 'Este sitio utiliza cookies técnicas y de elaboración de perfiles . Al hacer clic en "Aceptar" , se autorizan todas las cookies de elaboración de perfiles. Al hacer clic en "Rechazar" o en "X" , se rechazan todas las cookies de elaboración de perfiles. Al hacer clic en "Personalizar" , se pueden seleccionar cookies de elaboración de perfiles para su activación.';
+		$default_txt['es_ES']['notify_message_v2'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
+		$default_txt['es_ES']['notify_message_v2_short'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
 		$default_txt['es_ES']['view_the_cookie_policy'] = 'Política de cookies';
 		$default_txt['es_ES']['view_the_personal_data_policy'] = 'Consulte la política de datos personales';
 		$default_txt['es_ES']['manage_consent'] = 'Consentimiento de privacidad';
@@ -2054,7 +2059,8 @@ class MyAgilePrivacy {
 		$default_txt['de_DE']['is_enabled'] = 'Aktiviert';
 		$default_txt['de_DE']['is_disabled'] = 'Deaktiviert';
 		$default_txt['de_DE']['blocked_content'] = 'Warnung: Einige Funktionen dieser Seite können aufgrund Ihrer Datenschutzeinstellungen blockiert werden';
-		$default_txt['de_DE']['notify_message_v2'] = 'Diese Website verwendet technische und Profiling-Cookies. Durch Klicken auf "Akzeptieren" autorisieren Sie alle Profiling-Cookies . Durch Klicken auf "Ablehnen" oder das "X" werden alle Profiling-Cookies abgelehnt. Durch Klicken auf "Anpassen" können Sie auswählen, welche Profiling-Cookies aktiviert werden sollen';
+		$default_txt['de_DE']['notify_message_v2'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
+		$default_txt['de_DE']['notify_message_v2_short'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
 		$default_txt['de_DE']['view_the_cookie_policy'] = 'Cookie-Richtlinie';
 		$default_txt['de_DE']['view_the_personal_data_policy'] = 'Sehen Sie sich die Datenschutzrichtlinie an';
 		$default_txt['de_DE']['manage_consent'] = 'Zustimmung zum Datenschutz';
@@ -2101,7 +2107,8 @@ class MyAgilePrivacy {
 		$default_txt['pt_PT']['is_enabled'] = 'Ativado';
 		$default_txt['pt_PT']['is_disabled'] = 'Desativado';
 		$default_txt['pt_PT']['blocked_content'] = 'Aviso: algumas funcionalidades da página podem não funcionar devido às suas escolhas de privacidade';
-		$default_txt['pt_PT']['notify_message_v2'] = 'Este site utiliza cookies técnicos e de perfilagem . Clicar em "Aceitar" autoriza todos os cookies de perfilagem. Clicar em "Recusar" ou no "X" recusa todos os cookies de perfilagem. Clicando em "Personalizar" , você pode selecionar quais cookies de perfilagem ativar.';
+		$default_txt['pt_PT']['notify_message_v2'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
+		$default_txt['pt_PT']['notify_message_v2_short'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
 		$default_txt['pt_PT']['view_the_cookie_policy'] = 'Ver a Política de Cookies';
 		$default_txt['pt_PT']['view_the_personal_data_policy'] = 'Ver a Política de Dados Pessoais';
 		$default_txt['pt_PT']['manage_consent'] = 'Gerenciar consentimento';
@@ -2148,7 +2155,8 @@ class MyAgilePrivacy {
 		$default_txt['nl_NL']['is_enabled'] = 'Ingeschakeld';
 		$default_txt['nl_NL']['is_disabled'] = 'Uitgeschakeld';
 		$default_txt['nl_NL']['blocked_content'] = 'Waarschuwing: sommige functionaliteiten van de pagina kunnen niet werken vanwege uw privacykeuzes';
-		$default_txt['nl_NL']['notify_message_v2'] = 'Deze website maakt gebruik van technische en profileringscookies . Door op "Accepteren" te klikken, machtigt u alle profileringscookies. Door op "Weigeren" of de "X" te klikken, weigert u alle profileringscookies. Door op "Aanpassen" te klikken, kunt u selecteren welke profileringscookies u wilt activeren.';
+		$default_txt['nl_NL']['notify_message_v2'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
+		$default_txt['nl_NL']['notify_message_v2_text'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
 		$default_txt['nl_NL']['view_the_cookie_policy'] = 'Bekijk het Cookiebeleid';
 		$default_txt['nl_NL']['view_the_personal_data_policy'] = 'Bekijk het Beleid voor Persoonsgegevens';
 		$default_txt['nl_NL']['manage_consent'] = 'Beheer toestemmingen';
@@ -2196,7 +2204,8 @@ class MyAgilePrivacy {
 		$default_txt['pl_PL']['is_enabled'] = 'Włączone';
 		$default_txt['pl_PL']['is_disabled'] = 'Wyłączone';
 		$default_txt['pl_PL']['blocked_content'] = 'Uwaga: niektóre funkcje strony mogą nie działać z powodu wybranych przez Ciebie opcji prywatności';
-		$default_txt['pl_PL']['notify_message_v2'] = 'Ta strona używa technicznych i profilujących plików cookie . Klikając "Akceptuj" , zezwalasz na wszystkie profilujące pliki cookie. Klikając "Odrzuć" lub "X" , odrzucasz wszystkie profilujące pliki cookie. Klikając "Dostosuj" , możesz wybrać, które profilujące pliki cookie włączyć.';
+		$default_txt['pl_PL']['notify_message_v2'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
+		$default_txt['pl_PL']['notify_message_v2_text'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
 		$default_txt['pl_PL']['view_the_cookie_policy'] = 'Zobacz Politykę Cookie';
 		$default_txt['pl_PL']['view_the_personal_data_policy'] = 'Zobacz Politykę Danych Osobowych';
 		$default_txt['pl_PL']['manage_consent'] = 'Zarządzaj zgodami';
@@ -2244,7 +2253,8 @@ class MyAgilePrivacy {
 		$default_txt['el']['is_enabled'] = 'Ενεργοποιήθηκε';
 		$default_txt['el']['is_disabled'] = 'Απενεργοποιήθηκε';
 		$default_txt['el']['blocked_content'] = 'Προειδοποίηση: ορισμένες λειτουργίες της σελίδας ενδέχεται να μην λειτουργούν λόγω των επιλογών απορρήτου σας';
-		$default_txt['el']['notify_message_v2'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά και προφίλ cookies. Κάνοντας κλικ στο "Αποδοχή" εξουσιοδοτείτε όλα τα προφίλ cookies. Κάνοντας κλικ στο "Άρνηση" ή στο "X" θα αρνηθείτε όλα τα προφίλ cookies. Κάνοντας κλικ στο "Προσαρμογή" μπορείτε να επιλέξετε ποια προφίλ cookies θα ενεργοποιήσετε.';
+		$default_txt['el']['notify_message_v2'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
+		$default_txt['el']['notify_message_v2_text'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
 		$default_txt['el']['view_the_cookie_policy'] = 'Δείτε την Πολιτική Cookies';
 		$default_txt['el']['view_the_personal_data_policy'] = 'Δείτε την Πολιτική Προσωπικών Δεδομένων';
 		$default_txt['el']['manage_consent'] = 'Διαχείριση συναίνεσης';

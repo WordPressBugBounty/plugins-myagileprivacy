@@ -5,7 +5,7 @@
 
 var MAP_SYS = {
 	'plugin_version' 					: null,
-	'internal_version' 					: "2.0011",
+	'internal_version' 					: "2.0013",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -37,12 +37,30 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 	console.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
 
-if( !MAP_Cookie )
+if( typeof MAP_Cookie === 'undefined' )
 {
+	if( typeof MAP_UA_NO_COOKIE_SET === 'undefined' )
+	{
+		var MAP_UA_NO_COOKIE_SET = ["Cookiebot", "cookiebot.com", "CookieHubVerify", "TermlyBot"];
+	}
+
 	var MAP_Cookie = {
+		_isUserAgentNoCookieSet: function () {
+			var userAgent = navigator?.userAgent;
+
+			return MAP_UA_NO_COOKIE_SET.some( function( forbidden ){
+				return userAgent.includes( forbidden );
+			});
+		},
 		set: function (name, value, days) {
+
+			if( this._isUserAgentNoCookieSet() )
+			{
+				return null;
+			}
+
 			try {
-				if(days) {
+				if (days) {
 					var date = new Date();
 					date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
 					var expires = "; expires=" + date.toGMTString();
@@ -57,6 +75,12 @@ if( !MAP_Cookie )
 			}
 		},
 		setGMTString: function (name, value, GMTString) {
+
+			if( this._isUserAgentNoCookieSet() )
+			{
+				return null;
+			}
+
 			try {
 
 				var expires = "; expires=" + GMTString;
@@ -71,13 +95,13 @@ if( !MAP_Cookie )
 		read: function (name) {
 			try {
 				var nameEQ = name + "=";
-				var ca = document.cookie.split( ';' );
+				var ca = document.cookie.split(';');
 				for (var i = 0; i < ca.length; i++) {
 					var c = ca[i];
-					while (c.charAt(0) == ' ' ) {
+					while (c.charAt(0) == ' ') {
 						c = c.substring(1, c.length);
 					}
-					if(c.indexOf(nameEQ) === 0) {
+					if (c.indexOf(nameEQ) === 0) {
 						return c.substring(nameEQ.length, c.length);
 					}
 				}
@@ -207,7 +231,6 @@ var MAP =
 			}
 
 			this.loadDependencies();
-
 			this.toggleBar();
 			this.createInlineNotify();
 			this.attachEvents();
@@ -285,7 +308,7 @@ var MAP =
 			if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) &&
 				typeof map_full_config !== 'undefined' && typeof map_full_config?.js_shield_url !== 'undefined' && map_full_config?.js_shield_url )
 			{
-				that.injectCode( map_full_config?.js_shield_url, function(){
+				that.injectCode( map_full_config?.js_shield_url, function() {
 				} );
 
 				something_to_do = true;
@@ -297,7 +320,7 @@ var MAP =
 				typeof map_full_config?.iab_tcf_script_url !== 'undefined' &&
 				typeof window?.initMyAgilePrivacyIabTCF === 'undefined' )
 			{
-				that.injectCode( map_full_config?.iab_tcf_script_url, function(){
+				that.injectCode( map_full_config?.iab_tcf_script_url, function() {
 				} );
 
 				something_to_do = true;
@@ -641,7 +664,7 @@ var MAP =
 							//console.log("variable is defined");
 							that.displayBar();
 
-							setTimeout(function(){
+							setTimeout( function() {
 								var scroll_to_top = document.querySelector( '.map_notification-message.map-iab-context' );
 								if(scroll_to_top) {
 									scroll_to_top.scrollIntoView( { behavior: 'smooth' } );
@@ -673,24 +696,146 @@ var MAP =
 					var that_animation = MAP.bar_elm.getAttribute( 'data-animation' );
 					var that_id_selector = '#' + MAP.bar_elm.getAttribute( 'id' );
 
-
 					var animation_params = {
 						targets: that_id_selector,
 						easing: 'easeInOutQuad',
 						duration: 1000
 					};
 
+					setTimeout( function() {
+						MAP.showagain_elm.style.display = 'none';
+					}, 150 );
+
 					anime( {
 						targets: MAP.showagain_elm,
 						easing: 'easeInOutQuad',
 						duration: 150,
 						opacity: 0,
-						complete: function(anim) {
+						complete: function( anim ) {
 							MAP.showagain_elm.style.display = 'none';
 						}
 					} );
 
-					setTimeout( function(){
+					setTimeout( function() {
+
+						try {
+
+							switch( that_animation )
+							{
+								case 'slide':
+
+									var y_value = '0vh';
+									var x_value = '0vw';
+
+									if( MAP.bar_elm.classList.contains( 'map_floating_banner' ) )
+									{
+										y_value = '3vh';
+										x_value = '3vw';
+									}
+
+									var $this = MAP.bar_elm;
+
+									if( MAP.bar_elm.className.includes( 'mapPositionBottom' ) ) {
+										$this.style.bottom = '-100vh';
+										animation_params['bottom'] = y_value;
+									}
+									else if( MAP.bar_elm.className.includes( 'mapPositionTop' ) ) {
+										$this.style.top = '-100vh';
+										animation_params['top'] = y_value;
+									}
+									else if( MAP.bar_elm.className.includes( 'mapPositionCenterLeft' ) ) {
+										$this.style.left = '-100vw';
+										animation_params['left'] = x_value;
+									}
+									else if( MAP.bar_elm.className.includes( 'mapPositionCenterCenter' ) ) {
+										$this.style.top = '-100%';
+										animation_params['top'] = '50%';
+									}
+									else if( MAP.bar_elm.className.includes( 'mapPositionCenterRight' ) ) {
+										$this.style.right = '-100vw';
+										animation_params['right'] = x_value;
+									}
+
+									MAP.bar_elm.style.display = 'block';
+									anime( animation_params );
+									break;
+
+								case 'fade':
+									document.querySelector( that_id_selector ).style.opacity = '0';
+									MAP.bar_elm.style.display = 'block';
+
+									animation_params['opacity'] = '1';
+									animation_params['duration'] = '500';
+
+									anime( animation_params );
+
+									break;
+
+								case 'zoom':
+									document.querySelector( that_id_selector ).style.transform = 'scale(0)';
+									MAP.bar_elm.style.display = 'block';
+
+									animation_params['scale'] = '1';
+									anime( animation_params );
+
+									break;
+
+								default: // no animation -> value = "none"
+									MAP.bar_elm.style.display = 'block';
+									break;
+							}
+
+							that.bar_open = true;
+							that.optimizeMobile();
+
+						}
+						catch( error )
+						{
+							console.error( error );
+						}
+
+					},100 );
+
+
+				});
+			});
+
+			//bof user consent review trigger
+
+			that.bar_elm.addEventListener( 'triggerShowAgainDisplay', function(e) {
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered triggerShowAgainDisplay' );
+
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				//animation
+				var that_animation = MAP.bar_elm.getAttribute('data-animation');
+				var that_id_selector = '#' + MAP.bar_elm.getAttribute('id');
+
+				var animation_params = {
+					targets: that_id_selector,
+					easing: 'easeInOutQuad',
+					duration: 1000
+				};
+
+				setTimeout( function() {
+					MAP.showagain_elm.style.display = 'none';
+				}, 150 );
+
+				anime( {
+					targets: MAP.showagain_elm,
+					easing: 'easeInOutQuad',
+					duration: 150,
+					opacity: 0,
+					complete: function(anim) {
+						MAP.showagain_elm.style.display = 'none';
+					}
+				} );
+
+				setTimeout( function() {
+
+					try {
+
 						switch( that_animation )
 						{
 							case 'slide':
@@ -704,26 +849,26 @@ var MAP =
 									x_value = '3vw';
 								}
 
-								var $this = MAP.bar_elm;
+								var element = document.querySelector( that_id_selector );
 
 								if( MAP.bar_elm.className.includes( 'mapPositionBottom' ) ) {
-									$this.style.bottom = '-100vh';
+									element.style.bottom = '-100vh';
 									animation_params['bottom'] = y_value;
 								}
 								else if( MAP.bar_elm.className.includes( 'mapPositionTop' ) ) {
-									$this.style.top = '-100vh';
+									element.style.top = '-100vh';
 									animation_params['top'] = y_value;
 								}
 								else if( MAP.bar_elm.className.includes( 'mapPositionCenterLeft' ) ) {
-									$this.style.left = '-100vw';
+									element.style.left = '-100vw';
 									animation_params['left'] = x_value;
 								}
 								else if( MAP.bar_elm.className.includes( 'mapPositionCenterCenter' ) ) {
-									$this.style.top = '-100%';
+									element.style.top = '-100%';
 									animation_params['top'] = '50%';
 								}
-								else if( MAP.bar_elm.className.includes( 'mapPositionCenterRight' ) ) {
-									$this.style.right = '-100vw';
+								else if( MAP.bar_elm.className.includes( 'mapPositionCenterRight') ) {
+									element.style.right = '-100vw';
 									animation_params['right'] = x_value;
 								}
 
@@ -748,7 +893,6 @@ var MAP =
 
 								animation_params['scale'] = '1';
 								anime( animation_params );
-
 								break;
 
 							default: // no animation -> value = "none"
@@ -758,114 +902,32 @@ var MAP =
 
 						that.bar_open = true;
 						that.optimizeMobile();
-					},100);
-
-
-				});
-			});
-
-			//bof user consent review trigger
-
-			that.bar_elm.addEventListener( 'triggerShowAgainDisplay', function(e) {
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered triggerShowAgainDisplay' );
-
-				e.preventDefault();
-				e.stopImmediatePropagation();
-
-				//animation
-				var that_animation = MAP.bar_elm.getAttribute('data-animation');
-				var that_id_selector = '#' + MAP.bar_elm.getAttribute('id');
-
-				var animation_params = {
-					targets: that_id_selector,
-					easing: 'easeInOutQuad',
-					duration: 1000
-				};
-
-				anime( {
-					targets: MAP.showagain_elm,
-					easing: 'easeInOutQuad',
-					duration: 150,
-					opacity: 0,
-					complete: function(anim) {
-						MAP.showagain_elm.style.display = 'none';
 					}
-				} );
-
-
-				setTimeout(function(){
-					switch( that_animation )
+					catch( error )
 					{
-						case 'slide':
-
-							var y_value = '0vh';
-							var x_value = '0vw';
-
-							if( MAP.bar_elm.classList.contains( 'map_floating_banner' ) )
-							{
-								y_value = '3vh';
-								x_value = '3vw';
-							}
-
-							var element = document.querySelector( that_id_selector );
-
-							if( MAP.bar_elm.className.includes( 'mapPositionBottom' ) ) {
-								element.style.bottom = '-100vh';
-								animation_params['bottom'] = y_value;
-							}
-							else if( MAP.bar_elm.className.includes( 'mapPositionTop' ) ) {
-								element.style.top = '-100vh';
-								animation_params['top'] = y_value;
-							}
-							else if( MAP.bar_elm.className.includes( 'mapPositionCenterLeft' ) ) {
-								element.style.left = '-100vw';
-								animation_params['left'] = x_value;
-							}
-							else if( MAP.bar_elm.className.includes( 'mapPositionCenterCenter' ) ) {
-								element.style.top = '-100%';
-								animation_params['top'] = '50%';
-							}
-							else if( MAP.bar_elm.className.includes( 'mapPositionCenterRight') ) {
-								element.style.right = '-100vw';
-								animation_params['right'] = x_value;
-							}
-
-							MAP.bar_elm.style.display = 'block';
-							anime( animation_params );
-							break;
-
-						case 'fade':
-							document.querySelector( that_id_selector ).style.opacity = '0';
-							MAP.bar_elm.style.display = 'block';
-
-							animation_params['opacity'] = '1';
-							animation_params['duration'] = '500';
-
-							anime( animation_params );
-
-							break;
-
-						case 'zoom':
-							document.querySelector( that_id_selector ).style.transform = 'scale(0)';
-							MAP.bar_elm.style.display = 'block';
-
-							animation_params['scale'] = '1';
-							anime( animation_params );
-							break;
-
-						default: // no animation -> value = "none"
-							MAP.bar_elm.style.display = 'block';
-							break;
+						console.error( error );
 					}
-
-					that.bar_open = true;
-					that.optimizeMobile();
 
 				}, 100 );
 			});
 
-			document.body.addEventListener( 'click', function( e ) {
-				if(e.target.matches('.showConsentAgain') )
+			document.body.addEventListener('click', function(e) {
+
+				var targetElement = e.target;
+				var matchFound = false;
+				var levelsToCheck = 2;
+
+				while( levelsToCheck > 0 && targetElement )
+				{
+					if (targetElement.matches('.showConsentAgain')) {
+						matchFound = true;
+						break;
+					}
+					targetElement = targetElement.parentElement;
+					levelsToCheck--;
+				}
+
+				if( matchFound )
 				{
 					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered showConsentAgain' );
 					e.preventDefault();
@@ -874,11 +936,10 @@ var MAP =
 					var event = new CustomEvent('triggerShowAgainDisplay');
 					that.bar_elm.dispatchEvent( event );
 				}
-
 			});
 
+
 			//eof user consent review trigger
-			//
 		}
 		catch( error )
 		{
@@ -908,7 +969,6 @@ var MAP =
 
 					if( $custom_ref )
 					{
-						// $custom_ref.show();
 						$custom_ref.style.display = 'block';
 					}
 				});
@@ -916,7 +976,6 @@ var MAP =
 
 			var $map_blocked_content = document.querySelectorAll( '.map_blocked_content' );
 
-			// $map_blocked_content.each(function(){
 			$map_blocked_content.forEach( function( $this) {
 
 				var api_key = $this.getAttribute( 'data-cookie-api-key' );
@@ -934,20 +993,15 @@ var MAP =
 
 			var $show_inline_notify = document.querySelectorAll( '.iframe_src_blocked.map_show_inline_notify' );
 
-			// $show_inline_notify.each(function(){
 			$show_inline_notify.forEach( function( $this ) {
 
-				// var height = $this.height();
 				var height = $this.offsetHeight;
 
-				// var width = $this.width();
 				var width = $this.offsetWidth;
 
-				// var api_key = $this.attr( 'data-cookie-api-key' );
 				var api_key = $this.getAttribute('data-cookie-api-key');
 
 				var the_friendly_name = '';
-				// var friendly_name = $this.attr( 'data-friendly_name' );
 				var friendly_name = $this.getAttribute('data-friendly-name');
 
 				if( friendly_name )
@@ -955,7 +1009,6 @@ var MAP =
 					the_friendly_name = friendly_name;
 				}
 
-				// $this.hide();
 				$this.style.display = 'none';
 
 				var html = "<div class='map_inline_notify showConsentAgain' data-cookie-api-key='"+api_key+"'>"+that.settings.blocked_content_text+"<br>"+the_friendly_name+"</div>";
@@ -1082,23 +1135,31 @@ var MAP =
 							$_this.click();
 						});
 
-						setTimeout(function(){
+						setTimeout( function() {
 
-							var $vendor_list_button = document.querySelector( '#map-iab-tcf-vendor-list' );
+							try {
 
-							if( $vendor_list_button )
-							{
-								$vendor_list_button.click();
+								var $vendor_list_button = document.querySelector( '#map-iab-tcf-vendor-list' );
 
-								setTimeout(function(){
-									var $vendor_list_scrollto = document.querySelector( '#map-iab-tcf-vendor-list-scroll-here' );
+								if( $vendor_list_button )
+								{
+									$vendor_list_button.click();
 
-									if( $vendor_list_scrollto )
-									{
-										$vendor_list_scrollto.scrollIntoView({ behavior: 'smooth' });
-									}
-								}, 200 );
+									setTimeout( function() {
+										var $vendor_list_scrollto = document.querySelector( '#map-iab-tcf-vendor-list-scroll-here' );
+
+										if( $vendor_list_scrollto )
+										{
+											$vendor_list_scrollto.scrollIntoView({ behavior: 'smooth' });
+										}
+									}, 200 );
+								}
 							}
+							catch( error )
+							{
+								console.error( error );
+							}
+
 						}, 200);
 					});
 				});
@@ -1447,7 +1508,7 @@ var MAP =
 
 				var iteration_counter = 0;
 
-				var animInterval = setInterval( function(){
+				var animInterval = setInterval( function() {
 					if(iteration_counter == repeat)
 					{
 						clearInterval( animInterval );
@@ -1457,6 +1518,7 @@ var MAP =
 						acceptButton.classList.add( ...all_animation_classes );
 
 						setTimeout( function() {
+
 							acceptButton.classList.remove( ...all_animation_classes );
 							iteration_counter ++;
 
@@ -1563,35 +1625,47 @@ var MAP =
 							blocked_content_notify_auto_shutdown_time = that.settings.blocked_content_notify_auto_shutdown_time;
 						}
 
-						setTimeout( function(){
+						setTimeout( function() {
 
-							that.blocked_content_notification.style.opacity = 0;
-							that.blocked_content_notification.style.display = 'block';
+							try {
 
-							anime( {
-								targets: that.blocked_content_notification,
-								easing: 'easeInOutQuad',
-								duration: 150,
-								opacity: 1,
-								complete: function(anim) {
-								}
-							} );
+								that.blocked_content_notification.style.opacity = 0;
+								that.blocked_content_notification.style.display = 'block';
 
-							if( that.blocked_content_notification.classList.contains( 'autoShutDown' ) )
-							{
-								setTimeout(function(){
+								anime( {
+									targets: that.blocked_content_notification,
+									easing: 'easeInOutQuad',
+									duration: 150,
+									opacity: 1,
+									complete: function(anim) {
+									}
+								} );
 
-									anime( {
-										targets: that.blocked_content_notification,
-										easing: 'easeInOutQuad',
-										duration: 150,
-										opacity: 0,
-										complete: function(anim) {
+								if( that.blocked_content_notification.classList.contains( 'autoShutDown' ) )
+								{
+									setTimeout( function() {
+
+
+										setTimeout( function() {
 											that.blocked_content_notification.style.display = 'none';
-										}
-									} );
+										}, 150 );
 
-								}, blocked_content_notify_auto_shutdown_time );
+										anime( {
+											targets: that.blocked_content_notification,
+											easing: 'easeInOutQuad',
+											duration: 150,
+											opacity: 0,
+											complete: function(anim) {
+												that.blocked_content_notification.style.display = 'none';
+											}
+										} );
+
+									}, blocked_content_notify_auto_shutdown_time );
+								}
+							}
+							catch( error )
+							{
+								console.error( error );
 							}
 
 						}, 1000 );
@@ -1602,6 +1676,11 @@ var MAP =
 			{
 				if( that.blocked_content_notification )
 				{
+
+					setTimeout( function() {
+						that.blocked_content_notification.style.display = 'none';
+					}, 150 );
+
 					anime( {
 						targets: that.blocked_content_notification,
 						easing: 'easeInOutQuad',
@@ -1611,7 +1690,6 @@ var MAP =
 							that.blocked_content_notification.style.display = 'none';
 						}
 					} );
-
 				}
 			}
 
@@ -1718,6 +1796,10 @@ var MAP =
 					break;
 			}
 
+			setTimeout( function() {
+				that.showagain_elm.style.display = 'none';
+			}, 150 );
+
 			anime( {
 				targets: that.showagain_elm,
 				easing: 'easeInOutQuad',
@@ -1766,6 +1848,10 @@ var MAP =
 			}
 			else
 			{
+				setTimeout( function() {
+					that.showagain_elm.style.display = 'none';
+				}, 150 );
+
 				//hide
 				anime( {
 					targets: this.showagain_elm,
@@ -1783,6 +1869,10 @@ var MAP =
 			var that_animation = this.bar_elm.getAttribute( 'data-animation' );
 
 			var that_id_selector = '#' + this.bar_elm.getAttribute( 'id' );
+
+			setTimeout( function() {
+				MAP.bar_elm.style.display = 'none';
+			}, 150 );
 
 			var animation_params = {
 				targets: that_id_selector,
@@ -1844,6 +1934,8 @@ var MAP =
 					break;
 			}
 
+
+
 			this.bar_open = false;
 
 			(async() => {
@@ -1873,9 +1965,10 @@ var MAP =
 		//for preserving scope
 		var that = this;
 
-		try {
+		setTimeout( function() {
 
-			setTimeout( function(){
+			try {
+
 				if( that.bar_open )
 				{
 					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
@@ -1901,14 +1994,13 @@ var MAP =
 
 				that.setOverflowMaxHeight();
 
-			}, 400 );
+			}
+			catch( error )
+			{
+				console.error( error );
+			}
 
-		}
-		catch( error )
-		{
-			console.error( error );
-		}
-
+		}, 400 );
 	},
 
 	accept_close: function()
@@ -2112,9 +2204,9 @@ var MAP =
 
 			that.tryToUnblockScripts( true );
 
-			setTimeout( function(){
+			setTimeout( function() {
 				that.checkBlockedContent();
-			},200);
+			}, 200 );
 
 			(async() => {
 
@@ -2309,7 +2401,7 @@ var MAP =
 
 										classes.forEach(function(v) {
 											if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
-												setTimeout(function() {
+												setTimeout( function() {
 													window[v]();
 												}, 4000 );
 											}
@@ -2331,9 +2423,12 @@ var MAP =
 
 									if( $_this.classList.contains( 'mapWait' ) )
 									{
-										setTimeout(function() {
-											var script = document.createElement( 'script' );
+										setTimeout( function() {
+
+											//prevent block using createElementBackup
+											var script = document.createElementBackup( 'script' );
 											script.className = '_is_activated';
+											script.setAttribute( 'type','text/javascript' );
 
 											script = cloneNodeAttributeToAnother( $_this, script );
 
@@ -2352,14 +2447,17 @@ var MAP =
 									}
 									else
 									{
-										var script = document.createElement( 'script' );
+										//prevent block using createElementBackup
+										var script = document.createElementBackup( 'script' );
 										script.className = '_is_activated';
+										script.setAttribute( 'type','text/javascript' );
 
 										script = cloneNodeAttributeToAnother( $_this, script );
 
 										var blocked_src = $_this.getAttribute( 'unblocked_src' );
 
-										if(blocked_src) {
+										if( blocked_src )
+										{
 											script.src = blocked_src;
 										}
 
@@ -2389,7 +2487,7 @@ var MAP =
 										classes.forEach( function(v) {
 											if( v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function' )
 											{
-												setTimeout(function() {
+												setTimeout( function() {
 													window[v]();
 												}, 2200);
 											}
@@ -2506,16 +2604,16 @@ var MAP =
 
 			//execution of once custom patch functions
 			once_functions_to_execute.forEach( function(v) {
-				setTimeout(function() {
+				setTimeout( function() {
 					window[v]();
 				}, 1000 );
 			});
 
-			setTimeout( function(){
+			setTimeout( function() {
 				that.checkBlockedContent();
 			}, 500 );
 
-			setTimeout( function(){
+			setTimeout( function() {
 				var event = new Event('MAP_PRIVACY_CHANGE');
 				document.body.dispatchEvent(event);
 			}, 100 );
@@ -2945,15 +3043,25 @@ var MAP =
 			target.style.marginBottom = 0;
 
 			window.setTimeout( () => {
-				target.style.display = 'none';
-				target.style.removeProperty('height');
-				target.style.removeProperty('padding-top');
-				target.style.removeProperty('padding-bottom');
-				target.style.removeProperty('margin-top');
-				target.style.removeProperty('margin-bottom');
-				target.style.removeProperty('overflow');
-				target.style.removeProperty('transition-duration');
-				target.style.removeProperty('transition-property');
+
+				try {
+
+					target.style.display = 'none';
+					target.style.removeProperty('height');
+					target.style.removeProperty('padding-top');
+					target.style.removeProperty('padding-bottom');
+					target.style.removeProperty('margin-top');
+					target.style.removeProperty('margin-bottom');
+					target.style.removeProperty('overflow');
+					target.style.removeProperty('transition-duration');
+					target.style.removeProperty('transition-property');
+
+				}
+				catch( error )
+				{
+					console.error( error );
+				}
+
 			}, duration);
 
 			if( callback )
@@ -2968,6 +3076,7 @@ var MAP =
 		}
 
 	 },
+
 	//slideDown equivalent function (show)
 	slideDown: function( target, duration=500, callback=null )
 	{
@@ -3001,10 +3110,20 @@ var MAP =
 			target.style.removeProperty('margin-bottom');
 
 			window.setTimeout( () => {
-				target.style.removeProperty('height');
-				target.style.removeProperty('overflow');
-				target.style.removeProperty('transition-duration');
-				target.style.removeProperty('transition-property');
+
+				try {
+
+					target.style.removeProperty('height');
+					target.style.removeProperty('overflow');
+					target.style.removeProperty('transition-duration');
+					target.style.removeProperty('transition-property');
+
+				}
+				catch( error )
+				{
+					console.error( error );
+				}
+
 			}, duration);
 
 		}
@@ -3596,7 +3715,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	try {
 
-		if( !window === window.parent )
+		if( window !== window.parent )
 		{
 			console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
 			return false;
@@ -3613,9 +3732,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 		}
 
-		setTimeout(function(){
+		setTimeout( function() {
 
-			if( !window === window.parent )
+			if( window !== window.parent )
 			{
 				console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
 				return false;
@@ -3624,14 +3743,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			if( !MAP_SYS.map_initted &&
 				typeof map_cookiebar_settings !== 'undefined' )
 			{
-				MAP_SYS.map_initted = true;
-
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
-
 				try {
+
+					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
+
 					MAP.set({
 						settings : map_cookiebar_settings
 					});
+
+					MAP_SYS.map_initted = true;
 
 				}
 				catch( error )
@@ -3642,7 +3762,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		}, 3000 );
 
-		setTimeout(function(){
+		setTimeout( function() {
 
 			MAP_SYS.map_document_load = true;
 
@@ -3662,7 +3782,7 @@ window.addEventListener('load', function() {
 
 		MAP_SYS.map_document_load = true;
 
-		if( !window === window.parent )
+		if( window !== window.parent )
 		{
 			console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
 			return false;
@@ -3671,14 +3791,16 @@ window.addEventListener('load', function() {
 		if( !MAP_SYS.map_initted &&
 				typeof map_cookiebar_settings !== 'undefined' )
 		{
-			MAP_SYS.map_initted = true;
-
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
 
 			try {
+
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
+
 				MAP.set({
 					settings : map_cookiebar_settings
 				});
+
+				MAP_SYS.map_initted = true;
 
 			}
 			catch( error )
@@ -3694,7 +3816,7 @@ window.addEventListener('load', function() {
 		{
 			MAP.checkJsShield();
 
-			setTimeout( function(){
+			setTimeout( function() {
 				MAP.checkConsentModeStatus();
 			}, 800 );
 		}

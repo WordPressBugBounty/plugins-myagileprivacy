@@ -13,13 +13,13 @@
 		<div class="mb-3">
 
 			<?php
-				_e("From this interface, you can edit the texts of the cookie banner. To find out which texts can be modified, use the mouse and hover over the text: if it is editable, it will be highlighted in yellow. Click on the text to edit it.", 'MAP_txt');
+				echo wp_kses_post( __( "From this interface, you can edit the texts of the cookie banner. To find out which texts can be modified, use the mouse and hover over the text: if it is editable, it will be highlighted in yellow. Click on the text to edit it.", 'MAP_txt' ) );
 			?>
 
 			<br>
 
 			<?php
-				_e("Remember to save to apply the changes made.", 'MAP_txt');
+				echo wp_kses_post( __( "Remember to save to apply the changes made.", 'MAP_txt' ) );
 			?>
 
 		</div>
@@ -27,13 +27,13 @@
 		<div class="alert alert-warning" role="alert">
 
 			<?php
-				_e("Warning: Modify the banner texts only under the supervision of your privacy consultant.", 'MAP_txt');
+				echo wp_kses_post( __( "Warning: Modify the banner texts only under the supervision of your privacy consultant.", 'MAP_txt' ) );
 			?>
 
 			<br>
 
 			<?php
-				_e("Altering the content without supervision could invalidate your website's compliance.", 'MAP_txt');
+				echo wp_kses_post( __( "Altering the content without supervision could invalidate your website's compliance.", 'MAP_txt' ) );
 			?>
 
 		</div>
@@ -42,7 +42,7 @@
 </div>
 
 <span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
-	<small><?php _e('Premium Feature', 'MAP_txt'); ?></small>
+	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
 <div class="row  <?php if( $the_options['pa'] != 1){echo 'forbiddenArea';} ?>">
 	<div class="col-sm-2">
@@ -164,13 +164,12 @@
 						<!-- eof hidden original input -->
 
 						<p>
-							<?php _e("Do you want to revert to the default content?", 'MAP_txt');?> <a role="button" class="reset_lang_values"><?php _e("Click here to reset the current language", 'MAP_txt');?></a>
+							<?php echo wp_kses_post( __( "Do you want to revert to the default content?", 'MAP_txt' ) ); ?> <a role="button" class="reset_lang_values"><?php echo wp_kses_post( __( "Click here to reset the current language", 'MAP_txt' ) ); ?></a>
 						</p>
 
 
 						<div class="text-preview">
 							<div class="browser">
-
 
 								<div class="preview-cookiebanner" <?php if( !$the_options['title_is_on'] )
 									echo 'style="padding-top:20px;"' ?>>
@@ -310,10 +309,10 @@
 													<?php endif; ?>
 
 													<div class="cookie-placeholder-list">
-														<div><?php _e('This is an example cookie', 'MAP_txt'); ?></div>
-														<div><?php _e('This is an example cookie', 'MAP_txt'); ?></div>
-														<div><?php _e('This is an example cookie', 'MAP_txt'); ?></div>
-														<div><?php _e('This is an example cookie', 'MAP_txt'); ?></div>
+														<div><?php echo wp_kses_post( __( 'This is an example cookie', 'MAP_txt' ) ); ?></div>
+														<div><?php echo wp_kses_post( __( 'This is an example cookie', 'MAP_txt' ) ); ?></div>
+														<div><?php echo wp_kses_post( __( 'This is an example cookie', 'MAP_txt' ) ); ?></div>
+														<div><?php echo wp_kses_post( __( 'This is an example cookie', 'MAP_txt' ) ); ?></div>
 													</div>
 
 												</div>
@@ -350,14 +349,14 @@
   <div class="modal-dialog">
 	<div class="modal-content">
 	  <div class="modal-header">
-		<h5 class="modal-title" id="editModalLabel"> <?php _e("Modify text", 'MAP_txt');?></h5>
+		<h5 class="modal-title" id="editModalLabel"> <?php echo wp_kses_post( __( "Modify text", 'MAP_txt' ) ); ?></h5>
 		<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 	  </div>
 	  <div class="modal-body">
 	  </div>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php _e("Cancel", 'MAP_txt');?></button>
-		<button type="button" class="btn btn-primary" id="saveChanges"><?php _e("Modify text", 'MAP_txt');?></button>
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo wp_kses_post( __( "Cancel", 'MAP_txt' ) ); ?></button>
+		<button type="button" class="btn btn-primary" id="saveChanges"><?php echo wp_kses_post( __( "Modify text", 'MAP_txt' ) ); ?></button>
 	  </div>
 	</div>
   </div>

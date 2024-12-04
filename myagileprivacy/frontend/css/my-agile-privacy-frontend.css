@@ -11,14 +11,17 @@ My Agile Privacy Main Css
     overflow: hidden;
 
     font-family:-apple-system,sans-serif !important;
+    font-display:swap !important;
 }
 
 #mapSettingsPopup{
     font-family:-apple-system,sans-serif !important;
+    font-display:swap !important;
 }
 
 #my-agile-privacy-consent-again {
     font-family:-apple-system,sans-serif !important;
+    font-display:swap !important;
 }
 
 #my-agile-privacy-notification-content {
@@ -72,12 +75,24 @@ My Agile Privacy Main Css
 
 /* banner */
 
-
 #my-agile-privacy-notification-area {
     font-size: 18px;
     line-height: 35px;
-    /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; */
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+#my-agile-privacy-notification-area .map-area-container .map_notification-message {
+}
+
+#my-agile-privacy-notification-area .map-area-container .map_notification-message.map_flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+#my-agile-privacy-notification-area .map-area-container .map_notification-message p.map_p_splitted {
+    margin:0px !important;
+    padding:0px !important;
 }
 
 #my-agile-privacy-notification-area.map-shadow-soft,
@@ -97,7 +112,7 @@ My Agile Privacy Main Css
 }
 
 #my-agile-privacy-notification-area.mapSizeBoxed {
-    width: 50vw;
+    width: 40vw;
 }
 
 #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {

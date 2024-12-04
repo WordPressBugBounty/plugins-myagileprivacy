@@ -742,7 +742,7 @@ class MyAgilePrivacyAdmin {
 			$locale = $the_options['default_locale'];
 		}
 
-		$urlparts = parse_url( home_url() );
+		$urlparts = wp_parse_url( home_url() );
 		$domain = $urlparts['host'];
 
 		$data_to_send = array(
@@ -1500,10 +1500,11 @@ class MyAgilePrivacyAdmin {
 		// Check nonce:
 		check_admin_referer( 'myagileprivacy-update-' . MAP_PLUGIN_SETTINGS_FIELD );
 
-		if( $_FILES['the_imported_file']['error'] == UPLOAD_ERR_OK
-			&& is_uploaded_file($_FILES['the_imported_file']['tmp_name']))
+		if( isset($_FILES) &&
+			$_FILES['the_imported_file']['error'] == UPLOAD_ERR_OK &&
+			is_uploaded_file($_FILES['the_imported_file']['tmp_name']))
 		{
-			$file_content = file_get_contents($_FILES['the_imported_file']['tmp_name']);
+			$file_content = file_get_contents( $_FILES['the_imported_file']['tmp_name'] );
 
 			$cookies = json_decode( $file_content, true );
 
@@ -1711,6 +1712,8 @@ class MyAgilePrivacyAdmin {
 		header( 'Content-type: application/json' );
 
 		echo( $json_data );
+
+		return;
 	}
 
 	//display scan mode in admin topbar
@@ -2153,6 +2156,11 @@ class MyAgilePrivacyAdmin {
 				$do_clear_file_cache = true;
 			}
 
+			if( $the_options_save['enable_iab_tcf'] != $the_options['enable_iab_tcf'] )
+			{
+				$do_clear_file_cache = true;
+			}
+
 			if( isset( $_POST['force_sync'] ) )
 			{
 				$do_revalidation = true;
@@ -2225,7 +2233,9 @@ class MyAgilePrivacyAdmin {
 
 			if( !$the_options['license_valid'] ||
 				!$the_options_save['pa'] ||
-				$the_options_save['license_code'] != $_POST['license_code_field'] )
+				( isset( $_POST['license_code_field']) &&
+					$the_options_save['license_code'] != $_POST['license_code_field'] )
+			)
 			{
 				$missing_key = true;
 			}
@@ -2243,7 +2253,7 @@ class MyAgilePrivacyAdmin {
 				$do_clear_file_cache = true;
 
 				//validation part
-				$urlparts = parse_url( home_url() );
+				$urlparts = wp_parse_url( home_url() );
 				$domain = $urlparts['host'];
 
 				$data_to_send = array(
@@ -2518,7 +2528,7 @@ class MyAgilePrivacyAdmin {
 			{
 				$do_load = true;
 
-				echo '<div id="my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">'.__('Welcome to the policy list! ', 'MAP_txt').'<br>'.__( 'Here you will find a list of all the available policies. You can modify specific options by clicking on the policy.', 'MAP_txt').'</div>';
+				echo '<div id="my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">'.wp_kses_post( __( 'Welcome to the policy list! ', 'MAP_txt' ) ).'<br>'.wp_kses_post( __( 'Here you will find a list of all the available policies. You can modify specific options by clicking on the policy.', 'MAP_txt' ) ).'</div>';
 			}
 
 			elseif( $_GET['post_type']  == MAP_POST_TYPE_COOKIES )
@@ -2529,13 +2539,15 @@ class MyAgilePrivacyAdmin {
 				unset( $views['mine'] );
 				unset( $views['__expired'] );
 
-				echo '<div id="my_agile_privacy_backend" class="cookieWrapperView postbox map_infobox">'.__('Welcome to Your Cookie List!', 'MAP_txt').'<br>'.__('In this section, you will find a detailed list of the cookies and third-party services used on your website.', 'MAP_txt').'<br>'.__('We encourage you to use the "Cookie Shield" function in Learning mode to automatically detect the cookies and third-party services active on your site. This feature allows you to easily configure and customize cookie management, enabling you to publish or keep in draft those you consider most appropriate.', 'MAP_txt').'<br><br>'.
-
-					__('Here is the mapping of the possible states of the Cookies:', 'MAP_txt').'<br>'.
-					__('<b>Published</b>: the Cookie configuration is active according to the specified settings.', 'MAP_txt').'<br>'.
-					__('<b>Draft</b>: represents a Cookie or a software that you are not currently using, and is available as a "library".', 'MAP_txt').'<br>'.
-					__('<b>Blocked without notification</b>: represents a Cookie that you want to block without it appearing in the list of Cookies for which you are requesting consent.', 'MAP_txt').'<br>'.
-					__('<b>Allowed without notification</b>: represents a Cookie that you do not wish to block, and you want to prevent it from appearing in the list of cookies. This setting is intended for advanced users and should be used with caution.', 'MAP_txt').'<br>'.
+				echo '<div id="my_agile_privacy_backend" class="cookieWrapperView postbox map_infobox">'.
+					wp_kses_post( __( 'Welcome to Your Cookie List!', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( 'In this section, you will find a detailed list of the cookies and third-party services used on your website.', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( 'We encourage you to use the "Cookie Shield" function in Learning mode to automatically detect the cookies and third-party services active on your site. This feature allows you to easily configure and customize cookie management, enabling you to publish or keep in draft those you consider most appropriate.', 'MAP_txt' ) ).'<br><br>'.
+					wp_kses_post( __( 'Here is the mapping of the possible states of the Cookies:', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( '<b>Published</b>: the Cookie configuration is active according to the specified settings.', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( '<b>Draft</b>: represents a Cookie or a software that you are not currently using, and is available as a "library".', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( '<b>Blocked without notification</b>: represents a Cookie that you want to block without it appearing in the list of Cookies for which you are requesting consent.', 'MAP_txt' ) ).'<br>'.
+					wp_kses_post( __( '<b>Allowed without notification</b>: represents a Cookie that you do not wish to block, and you want to prevent it from appearing in the list of cookies. This setting is intended for advanced users and should be used with caution.', 'MAP_txt' ) ).'<br>'.
 
 				'</div>';
 			}
@@ -2564,8 +2576,8 @@ class MyAgilePrivacyAdmin {
 
 		if( isset( $post ) && $post->post_type == MAP_POST_TYPE_COOKIES )
 		{
-			$label_blocked = __('Blocked without notification', 'MAP_txt');
-			$label_allowed = __('Allowed without notification', 'MAP_txt');
+			$label_blocked = wp_kses_post( __( 'Blocked without notification', 'MAP_txt' ) );
+			$label_allowed = wp_kses_post( __( 'Allowed without notification', 'MAP_txt' ) );
 
 			$the_options = '<option value="__blocked">'.$label_blocked.'</option>' .
 						'<option value="__always_allowed">'.$label_allowed.'</option>';
@@ -2599,8 +2611,8 @@ class MyAgilePrivacyAdmin {
 		if( $post->post_type == MAP_POST_TYPE_COOKIES )
 		{
 
-			$label_blocked = __('Blocked without notification', 'MAP_txt');
-			$label_allowed = __('Allowed without notification', 'MAP_txt');
+			$label_blocked = wp_kses_post( __( 'Blocked without notification', 'MAP_txt' ) );
+			$label_allowed = wp_kses_post( __( 'Allowed without notification', 'MAP_txt' ) );
 
 			if( $post->post_status == '__blocked' )
 			{
@@ -2656,8 +2668,8 @@ class MyAgilePrivacyAdmin {
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			__('Privacy Settings', 'MAP_txt'),
-			__('Privacy Settings', 'MAP_txt'),
+			wp_kses_post( __( 'Privacy Settings', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Privacy Settings', 'MAP_txt' ) ),
 			'manage_options',
 			MAP_POST_TYPE_COOKIES.'_settings',
 			array( $this, 'admin_page_html' )
@@ -2665,50 +2677,50 @@ class MyAgilePrivacyAdmin {
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			__('Policies List', 'MAP_txt'),
-			__('Policies List', 'MAP_txt'),
+			wp_kses_post( __( 'Policies List', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Policies List', 'MAP_txt' ) ),
 			'manage_options',
 			'edit.php?post_type='.MAP_POST_TYPE_POLICY
 		);
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			__('Backup & Restore', 'MAP_txt'),			 	//page_title
-			__('Backup & Restore', 'MAP_txt'), 				//menu_title
-			'manage_options', 										//capability
-			MAP_POST_TYPE_COOKIES.'_backup_restore', 				//menu_slug
-			array( $this, 'backup_restore_view' ) 					//function		 										//position
+			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
+			'manage_options',
+			MAP_POST_TYPE_COOKIES.'_backup_restore',
+			array( $this, 'backup_restore_view' )
 		);
-
-
-			add_submenu_page(
-				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-				__('Texts and Translations', 'MAP_txt'),			 			//page_title
-				__('Texts and Translations', 'MAP_txt'), 					//menu_title
-				'manage_options', 										//capability
-				MAP_POST_TYPE_COOKIES.'_translations', 						//menu_slug
-				array( $this, 'translations_view' ) 						//function		 										//position
-			);
 
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			__('Help Desk', 'MAP_txt'),			 			//page_title
-			__('Help Desk', 'MAP_txt'), 					//menu_title
-			'manage_options', 										//capability
-			MAP_POST_TYPE_COOKIES.'_helpdesk', 						//menu_slug
-			array( $this, 'helpdesk_view' ) 						//function		 										//position
+			wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ),
+			'manage_options',
+			MAP_POST_TYPE_COOKIES.'_translations',
+			array( $this, 'translations_view' )
+		);
+
+
+		add_submenu_page(
+			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+			wp_kses_post( __( 'Help Desk', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Help Desk', 'MAP_txt' ) ),
+			'manage_options',
+			MAP_POST_TYPE_COOKIES.'_helpdesk',
+			array( $this, 'helpdesk_view' )
 		);
 
 		if( isset( $rconfig['display_compliance_report'] ) && $rconfig['display_compliance_report'] == 1 )
 		{
 			add_submenu_page(
 				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-				__('Compliance Report', 'MAP_txt'),			 	//page_title
-				__('Compliance Report', 'MAP_txt'), 				//menu_title
-				'manage_options', 										//capability
-				MAP_POST_TYPE_COOKIES.'_compliance_report', 				//menu_slug
-				array( $this, 'compliance_report_view' ) 					//function		 								//position
+				wp_kses_post( __( 'Compliance Report', 'MAP_txt' ) ),
+				wp_kses_post( __( 'Compliance Report', 'MAP_txt' ) ),
+				'manage_options',
+				MAP_POST_TYPE_COOKIES.'_compliance_report',
+				array( $this, 'compliance_report_view' )
 			);
 		}
 
@@ -3048,16 +3060,16 @@ class MyAgilePrivacyAdmin {
 	{
 		global $locale;
 
-		$links[] = '<a href="'. get_admin_url( null, 'edit.php?post_type='.MAP_POST_TYPE_COOKIES.'&page=my-agile-privacy-c_settings' ) .'">'.__('Settings', 'MAP_txt').'</a>';
-		$links[] = '<a href="https://www.myagileprivacy.com/" target="_blank">'.__('Support', 'MAP_txt').'</a>';
+		$links[] = '<a href="'. get_admin_url( null, 'edit.php?post_type='.MAP_POST_TYPE_COOKIES.'&page=my-agile-privacy-c_settings' ) .'">'.wp_kses_post( __( 'Settings', 'MAP_txt' ) ).'</a>';
+		$links[] = '<a href="https://www.myagileprivacy.com/" target="_blank">'.wp_kses_post( __( 'Support', 'MAP_txt' ) ).'</a>';
 
 		if( $locale == 'it_IT' )
 		{
-			$links[] = '<a href="https://www.myagileprivacy.com/changelog/" target="_blank">'.__('Changelog', 'MAP_txt').'</a>';
+			$links[] = '<a href="https://www.myagileprivacy.com/changelog/" target="_blank">'.wp_kses_post( __( 'Changelog', 'MAP_txt' ) ).'</a>';
 		}
 		else
 		{
-			$links[] = '<a href="https://www.myagileprivacy.com/en/changelog/" target="_blank">'.__('Changelog', 'MAP_txt').'</a>';
+			$links[] = '<a href="https://www.myagileprivacy.com/en/changelog/" target="_blank">'.wp_kses_post( __( 'Changelog', 'MAP_txt' ) ).'</a>';
 
 		}
 		return $links;
@@ -3095,17 +3107,17 @@ class MyAgilePrivacyAdmin {
 		$this->remove_wpml_metaboxes();
 
 		//add metabox (cookies)
-		add_meta_box( "_map_remote_id",__('Cookie ID', 'MAP_txt'), array( $this, "metabox_map_remote_id" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_name",__('Cookie Name', 'MAP_txt'), array( $this, "metabox_map_name" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_is_free",__('Free Available', 'MAP_txt'), array( $this, "metabox_is_free" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_is_necessary",__('Is necessary?', 'MAP_txt'), array( $this, "metabox_map_is_necessary" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_page_reload_on_user_consent",__('Requires page reload on user acceptance?', 'MAP_txt'), array( $this, "metabox_map_page_reload_on_user_consent" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_allow_sync",__('Allow updates?', 'MAP_txt'), array( $this, "metabox_map_allow_sync" ), MAP_POST_TYPE_COOKIES, "side", "default" );
-		add_meta_box( "_map_script_installation",__('Script Installation', 'MAP_txt'), array( $this, "metabox_script_installation" ), MAP_POST_TYPE_COOKIES, "advanced", "default" );
-		add_meta_box( "_map_marketing",__('Marketing Policy', 'MAP_txt'), array( $this, "metabox_marketing" ), MAP_POST_TYPE_POLICY, "advanced", "default" );
+		add_meta_box( "_map_remote_id",wp_kses_post( __( 'Cookie ID', 'MAP_txt' ) ), array( $this, "metabox_map_remote_id" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_name",wp_kses_post( __( 'Cookie Name', 'MAP_txt' ) ), array( $this, "metabox_map_name" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_is_free",wp_kses_post( __( 'Free Available', 'MAP_txt' ) ), array( $this, "metabox_is_free" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_is_necessary",wp_kses_post( __( 'Is necessary?', 'MAP_txt' ) ), array( $this, "metabox_map_is_necessary" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_page_reload_on_user_consent",wp_kses_post( __( 'Requires page reload on user acceptance?', 'MAP_txt' ) ), array( $this, "metabox_map_page_reload_on_user_consent" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_allow_sync",wp_kses_post( __( 'Allow updates?', 'MAP_txt' ) ), array( $this, "metabox_map_allow_sync" ), MAP_POST_TYPE_COOKIES, "side", "default" );
+		add_meta_box( "_map_script_installation",wp_kses_post( __( 'Script Installation', 'MAP_txt' ) ), array( $this, "metabox_script_installation" ), MAP_POST_TYPE_COOKIES, "advanced", "default" );
+		add_meta_box( "_map_marketing",wp_kses_post( __( 'Marketing Policy', 'MAP_txt' ) ), array( $this, "metabox_marketing" ), MAP_POST_TYPE_POLICY, "advanced", "default" );
 
 		//add metabox (policies)
-		add_meta_box( "_map_allow_sync",__('Allow updates?', 'MAP_txt'), array( $this, "metabox_map_allow_sync" ), MAP_POST_TYPE_POLICY, "side", "default" );
+		add_meta_box( "_map_allow_sync",wp_kses_post( __( 'Allow updates?', 'MAP_txt' ) ), array( $this, "metabox_map_allow_sync" ), MAP_POST_TYPE_POLICY, "side", "default" );
 
 		//hide metabox
 		remove_meta_box( '_map_remote_id', MAP_POST_TYPE_COOKIES, 'side' );
@@ -3183,21 +3195,21 @@ class MyAgilePrivacyAdmin {
 		$selected = ( isset( $custom["_map_page_reload_on_user_consent"][0] ) ) ? $custom["_map_page_reload_on_user_consent"][0] : '';
 
 		?>
-		<label class="mt-2" for="_map_page_reload_on_user_consent"><?php _e("Requires page reload on user acceptance?", 'MAP_txt')?></label>
+		<label class="mt-2" for="_map_page_reload_on_user_consent"><?php echo wp_kses_post( __( "Requires page reload on user acceptance?", 'MAP_txt' ) ); ?></label>
 		<br>
 
 		<select class="mt-2 mb-2" name='_map_page_reload_on_user_consent' id='_map_page_reload_on_user_consent'>
 			<?php $post_types = array(
-				'1'	=>	__('Yes', 'MAP_txt'),
-				'0'	=> 	__('No', 'MAP_txt'),
+				'1'	=>	esc_attr( __( 'Yes', 'MAP_txt' ) ),
+				'0'	=> 	esc_attr( __( 'No', 'MAP_txt' ) ),
 			);
 			foreach( $post_types as $key => $post_type ): ?>
-			<option value="<?php echo esc_attr( $key ); ?>" <?php if( $selected == esc_attr( $key ) ):?>selected<?php endif;?>><?php echo esc_html( $post_type ); ?></option>
+			<option value="<?php echo esc_attr( $key ); ?>" <?php if( $selected == esc_attr( $key ) ):?>selected<?php endif; ?>><?php echo esc_html( $post_type ); ?></option>
 			<?php endforeach; ?>
 		</select>
 
-		<p><?php _e("If this setting is enabled, the first-time activation by the user will trigger a page reload.", 'MAP_txt');?><br>
-			<?php _e("This setting does not apply if the cookie is set as 'necessary'.", 'MAP_txt');?>
+		<p><?php echo wp_kses_post( __( "If this setting is enabled, the first-time activation by the user will trigger a page reload.", 'MAP_txt' ) ); ?><br>
+			<?php echo wp_kses_post( __( "This setting does not apply if the cookie is set as 'necessary'.", 'MAP_txt' ) ); ?>
 		</p>
 
 		<?php
@@ -3222,25 +3234,25 @@ class MyAgilePrivacyAdmin {
 		$selected = ( isset( $custom["_map_allow_sync"][0] ) ) ? $custom["_map_allow_sync"][0] : '';
 
 		?>
-		<label class="mt-2" for="_map_allow_sync"><?php _e("Allow automatic updates ?", 'MAP_txt')?></label>
+		<label class="mt-2" for="_map_allow_sync"><?php echo wp_kses_post( __( "Allow automatic updates ?", 'MAP_txt' ) ); ?></label>
 		<br>
 
 		<select class="mt-2 mb-2" name='_map_allow_sync' id='_map_allow_sync'>
 			<?php $post_types = array(
-				'1'	=>	__('Yes', 'MAP_txt'),
-				'0'	=> 	__('No', 'MAP_txt'),
+				'1'	=>	esc_attr( __( 'Yes', 'MAP_txt' ) ),
+				'0'	=> 	esc_attr( __( 'No', 'MAP_txt' ) ),
 			);
 			foreach( $post_types as $key => $post_type ): ?>
-			<option value="<?php echo esc_attr( $key ); ?>" <?php if( $selected == esc_attr( $key ) ):?>selected<?php endif;?>><?php echo esc_html( $post_type ); ?></option>
+			<option value="<?php echo esc_attr( $key ); ?>" <?php if( $selected == esc_attr( $key ) ):?>selected<?php endif; ?>><?php echo esc_html( $post_type ); ?></option>
 			<?php endforeach; ?>
 		</select>
 
 
-		<p><?php _e("If enabled, this will auto update this element text. Disable it if you would to change the text and keep it unchanged.", 'MAP_txt');?></p>
+		<p><?php echo wp_kses_post( __( "If enabled, this will auto update this element text. Disable it if you would to change the text and keep it unchanged.", 'MAP_txt' ) ); ?></p>
 		<?php
 		else:
 		?>
-		<p><?php _e("This setting is unavailable on custom added cookie", 'MAP_txt');?>.</p>
+		<p><?php echo wp_kses_post( __( "This setting is unavailable on custom added cookie", 'MAP_txt' ) ); ?>.</p>
 		<?php
 		endif;
 	}
@@ -3260,25 +3272,25 @@ class MyAgilePrivacyAdmin {
 		$selected = ( isset( $custom["_map_is_necessary"][0] ) ) ? $custom["_map_is_necessary"][0] : '';
 
 		?>
-		<label class="mt-2" for="_map_is_necessary"><?php _e("Is necessary?", 'MAP_txt'); ?></label>
+		<label class="mt-2" for="_map_is_necessary"><?php echo wp_kses_post( __( "Is necessary?", 'MAP_txt' ) ); ?></label>
 		<br>
 		<select class="mt-2 mb-2" name='_map_is_necessary' id='_map_is_necessary'>
 			<?php $post_types = array( 'necessary', 'not-necessary' );
 			foreach( $post_types as $post_type ): ?>
-			<option value="<?php echo esc_attr( $post_type ); ?>" <?php if( $selected == esc_attr( $post_type ) ):?>selected<?php endif;?>><?php echo esc_html( $post_type ); ?></option>
+			<option value="<?php echo esc_attr( $post_type ); ?>" <?php if( $selected == esc_attr( $post_type ) ):?>selected<?php endif; ?>><?php echo esc_html( $post_type ); ?></option>
 			<?php endforeach; ?>
 		</select>
 
 		<p>
-			<?php _e('Setting the cookie as "necessary" will disable the preventive blocking, making the tool always active regardless of user consent.', 'MAP_txt');?><br>
-			<?php _e('Setting the cookie as "not necessary" will activate the cookie only upon user consent.', 'MAP_txt');?><br>
+			<?php echo wp_kses_post( __( 'Setting the cookie as "necessary" will disable the preventive blocking, making the tool always active regardless of user consent.', 'MAP_txt' ) ); ?><br>
+			<?php echo wp_kses_post( __( 'Setting the cookie as "not necessary" will activate the cookie only upon user consent.', 'MAP_txt' ) ); ?><br>
 			<?php
 
 				if( isset( $custom["_map_suggested_is_necessary"] ) &&
 					isset( $custom["_map_suggested_is_necessary"][0] )
 				)
 				{
-					echo __('Suggested value for this Cookie', 'MAP_txt').': '.$custom["_map_suggested_is_necessary"][0].'.';
+					echo wp_kses_post( __( 'Suggested value for this Cookie', 'MAP_txt' ) ).':<b> '.esc_html( $custom["_map_suggested_is_necessary"][0] ).'</b>.';
 				}
 			?>
 		</p>
@@ -3311,12 +3323,12 @@ class MyAgilePrivacyAdmin {
 		<div id="my_agile_privacy_backend" class="MAP_policyWrapperEdit">
 
 			<span class="forbiddenWarning badge rounded-pill bg-danger position-absolute metabox-pill d-none">
-				<small><?php _e('Premium Feature', 'MAP_txt'); ?></small>
+				<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 			</span>
 
 			<div class="checkForbiddenArea">
 
-				<label><?php _e("Compliance with Marketing Consent", 'MAP_txt'); ?></label>
+				<label><?php echo wp_kses_post( __( "Compliance with Marketing Consent", 'MAP_txt' ) ); ?></label>
 
 				<div class="row mt-4">
 
@@ -3332,7 +3344,7 @@ class MyAgilePrivacyAdmin {
 								<label for="_map_option1_ack" class="me-3 label-checkbox"></label>
 
 								<label for="_map_option1_ack">
-									<?php _e("I declare that I have read, understood and adapted the forms on my site according to the specifications", 'MAP_txt');?> <a target="blank" href="https://www.myagileprivacy.com/come-essere-a-norma-con-i-moduli-di-contatto-per-le-attivita-di-marketing/"><?php _e( "described here", 'MAP_txt');?></a>
+									<?php echo wp_kses_post( __( "I declare that I have read, understood and adapted the forms on my site according to the specifications", 'MAP_txt' ) ); ?> <a target="blank" href="https://www.myagileprivacy.com/come-essere-a-norma-con-i-moduli-di-contatto-per-le-attivita-di-marketing/"><?php echo wp_kses_post( __( "described here", 'MAP_txt' ) ); ?></a>
 								</label>
 							</div>
 						</div> <!-- ./ styled_radio -->
@@ -3355,7 +3367,7 @@ class MyAgilePrivacyAdmin {
 								<label for="_map_option1_on" class="me-3 label-checkbox"></label>
 
 								<label for="_map_option1_on">
-									<?php _e("I request consent for functional marketing activities including the sending of newsletters, paper mail, sms, mms and messaging apps.", 'MAP_txt'); ?>
+									<?php echo wp_kses_post( __( "I request consent for functional marketing activities including the sending of newsletters, paper mail, sms, mms and messaging apps.", 'MAP_txt' ) ); ?>
 								</label>
 							</div>
 						</div> <!-- ./ styled_radio -->
@@ -3414,7 +3426,7 @@ class MyAgilePrivacyAdmin {
 		?>
 			<div id="my_agile_privacy_backend" class="MAP_cookieWrapperEdit">
 
-				<?php _e("This Cookie is reserved by the system and it is not possible to associate other scripts with its execution.", 'MAP_txt'); ?>
+				<?php echo wp_kses_post( __( "This Cookie is reserved by the system and it is not possible to associate other scripts with its execution.", 'MAP_txt' ) ); ?>
 			</div>
 
 		<?php
@@ -3433,7 +3445,7 @@ class MyAgilePrivacyAdmin {
 			?>
 
 				<div>
-					<?php _e("Warning: this cookie has been detected automatically and usually you shouldn't need to install other code.", 'MAP_txt'); ?>
+					<?php echo wp_kses_post( __( "Warning: this cookie has been detected automatically and usually you shouldn't need to install other code.", 'MAP_txt' ) ); ?>
 				</div>
 
 				<div class="row mt-3 mb-2">
@@ -3450,7 +3462,7 @@ class MyAgilePrivacyAdmin {
 								<label for="_map_auto_detected_override" class="me-3 label-checkbox"></label>
 
 								<label for="_map_auto_detected_override">
-									<?php _e("Add custom code anyway.", 'MAP_txt'); ?>
+									<?php echo wp_kses_post( __( "Add custom code anyway.", 'MAP_txt' ) ); ?>
 								</label>
 							</div>
 						</div> <!-- ./ styled_radio -->
@@ -3463,11 +3475,11 @@ class MyAgilePrivacyAdmin {
 				endif;
 			?>
 
-				<div class="row mb-3 MAP_cookieWrapperEdit map_auto_detected_override_wrapper <?php echo $addedClass;?>" data-value="1">
+				<div class="row mb-3 MAP_cookieWrapperEdit map_auto_detected_override_wrapper <?php echo esc_attr( $addedClass ) ; ?>" data-value="1">
 
 					<div class="col-sm-12">
 
-						<label class="col-form-label"><b><?php _e("Script Installation type", 'MAP_txt'); ?></b></label>
+						<label class="col-form-label"><b><?php echo wp_kses_post( __( "Script Installation type", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="col-sm-7">
 
@@ -3476,9 +3488,9 @@ class MyAgilePrivacyAdmin {
 
 								$valid_options = array(
 
-									'js_noscript'					=>	array(  'label' => __('JavaScript-Noscript code', 'MAP_txt'),
+									'js_noscript'		=>	array( 'label' => esc_attr( __( 'JavaScript-Noscript code', 'MAP_txt' ) ),
 																			'selected' => false ),
-									'raw_code'						=>	array(  'label' => __('Raw code', 'MAP_txt'),
+									'raw_code'			=>	array( 'label' => esc_attr( __( 'Raw code', 'MAP_txt' ) ),
 																			'selected' => false ),
 								);
 
@@ -3516,9 +3528,9 @@ class MyAgilePrivacyAdmin {
 
 							<p class="mt-3">
 								 <?php
-								 _e("The API KEY for this cookie is", 'MAP_txt');
+								 echo wp_kses_post( __( "The API KEY for this cookie is", 'MAP_txt' ) );
 								 echo ' <b>'.esc_html( $_map_api_key ).'</b>.<br>';
-								 _e("You will need this only for advanced installation", 'MAP_txt');
+								 echo wp_kses_post( __( "You will need this only for advanced installation", 'MAP_txt' ) );
 								 ?>.
 							</p>
 
@@ -3531,7 +3543,7 @@ class MyAgilePrivacyAdmin {
 						?>
 
 							<p>
-								<a target="blank" href="<?php echo esc_url( $_map_help_url); ?>"><?php _e("Need help ? See this cookie installation guide", 'MAP_txt'); ?></a>
+								<a target="blank" href="<?php echo esc_url( $_map_help_url); ?>"><?php echo wp_kses_post( __( "Need help ? See this cookie installation guide", 'MAP_txt' ) ); ?></a>
 							</p>
 
 						<?php
@@ -3543,7 +3555,7 @@ class MyAgilePrivacyAdmin {
 
 					<div class="map_installation_type_wrapper displayNone" data-value="js_noscript">
 
-						<label><b><?php _e("Custom JavaScript Code", 'MAP_txt'); ?></b></label>
+						<label><b><?php echo wp_kses_post( __( "Custom JavaScript Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small mb-4">
 							<textarea name="_map_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_code ); ?></textarea>
@@ -3551,7 +3563,7 @@ class MyAgilePrivacyAdmin {
 							<pre class="line-numbers code-viewer code-viewer-small"><code class="language-js"><?php echo esc_attr( $_map_code ); ?></code></pre>
 						</div>
 
-						<label><b><?php _e("Noscript Code", 'MAP_txt'); ?></b></label>
+						<label><b><?php echo wp_kses_post( __( "Noscript Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small">
 							<textarea name="_map_noscript" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_noscript ); ?></textarea>
@@ -3563,7 +3575,7 @@ class MyAgilePrivacyAdmin {
 
 					<div class="map_installation_type_wrapper displayNone" data-value="raw_code">
 
-						<label><b><?php _e("Raw Html Code", 'MAP_txt'); ?></b></label>
+						<label><b><?php echo wp_kses_post( __( "Raw Html Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small">
 							<textarea name="_map_raw_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_raw_code ); ?></textarea>
@@ -3576,18 +3588,18 @@ class MyAgilePrivacyAdmin {
 				<?php if( $_map_api_key ): ?>
 
 					<div class="map_js_dependencies_wrapper mt-4">
-						<label><b><?php _e("Custom JavaScript dependencies", 'MAP_txt'); ?></b></label>
+						<label><b><?php echo wp_kses_post( __( "Custom JavaScript dependencies", 'MAP_txt' ) ); ?></b></label>
 
 						<span class="forbiddenWarning badge rounded-pill bg-danger metabox-pill d-none">
-							<small><?php _e('Premium Feature', 'MAP_txt'); ?></small>
+							<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 						</span>
 
 						<div class="checkForbiddenArea">
 
 							<p>
-								<i><?php _e("Warning: this feature is intended for advanced users and developers.", 'MAP_txt'); ?></i><br>
-								<?php _e("If you are experiencing JavaScript errors with scripts dependent on this cookie, you can list them here by writing part of the source file path or part of the inline JavaScript code.", 'MAP_txt'); ?><br>
-								<?php _e("Thanks to this functionality, these scripts will be unblocked only after the user has accepted this cookie.", 'MAP_txt'); ?>
+								<i><?php echo wp_kses_post( __( "Warning: this feature is intended for advanced users and developers.", 'MAP_txt' ) ); ?></i><br>
+								<?php echo wp_kses_post( __( "If you are experiencing JavaScript errors with scripts dependent on this cookie, you can list them here by writing part of the source file path or part of the inline JavaScript code.", 'MAP_txt' ) ); ?><br>
+								<?php echo wp_kses_post( __( "Thanks to this functionality, these scripts will be unblocked only after the user has accepted this cookie.", 'MAP_txt' ) ); ?>
 							</p>
 
 							<div id="map-ips-list-container" class="row dynamic_fields_container">
@@ -3885,14 +3897,14 @@ class MyAgilePrivacyAdmin {
 	{
 		$columns = array(
 			"cb" 							=> "<input type=\"checkbox\" />",
-			"title"							=> __('Cookie Name', 'MAP_txt'),
-			"auto_detected"					=> __('Auto Detected', 'MAP_txt'),
-			"necessary"						=> __('Preventive blocking status', 'MAP_txt'),
-			"suggested"						=> __('Suggested setting', 'MAP_txt'),
-			"allow_sync"					=> __('Allow automatic updates ?', 'MAP_txt'),
-			"installation_type"				=> __('Additional code installation type', 'MAP_txt'),
-			"page_reload_on_user_consent"	=> __('Requires page reload on user acceptance', 'MAP_txt'),
-			"map_sync_datetime_human"		=> __('Last update', 'MAP_txt'),
+			"title"							=> wp_kses_post( __( 'Cookie Name', 'MAP_txt' ) ),
+			"auto_detected"					=> wp_kses_post( __( 'Auto Detected', 'MAP_txt' ) ),
+			"necessary"						=> wp_kses_post( __( 'Preventive blocking status', 'MAP_txt' ) ),
+			"suggested"						=> wp_kses_post( __( 'Suggested setting', 'MAP_txt' ) ),
+			"allow_sync"					=> wp_kses_post( __( 'Allow automatic updates ?', 'MAP_txt' ) ),
+			"installation_type"				=> wp_kses_post( __( 'Additional code installation type', 'MAP_txt' ) ),
+			"page_reload_on_user_consent"	=> wp_kses_post( __( 'Requires page reload on user acceptance', 'MAP_txt' ) ),
+			"map_sync_datetime_human"		=> wp_kses_post( __( 'Last update', 'MAP_txt' ) ),
 		);
 		return $columns;
 	}
@@ -3914,7 +3926,7 @@ class MyAgilePrivacyAdmin {
 
 				if( isset( $custom["_map_sync_datetime_human"][0] ) )
 				{
-					echo $custom["_map_sync_datetime_human"][0];
+					echo esc_html( $custom["_map_sync_datetime_human"][0] );
 				}
 				else
 				{
@@ -3942,10 +3954,10 @@ class MyAgilePrivacyAdmin {
 						switch ( $custom["_map_installation_type"][0] )
 						{
 							case 'js_noscript':
-								echo __('Javascript-Noscript code', 'MAP_txt');
+								echo wp_kses_post( __( 'Javascript-Noscript code', 'MAP_txt' ) );
 								break;
 							case 'raw_code':
-								echo __('Raw code', 'MAP_txt');
+								echo wp_kses_post( __( 'Raw code', 'MAP_txt' ) );
 								break;
 						}
 					}
@@ -3974,11 +3986,11 @@ class MyAgilePrivacyAdmin {
 							if( isset( $custom["_map_page_reload_on_user_consent"] ) &&
 								$custom["_map_page_reload_on_user_consent"][0] == 1 )
 							{
-								echo __('Yes', 'MAP_txt');
+								echo wp_kses_post( __( 'Yes', 'MAP_txt' ) );
 							}
 							else
 							{
-								echo __('No', 'MAP_txt');
+								echo wp_kses_post( __( 'No', 'MAP_txt' ) );
 							}
 
 							break;
@@ -3993,11 +4005,11 @@ class MyAgilePrivacyAdmin {
 				if( isset( $custom["_map_auto_detected"] ) &&
 					$custom["_map_auto_detected"][0] == 1 )
 				{
-					echo "<span style='color:#3fe63f;' title='".__('Yes', 'MAP_txt')."'>&#11044;</span>";
+					echo "<span style='color:#3fe63f;' title='".esc_attr( __( 'Yes', 'MAP_txt' ) )."'>&#11044;</span>";
 				}
 				else
 				{
-					echo "<span style='color:#d0d0d0;' title='".__('No', 'MAP_txt')."'>&#11044;</span>";
+					echo "<span style='color:#d0d0d0;' title='".esc_attr( __( 'No', 'MAP_txt' ) )."'>&#11044;</span>";
 				}
 				break;
 
@@ -4020,11 +4032,11 @@ class MyAgilePrivacyAdmin {
 					switch( $custom["_map_is_necessary"][0] )
 					{
 						case 'necessary':
-							echo 'necessary:<br>'.__('Preventive blocking is not active', 'MAP_txt');
+							echo 'necessary:<br>'.wp_kses_post( __( 'Preventive blocking is not active', 'MAP_txt' ) );
 							break;
 
 						case 'not-necessary':
-							echo 'not-necessary:<br>'.__('Preventive blocking <strong>is active</strong>.', 'MAP_txt');
+							echo 'not-necessary:<br>'.wp_kses_post( __( 'Preventive blocking <strong>is active</strong>.', 'MAP_txt' ) );
 							break;
 					}
 				}
@@ -4053,11 +4065,11 @@ class MyAgilePrivacyAdmin {
 				{
 					if( $custom["_map_allow_sync"][0] )
 					{
-						echo __('Yes', 'MAP_txt');
+						echo wp_kses_post( __( 'Yes', 'MAP_txt' ) );
 					}
 					else
 					{
-						echo __('No', 'MAP_txt');
+						echo wp_kses_post( __( 'No', 'MAP_txt' ) );
 					}
 				}
 				else
@@ -4079,8 +4091,8 @@ class MyAgilePrivacyAdmin {
 		$columns = array(
 			"cb" 						=> "<input type=\"checkbox\" />",
 			"title"						=> "Policy",
-			"allow_sync"				=> __("Allow automatic updates ?", 'MAP_txt'),
-			"map_sync_datetime_human"	=> __('Last update', 'MAP_txt'),
+			"allow_sync"				=> wp_kses_post( __( "Allow automatic updates ?", 'MAP_txt' ) ),
+			"map_sync_datetime_human"	=> wp_kses_post( __( 'Last update', 'MAP_txt' ) ),
 		);
 		return $columns;
 	}
@@ -4102,7 +4114,7 @@ class MyAgilePrivacyAdmin {
 
 				if( isset( $custom["_map_sync_datetime_human"][0] ) )
 				{
-					echo $custom["_map_sync_datetime_human"][0];
+					echo esc_html( $custom["_map_sync_datetime_human"][0] );
 				}
 				else
 				{
@@ -4117,11 +4129,11 @@ class MyAgilePrivacyAdmin {
 				{
 					if( $custom["_map_allow_sync"][0] )
 					{
-						echo __('Yes', 'MAP_txt');
+						echo wp_kses_post( __( 'Yes', 'MAP_txt' ) );
 					}
 					else
 					{
-						echo __('No', 'MAP_txt');
+						echo wp_kses_post( __( 'No', 'MAP_txt' ) );
 					}
 				}
 				else
@@ -4361,9 +4373,9 @@ class MyAgilePrivacyAdmin {
 
 					<div class="postbox map_infobox">
 						<?php
-							echo esc_html__("Please add the following shortcode to the right page:", 'MAP_txt').'<br>';
+							echo wp_kses_post( __( "Please add the following shortcode to the right page:", 'MAP_txt' ) ).'<br>';
 							echo '<code>'.wp_kses( $shortcode, MyAgilePrivacy::allowed_html_tags() ).'</code><br>';
-							echo esc_html__("Remember also associate in the Privacy Settings -> Policies tab.", 'MAP_txt');
+							echo wp_kses_post( __( "Remember also associate in the Privacy Settings -> Policies tab.", 'MAP_txt' ) );
 						?>
 					</div>
 
@@ -4371,7 +4383,7 @@ class MyAgilePrivacyAdmin {
 						<div class="map-policy-quickview">
 							<div class="map-custom-card">
 								<div class="map-custom-card-header">
-									<h1><?php echo esc_html__("Quickview for", 'MAP_txt').' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-policy"><?php _e('Edit Policy', 'MAP_txt'); ?></button></h1>
+									<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-policy"><?php echo wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ); ?></button></h1>
 								</div>
 								<div class="map-custom-card-body">
 
@@ -4430,7 +4442,7 @@ class MyAgilePrivacyAdmin {
 
 													?>
 														<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab">
-															<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo esc_html__('Policy Preview', 'MAP_txt'); ?></label>
+															<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo wp_kses_post( __( 'Policy Preview', 'MAP_txt' ) ); ?></label>
 
 															<?php
 
@@ -4463,9 +4475,9 @@ class MyAgilePrivacyAdmin {
 						</div>
 						<div class="map-wrap-editor displayNone">
 							<div class="alert alert-warning" role="alert">
-								<?php _e('Attention: Modifying the policy without specific expertise may result in loss of compliance.', 'MAP_txt'); ?><br>
-								<?php _e('By modifying the text, you assume all risks.', 'MAP_txt'); ?><br>
-								<?php _e('Remember to disable automatic updates for this policy to avoid losing the changes made.', 'MAP_txt'); ?><br>
+								<?php echo wp_kses_post( __( 'Attention: Modifying the policy without specific expertise may result in loss of compliance.', 'MAP_txt' ) ); ?><br>
+								<?php echo wp_kses_post( __( 'By modifying the text, you assume all risks.', 'MAP_txt' ) ); ?><br>
+								<?php echo wp_kses_post( __( 'Remember to disable automatic updates for this policy to avoid losing the changes made.', 'MAP_txt' ) ); ?><br>
 							</div>
 
 							<?php
@@ -4642,10 +4654,10 @@ class MyAgilePrivacyAdmin {
 
 									?>
 										<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="<?php echo esc_attr( $lang_code_2char ); ?>-tab">
-											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo esc_html__('Cookie Name', 'MAP_txt'); ?></label>
+											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo wp_kses_post( __( 'Cookie Name', 'MAP_txt' ) ); ?></label>
 											<input type="text" name="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]" value="<?php echo esc_attr( $this_name ); ?>" class="widefat">
 
-											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][text]"><?php echo esc_html__('Cookie Description', 'MAP_txt'); ?></label>
+											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][text]"><?php echo wp_kses_post( __( 'Cookie Description', 'MAP_txt' ) ); ?></label>
 											<?php
 												$editor_id = 'map_translation_' . $lang_code_2char;
 												$editor_settings = array(
