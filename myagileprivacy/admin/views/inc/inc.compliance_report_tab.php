@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 

@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.7
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -99,6 +99,14 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.4
+* New option for default language fallback in multi-language environment
+* Stape and Google Consent Mode v2 support
+* New banner view option
+* Better blocking for JavaScript modules
+* JavaScript code security optimization
+* Backend code security optimization
 
 = 3.1.3
 * Cookie Shield dependency fix

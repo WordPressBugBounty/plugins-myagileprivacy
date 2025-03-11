@@ -34,11 +34,11 @@
 	}
 
 	//retrocompatibility
-	$cookie_banner_vertical_position = $the_options['cookie_banner_vertical_position'];
+	$cookie_banner_vertical_position = $the_settings['cookie_banner_vertical_position'];
 
 	if( !$cookie_banner_vertical_position )
 	{
-		if( $the_options['is_bottom'] )
+		if( $the_settings['is_bottom'] )
 		{
 			$cookie_banner_vertical_position = 'Bottom';
 		}
@@ -47,17 +47,17 @@
 			$cookie_banner_vertical_position = 'Top';
 		}
 
-		$the_options['cookie_banner_vertical_position'] = $cookie_banner_vertical_position;
-		$the_options['cookie_banner_horizontal_position'] = 'Center';
-		$the_options['cookie_banner_size'] = 'sizeBoxed';
+		$the_settings['cookie_banner_vertical_position'] = $cookie_banner_vertical_position;
+		$the_settings['cookie_banner_horizontal_position'] = 'Center';
+		$the_settings['cookie_banner_size'] = 'sizeBoxed';
 	}
 
 	//iab and cmode check
-	$iab_enabled = isset( $the_options['enable_iab_tcf'] ) ? $the_options['enable_iab_tcf'] : false;
-	$cmode_enabled = isset( $the_options['enable_cmode_v2'] ) ? $the_options['enable_cmode_v2'] : false;
+	$iab_enabled = isset( $the_settings['enable_iab_tcf'] ) ? $the_settings['enable_iab_tcf'] : false;
+	$cmode_enabled = isset( $the_settings['enable_cmode_v2'] ) ? $the_settings['enable_cmode_v2'] : false;
 	$hide_cmode_alert = true;
 
-	if( $the_options['pa'] == 1 && !$iab_enabled && !$cmode_enabled )
+	if( $the_settings['pa'] == 1 && !$iab_enabled && !$cmode_enabled )
 	{
 		$hide_cmode_alert = false;
 	}
@@ -108,7 +108,7 @@ endif;
 
 			$locale = get_user_locale();
 
-			if( $the_options['pa'] == 1 )
+			if( $the_settings['pa'] == 1 )
 			{
 				if( $locale && $locale == 'it_IT' )
 				{
@@ -200,7 +200,7 @@ endif;
 						<i class="fa-regular fa-shield"></i>
 						<?php echo wp_kses_post( __( 'Cookie Shield', 'MAP_txt' ) ); ?>
 
-						<span class="position-absolute top-0 end-0 translate-middle-y badge rounded-pill bg-danger <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
+						<span class="position-absolute top-0 end-0 translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
 							<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 						</span>
 					</button>

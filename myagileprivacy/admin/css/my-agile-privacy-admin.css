@@ -1,3 +1,7 @@
+:root {
+    /* --bs-danger-rgb:120,53,1 !important; */
+}
+
 body {
 	background: #F0F0F1 !important;
 }
@@ -460,6 +464,11 @@ body {
   pointer-events: none;
 }
 
+#my_agile_privacy_backend .forbiddenAreaIAB {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 
 .metabox-pill {
     top: -52px;
@@ -687,3 +696,102 @@ body {
 }
 
 /*eof map cookies translations-list */
+
+
+#my_agile_privacy_backend .consistent-alert-container .alert {
+    min-height: 200px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+#my_agile_privacy_backend .alert.consistent-alert {
+    background-color: #ffffff;
+    /* border-color: #055160; */
+    color: #555;
+}
+
+#my_agile_privacy_backend .alert.consistent-alert .alert-heading i {
+    color: #F95722;
+}
+
+#my_agile_privacy_backend .consistent-alert-container .data-text {
+    position: absolute !important;
+    bottom: 10px !important;
+    right: 20px !important;
+    font-size: 2rem !important;
+    margin-bottom: 0 !important;
+}
+
+
+#my_agile_privacy_backend.dashboardOptionsWrapper .button-agile {
+    border-color: #ca3b0b;
+    background: #F95722;
+}
+#my_agile_privacy_backend.dashboardOptionsWrapper .button-agile:hover {
+    color: #fff;
+}
+
+
+/* REDEFINE BOOTSTRAP COLORS */
+:root {
+    --bs-success-rgb:242, 255, 234 !important;
+    --bs-danger-rgb:255, 234, 234 !important;
+}
+.alert-success {
+    color:#0f5132 !important;
+    background-color:#f2ffea !important;
+    border-color:#badbcc !important;
+}
+
+.alert-warning {
+    color: #664d03 !important;
+    background-color: #fff3cd !important;
+    border-color: #ffecb5 !important;
+}
+
+.alert-danger {
+    color:#842029 !important;
+    background-color:#ffeaea !important;
+    border-color:#f5c2c7 !important;
+}
+
+.progress-bar {
+    font-size: 1rem;
+}
+.progress-bar.bg-success,
+.data-text.text-success {
+    color: var(--bs-green) !important;
+}
+
+.progress-bar {
+    font-size: 1rem;
+}
+
+.progress-bar.bg-danger,
+.data-text.text-danger {
+    color:#842029 !important;
+}
+
+.forbiddenWarning.bg-danger{
+    background-color:#dc2626!important;
+}
+
+.forbiddenWarning.bg-danger:hover{
+    background-color:#b21d1d!important;
+}
+
+.forbiddenWarningIAB.bg-danger{
+    background-color:#dc2626!important;
+}
+
+.forbiddenWarningIAB.bg-danger:hover{
+    background-color:#b21d1d!important;
+}
+
+
+
+
+/*bof fix columns inline margin */
+#my_agile_privacy_backend .row [class^=col] {
+    margin-inline: 0 !important;
+}
+/*eof fix columns inline margin */

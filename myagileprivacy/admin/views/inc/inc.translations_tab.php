@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 
@@ -41,10 +41,10 @@
 	</div>
 </div>
 
-<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
+<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
 	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
-<div class="row  <?php if( $the_options['pa'] != 1){echo 'forbiddenArea';} ?>">
+<div class="row  <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 	<div class="col-sm-2">
 		<div class="nav flex-column nav-pills me-3" id="map-translations-tab" role="tablist"
 			aria-orientation="vertical">
@@ -171,9 +171,9 @@
 						<div class="text-preview">
 							<div class="browser">
 
-								<div class="preview-cookiebanner" <?php if( !$the_options['title_is_on'] )
+								<div class="preview-cookiebanner" <?php if( !$the_settings['title_is_on'] )
 									echo 'style="padding-top:20px;"' ?>>
-									<?php if( $the_options['title_is_on'] ): ?>
+									<?php if( $the_settings['title_is_on'] ): ?>
 										<div class="preview-title">
 											<span
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][banner_title]"><?php echo ($the_translations[$lang_code]['banner_title']) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy' ?></span>
@@ -253,15 +253,15 @@
 										<div class="preview-button-container">
 											<div class="preview-button" id="preview-accept">
 												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][accept]"
-													style="background:<?php echo esc_attr( $the_options['button_accept_button_color'] ); ?>; color:<?php echo esc_html( $the_options['button_accept_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['accept'] ); ?></span>
+													style="background:<?php echo esc_attr( $the_settings['button_accept_button_color'] ); ?>; color:<?php echo esc_html( $the_settings['button_accept_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['accept'] ); ?></span>
 											</div>
 											<div class="preview-button" id="preview-refuse">
 												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][refuse]"
-													style="background:<?php echo esc_attr( $the_options['button_reject_button_color'] ); ?>; color:<?php echo esc_attr( $the_options['button_reject_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['refuse'] ); ?></span>
+													style="background:<?php echo esc_attr( $the_settings['button_reject_button_color'] ); ?>; color:<?php echo esc_attr( $the_settings['button_reject_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['refuse'] ); ?></span>
 											</div>
 											<div class="preview-button" id="preview-customize">
 												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][customize]"
-													style="background:<?php echo esc_attr( $the_options['button_customize_button_color'] ); ?>; color:<?php echo esc_attr( $the_options['button_customize_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['customize'] ); ?></span>
+													style="background:<?php echo esc_attr( $the_settings['button_customize_button_color'] ); ?>; color:<?php echo esc_attr( $the_settings['button_customize_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['customize'] ); ?></span>
 											</div>
 										</div>
 									</div>
@@ -317,7 +317,7 @@
 
 												</div>
 
-												<div class="mt-3 d-flex flex-row-reverse"><img src="<?php echo esc_attr( plugin_dir_url(__DIR__) ); ?>../img/privacy-by-pro.png"></div>
+												<div class="mt-3 d-flex flex-row-reverse"><img src="<?php echo esc_attr( plugin_dir_url(__DIR__) ); ?>../img/privacy-by-pro.png" style="max-width: 300px"></div>
 
 											</div> <!-- overflow-cookielist-container -->
 

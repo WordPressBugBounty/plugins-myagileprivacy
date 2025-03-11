@@ -21,6 +21,8 @@ $sito_multilingue_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-confi
 $sito_area_faq_url = 'https://www.myagileprivacy.com/en/helpdesk/post-installation-frequently-asked-questions/';
 $sito_area_privata_url = 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-private-area/';
 
+$personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/en/helpdesk/how-to-customise-the-my-agile-privacy-cookie-banner/';
+
 //per lang helpdesk defs
 if( $locale && $locale == 'it_IT' )
 {
@@ -37,6 +39,8 @@ if( $locale && $locale == 'it_IT' )
 
 	$sito_area_faq_url = 'https://www.myagileprivacy.com/helpdesk/domande-frequenti-post-installazione/';
 	$sito_area_privata_url = 'https://www.myagileprivacy.com/helpdesk/guida-allutilizzo-dellarea-privata/';
+
+	$personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/helpdesk/come-personalizzare-il-cookie-banner-di-my-agile-privacy/';
 }
 ?>
 
@@ -62,6 +66,16 @@ if( $locale && $locale == 'it_IT' )
 					<p><a target="_blank" href="<?php echo esc_attr( $installa_map_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Install and configure My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
 					<p><a target="_blank" href="<?php echo esc_attr( $cookie_shied_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Detect and automatically block cookies with Cookie Shield', 'MAP_txt' ) ); ?></a></p>
 					<p><a target="_blank" href="<?php echo esc_attr( $moduli_norma_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Adapt the contact forms to GDPR', 'MAP_txt' ) ); ?></a></p>
+
+					<hr>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'Customizations', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_attr( $personalizzazione_cookie_banner ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Customize cookie banner, text and translations, and user notifications', 'MAP_txt' ) ); ?></a></p>
 				</div>
 
 

@@ -192,8 +192,8 @@ class MyAgilePrivacyAdmin {
 
 			if( count( $auto_activate_keys ) > 0 )
 			{
-				// Get options
-				$the_options = MyAgilePrivacy::get_settings();
+				// Get settings
+				$the_settings = MyAgilePrivacy::get_settings();
 
 				$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
@@ -353,6 +353,7 @@ class MyAgilePrivacyAdmin {
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk' ||
+			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_dashboard' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_translations' ||
 			 $current_page_post_type == MAP_POST_TYPE_COOKIES ||
 			 $current_page_post_type == MAP_POST_TYPE_POLICY
@@ -395,6 +396,7 @@ class MyAgilePrivacyAdmin {
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk' ||
+			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_dashboard' ||
 			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_translations' ||
 			 $current_page_post_type == MAP_POST_TYPE_COOKIES ||
 			 $current_page_post_type == MAP_POST_TYPE_POLICY
@@ -493,7 +495,7 @@ class MyAgilePrivacyAdmin {
 	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'start triggered_do_cron_sync' );
 
-		$the_options = MyAgilePrivacy::get_settings();
+		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		$now = time();
@@ -520,8 +522,8 @@ class MyAgilePrivacyAdmin {
 
 		if( $do_sync_now )
 		{
-			if( isset( $the_options['pa'] ) &&
-				$the_options['pa'] == 1
+			if( isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1
 				&& !( isset( $rconfig['forbid_local_js_caching'] ) && $rconfig['forbid_local_js_caching'] == 1 )
 			)
 			{
@@ -574,7 +576,7 @@ class MyAgilePrivacyAdmin {
 						if( !(
 								defined( 'MAP_IAB_TCF' ) && MAP_IAB_TCF &&
 								$rconfig['allow_iab'] == 1 &&
-								$the_options['enable_iab_tcf']
+								$the_settings['enable_iab_tcf']
 							) &&
 							strpos( $remote_url, "MyAgilePrivacyIabTCF" ) !== false )
 						{
@@ -597,46 +599,50 @@ class MyAgilePrivacyAdmin {
 
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'START triggered_do_cron_sync' );
 
-			// Get options
-			$the_options = MyAgilePrivacy::get_settings();
+			// Get settings
+			$the_settings = MyAgilePrivacy::get_settings();
 
 			$sync_result = $this->sync_cookies_and_fixed_texts( false );
-			$the_options = MyAgilePrivacy::get_settings();
+			$the_settings = MyAgilePrivacy::get_settings();
 
 			//bof adjust last_sync data
 
 			$this_sync_datetime_human = strtotime( "now" );
 
-			if( function_exists( 'wp_date') )
+			$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+
+			if( $wp_date_format )
 			{
-				$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+				$wp_date_format .= ' H:i:s';
 
-				if( $wp_date_format )
+				if( function_exists( 'wp_date' ) )
 				{
-					$wp_date_format .= ' H:i:s';
-
 					$this_sync_datetime_human = wp_date( $wp_date_format, $now );
+				}
+				else
+				{
+					$this_sync_datetime_human = date_i18n( $wp_date_format, $now );
 				}
 			}
 
-			$the_options['last_sync'] = $this_sync_datetime_human;
+			$the_settings['last_sync'] = $this_sync_datetime_human;
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-			$the_options = MyAgilePrivacy::get_settings();
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			$the_settings = MyAgilePrivacy::get_settings();
 
 			//eof adjust last_sync data
 
 			//learning mode auto turn to live
-			if( $the_options['scan_mode'] == 'learning_mode' )
+			if( $the_settings['scan_mode'] == 'learning_mode' )
 			{
 				$now = time();
 
-				if( $the_options['learning_mode_last_active_timestamp'] == null )
+				if( $the_settings['learning_mode_last_active_timestamp'] == null )
 				{
-					$the_options['learning_mode_last_active_timestamp'] = $now;
+					$the_settings['learning_mode_last_active_timestamp'] = $now;
 
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-					$the_options = MyAgilePrivacy::get_settings();
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+					$the_settings = MyAgilePrivacy::get_settings();
 				}
 				else
 				{
@@ -644,14 +650,14 @@ class MyAgilePrivacyAdmin {
 
 					if( MAP_DEV_MODE )
 					{
-						if( $now - $the_options['learning_mode_last_active_timestamp'] > 3600 )
+						if( $now - $the_settings['learning_mode_last_active_timestamp'] > 3600 )
 						{
 							$turn_to_live = true;
 						}
 					}
 					else
 					{
-						if( $now - $the_options['learning_mode_last_active_timestamp'] > 604800 )
+						if( $now - $the_settings['learning_mode_last_active_timestamp'] > 604800 )
 						{
 							$turn_to_live = true;
 						}
@@ -660,11 +666,11 @@ class MyAgilePrivacyAdmin {
 					if( $turn_to_live )
 					{
 						//auto turn to live after 1 week
-						$the_options['learning_mode_last_active_timestamp'] = null;
-						$the_options['scan_mode'] = 'config_finished';
+						$the_settings['learning_mode_last_active_timestamp'] = null;
+						$the_settings['scan_mode'] = 'config_finished';
 
-						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-						$the_options = MyAgilePrivacy::get_settings();
+						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+						$the_settings = MyAgilePrivacy::get_settings();
 					}
 				}
 			}
@@ -696,8 +702,8 @@ class MyAgilePrivacyAdmin {
 	 */
 	public function sync_cookies_and_fixed_texts( $bypass_cache=false )
 	{
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 
 		$sync_in_progress = MyAgilePrivacy::get_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
 
@@ -711,9 +717,9 @@ class MyAgilePrivacyAdmin {
 
 				$now = strtotime( "now" );
 
-				if( $the_options &&
-					( $the_options['last_legit_sync'] ) &&
-					( $now - $the_options['last_legit_sync'] > MAP_AUTORESET_SYNC_TRESHOLD ) )
+				if( $the_settings &&
+					( $the_settings['last_legit_sync'] ) &&
+					( $now - $the_settings['last_legit_sync'] > MAP_AUTORESET_SYNC_TRESHOLD ) )
 				{
 					$do_block = false;
 
@@ -734,12 +740,12 @@ class MyAgilePrivacyAdmin {
 
 		$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
-		if( isset( $the_options['default_locale'] ) )
+		if( isset( $the_settings['default_locale'] ) )
 		{
 			global $locale;
 
 			$old_locale = $locale;
-			$locale = $the_options['default_locale'];
+			$locale = $the_settings['default_locale'];
 		}
 
 		$urlparts = wp_parse_url( home_url() );
@@ -748,7 +754,7 @@ class MyAgilePrivacyAdmin {
 		$data_to_send = array(
 			'action'			=>	'get_cookies_and_fixed_text',
 			'software_key'		=>	MAP_SOFTWARE_KEY,
-			'hash'				=>	$the_options['license_code'],
+			'hash'				=>	$the_settings['license_code'],
 			'domain'			=>	$domain,
 			'locale'			=>	$locale,
 			'version'			=>	MAP_PLUGIN_VERSION,
@@ -831,16 +837,16 @@ class MyAgilePrivacyAdmin {
 			$customer_email = $action_result['customer_email'];
 			$summary_text = $action_result['summary_text'];
 
-			$the_options['license_user_status'] = $license_user_status;
-			$the_options['is_dm'] = $is_dm;
-			$the_options['license_valid'] = $license_valid;
-			$the_options['grace_period'] = $grace_period;
-			$the_options['customer_email'] = $customer_email;
-			$the_options['summary_text'] = $summary_text;
-			$the_options['wl'] = ( isset( $action_result['wl'] ) ) ? $action_result['wl'] : 0;
-			$the_options['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
-			$the_options['last_legit_sync'] = strtotime( "now" );
-			$the_options['pa'] = $pa;
+			$the_settings['license_user_status'] = $license_user_status;
+			$the_settings['is_dm'] = $is_dm;
+			$the_settings['license_valid'] = $license_valid;
+			$the_settings['grace_period'] = $grace_period;
+			$the_settings['customer_email'] = $customer_email;
+			$the_settings['summary_text'] = $summary_text;
+			$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
+			$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
+			$the_settings['last_legit_sync'] = strtotime( "now" );
+			$the_settings['pa'] = $pa;
 			$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
 			$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : null;
 			$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : null;
@@ -848,17 +854,17 @@ class MyAgilePrivacyAdmin {
 			MyAgilePrivacy::update_option( MAP_PLUGIN_L_ALLOWED, $l_allowed );
 			MyAgilePrivacy::update_option( MAP_PLUGIN_COMPLIANCE_REPORT, $compliance_report );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-			$the_options = MyAgilePrivacy::get_settings();
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			$the_settings = MyAgilePrivacy::get_settings();
 		}
 		else
 		{
-			$license_user_status = $the_options['license_user_status'];
-			$is_dm = $the_options['is_dm'];
-			$license_valid = $the_options['license_valid'];
-			$grace_period = $the_options['grace_period'];
-			$customer_email = $the_options['customer_email'];
-			$summary_text = $the_options['summary_text'];
+			$license_user_status = $the_settings['license_user_status'];
+			$is_dm = $the_settings['is_dm'];
+			$license_valid = $the_settings['license_valid'];
+			$grace_period = $the_settings['grace_period'];
+			$customer_email = $the_settings['customer_email'];
+			$summary_text = $the_settings['summary_text'];
 			$rconfig = MyAgilePrivacy::get_rconfig();
 		}
 
@@ -900,15 +906,19 @@ class MyAgilePrivacyAdmin {
 			$sync_datetime_human = strtotime( "now" );
 			$sync_datetime = time();
 
-			if( function_exists( 'wp_date') )
+			$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+
+			if( $wp_date_format )
 			{
-				$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+				$wp_date_format .= ' H:i:s';
 
-				if( $wp_date_format )
+				if( function_exists( 'wp_date' ) )
 				{
-					$wp_date_format .= ' H:i:s';
-
 					$sync_datetime_human = wp_date( $wp_date_format, $sync_datetime );
+				}
+				else
+				{
+					$sync_datetime_human = date_i18n( $wp_date_format, $sync_datetime );
 				}
 			}
 
@@ -962,7 +972,7 @@ class MyAgilePrivacyAdmin {
 											$do_content_sync = true;
 										}
 
-										if( $the_options['enable_metadata_sync'] &&
+										if( $the_settings['enable_metadata_sync'] &&
 											isset( $v['forced_metadata_sync'] ) &&
 											$v['forced_metadata_sync'] == 1 )
 										{
@@ -1373,32 +1383,32 @@ class MyAgilePrivacyAdmin {
 
 			if( isset( $autoconsume_options['forced'] ) )
 			{
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_options );
+				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_settings );
 
 				if( isset( $autoconsume_options['forced']['forced_auto_update'] ) )
 				{
-					$the_options['forced_auto_update'] = ( $autoconsume_options['forced']['forced_auto_update'] == 1 ) ? true : false;
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+					$the_settings['forced_auto_update'] = ( $autoconsume_options['forced']['forced_auto_update'] == 1 ) ? true : false;
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				}
 
 				if( isset( $autoconsume_options['forced']['enable_metadata_sync'] ) )
 				{
-					$the_options['enable_metadata_sync'] = ( $autoconsume_options['forced']['enable_metadata_sync'] == 1 ) ? true : false;
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+					$the_settings['enable_metadata_sync'] = ( $autoconsume_options['forced']['enable_metadata_sync'] == 1 ) ? true : false;
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				}
 
 				if( isset( $autoconsume_options['forced']['learning_mode'] ) && $autoconsume_options['forced']['learning_mode'] == 1 )
 				{
-					$the_options['scan_mode'] = 'learning_mode';
-					$the_options['learning_mode_last_active_timestamp'] = null;
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+					$the_settings['scan_mode'] = 'learning_mode';
+					$the_settings['learning_mode_last_active_timestamp'] = null;
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				}
 
 				if( isset( $autoconsume_options['forced']['reset_consent'] ) && $autoconsume_options['forced']['reset_consent'] == 1 )
 				{
 					$timestamp = time();
-					$the_options['cookie_reset_timestamp'] = $timestamp;
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+					$the_settings['cookie_reset_timestamp'] = $timestamp;
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				}
 
 				if( isset( $autoconsume_options['added_cookies'] ) && $autoconsume_options['added_cookies'] )
@@ -1852,13 +1862,13 @@ class MyAgilePrivacyAdmin {
 
 		//eof my agile pixel
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 		$do_not_send_in_clear_settings_key = MyAgilePrivacy::get_do_not_send_in_clear_settings_key();
 
 		//purge do_not_send fields
 
-		foreach( $the_options as $k => $v )
+		foreach( $the_settings as $k => $v )
 		{
 			if( is_array( $do_not_send_in_clear_settings_key ) &&
 				in_array( $k, $do_not_send_in_clear_settings_key ) )
@@ -2045,9 +2055,9 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
-		$the_options_save = $the_options;
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
+		$the_settings_save = $the_settings;
 
 		// Check nonce:
 		check_admin_referer( 'myagileprivacy-update-' . MAP_PLUGIN_SETTINGS_FIELD );
@@ -2075,11 +2085,9 @@ class MyAgilePrivacyAdmin {
 
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $sanitized_submitted_translations );
 
-			$the_options['fixed_translations_encoded'] = json_encode( $sanitized_submitted_translations );
+			$the_settings['fixed_translations_encoded'] = json_encode( $sanitized_submitted_translations );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-
-			$options_after_save = MyAgilePrivacy::get_settings();
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 		}
 
 		$answer = array(
@@ -2119,9 +2127,9 @@ class MyAgilePrivacyAdmin {
 		$customer_email = null;
 		$summary_text = null;
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
-		$the_options_save = $the_options;
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
+		$the_settings_save = $the_settings;
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $_POST );
 
@@ -2134,29 +2142,29 @@ class MyAgilePrivacyAdmin {
 			// Check nonce:
 			check_admin_referer( 'myagileprivacy-update-' . MAP_PLUGIN_SETTINGS_FIELD );
 
-			foreach( $the_options as $key => $value )
+			foreach( $the_settings as $key => $value )
 			{
 				if( isset($_POST[$key . '_field'] ) )
 				{
 					//store sanitised values only
-					$the_options[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $_POST[$key . '_field'] );
+					$the_settings[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $_POST[$key . '_field'] );
 				}
 			};
 
-			if( $the_options_save['is_on'] == false &&
-				$the_options['is_on'] == true )
+			if( $the_settings_save['is_on'] == false &&
+				$the_settings['is_on'] == true )
 			{
 				$do_revalidation = true;
 				$do_clear_file_cache = true;
 			}
 
-			if( $the_options_save['default_locale'] != $the_options['default_locale'] )
+			if( $the_settings_save['default_locale'] != $the_settings['default_locale'] )
 			{
 				$do_revalidation = true;
 				$do_clear_file_cache = true;
 			}
 
-			if( $the_options_save['enable_iab_tcf'] != $the_options['enable_iab_tcf'] )
+			if( $the_settings_save['enable_iab_tcf'] != $the_settings['enable_iab_tcf'] )
 			{
 				$do_clear_file_cache = true;
 			}
@@ -2177,7 +2185,7 @@ class MyAgilePrivacyAdmin {
 			{
 				$timestamp = time();
 
-				$the_options['cookie_reset_timestamp'] = $timestamp;
+				$the_settings['cookie_reset_timestamp'] = $timestamp;
 			}
 
 			if( isset( $_POST['reset_cookie_settings'] ) )
@@ -2205,11 +2213,11 @@ class MyAgilePrivacyAdmin {
 					'summary_text',
 					'default_locale',
 					'website_name',
-					'identity_name',
+					'identity_sname',
 					'identity_address',
 					'identity_email',
 					'pa',
-					'wl',
+					'wl_b',
 				);
 
 				foreach( $default_settings as $key => $value )
@@ -2218,7 +2226,7 @@ class MyAgilePrivacyAdmin {
 						!in_array( $key, $do_not_reset_array ) )
 					{
 						//lets'keep the license code and other do not reset settings
-						$the_options[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $value );
+						$the_settings[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $value );
 					}
 				}
 
@@ -2231,10 +2239,10 @@ class MyAgilePrivacyAdmin {
 
 			$missing_key = false;
 
-			if( !$the_options['license_valid'] ||
-				!$the_options_save['pa'] ||
+			if( !$the_settings['license_valid'] ||
+				!$the_settings_save['pa'] ||
 				( isset( $_POST['license_code_field']) &&
-					$the_options_save['license_code'] != $_POST['license_code_field'] )
+					$the_settings_save['license_code'] != $_POST['license_code_field'] )
 			)
 			{
 				$missing_key = true;
@@ -2331,8 +2339,8 @@ class MyAgilePrivacyAdmin {
 
 				if(
 					!$license_valid ||
-					( $the_options_save['license_valid'] != $license_valid ) ||
-					( $the_options_save['is_dm'] )
+					( $the_settings_save['license_valid'] != $license_valid ) ||
+					( $the_settings_save['is_dm'] )
 				)
 				{
 					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'trigger cookie update via db and hooks' );
@@ -2355,16 +2363,16 @@ class MyAgilePrivacyAdmin {
 				$customer_email = $action_result['customer_email'];
 				$summary_text = $action_result['summary_text'];
 
-				$the_options['license_user_status'] = $license_user_status;
-				$the_options['is_dm'] = $is_dm;
-				$the_options['license_valid'] = $license_valid;
-				$the_options['grace_period'] = $grace_period;
-				$the_options['customer_email'] = $customer_email;
-				$the_options['summary_text'] = $summary_text;
-				$the_options['wl'] = ( isset( $action_result['wl'] ) ) ? $action_result['wl'] : 0;
-				$the_options['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
-				$the_options['last_legit_sync'] = strtotime( "now" );
-				$the_options['pa'] = $pa;
+				$the_settings['license_user_status'] = $license_user_status;
+				$the_settings['is_dm'] = $is_dm;
+				$the_settings['license_valid'] = $license_valid;
+				$the_settings['grace_period'] = $grace_period;
+				$the_settings['customer_email'] = $customer_email;
+				$the_settings['summary_text'] = $summary_text;
+				$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
+				$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
+				$the_settings['last_legit_sync'] = strtotime( "now" );
+				$the_settings['pa'] = $pa;
 				$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
 				$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : null;
 				$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : null;
@@ -2375,12 +2383,12 @@ class MyAgilePrivacyAdmin {
 			}
 			else
 			{
-				$license_user_status = $the_options['license_user_status'];
-				$is_dm = $the_options['is_dm'];
-				$license_valid = $the_options['license_valid'];
-				$grace_period = $the_options['grace_period'];
-				$customer_email = $the_options['customer_email'];
-				$summary_text = $the_options['summary_text'];
+				$license_user_status = $the_settings['license_user_status'];
+				$is_dm = $the_settings['is_dm'];
+				$license_valid = $the_settings['license_valid'];
+				$grace_period = $the_settings['grace_period'];
+				$customer_email = $the_settings['customer_email'];
+				$summary_text = $the_settings['summary_text'];
 
 				$rconfig = MyAgilePrivacy::get_rconfig();
 			}
@@ -2390,9 +2398,9 @@ class MyAgilePrivacyAdmin {
 			$lc_owner_email = ( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) ? $rconfig['lc_owner_email'] : null;
 			$lc_owner_website = ( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) ? $rconfig['lc_owner_website'] : null;
 
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_options );
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_settings );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 
 			if( isset( $_POST['force_sync'] ) )
 			{
@@ -2409,22 +2417,26 @@ class MyAgilePrivacyAdmin {
 				$now = time();
 				$this_sync_datetime_human = strtotime( "now" );
 
-				if( function_exists( 'wp_date') )
+				$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+
+				if( $wp_date_format )
 				{
-					$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+					$wp_date_format .= ' H:i:s';
 
-					if( $wp_date_format )
+					if( function_exists( 'wp_date' ) )
 					{
-						$wp_date_format .= ' H:i:s';
-
 						$this_sync_datetime_human = wp_date( $wp_date_format, $now );
+					}
+					else
+					{
+						$this_sync_datetime_human = date_i18n( $wp_date_format, $now );
 					}
 				}
 
-				$the_options['last_sync'] = $this_sync_datetime_human;
+				$the_settings['last_sync'] = $this_sync_datetime_human;
 
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_options );
-				$the_options = MyAgilePrivacy::get_settings();
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+				$the_settings = MyAgilePrivacy::get_settings();
 
 				//eof adjust last_sync data
 			}
@@ -2432,9 +2444,9 @@ class MyAgilePrivacyAdmin {
 			$cookie_shield_raw_status = null;
 			$cookie_shied_value = null;
 
-			if( isset( $the_options ) && $the_options['scan_mode'] )
+			if( isset( $the_settings ) && $the_settings['scan_mode'] )
 			{
-				$cookie_shield_raw_status = $the_options['scan_mode'];
+				$cookie_shield_raw_status = $the_settings['scan_mode'];
 
 				switch( $cookie_shield_raw_status )
 				{
@@ -2579,13 +2591,13 @@ class MyAgilePrivacyAdmin {
 			$label_blocked = wp_kses_post( __( 'Blocked without notification', 'MAP_txt' ) );
 			$label_allowed = wp_kses_post( __( 'Allowed without notification', 'MAP_txt' ) );
 
-			$the_options = '<option value="__blocked">'.$label_blocked.'</option>' .
+			$this_options = '<option value="__blocked">'.$label_blocked.'</option>' .
 						'<option value="__always_allowed">'.$label_allowed.'</option>';
 
 			$final_output_script = '<script type="text/javascript">' . PHP_EOL;
 
 			$final_output_script .= '
-									jQuery( "select[name=\"_status\"]" ).append( \''.$the_options.'\' );
+									jQuery( "select[name=\"_status\"]" ).append( \''.$this_options.'\' );
 									'. PHP_EOL;
 
 
@@ -2624,14 +2636,14 @@ class MyAgilePrivacyAdmin {
 				$complete_allowed = ' selected="selected"';
 			}
 
-			$the_options = '<option value="__blocked" '.$complete_blocked.'>'.$label_blocked.'</option>' .
+			$this_options = '<option value="__blocked" '.$complete_blocked.'>'.$label_blocked.'</option>' .
 						'<option value="__always_allowed" '.$complete_allowed.'>'.$label_allowed.'</option>';
 
 
 			$final_output_script = '<script type="text/javascript">' . PHP_EOL;
 
 			$final_output_script .= '
-									jQuery("select#post_status").append( \''.$the_options.'\' );
+									jQuery("select#post_status").append( \''.$this_options.'\' );
 									'. PHP_EOL;
 
 			if( $post->post_status == '__blocked' )
@@ -2660,16 +2672,28 @@ class MyAgilePrivacyAdmin {
 	{
 		global $submenu;
 
-		$the_options = MyAgilePrivacy::get_settings();
+		$the_settings = MyAgilePrivacy::get_settings();
 
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		remove_menu_page( 'edit.php?post_type='.MAP_POST_TYPE_POLICY );
 
+		if( defined( 'MAP_DASHBOARD' ) && MAP_DASHBOARD )
+		{
+			add_submenu_page(
+				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+				__('Dashboard', 'MAP_txt'),
+				__('Dashboard', 'MAP_txt'),
+				'manage_options',
+				MAP_POST_TYPE_COOKIES.'_dashboard',
+				array( $this, 'dashboard_view' )
+			);
+		}
+
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			wp_kses_post( __( 'Privacy Settings', 'MAP_txt' ) ),
-			wp_kses_post( __( 'Privacy Settings', 'MAP_txt' ) ),
+			__('Privacy Settings', 'MAP_txt'),
+			__('Privacy Settings', 'MAP_txt'),
 			'manage_options',
 			MAP_POST_TYPE_COOKIES.'_settings',
 			array( $this, 'admin_page_html' )
@@ -2727,20 +2751,27 @@ class MyAgilePrivacyAdmin {
 		//reorder settings menu
 		if( isset( $submenu ) &&
 			is_array( $submenu ) &&
-			!empty( $submenu ) )
+			!empty( $submenu )
+		)
 		{
 			$out = array();
 			$settings_menu = array();
+			$dashboard_menu = array();
+
 			if( isset( $submenu['edit.php?post_type='.MAP_POST_TYPE_COOKIES] ) && is_array( $submenu['edit.php?post_type='.MAP_POST_TYPE_COOKIES ] ))
 			{
 				foreach( $submenu['edit.php?post_type='.MAP_POST_TYPE_COOKIES] as $k => $v )
 				{
 					if( $v[2] != 'post-new.php?post_type='.MAP_POST_TYPE_COOKIES )
 					{
-						//slug check
+						// Slug check
 						if( $v[2] == MAP_POST_TYPE_COOKIES.'_settings' )
 						{
 							$settings_menu = $v;
+						}
+						elseif( $v[2] == MAP_POST_TYPE_COOKIES.'_dashboard' )
+						{
+							$dashboard_menu = $v;
 						}
 						else
 						{
@@ -2756,7 +2787,15 @@ class MyAgilePrivacyAdmin {
 						}
 					}
 				}
-				array_unshift( $out, $settings_menu );
+
+				//dashboard first
+				if( defined( 'MAP_DASHBOARD' ) && MAP_DASHBOARD )
+				{
+					array_unshift( $out, $dashboard_menu );
+				}
+
+				//settings next
+				array_splice( $out, 1, 0, array($settings_menu) );
 
 				$submenu['edit.php?post_type='.MAP_POST_TYPE_COOKIES] = $out;
 			}
@@ -2776,8 +2815,8 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
@@ -2818,8 +2857,8 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
@@ -2838,6 +2877,84 @@ class MyAgilePrivacyAdmin {
 		require_once plugin_dir_path( __FILE__ ).'views/compliance_report_html.php';
 	}
 
+
+	/**
+	* Help Desk report view
+	*/
+	public function dashboard_view()
+	{
+		// check user capabilities
+		if( !current_user_can( 'manage_options' ) )
+		{
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'dashboard_view -> missing user permission' );
+			return false;
+		}
+
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
+			strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )== 'xmlhttprequest' )
+		{
+			exit();
+		}
+
+		$css_compatibility_fix = false;
+
+		if( isset( $GLOBALS['wp_version'] ) && version_compare( $GLOBALS['wp_version'], '4.2', '<' ) )
+		{
+			$css_compatibility_fix = true;
+		}
+
+		$locale = get_user_locale();
+
+
+		global $wpdb;
+
+		//get global integrity checks
+		$global_integrity_checks = MyAgilePrivacy::getGlobalIntegrityChesks();
+
+		$is_on = isset( $the_settings['is_on'] ) ? $the_settings['is_on'] : false; // Option to check if the banner is on
+
+		// Secure queries using prepared statements
+		$cookie_published_count = $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type = %s AND post_status = %s",
+			MAP_POST_TYPE_COOKIES,
+			'publish'
+		));
+		$cookie_total_count = $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type = %s",
+			MAP_POST_TYPE_COOKIES
+		));
+
+		$last_scan_date_human = '-';
+
+		if( isset( $the_settings ) &&
+			isset( $the_settings['last_scan_date_internal'] ) &&
+			$the_settings['last_scan_date_internal']
+		)
+		{
+			$last_scan_date_human = $the_settings['last_scan_date_internal'];
+
+			$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
+
+			if( $wp_date_format )
+			{
+				if( function_exists( 'wp_date' ) )
+				{
+					$last_scan_date_human = wp_date( $wp_date_format, $the_settings['last_scan_date_internal'] );
+				}
+				else
+				{
+					$last_scan_date_human = date_i18n( $wp_date_format, $the_settings['last_scan_date_internal'] );
+				}
+			}
+		}
+
+		require_once plugin_dir_path( __FILE__ ).'views/dashboard_html.php';
+	}
+
 	/**
 	* Help Desk report view
 	*/
@@ -2850,8 +2967,8 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
@@ -2880,8 +2997,8 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
@@ -2905,14 +3022,14 @@ class MyAgilePrivacyAdmin {
 			$rconfig &&
 			isset( $rconfig['allow_iab'] ) &&
 			$rconfig['allow_iab'] == 1 &&
-			$the_options['enable_iab_tcf']
+			$the_settings['enable_iab_tcf']
 		)
 		{
 			$iab_tcf_context = true;
 		}
 
 		$show_lpd = false;
-		if( isset( $the_options['display_lpd'] ) && $the_options['display_lpd'] )
+		if( isset( $the_settings['display_lpd'] ) && $the_settings['display_lpd'] )
 		{
 			$show_lpd = true;
 		}
@@ -2922,17 +3039,26 @@ class MyAgilePrivacyAdmin {
 		{
 			if( defined( 'MAPX_my_agile_pixel_ga_on' ) )
 			{
-				$mapx_items[] = 'ga_4_version';
+				if( defined( 'MAPX_my_agile_pixel_ga_on_anonymous' ) && MAPX_my_agile_pixel_ga_on_anonymous )
+				{
+					$mapx_items[] = 'ga_4_version';
+				}
 			}
 
 			if( defined( 'MAPX_my_agile_pixel_fbq_on' ) )
 			{
-				$mapx_items[] = 'facebook_remarketing';
+				if( defined( 'MAPX_my_agile_pixel_fbq_on_anonymous' ) && MAPX_my_agile_pixel_fbq_on_anonymous )
+				{
+					$mapx_items[] = 'facebook_remarketing';
+				}
 			}
 
 			if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) )
 			{
-				$mapx_items[] = 'tiktok_pixel';
+				if( defined( 'MAPX_my_agile_pixel_tiktok_on_anonymous' ) && MAPX_my_agile_pixel_tiktok_on_anonymous )
+				{
+					$mapx_items[] = 'tiktok_pixel';
+				}
 			}
 		}
 
@@ -2956,8 +3082,8 @@ class MyAgilePrivacyAdmin {
 			return false;
 		}
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 
 		//clean colors
 		$param_to_clean = array(
@@ -2976,7 +3102,7 @@ class MyAgilePrivacyAdmin {
 			'map_inline_notify_background',
 		);
 
-		foreach( $the_options as $k => &$v )
+		foreach( $the_settings as $k => &$v )
 		{
 			if( is_array( $param_to_clean ) &&
 				in_array( $k, $param_to_clean ) )
@@ -3032,6 +3158,17 @@ class MyAgilePrivacyAdmin {
 			//4 char version
 			$selected_lang = MyAgilePrivacy::translate2charTo4CharLangCode( $current_language_2char );
 
+			if( !$selected_lang &&
+				isset( $the_settings ) &&
+				isset( $the_settings['enable_language_fallback'] ) &&
+				$the_settings['enable_language_fallback'] &&
+				isset( $the_settings['language_fallback_locale'] ) &&
+				$the_settings['language_fallback_locale']
+			)
+			{
+				$selected_lang = $the_settings['language_fallback_locale'];
+			}
+
 			if( !$selected_lang )
 			{
 				$selected_lang = MyAgilePrivacy::translate2charTo4CharLangCode( $currentAndSupportedLanguages['multilang_default_lang'] );
@@ -3045,7 +3182,7 @@ class MyAgilePrivacyAdmin {
 		else
 		{
 			//4 char version
-			$selected_lang = $the_options['default_locale'];
+			$selected_lang = $the_settings['default_locale'];
 		}
 
 		require_once plugin_dir_path( __FILE__ ).'views/admin_page_html.php';
@@ -4180,8 +4317,8 @@ class MyAgilePrivacyAdmin {
 			$map_remote_id = 'cookie_policy';
 		}
 
-		$defaults = MyAgilePrivacy::get_default_settings();
-		$settings = wp_parse_args( MyAgilePrivacy::get_settings(), $defaults );
+		$the_settings = MyAgilePrivacy::get_settings();
+
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		$remove_dpo_text = true;
@@ -4189,32 +4326,32 @@ class MyAgilePrivacyAdmin {
 		$remove_ccpa_text = true;
 		$remove_lpd_text = true;
 
-		if( $settings['pa'] == 1 &&
+		if( $the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_dpo_edit'] &&
-			isset( $settings['display_dpo'] ) && $settings['display_dpo'] == 1 &&
-			isset( $settings['dpo_email'] ) && $settings['dpo_email'] )
+			isset( $the_settings['display_dpo'] ) && $the_settings['display_dpo'] == 1 &&
+			isset( $the_settings['dpo_email'] ) && $the_settings['dpo_email'] )
 		{
 			$remove_dpo_text = false;
 
 			if(
-				( isset( $settings['dpo_name'] ) && $settings['dpo_name'] ) ||
-				( isset( $settings['dpo_address'] ) && $settings['dpo_address'] )
+				( isset( $the_settings['dpo_name'] ) && $the_settings['dpo_name'] ) ||
+				( isset( $the_settings['dpo_address'] ) && $the_settings['dpo_address'] )
 			)
 			{
 				$remove_dpo_other_text = false;
 			}
 		}
 
-		if( $settings['pa'] == 1 &&
+		if( $the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_ccpa_text'] &&
-			isset( $settings['display_ccpa'] ) && $settings['display_ccpa'] == 1 )
+			isset( $the_settings['display_ccpa'] ) && $the_settings['display_ccpa'] == 1 )
 		{
 			$remove_ccpa_text = false;
 		}
 
-		if( $settings['pa'] == 1 &&
+		if( $the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_lpd_text'] &&
-			isset( $settings['display_lpd'] ) && $settings['display_lpd'] == 1 )
+			isset( $the_settings['display_lpd'] ) && $the_settings['display_lpd'] == 1 )
 		{
 			$remove_lpd_text = false;
 		}
@@ -4226,7 +4363,7 @@ class MyAgilePrivacyAdmin {
 			$map_option1_ack = get_post_meta( $the_id, '_map_option1_ack', true );
 			$map_option1_on = get_post_meta( $the_id, '_map_option1_on', true );
 
-			if( $settings['pa'] == 1 )
+			if( $the_settings['pa'] == 1 )
 			{
 				if( $map_option1_ack == 1 && $map_option1_on == 1 )
 				{
@@ -4252,7 +4389,7 @@ class MyAgilePrivacyAdmin {
 		}
 		else
 		{
-			$content = str_replace( 'MAP_DPO_MAIL', stripslashes( $settings['dpo_email'] ), $content );
+			$content = str_replace( 'MAP_DPO_MAIL', stripslashes( $the_settings['dpo_email'] ), $content );
 		}
 
 		if( $remove_dpo_other_text )
@@ -4261,18 +4398,18 @@ class MyAgilePrivacyAdmin {
 		}
 		else
 		{
-			if( $settings['dpo_name'] )
+			if( $the_settings['dpo_name'] )
 			{
-				$content = str_replace( 'MAP_DPO_NAME', stripslashes( $settings['dpo_name'] ), $content );
+				$content = str_replace( 'MAP_DPO_NAME', stripslashes( $the_settings['dpo_name'] ), $content );
 			}
 			else
 			{
 				$content = str_replace( 'MAP_DPO_NAME<br>', '', $content );
 			}
 
-			if( $settings['dpo_address'] )
+			if( $the_settings['dpo_address'] )
 			{
-				$content = str_replace( 'MAP_DPO_ADDRESS', stripslashes( $settings['dpo_address'] ), $content );
+				$content = str_replace( 'MAP_DPO_ADDRESS', stripslashes( $the_settings['dpo_address'] ), $content );
 			}
 			else
 			{
@@ -4301,9 +4438,9 @@ class MyAgilePrivacyAdmin {
 
 		$website_name = get_site_url();
 
-		if( isset( $settings['website_name'] ) && $settings['website_name'] != '' )
+		if( isset( $the_settings['website_name'] ) && $the_settings['website_name'] != '' )
 		{
-			$website_name = stripslashes( $settings['website_name'] );
+			$website_name = stripslashes( $the_settings['website_name'] );
 
 			//block_the_content_filter mode
 			if(
@@ -4311,7 +4448,7 @@ class MyAgilePrivacyAdmin {
 				isset( $rconfig['block_the_content_filter'] ) &&
 				$rconfig['block_the_content_filter'] == 1 ) ||
 				(
-					$settings['scanner_compatibility_mode']
+					$the_settings['scanner_compatibility_mode']
 				)
 			)
 			{
@@ -4326,10 +4463,10 @@ class MyAgilePrivacyAdmin {
 
 
 		$content = str_replace( '[website_name]', $website_name, $content );
-		$content = str_replace( '[identity_name]', stripslashes( $settings['identity_name'] ), $content );
-		$content = str_replace( '[identity_vat_id]', ( $settings['identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.stripslashes( $settings['identity_vat_id'] ) : '', $content );
-		$content = str_replace( '[identity_address]', stripslashes( $settings['identity_address'] ), $content );
-		$content = str_replace( '[identity_email]', stripslashes( $settings['identity_email'] ), $content );
+		$content = str_replace( '[identity_name]', stripslashes( $the_settings['identity_name'] ), $content );
+		$content = str_replace( '[identity_vat_id]', ( $the_settings['identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.stripslashes( $the_settings['identity_vat_id'] ) : '', $content );
+		$content = str_replace( '[identity_address]', stripslashes( $the_settings['identity_address'] ), $content );
+		$content = str_replace( '[identity_email]', stripslashes( $the_settings['identity_email'] ), $content );
 
 		return $content;
 	}
@@ -4705,10 +4842,10 @@ class MyAgilePrivacyAdmin {
 
 		$success = false;
 
-		// Get options
-		$the_options = MyAgilePrivacy::get_settings();
+		// Get settings
+		$the_settings = MyAgilePrivacy::get_settings();
 
-		if( isset( $the_options['pa'] ) && $the_options['pa'] == 1 )
+		if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
 		{
 			$success = true;
 		}

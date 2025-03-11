@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 
@@ -27,7 +27,7 @@
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
-							<?php if( $the_options['is_on'] == true ): ?>
+							<?php if( $the_settings['is_on'] == true ): ?>
 								<input type="radio" id="is_on_field_yes" name="is_on_field" value="true" checked="checked" />
 								<label for="is_on_field_yes" class="me-2 label-radio"></label>
 
@@ -43,7 +43,7 @@
 						</div>
 
 						<div class="round d-flex">
-							<?php if( $the_options['is_on'] == false ): ?>
+							<?php if( $the_settings['is_on'] == false ): ?>
 								<input type="radio" id="is_on_field_no" name="is_on_field" value="false" checked="checked" />
 								<label for="is_on_field_no" class="me-2 label-radio"></label>
 
@@ -69,13 +69,31 @@
 			<!-- NEW banner width -->
 			<div class="row mb-4">
 				<label for="cookie_banner_size_field" class="col-sm-5 col-form-label">
+
+					<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] ){echo 'd-none';} ?>">
+						<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small><br>
+					</span>
+
 					<?php echo wp_kses_post( __( 'Banner Size', 'MAP_txt' ) ); ?>
 				</label>
+
 				<div class="col-sm-7">
 					<select name="cookie_banner_size_field" class="form-control hideShowInput" id="cookie_banner_size_field" data-preview="mapSize" data-hide-show-ref="cookie_banner_size">
-						<option value="sizeWide" <?php selected( $the_options['cookie_banner_size'], 'sizeWide' ); ?>><?php esc_attr_e('Wide', 'MAP_txt' ); ?></option>
-						<option value="sizeBig" <?php selected( $the_options['cookie_banner_size'], 'sizeBig' ); ?>><?php esc_attr_e('Big', 'MAP_txt' ); ?></option>
-						<option value="sizeBoxed" <?php selected( $the_options['cookie_banner_size'], 'sizeBoxed' ); ?>><?php esc_attr_e('Boxed', 'MAP_txt' ); ?></option>
+						<option value="sizeWideBranded" <?php selected( $the_settings['cookie_banner_size'], 'sizeWideBranded' ); ?>><?php esc_attr_e('Big and Branded', 'MAP_txt' ); ?></option>
+
+						<?php
+							if( $the_settings['pa'] ) :
+						?>
+
+							<option value="sizeBig" <?php selected( $the_settings['cookie_banner_size'], 'sizeBig' ); ?>><?php esc_attr_e('Big', 'MAP_txt' ); ?></option>
+							<option value="sizeWide" <?php selected( $the_settings['cookie_banner_size'], 'sizeWide' ); ?>><?php esc_attr_e('Wide', 'MAP_txt' ); ?></option>
+							<option value="sizeBoxed" <?php selected( $the_settings['cookie_banner_size'], 'sizeBoxed' ); ?>><?php esc_attr_e('Boxed', 'MAP_txt' ); ?></option>
+
+
+						<?php
+							endif;
+						?>
+
 					</select>
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
@@ -87,9 +105,9 @@
 				<div class="col-sm-7">
 					<select name="cookie_banner_vertical_position_field" class="form-control" id="cookie_banner_vertical_position_field" data-preview="mapPosition">
 
-						<option value="Top" <?php selected( $the_options['cookie_banner_vertical_position'], 'Top' ); ?>><?php esc_attr_e('Top', 'MAP_txt' ); ?></option>
-						<option value="Center" <?php selected( $the_options['cookie_banner_vertical_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
-						<option value="Bottom" <?php selected( $the_options['cookie_banner_vertical_position'], 'Bottom' ); ?>><?php esc_attr_e('Bottom', 'MAP_txt' ); ?></option>
+						<option value="Top" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Top' ); ?>><?php esc_attr_e('Top', 'MAP_txt' ); ?></option>
+						<option value="Center" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
+						<option value="Bottom" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Bottom' ); ?>><?php esc_attr_e('Bottom', 'MAP_txt' ); ?></option>
 					</select>
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
@@ -103,9 +121,9 @@
 					<div class="col-sm-7">
 						<select name="cookie_banner_horizontal_position_field" class="form-control" id="cookie_banner_horizontal_position_field" data-preview="mapPosition">
 
-							<option value="Center" <?php selected( $the_options['cookie_banner_horizontal_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
-							<option value="Left" <?php selected( $the_options['cookie_banner_horizontal_position'], 'Left' ); ?>><?php esc_attr_e('Left', 'MAP_txt' ); ?></option>
-							<option value="Right" <?php selected( $the_options['cookie_banner_horizontal_position'], 'Right' ); ?>><?php esc_attr_e('Right', 'MAP_txt' ); ?></option>
+							<option value="Center" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
+							<option value="Left" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Left' ); ?>><?php esc_attr_e('Left', 'MAP_txt' ); ?></option>
+							<option value="Right" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Right' ); ?>><?php esc_attr_e('Right', 'MAP_txt' ); ?></option>
 						</select>
 					</div> <!-- col-sm-7 -->
 				</div> <!-- row -->
@@ -121,8 +139,8 @@
 
 				<div class="col-sm-7">
 					<select name="floating_banner_field" class="form-control" id="floating_banner_field" data-preview="floating_banner">
-						<option value="0" <?php selected( $the_options['floating_banner'], 0 ); ?>><?php esc_attr_e('No', 'MAP_txt' ); ?></option>
-						<option value="1" <?php selected( $the_options['floating_banner'], 1 ); ?>><?php esc_attr_e('Yes', 'MAP_txt' ); ?></option>
+						<option value="0" <?php selected( $the_settings['floating_banner'], 0 ); ?>><?php esc_attr_e('No', 'MAP_txt' ); ?></option>
+						<option value="1" <?php selected( $the_settings['floating_banner'], 1 ); ?>><?php esc_attr_e('Yes', 'MAP_txt' ); ?></option>
 					</select>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -135,11 +153,11 @@
 				</label>
 				<div class="col-sm-7">
 					<select name="cookie_banner_shadow_field" class="form-control" id="cookie_banner_shadow_field" data-preview="shadow">
-						<option value="false" <?php selected( $the_options['cookie_banner_shadow'], 'false' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
+						<option value="false" <?php selected( $the_settings['cookie_banner_shadow'], 'false' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
 
-						<option value="map-shadow-soft" <?php selected( $the_options['cookie_banner_shadow'], 'map-shadow-soft' ); ?>><?php esc_attr_e('Soft', 'MAP_txt' ); ?></option>
+						<option value="map-shadow-soft" <?php selected( $the_settings['cookie_banner_shadow'], 'map-shadow-soft' ); ?>><?php esc_attr_e('Soft', 'MAP_txt' ); ?></option>
 
-						<option value="map-shadow-hard" <?php selected( $the_options['cookie_banner_shadow'], 'map-shadow-hard' ); ?>><?php esc_attr_e('Strong', 'MAP_txt' ); ?></option>
+						<option value="map-shadow-hard" <?php selected( $the_settings['cookie_banner_shadow'], 'map-shadow-hard' ); ?>><?php esc_attr_e('Strong', 'MAP_txt' ); ?></option>
 					</select>
 
 					<div class="form-text">
@@ -155,7 +173,7 @@
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="0" max="50" data-preview="border_radius" class="form-control" id="elements_border_radius_field" name="elements_border_radius_field" value="<?php echo esc_attr( stripslashes( $the_options['elements_border_radius'] ) )  ?>" />
+				<input type="number" min="0" max="50" data-preview="border_radius" class="form-control" id="elements_border_radius_field" name="elements_border_radius_field" value="<?php echo esc_attr( stripslashes( $the_settings['elements_border_radius'] ) )  ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -172,9 +190,9 @@
 				</label>
 				<div class="col-sm-7">
 				<select name="cookie_banner_animation_field" class="form-control" id="cookie_banner_animation_field">
-					<option value="none" <?php selected( $the_options['cookie_banner_animation'], 'none' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
-					<option value="slide" <?php selected( $the_options['cookie_banner_animation'], 'slide' ); ?>><?php esc_attr_e('Slide', 'MAP_txt' ); ?></option>
-					<option value="fade" <?php selected( $the_options['cookie_banner_animation'], 'fade' ); ?>><?php esc_attr_e('Fade', 'MAP_txt' ); ?></option>
+					<option value="none" <?php selected( $the_settings['cookie_banner_animation'], 'none' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
+					<option value="slide" <?php selected( $the_settings['cookie_banner_animation'], 'slide' ); ?>><?php esc_attr_e('Slide', 'MAP_txt' ); ?></option>
+					<option value="fade" <?php selected( $the_settings['cookie_banner_animation'], 'fade' ); ?>><?php esc_attr_e('Fade', 'MAP_txt' ); ?></option>
 				</select>
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
@@ -188,7 +206,7 @@
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
-							<?php if( $the_options['title_is_on'] == true ): ?>
+							<?php if( $the_settings['title_is_on'] == true ): ?>
 								<input type="radio" id="title_is_on_field_yes" class="hideShowInput" name="title_is_on_field" value="true" checked="checked" data-hide-show-ref="show_banner_title" data-meaning="1" data-preview="bannerTitle" />
 								<label for="title_is_on_field_yes" class="me-2 label-radio"></label>
 
@@ -210,7 +228,7 @@
 						</div>
 
 						<div class="round d-flex">
-							<?php if( $the_options['title_is_on'] == false ): ?>
+							<?php if( $the_settings['title_is_on'] == false ): ?>
 								<input type="radio" id="title_is_on_field_no" class="hideShowInput" name="title_is_on_field" value="false" checked="checked" data-hide-show-ref="show_banner_title" data-meaning="0" data-preview="bannerTitle" />
 								<label for="title_is_on_field_no" class="me-2 label-radio"></label>
 
@@ -284,7 +302,7 @@
 						<div class="round d-flex me-4">
 							<input type="hidden" name="with_css_effects_field" value="false" id="with_css_effects_field_no">
 
-							<input name="with_css_effects_field" type="checkbox" value="true" id="with_css_effects_field" <?php checked($the_options['with_css_effects'], true); ?>>
+							<input name="with_css_effects_field" type="checkbox" value="true" id="with_css_effects_field" <?php checked($the_settings['with_css_effects'], true); ?>>
 							<label for="with_css_effects_field" class="me-2 label-checkbox"></label><?php echo wp_kses_post( __( 'Enable shadows and rounding effects', 'MAP_txt' ) ); ?>
 
 						</div>
@@ -299,7 +317,7 @@
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="4" max="50" class="form-control" id="text_size_field" name="text_size_field" value="<?php echo esc_attr( stripslashes( $the_options['text_size'] ) ); ?>" />
+				<input type="number" min="4" max="50" class="form-control" id="text_size_field" name="text_size_field" value="<?php echo esc_attr( stripslashes( $the_settings['text_size'] ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -316,7 +334,7 @@
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="0" max="100" class="form-control" id="text_lineheight_field" name="text_lineheight_field" value="<?php echo esc_attr( stripslashes( $the_options['text_lineheight'] ) ); ?>" />
+				<input type="number" min="0" max="100" class="form-control" id="text_lineheight_field" name="text_lineheight_field" value="<?php echo esc_attr( stripslashes( $the_settings['text_lineheight'] ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -362,7 +380,7 @@
 				<div class="col-sm-7">
 
 					<?php
-						echo wp_kses( '<input type="color" id="background_field" name="background_field" value="' . esc_attr( $the_options['background'] ) . '" data-default-color="#ffffff" data-preview="bg_color">', MyAgilePrivacy::allowed_html_tags() );
+						echo wp_kses( '<input type="color" id="background_field" name="background_field" value="' . esc_attr( $the_settings['background'] ) . '" data-default-color="#ffffff" data-preview="bg_color">', MyAgilePrivacy::allowed_html_tags() );
 					?>
 
 					<div class="form-text">
@@ -381,7 +399,7 @@
 					</label>
 					<div class="col-sm-7">
 						<?php
-							echo wp_kses( '<input type="color" id="heading_background_color_field" name="heading_background_color_field" value="' . esc_attr( $the_options['heading_background_color'] ) . '" data-default-color="#F14307" data-preview="title_background_color">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="heading_background_color_field" name="heading_background_color_field" value="' . esc_attr( $the_settings['heading_background_color'] ) . '" data-default-color="#F14307" data-preview="title_background_color">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 						<div class="form-text">
 							<?php
@@ -397,7 +415,7 @@
 					</label>
 					<div class="col-sm-7">
 						<?php
-							echo wp_kses( '<input type="color" id="heading_text_color_field" name="heading_text_color_field" value="' . esc_attr( $the_options['heading_text_color'] ) . '" data-default-color="#ffffff" data-preview="title_color">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="heading_text_color_field" name="heading_text_color_field" value="' . esc_attr( $the_settings['heading_text_color'] ) . '" data-default-color="#ffffff" data-preview="title_color">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 						<div class="form-text">
 							<?php
@@ -416,7 +434,7 @@
 
 				<div class="col-sm-7">
 					<?php
-						echo wp_kses( '<input type="color" id="text_field" name="text_field" value="' . esc_attr( $the_options['text'] ) . '" data-default-color="#000" data-preview="text_color">', MyAgilePrivacy::allowed_html_tags() );
+						echo wp_kses( '<input type="color" id="text_field" name="text_field" value="' . esc_attr( $the_settings['text'] ) . '" data-default-color="#000" data-preview="text_color">', MyAgilePrivacy::allowed_html_tags() );
 					?>
 
 					<div class="form-text">
@@ -467,7 +485,7 @@
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
-							<?php if( $the_options['show_buttons_icons'] == true ): ?>
+							<?php if( $the_settings['show_buttons_icons'] == true ): ?>
 								<input type="radio" id="show_buttons_icons_field_yes" name="show_buttons_icons_field" value="true" checked="checked" data-meaning="1" data-preview="button_icon" />
 								<label for="show_buttons_icons_field_yes" class="me-2 label-radio"></label>
 
@@ -486,7 +504,7 @@
 						</div>
 
 						<div class="round d-flex">
-							<?php if( $the_options['show_buttons_icons'] == false ): ?>
+							<?php if( $the_settings['show_buttons_icons'] == false ): ?>
 								<input type="radio" id="show_buttons_icons_field_no" name="show_buttons_icons_field" value="false" checked="checked" data-meaning="0" data-preview="button_icon" />
 								<label for="show_buttons_icons_field_no" class="me-2 label-radio"></label>
 
@@ -530,14 +548,14 @@
 						<div>
 							<label for="button_accept_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_accept_link_color_field" name="button_accept_link_color_field" data-preview="accept-text-color" value="' . esc_attr( $the_options['button_accept_link_color'] ) . '" data-default-color="#ffffff">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_accept_link_color_field" name="button_accept_link_color_field" data-preview="accept-text-color" value="' . esc_attr( $the_settings['button_accept_link_color'] ) . '" data-default-color="#ffffff">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_accept_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_accept_button_color_field" name="button_accept_button_color_field" data-preview="accept" value="' . esc_attr( $the_options['button_accept_button_color'] ) . '" data-default-color="#34C759">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_accept_button_color_field" name="button_accept_button_color_field" data-preview="accept" value="' . esc_attr( $the_settings['button_accept_button_color'] ) . '" data-default-color="#34C759">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 				</div>
@@ -566,14 +584,14 @@
 					<div class="col-sm-4 text-center">
 						<div><label for="button_reject_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_reject_link_color_field" name="button_reject_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_options['button_reject_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_reject_link_color_field" name="button_reject_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_reject_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_reject_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_reject_button_color_field" name="button_reject_button_color_field" data-preview="refuse" data-default-color="#636366" value="' . esc_attr( $the_options['button_reject_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_reject_button_color_field" name="button_reject_button_color_field" data-preview="refuse" data-default-color="#636366" value="' . esc_attr( $the_settings['button_reject_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 				</div>
@@ -600,14 +618,14 @@
 					<div class="col-sm-4 text-center">
 						<div><label for="button_customize_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_customize_link_color_field" name="button_customize_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_options['button_customize_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_customize_link_color_field" name="button_customize_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_customize_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_customize_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_customize_button_color_field" name="button_customize_button_color_field" data-default-color="#636366" data-preview="customize" value="' . esc_attr( $the_options['button_customize_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							echo wp_kses( '<input type="color" id="button_customize_button_color_field" name="button_customize_button_color_field" data-default-color="#636366" data-preview="customize" value="' . esc_attr( $the_settings['button_customize_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
 						?>
 					</div>
 				</div>
@@ -658,24 +676,27 @@
 					</div>
 
 					<div id="preview-content">
-						<div id="preview-text-container">
-							<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
-							<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
-							<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+						<div class="branded-logo"><img src="<?php echo plugin_dir_url(__DIR__) ?>../img/map_logo_branded.svg"></div>
+						<div class="map-preview-content">
+							<div id="preview-text-container">
+								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
 
-							<div class="added_iab_text displayNone">
-								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
-								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
-								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
-								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+								<div class="added_iab_text displayNone">
+									<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+									<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+									<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+									<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
+								</div>
+
+								<div class="text show_boxed_preview" style="<?php echo $preview_text_styles; ?>"></div>
 							</div>
-
-							<div class="text show_boxed_preview" style="<?php echo $preview_text_styles; ?>"></div>
-						</div>
-						<div id="preview-button-container">
-							<div class="preview-button" id="preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style ); ?>"></div>
-							<div class="preview-button" id="preview-refuse" style="<?php echo esc_attr( $preview_refuse_styles.$border_radius_style ); ?>"></div>
-							<div class="preview-button" id="preview-customize" style="<?php echo esc_attr( $preview_customize_styles.$border_radius_style ); ?>"></div>
+							<div id="preview-button-container">
+								<div class="preview-button" id="preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style ); ?>"></div>
+								<div class="preview-button" id="preview-refuse" style="<?php echo esc_attr( $preview_refuse_styles.$border_radius_style ); ?>"></div>
+								<div class="preview-button" id="preview-customize" style="<?php echo esc_attr( $preview_customize_styles.$border_radius_style ); ?>"></div>
+							</div>
 						</div>
 					</div>
 
@@ -685,7 +706,7 @@
 			<div class="mt-5">
 				<h6 class="text-center"><?php echo wp_kses_post( __( 'Accept button detailed preview', 'MAP_txt' ) ); ?></h6>
 				<div id="accept-detail-preview">
-					<div class="preview-button" id="detail-preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style.$accept_button_styles ); ?>"><div class="preview-button-icon" style="background:<?php echo esc_attr( $the_options['button_accept_link_color'] ); ?>;"></div> <span class="preview-botton-text"></span></div>
+					<div class="preview-button" id="detail-preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style.$accept_button_styles ); ?>"><div class="preview-button-icon" style="background:<?php echo esc_attr( $the_settings['button_accept_link_color'] ); ?>;"></div> <span class="preview-botton-text"></span></div>
 				</div>
 			</div>
 

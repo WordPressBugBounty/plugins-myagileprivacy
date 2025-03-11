@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 
@@ -35,7 +35,7 @@
 
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
-							<?php if( $the_options['is_cookie_policy_url'] == true ): ?>
+							<?php if( $the_settings['is_cookie_policy_url'] == true ): ?>
 								<input type="radio" id="is_cookie_policy_url_yes" name="is_cookie_policy_url_field" value="true" checked="checked" />
 							<?php else: ?>
 								<input type="radio" id="is_cookie_policy_url_yes" name="is_cookie_policy_url_field" value="true" />
@@ -51,7 +51,7 @@
 						</div>
 
 						<div class="round d-flex">
-							<?php if( $the_options['is_cookie_policy_url'] == false ): ?>
+							<?php if( $the_settings['is_cookie_policy_url'] == false ): ?>
 								<input type="radio" id="is_cookie_policy_url_no" name="is_cookie_policy_url_field" class="" value="false" checked="checked" />
 							<?php else: ?>
 								<input type="radio" id="is_cookie_policy_url_no" name="is_cookie_policy_url_field" class="" value="false" />
@@ -75,7 +75,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="cookie_policy_url_field" name="cookie_policy_url_field" value="<?php echo esc_attr(stripslashes($the_options['cookie_policy_url'])) ?>" />
+					<input type="text" class="form-control" id="cookie_policy_url_field" name="cookie_policy_url_field" value="<?php echo esc_attr(stripslashes($the_settings['cookie_policy_url'])) ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the cookie policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -101,7 +101,7 @@
 							?>
 
 							<?php
-							if( $the_options['cookie_policy_page']==$page->ID ):
+							if( $the_settings['cookie_policy_page']==$page->ID ):
 							?>
 								<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title); ?> </option>
 							<?php
@@ -155,7 +155,7 @@
 
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
-							<?php if( $the_options['is_personal_data_policy_url'] == true ): ?>
+							<?php if( $the_settings['is_personal_data_policy_url'] == true ): ?>
 								<input type="radio" id="is_personal_data_policy_url_yes" name="is_personal_data_policy_url_field" value="true" checked="checked" />
 							<?php else: ?>
 								<input type="radio" id="is_personal_data_policy_url_yes" name="is_personal_data_policy_url_field" value="true" />
@@ -170,7 +170,7 @@
 						</div>
 
 						<div class="round d-flex">
-							<?php if( $the_options['is_personal_data_policy_url'] == false ): ?>
+							<?php if( $the_settings['is_personal_data_policy_url'] == false ): ?>
 								<input type="radio" id="is_personal_data_policy_url_no" name="is_personal_data_policy_url_field" class="" value="false" checked="checked" />
 							<?php else: ?>
 								<input type="radio" id="is_personal_data_policy_url_no" name="is_personal_data_policy_url_field" class="" value="false" />
@@ -194,7 +194,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="personal_data_policy_url_field" name="personal_data_policy_url_field" value="<?php echo esc_attr( stripslashes( $the_options['personal_data_policy_url'] ) ) ?>" />
+					<input type="text" class="form-control" id="personal_data_policy_url_field" name="personal_data_policy_url_field" value="<?php echo esc_attr( stripslashes( $the_settings['personal_data_policy_url'] ) ) ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the personal data policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -221,7 +221,7 @@
 							?>
 
 							<?php
-							if( $the_options['personal_data_policy_page']==$page->ID ):
+							if( $the_settings['personal_data_policy_page']==$page->ID ):
 							?>
 								<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title ); ?> </option>
 							<?php
@@ -248,11 +248,11 @@
 		</div> <!-- consistent-box -->
 
 
-		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
+		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
 
-		<div class="consistent-box <?php if( $the_options['pa'] != 1){echo 'forbiddenArea';} ?>">
+		<div class="consistent-box <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 
 			<h4 class="mb-4">
 				<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>../img/flag-switzerland.png" alt="" width="24">
@@ -281,7 +281,7 @@
 
 							<input type="hidden" name="display_lpd_field" value="false" id="display_lpd_field_no">
 
-							<input name="display_lpd_field" type="checkbox" value="true" id="display_lpd_field" <?php checked( $the_options['display_lpd'], true); ?>>
+							<input name="display_lpd_field" type="checkbox" value="true" id="display_lpd_field" <?php checked( $the_settings['display_lpd'], true); ?>>
 
 							<label for="display_lpd_field" class="me-2 label-checkbox"></label>
 
@@ -297,11 +297,11 @@
 		</div>
 
 
-		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
+		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
 
-		<div class="consistent-box <?php if( $the_options['pa'] != 1){echo 'forbiddenArea';} ?>">
+		<div class="consistent-box <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 
 			<h4 class="mb-4">
 				<i class="fa-regular fa-flag-usa"></i>
@@ -329,7 +329,7 @@
 
 							<input type="hidden" name="display_ccpa_field" value="false" id="display_ccpa_field_no">
 
-							<input name="display_ccpa_field" type="checkbox" value="true" id="display_ccpa_field" <?php checked( $the_options['display_ccpa'], true); ?>>
+							<input name="display_ccpa_field" type="checkbox" value="true" id="display_ccpa_field" <?php checked( $the_settings['display_ccpa'], true); ?>>
 
 							<label for="display_ccpa_field" class="me-2 label-checkbox"></label>
 

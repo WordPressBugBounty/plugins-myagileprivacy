@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 
@@ -23,7 +23,7 @@
 				</label>
 
 				<div class="col-sm-7">
-				<input disabled type="text" id="license_user_status_field" name="license_user_status_field" value="<?php echo esc_attr(stripslashes($the_options['license_user_status']));  ?>" class="form-control <?php if( $the_options['license_valid'] && !$the_options['grace_period'] ) echo esc_attr( 'success_style' ); else echo esc_attr( 'warning_style' );  ?>"/>
+				<input disabled type="text" id="license_user_status_field" name="license_user_status_field" value="<?php echo esc_attr(stripslashes($the_settings['license_user_status']));  ?>" class="form-control <?php if( $the_settings['license_valid'] && !$the_settings['grace_period'] ) echo esc_attr( 'success_style' ); else echo esc_attr( 'warning_style' );  ?>"/>
 
 					<div class="form-text">
 						<?php
@@ -44,7 +44,7 @@
 					</label>
 
 					<div class="col-sm-7">
-						<input type="text" class="form-control" id="license_code_field" name="license_code_field" value="<?php echo esc_attr(stripslashes($the_options['license_code']))  ?>" />
+						<input type="text" class="form-control" id="license_code_field" name="license_code_field" value="<?php echo esc_attr(stripslashes($the_settings['license_code']))  ?>" />
 
 						<div class="form-text">
 							<?php
@@ -53,7 +53,7 @@
 
 							<?php
 
-								if( isset( $the_options ) && isset( $the_options['license_code'] ) && $the_options['license_code'] ):
+								if( isset( $the_settings ) && isset( $the_settings['license_code'] ) && $the_settings['license_code'] ):
 							?>
 
 							<br>
@@ -72,7 +72,7 @@
 					</div>
 				</div> <!-- row -->
 
-				<div class="<?php if( !$the_options['summary_text'] ) echo 'd-none';  ?>">
+				<div class="<?php if( !$the_settings['summary_text'] ) echo 'd-none';  ?>">
 
 					<!-- email associata -->
 					<div class="row mb-4 d-none">
@@ -81,7 +81,7 @@
 						</label>
 
 						<div class="col-sm-7">
-							<input disabled class="form-control" type="text" id="customer_email_field" name="customer_email_field" value="<?php echo esc_attr(stripslashes($the_options['customer_email']));  ?>" />
+							<input disabled class="form-control" type="text" id="customer_email_field" name="customer_email_field" value="<?php echo esc_attr(stripslashes($the_settings['customer_email']));  ?>" />
 
 							<div class="form-text">
 								<?php
@@ -99,7 +99,7 @@
 						</label>
 
 						<div class="col-sm-7">
-							<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr( stripslashes( $the_options['summary_text'] ) ); ?></textarea>
+							<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr( stripslashes( $the_settings['summary_text'] ) ); ?></textarea>
 						</div>
 					</div> <!-- row -->
 
@@ -150,7 +150,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input disabled class="form-control" type="text" id="last_sync_field" name="last_sync_field" value="<?php if( $the_options['last_sync'] ) echo esc_attr( stripslashes( $the_options['last_sync'] ) ); else echo ''; ?>"/>
+					<input disabled class="form-control" type="text" id="last_sync_field" name="last_sync_field" value="<?php if( $the_settings['last_sync'] ) echo esc_attr( stripslashes( $the_settings['last_sync'] ) ); else echo ''; ?>"/>
 
 					<div class="form-text">
 						<?php

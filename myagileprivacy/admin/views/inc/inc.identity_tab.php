@@ -1,9 +1,11 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
+
+$caller = 'genericOptionsWrapper';
 
 ?>
 
@@ -22,91 +24,15 @@
 				</div>
 			</div>
 
-			<!-- website name -->
-			<div class="row mb-4">
-				<label for="website_name_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Domain list', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<textarea class="form-control" rows="6" id="website_name_field" name="website_name_field"><?php echo esc_attr( stripslashes($the_options['website_name'] ) )  ?></textarea>
-
-					<div class="form-text">
-						<?php echo wp_kses_post( __( 'You can enter multiple domain linked to this website.', 'MAP_txt' ) ); ?>
-					</div>
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-
-			<!-- company name -->
-			<div class="row mb-4">
-				<label for="identity_name_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Company Name / Site Holder', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<input type="text" class="form-control" id="identity_name_field" name="identity_name_field" value="<?php echo esc_attr(stripslashes($the_options['identity_name']))  ?>" />
-
-					<div class="form-text">
-						<?php echo wp_kses_post( __( 'Insert here the name of the company or the person who is the owner of the website.', 'MAP_txt' ) ); ?>
-					</div>
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-			<!-- company address -->
-			<div class="row mb-4">
-				<label for="identity_address_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Company Address', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<input type="text" class="form-control" id="identity_address_field" name="identity_address_field" value="<?php echo esc_attr(stripslashes($the_options['identity_address']))  ?>" />
-
-					<div class="form-text">
-						<?php echo wp_kses_post( __( 'Insert here the address of the company or person who owns the website.', 'MAP_txt' ) ); ?>
-					</div>
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-			<!-- vat id -->
-			<div class="row mb-4">
-				<label for="identity_vat_id_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Vat Id', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<input type="text" class="form-control" id="identity_vat_id_field" name="identity_vat_id_field" value="<?php echo esc_attr(stripslashes($the_options['identity_vat_id']))  ?>" />
-
-					<div class="form-text">
-						<?php echo wp_kses_post( __( 'Leave it blank, if not applicabile', 'MAP_txt' ) ); ?>.
-					</div>
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-			<!-- email -->
-			<div class="row mb-4">
-				<label for="identity_email_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Company E-mail', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<input type="text" class="form-control" id="identity_email_field" name="identity_email_field" value="<?php echo esc_attr(stripslashes($the_options['identity_email']))  ?>" />
-
-					<div class="form-text">
-						<?php echo wp_kses_post( __( 'Insert here the email where the user can contact you for questions about privacy and personal data use', 'MAP_txt' ) ); ?>.
-					</div>
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-
+			<?php include 'fields.identity_tab.php'; ?>
 
 		</div> <!-- consistent-box -->
 
-		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_options['pa'] == 1){echo 'd-none';} ?>">
+		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
 
-		<div class="consistent-box <?php if( $the_options['pa'] != 1){echo 'forbiddenArea';} ?>">
+		<div class="consistent-box <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 
 			<h4 class="mb-4">
 				<i class="fa-regular fa-address-card"></i>
@@ -130,7 +56,7 @@
 						<div class="round d-flex me-4">
 							<input type="hidden" name="display_dpo_field" value="false" id="display_dpo_field_no">
 
-							<input class="hideShowInput" data-hide-show-ref="display_dpo_field_wrapper" name="display_dpo_field" type="checkbox" value="true" id="display_dpo_field" <?php checked($the_options['display_dpo'], true); ?>>
+							<input class="hideShowInput" data-hide-show-ref="display_dpo_field_wrapper" name="display_dpo_field" type="checkbox" value="true" id="display_dpo_field" <?php checked($the_settings['display_dpo'], true); ?>>
 
 							<label for="display_dpo_field" class="me-2 label-checkbox"></label>
 
@@ -151,7 +77,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="dpo_email_field" name="dpo_email_field" value="<?php echo esc_attr(stripslashes($the_options['dpo_email']))  ?>" />
+					<input type="text" class="form-control" id="dpo_email_field" name="dpo_email_field" value="<?php echo esc_attr(stripslashes($the_settings['dpo_email']))  ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( 'Insert here the email of your DPO', 'MAP_txt' ) ); ?>.
@@ -167,7 +93,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="dpo_name_field" name="dpo_name_field" value="<?php echo esc_attr(stripslashes($the_options['dpo_name']))  ?>" />
+					<input type="text" class="form-control" id="dpo_name_field" name="dpo_name_field" value="<?php echo esc_attr(stripslashes($the_settings['dpo_name']))  ?>" />
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
@@ -179,7 +105,7 @@
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="dpo_address_field" name="dpo_address_field" value="<?php echo esc_attr( stripslashes( $the_options['dpo_address'] ) )  ?>" />
+					<input type="text" class="form-control" id="dpo_address_field" name="dpo_address_field" value="<?php echo esc_attr( stripslashes( $the_settings['dpo_address'] ) )  ?>" />
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 

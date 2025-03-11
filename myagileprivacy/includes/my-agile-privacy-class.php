@@ -30,7 +30,9 @@ define( 'MAP_POST_TYPE_POLICY', 'my-agile-privacy-p' );
 define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
 define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
 define( 'MAP_SCANNER', true );
+define( 'MAP_DASHBOARD', false );
 define( 'MAP_IAB_TCF', true );
+define( 'MAP_MY_AGILE_PIXEL_TEXT_FIX', false );
 define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
 define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
@@ -652,7 +654,9 @@ class MyAgilePrivacy {
 			case 'enable_cmode_v2':
 			case 'enable_cmode_url_passthrough':
 			case 'cmode_v2_forced_off_ga4_advanced':
+			case 'bypass_cmode_enable':
 			case 'cmode_v2_js_on_error':
+			case 'enable_language_fallback':
 				if ( $value === 'true' || $value === true )
 				{
 					$ret = true;
@@ -710,7 +714,10 @@ class MyAgilePrivacy {
 			case 'dpo_email':
 			case 'dpo_name':
 			case 'dpo_address':
-				$ret = wp_kses( trim( $value ), self::allowed_html_tags(), self::allowed_protocols() );
+				$ret = wp_kses( $value , self::allowed_html_tags(), self::allowed_protocols() );
+
+				if( !is_null( $ret ) ) $ret = trim( $ret );
+
 				break;
 			case 'custom_css':
 				$ret = esc_html( $value );
@@ -962,7 +969,7 @@ class MyAgilePrivacy {
 			'is_bottom'									=>	true,
 			'cookie_banner_vertical_position'			=> 	null,
 			'cookie_banner_horizontal_position'			=> 	null,
-			'cookie_banner_size'						=> 	null,
+			'cookie_banner_size'						=> 	'sizeWideBranded',
 			'cookie_banner_shadow'						=> 	false,
 			'cookie_banner_animation'					=> 	'none',
 			'floating_banner'							=> 	1,
@@ -1018,7 +1025,7 @@ class MyAgilePrivacy {
 			'last_sync'									=>	null,
 			'default_locale'							=>	$default_locale,
 			'disable_logo'								=>	false,
-			'wl'										=>	0,
+			'wl_b'										=>	0,
 			'pa'										=>	0,
 			'last_legit_sync'							=>	null,
 			'custom_css'								=>	null,
@@ -1053,6 +1060,7 @@ class MyAgilePrivacy {
 			'enable_iab_tcf'							=>	false,
 			'enable_metadata_sync'						=>	true,
 
+			'bypass_cmode_enable'						=> 	false,
 			'enable_cmode_v2'							=>	false,
 			'enable_cmode_url_passthrough'				=> 	false,
 			'cmode_v2_implementation_type'				=> 	'native',
@@ -1068,7 +1076,11 @@ class MyAgilePrivacy {
 			'fixed_translations_encoded'				=>	null,
 			'cmode_v2_forced_off_ga4_advanced'			=>	false,
 
+
 			'last_scan_date_internal'					=>	null,
+
+			'enable_language_fallback' 					=> 	false,
+			'language_fallback_locale'					=>	null,
 		);
 
 		$settings = apply_filters( 'map_plugin_settings', $settings);
@@ -1237,7 +1249,7 @@ class MyAgilePrivacy {
 	 */
 	public static function get_json_settings()
 	{
-		$settings = self::get_settings();
+		$the_settings = self::get_settings();
 		$rconfig = self::get_rconfig();
 
 		$logged_in_and_admin = false;
@@ -1247,7 +1259,7 @@ class MyAgilePrivacy {
 		$the_translations = MyAgilePrivacy::getFixedTranslations();
 		$current_lang = MyAgilePrivacy::getCurrentLang4Char();
 
-		if( current_user_can( 'manage_options' ) && $settings['pa'] == 1 )
+		if( current_user_can( 'manage_options' ) && $the_settings['pa'] == 1 )
 		{
 			$logged_in_and_admin = true;
 			$internal_debug = true;
@@ -1262,26 +1274,41 @@ class MyAgilePrivacy {
 			$verbose_remote_log = true;
 		}
 
+		$map_notify_title = '0';
+
+		if( $the_settings['title_is_on'] )
+		{
+			$map_notify_title = '1';
+		}
+
+		$map_first_layer_branded = '0';
+		if( !$the_settings['pa'] || $the_settings['cookie_banner_size'] == 'sizeWideBranded' )
+		{
+			$map_first_layer_branded = '1';
+		}
+
 		$return_settings = array(
 			'logged_in_and_admin'						=>	$logged_in_and_admin,
 			'verbose_remote_log'						=>	$verbose_remote_log,
 			'internal_debug'							=>	$internal_debug,
-			'notify_div_id'								=> 	$settings['notify_div_id'],
-			'showagain_tab'								=> 	$settings['showagain_tab'],
-			'notify_position_horizontal'				=> 	$settings['notify_position_horizontal'],
-			'showagain_div_id'							=> 	$settings['showagain_div_id'],
+			'notify_div_id'								=> 	$the_settings['notify_div_id'],
+			'showagain_tab'								=> 	$the_settings['showagain_tab'],
+			'notify_position_horizontal'				=> 	$the_settings['notify_position_horizontal'],
+			'showagain_div_id'							=> 	$the_settings['showagain_div_id'],
 			'blocked_content_text'						=>	esc_html( $the_translations[ $current_lang ]['blocked_content'] ).'.',
-			'inline_notify_color'						=>	$settings['map_inline_notify_color'],
-			'inline_notify_background'					=>	$settings['map_inline_notify_background'],
-			'blocked_content_notify_auto_shutdown_time'	=>	$settings['blocked_content_notify_auto_shutdown_time'],
+			'inline_notify_color'						=>	$the_settings['map_inline_notify_color'],
+			'inline_notify_background'					=>	$the_settings['map_inline_notify_background'],
+			'blocked_content_notify_auto_shutdown_time'	=>	$the_settings['blocked_content_notify_auto_shutdown_time'],
 
-			'scan_mode'									=>	$settings['scan_mode'],
-			'cookie_reset_timestamp'					=>	( isset( $settings['cookie_reset_timestamp'] ) ) ? '_'.$settings['cookie_reset_timestamp'] : null,
-			'show_ntf_bar_on_not_yet_consent_choice'	=>	$settings['show_ntf_bar_on_not_yet_consent_choice'],
+			'scan_mode'									=>	$the_settings['scan_mode'],
+			'cookie_reset_timestamp'					=>	( isset( $the_settings['cookie_reset_timestamp'] ) ) ? '_'.$the_settings['cookie_reset_timestamp'] : null,
+			'show_ntf_bar_on_not_yet_consent_choice'	=>	$the_settings['show_ntf_bar_on_not_yet_consent_choice'],
 
-			'enable_cmode_v2'							=> 	$settings['enable_cmode_v2'],
-			'enable_cmode_url_passthrough'				=>	$settings['enable_cmode_url_passthrough'],
-			'cmode_v2_forced_off_ga4_advanced'			=>	$settings['cmode_v2_forced_off_ga4_advanced'],
+			'enable_cmode_v2'							=> 	$the_settings['enable_cmode_v2'],
+			'enable_cmode_url_passthrough'				=>	$the_settings['enable_cmode_url_passthrough'],
+			'cmode_v2_forced_off_ga4_advanced'			=>	$the_settings['cmode_v2_forced_off_ga4_advanced'],
+			'map_notify_title'							=>	$map_notify_title,
+			'map_first_layer_branded'					=>	$map_first_layer_branded,
 			'plugin_version'							=>	MAP_PLUGIN_VERSION,
 		);
 
@@ -1340,32 +1367,46 @@ class MyAgilePrivacy {
 
 		// Send the request
 		$response = wp_remote_post( $url, $args );
+		$http_code = wp_remote_retrieve_response_code( $response );
 
-		if ( is_wp_error( $response ) )
+		if( is_wp_error( $response ) || !( $http_code == '200' || $http_code == '429' ) )
 		{
 			//let's try http
 			$http_response = wp_remote_post( str_replace( 'https://','http://', $url ), $args );
+			$http_response_code = wp_remote_retrieve_response_code( $http_response );
 
-			if( !is_wp_error( $http_response ) )
+			if( is_wp_error( $http_response ) || !( $http_response_code == '200' || $http_response_code == '429' ) )
 			{
-				$response_body = wp_remote_retrieve_body( $http_response );
-				$result = json_decode( $response_body, true );
+				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $http_response );
+
+				$error_code = null;
+				$error_message = null;
+
+				if( isset( $response->errors ) && is_array( $response->errors ) && !empty( $response->errors ) )
+				{
+					$error_code = array_key_first( $response->errors );
+					$error_message = $response->errors[ $error_code ][0];
+				}
+
+				$error_code_http = null;
+				$error_message_http = null;
+
+				if( isset( $http_response->errors ) && is_array( $http_response->errors ) && !empty( $http_response->errors ) )
+				{
+					$error_code_http = array_key_first( $http_response->errors );
+					$error_message_http = $http_response->errors[ $error_code ][0];
+				}
+
+				$result = array(
+					'internal_error_message'	=>	"$error_code -> $error_message , $error_code_http -> $error_message_http ( $http_code/ $http_response_code )",
+				);
 
 				return $result;
 			}
 			else
 			{
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $http_response );
-
-				$error_code = array_key_first( $response->errors );
-				$error_message = $response->errors[ $error_code ][0];
-
-				$error_code_http = array_key_first( $http_response->errors );
-				$error_message_http = $http_response->errors[ $error_code ][0];
-
-				$result = array(
-					'internal_error_message'	=>	"$error_code -> $error_message , $error_code_http -> $error_message_http",
-				);
+				$response_body = wp_remote_retrieve_body( $http_response );
+				$result = json_decode( $response_body, true );
 
 				return $result;
 			}
@@ -1718,19 +1759,124 @@ class MyAgilePrivacy {
 
 
 	/**
-	* sort frontend cookies in order to give prio to google_tag_manager execution
+	* sort frontend cookies in order to give priority to google_tag_manager / stape presentation
 	*/
 	public static function frontendCookieSort( $a, $b )
 	{
-		if( $a['api_key'] == 'google_tag_manager' )
+		if( $a['api_key'] == 'google_tag_manager' || $a['api_key'] == 'stape' )
 		{
 			return -1;
 		}
-		elseif( $b['api_key'] == 'google_tag_manager' )
+		elseif( $b['api_key'] == 'google_tag_manager' || $b['api_key'] == 'stape' )
 		{
 			return 1;
 		}
 		return 0;
+	}
+
+
+	//f for getting global integrity checks
+	public static function getGlobalIntegrityChesks()
+	{
+		$the_settings = self::get_settings();
+
+		$global_integrity_checks = [
+			'version' 						=> '1.0',
+			'dashboard_checks'				=>	null,
+			'dashboard_checks_count'		=>	0,
+			'dashboard_checks_passed_count'	=>	0,
+			'summary'						=>	array(
+													'status_class_name'				=>	'bg-success',
+													'completion_percentage'			=>	0,
+													'completion_percentage_width'	=>	0,
+												)
+		];
+
+		//check identity information
+		//check cookie shield status
+		//check consent mode status
+
+		$dashboard_checks =  array(
+			'identity' => array(
+				'check' 		=> (
+									isset( $the_settings['identity_name'] ) &&
+									$the_settings['identity_name'] &&
+									isset( $the_settings['identity_address'] ) &&
+									$the_settings['identity_address'] &&
+									isset( $the_settings['identity_email'] ) &&
+									$the_settings['identity_email']
+								)
+			),
+			'consent_mode' => array(
+				'is_skipped'	=>	( isset( $the_settings['bypass_cmode_enable'] ) &&
+										$the_settings['bypass_cmode_enable'] ),
+				'is_enabled' 	=> ( isset( $the_settings['pa'] ) &&
+									$the_settings['pa'] == 1 &&
+									isset( $the_settings['enable_cmode_v2'] ) &&
+									$the_settings['enable_cmode_v2'] ),
+				'check' 		=> (
+										( isset( $the_settings['pa'] ) &&
+										$the_settings['pa'] == 1 ) &&
+										(
+											( isset( $the_settings['enable_cmode_v2'] ) &&
+												$the_settings['enable_cmode_v2'] )  ||
+											( isset( $the_settings['bypass_cmode_enable'] ) &&
+												$the_settings['bypass_cmode_enable'] )
+										)
+								)
+			),
+			'cookie_shield' => array(
+				'check' 		=> ( isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] !== 'turned_off')
+			),
+		);
+
+		$global_integrity_checks['dashboard_checks'] = $dashboard_checks;
+		$global_integrity_checks['dashboard_checks_count'] = count( $global_integrity_checks['dashboard_checks'] );
+
+		foreach( $global_integrity_checks['dashboard_checks'] as $key => &$item )
+		{
+			switch( $key )
+			{
+				case 'identity':
+					$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+					break;
+				case 'consent_mode':
+
+					if( $item['is_skipped'] )
+					{
+						$item['status_class_name'] = 'warning';
+					}
+					else
+					{
+						$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+					}
+
+					break;
+				case 'cookie_shield':
+					$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+					break;
+
+				default:
+					$check['status_class_name'] = '';
+					break;
+			}
+
+			if( $item['check'] )
+			{
+				$global_integrity_checks['dashboard_checks_passed_count'] = $global_integrity_checks['dashboard_checks_passed_count'] + 1;
+			}
+		}
+
+		$global_integrity_checks['summary']['completion_percentage'] = intval( ( $global_integrity_checks['dashboard_checks_passed_count'] / $global_integrity_checks['dashboard_checks_count'] ) * 100 );
+		$global_integrity_checks['summary']['completion_percentage_width'] = $global_integrity_checks['summary']['completion_percentage'];
+
+		if( $global_integrity_checks['summary']['completion_percentage'] == 0 )
+		{
+			$global_integrity_checks['summary']['status_class_name'] = 'bg-danger';
+			$global_integrity_checks['summary']['completion_percentage_width'] = 100;
+		}
+
+		return $global_integrity_checks;
 	}
 
 	//f for avoiding polylang filters
@@ -1857,7 +2003,7 @@ class MyAgilePrivacy {
 	*/
 	public static function getFixedTranslations()
 	{
-		$settings = self::get_settings();
+		$the_settings = self::get_settings();
 
 		$default_txt = array();
 
@@ -2299,7 +2445,7 @@ class MyAgilePrivacy {
 
 		$final_txt = $default_txt;
 
-		$fixed_translations = ( isset( $settings['fixed_translations_encoded'] ) && $settings['fixed_translations_encoded'] ) ? json_decode( $settings['fixed_translations_encoded'], true ) : array();
+		$fixed_translations = ( isset( $the_settings['fixed_translations_encoded'] ) && $the_settings['fixed_translations_encoded'] ) ? json_decode( $the_settings['fixed_translations_encoded'], true ) : array();
 
 		if( !is_null( $fixed_translations ) && !empty( $fixed_translations ) )
 		{
@@ -2324,7 +2470,7 @@ class MyAgilePrivacy {
 	//f for getting current lang (4 char)
 	public static function getCurrentLang4Char()
 	{
-		$the_options = self::get_settings();
+		$the_settings = self::get_settings();
 
 		$currentAndSupportedLanguages = self::getCurrentAndSupportedLanguages();
 
@@ -2335,6 +2481,17 @@ class MyAgilePrivacy {
 
 			//4 char version
 			$current_lang = self::translate2charTo4CharLangCode( $current_language_2char );
+
+			if( !$current_lang &&
+				isset( $the_settings ) &&
+				isset( $the_settings['enable_language_fallback'] ) &&
+				$the_settings['enable_language_fallback'] &&
+				isset( $the_settings['language_fallback_locale'] ) &&
+				$the_settings['language_fallback_locale']
+			)
+			{
+				$current_lang = $the_settings['language_fallback_locale'];
+			}
 
 			if( !$current_lang )
 			{
@@ -2348,7 +2505,7 @@ class MyAgilePrivacy {
 		}
 		else
 		{
-			$current_lang = $the_options['default_locale'];
+			$current_lang = $the_settings['default_locale'];
 		}
 
 		return $current_lang;

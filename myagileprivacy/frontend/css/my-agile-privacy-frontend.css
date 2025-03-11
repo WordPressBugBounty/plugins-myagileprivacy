@@ -119,7 +119,6 @@ My Agile Privacy Main Css
     width: 70vw;
 }
 
-
 /* Banner Positioning */
 #my-agile-privacy-notification-area.mapPositionTopLeft {
     top: 0;
@@ -222,14 +221,13 @@ My Agile Privacy Main Css
     width: calc(100% - 6vw);
 }
 
-
-
 /* Buttons Positioning */
 
 #my-agile-privacy-notification-area .map_notification_container a {
     padding: 8px 0px;
     width: 100%;
     text-decoration: none;
+    cursor: pointer!important;
 }
 
 #my-agile-privacy-notification-area .map_notification_container a:focus{
@@ -292,6 +290,7 @@ My Agile Privacy Main Css
 #my-agile-privacy-notification-area.mapSizeBoxed .map_notification_container a {
     text-align: center;
     width: 30%;
+    cursor:pointer;
 }
 
 #my-agile-privacy-notification-area .map_notification_container a:hover {
@@ -317,7 +316,6 @@ My Agile Privacy Main Css
     filter: brightness(90%);
     -webkit-filter: brightness(90%);
 }
-
 
 
 @media (max-width: 1024px) {
@@ -439,10 +437,17 @@ My Agile Privacy Main Css
     font-size: 24px;
 }
 
+@media (max-width: 320px) {
+    .map-modal h4 {
+        font-size: 20px !important;
+    }
+}
+
 .map-modal-body .modal_credits {
 	font-size: 11px;
 	text-align: right;
-    padding-top: 15px;
+    padding: 15px 5px 0px 5px;
+    border-top: 1px solid #d6d6d6;
 }
 
 .map-modal-body a {
@@ -461,8 +466,8 @@ My Agile Privacy Main Css
 }
 
 .map-modal-body img{
-    width: 111px!important;
-    height: 50px!important;
+    max-width: 100% !important;
+    max-height: 30px!important;
 }
 
 .map-modal-body .modal_credits a {
@@ -478,7 +483,7 @@ My Agile Privacy Main Css
 
 .map-modal-body .map-tab-container .map-cookielist-overflow-container {
     overflow-y: auto;
-    max-height: 100%;
+    max-height: 70%;
 }
 
 .map-modal-backdrop.map-fade {
@@ -1237,4 +1242,153 @@ span.map-necessary-caption {
     gap: 10px;
 }
 
+/* Branded Banner Layout */
+#my-agile-privacy-notification-area.mapSizeWideBranded {
+    width: 90vw;
+}
 
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container {
+    margin-top: 20px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a {
+    display: block;
+    margin-right: 0;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a:last-child {
+    margin-right: 0;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+    flex: 1 1 auto; /* Permette all'area di espandersi */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Mantiene l'allineamento orizzontale */
+    align-items: center; /* Centra verticalmente */
+    padding-top: 25px;
+    padding-bottom: 25px;
+    gap: 20px;
+
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container .map_notification-message {
+    flex-basis: 100%;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container {
+    flex-basis: 100%;
+    width:100%;
+    margin-top: 0;
+    padding-left: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a {
+    
+    text-align: center;
+    width: 30%;
+
+}
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a:last-child {
+    margin-bottom: 0px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification-message.map-iab-context{
+    flex-basis: 80%!important;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container.map-iab-context{
+    flex-basis: 20%!important;
+    /* flex-direction: column!important; */
+    display: flex;
+    gap: 10px;
+}
+
+
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 30px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
+    max-width: 300px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+}
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box img {
+    max-width:100%;
+}
+
+@media (max-width: 1024px) {
+    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+        display: block;
+        padding-bottom: 0;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-left: 0;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 425px) {
+    #my-agile-privacy-notification-area.mapSizeWideBranded.map_floating_banner {
+        width: calc(100vw - 6vw);
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+        padding-top: 0;
+    }
+}
+@media (max-width: 430px) {
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 0px;
+        padding: 10px;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
+        max-width: 50%;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/*fix for extra narrow display*/
+@media (max-width: 450px) {
+    #my-agile-privacy-notification-area .map_notification_container {
+        flex-direction: column!important;
+        align-items: center!important;
+        gap: 10px!important;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container a {
+        width: 100% !important;
+    }
+
+    .map-tab-header a.map-nav-link {
+        max-width: 130px!important;
+    }
+
+    .map-tab-header a.map-consent-mode-link {
+        max-width: 70px!important;
+    }
+}

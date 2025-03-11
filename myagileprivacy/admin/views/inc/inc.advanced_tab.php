@@ -1,9 +1,9 @@
 <?php
 
-	if( !defined( 'MAP_PLUGIN_NAME' ) )
-	{
-		exit('Not allowed.');
-	}
+if( !defined( 'MAP_PLUGIN_NAME' ) )
+{
+	exit('Not allowed.');
+}
 
 ?>
 
@@ -29,7 +29,7 @@
 
 							<input type="hidden" name="forced_auto_update_field" value="false" id="forced_auto_update_field_no">
 
-							<input name="forced_auto_update_field" type="checkbox" value="true" id="forced_auto_update_field" <?php checked( $the_options['forced_auto_update'], true); ?>>
+							<input name="forced_auto_update_field" type="checkbox" value="true" id="forced_auto_update_field" <?php checked( $the_settings['forced_auto_update'], true); ?>>
 
 							<label for="forced_auto_update_field" class="me-3 label-checkbox"></label>
 
@@ -56,7 +56,7 @@
 
 							<input type="hidden" name="enable_metadata_sync_field" value="false" id="enable_metadata_sync_field_no">
 
-							<input name="enable_metadata_sync_field" type="checkbox" value="true" id="enable_metadata_sync_field" <?php checked( $the_options['enable_metadata_sync'], true); ?>>
+							<input name="enable_metadata_sync_field" type="checkbox" value="true" id="enable_metadata_sync_field" <?php checked( $the_settings['enable_metadata_sync'], true); ?>>
 
 							<label for="enable_metadata_sync_field" class="me-3 label-checkbox"></label>
 
@@ -74,16 +74,18 @@
 
 			<?php
 
-				$this_added_class = '';
+				$this_added_class_first = '';
+				$this_added_class_second = 'd-none';
 
 				if( $currentAndSupportedLanguages['with_multilang'] )
 				{
-					$this_added_class = 'd-none';
+					$this_added_class_first = 'd-none';
+					$this_added_class_second = '';
 				}
 
 			?>
 
-			<div class="row mb-4 <?php echo esc_attr( $this_added_class ) ; ?>">
+			<div class="row mb-4 <?php echo esc_attr( $this_added_class_first ) ; ?>">
 				<label for="default_locale_field" class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Language', 'MAP_txt' ) ); ?>
 				</label>
@@ -102,7 +104,88 @@
 								$valid_options[ $this_language_key ] = $this_language_value;
 							}
 
-							$selected_value = $the_options['default_locale'];
+							$selected_value = $the_settings['default_locale'];
+
+							if( isset( $valid_options[ $selected_value ] ) )
+							{
+								$valid_options[ $selected_value ]['selected'] = true;
+							}
+
+							foreach( $valid_options as $key => $data )
+							{
+								if( $data['selected'] )
+								{
+									?>
+									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
+									<?php
+								}
+								else
+								{
+									?>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
+									<?php
+								}
+							}
+
+						?>
+					</select>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+
+			<div class="row mb-4 <?php echo esc_attr( $this_added_class_second ) ; ?>">
+
+				<label for="enable_language_fallback_field" class="col-sm-5 col-form-label">
+					<?php  echo wp_kses_post( __( 'Enable Fallback language', 'MAP_txt' ) ); ?>
+				</label>
+
+				<div class="col-sm-6">
+
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-12">
+
+							<input type="hidden" name="enable_language_fallback_field" value="false" id="enable_language_fallback_field_no">
+
+							<input class="hideShowInput" data-hide-show-ref="language_fallback_locale" name="enable_language_fallback_field" type="checkbox" value="true" id="enable_language_fallback_field" <?php checked( $the_settings['enable_language_fallback'], true); ?>>
+
+							<label for="enable_language_fallback_field" class="me-3 label-checkbox"></label>
+
+							<label for="enable_language_fallback_field">
+								<?php  echo wp_kses_post( __( 'I would like to customize the default language fallback setting.', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div> <!-- ./ styled_radio -->
+					<div class="form-text">
+						<?php  echo wp_kses_post( __( 'By modifying this setting, you will change the default display language for texts and notifications in the event of an unsupported language.', 'MAP_txt' ) ); ?>
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="row mb-4 language_fallback_locale displayNone">
+
+
+				<label for="default_locale_field" class="col-sm-5 col-form-label">
+					<?php  echo wp_kses_post( __( 'Fallback language', 'MAP_txt' ) ); ?>
+				</label>
+
+				<div class="col-sm-7">
+
+					<select id="language_fallback_locale_field" name="language_fallback_locale_field" class="form-control">
+						<?php
+
+							$valid_options = array();
+
+							foreach( $currentAndSupportedLanguages['supported_languages'] as $this_language_key => $this_language_value )
+							{
+								$this_language_value['selected'] = false;
+
+								$valid_options[ $this_language_key ] = $this_language_value;
+							}
+
+							$selected_value = $the_settings['language_fallback_locale'];
 
 							if( isset( $valid_options[ $selected_value ] ) )
 							{
@@ -141,9 +224,9 @@
 				<div class="col-sm-7">
 
 					<div class="position-relative code-block-container">
-						<textarea id="custom_css_field" name="custom_css_field" class="code-editor text_style" spellcheck="false"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_options['custom_css'] ) ); ?></textarea>
+						<textarea id="custom_css_field" name="custom_css_field" class="code-editor text_style" spellcheck="false"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_settings['custom_css'] ) ); ?></textarea>
 
-						<pre class="line-numbers code-viewer"><code class="language-css"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_options['custom_css'] ) ); ?></code></pre>
+						<pre class="line-numbers code-viewer"><code class="language-css"><?php echo apply_filters( 'format_to_edit', esc_attr( $the_settings['custom_css'] ) ); ?></code></pre>
 					</div>
 
 					<div class="form-text">
@@ -164,7 +247,7 @@
 
 							<input type="hidden" name="wrap_shortcodes_field" value="false" id="wrap_shortcodes_field_no">
 
-							<input name="wrap_shortcodes_field" type="checkbox" value="true" id="wrap_shortcodes_field" <?php checked($the_options['wrap_shortcodes'], true); ?>>
+							<input name="wrap_shortcodes_field" type="checkbox" value="true" id="wrap_shortcodes_field" <?php checked($the_settings['wrap_shortcodes'], true); ?>>
 
 							<label for="wrap_shortcodes_field" class="me-2 label-checkbox"></label>
 

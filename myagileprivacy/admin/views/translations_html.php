@@ -19,7 +19,6 @@
 
 	<h2>My Agile Privacy: <?php echo wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ); ?></h2>
 
-
 	<form action="admin-ajax.php" method="post" id="map_user_settings_form">
 
 		<input type="hidden" name="action" value="update_translations_form" id="action" />
