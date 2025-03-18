@@ -17,7 +17,6 @@ if( $rconfig &&
 	$layer2_overflow_wrapper_class = "";
 }
 
-
 $iab_tcf_context = false;
 $iab_extra_class = '';
 
@@ -116,6 +115,11 @@ if( !$new_position )
 	}
 
 	$new_size = 'mapSizeBoxed';
+}
+
+if( !$the_settings['pa'] )
+{
+	$new_size = 'mapSizeWideBranded';
 }
 
 $floating_banner = ( $the_settings['floating_banner'] == false ) ? '' : 'map_floating_banner';

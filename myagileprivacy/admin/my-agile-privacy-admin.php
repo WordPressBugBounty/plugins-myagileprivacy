@@ -2788,14 +2788,19 @@ class MyAgilePrivacyAdmin {
 					}
 				}
 
-				//dashboard first
 				if( defined( 'MAP_DASHBOARD' ) && MAP_DASHBOARD )
 				{
+					//dashboard first
 					array_unshift( $out, $dashboard_menu );
-				}
 
-				//settings next
-				array_splice( $out, 1, 0, array($settings_menu) );
+					//settings next
+					array_splice( $out, 1, 0, array( $settings_menu ) );
+				}
+				else
+				{
+
+					array_unshift( $out, $settings_menu );
+				}
 
 				$submenu['edit.php?post_type='.MAP_POST_TYPE_COOKIES] = $out;
 			}
