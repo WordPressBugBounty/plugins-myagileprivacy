@@ -1840,7 +1840,8 @@ class MyAgilePrivacyAdmin {
 		//bof my agile pixel
 		$with_my_agile_pixel = false;
 
-		if( !function_exists( 'is_plugin_active' ) ) {
+		if( !function_exists( 'is_plugin_active' ) )
+		{
 			include_once(ABSPATH . 'wp-admin/includes/plugin.php' );
 		}
 
@@ -2912,8 +2913,14 @@ class MyAgilePrivacyAdmin {
 			$css_compatibility_fix = true;
 		}
 
-		$locale = get_user_locale();
-
+		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+		{
+			$locale = get_locale();
+		}
+		else
+		{
+			$locale = get_user_locale();
+		}
 
 		global $wpdb;
 
@@ -3545,7 +3552,15 @@ class MyAgilePrivacyAdmin {
 
 		global $post;
 		$custom = get_post_custom( $post->ID );
-		$locale = get_user_locale();
+
+		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+		{
+			$locale = get_locale();
+		}
+		else
+		{
+			$locale = get_user_locale();
+		}
 
 		$_map_is_readonly = ( isset( $custom["_map_is_readonly"][0] ) ) ? $custom["_map_is_readonly"][0] : false;
 
@@ -4060,7 +4075,15 @@ class MyAgilePrivacyAdmin {
 	{
 		global $post;
 		$custom = get_post_custom();
-		$locale = get_user_locale();
+
+		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+		{
+			$locale = get_locale();
+		}
+		else
+		{
+			$locale = get_user_locale();
+		}
 
 		switch ( $column )
 		{
@@ -4937,7 +4960,14 @@ class MyAgilePrivacyAdmin {
 			$review_urls = $rconfig['review_urls'];
 		}
 
-		$locale = get_user_locale();
+		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+		{
+			$locale = get_locale();
+		}
+		else
+		{
+			$locale = get_user_locale();
+		}
 
 		if( $locale && $locale == 'it_IT' )
 		{

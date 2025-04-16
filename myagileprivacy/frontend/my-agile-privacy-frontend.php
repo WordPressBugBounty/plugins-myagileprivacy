@@ -649,10 +649,7 @@ class MyAgilePrivacyFrontend {
 
 				if( $currentAndSupportedLanguages['with_multilang'] )
 				{
-					if( !$lang )
-					{
-						$lang = $currentAndSupportedLanguages['current_language'];
-					}
+					$lang = $currentAndSupportedLanguages['current_language'];
 
 					$post_custom = get_post_custom( $the_id );
 					$_map_translations_decoded = ( isset( $post_custom["_map_translations"][0] ) ) ? json_decode( $post_custom["_map_translations"][0], true )  : null;
@@ -665,7 +662,23 @@ class MyAgilePrivacyFrontend {
 						}
 						else
 						{
-							$content = $_map_translations_decoded[ $currentAndSupportedLanguages['multilang_default_lang'] ]['text'];
+							if(
+								isset( $the_settings ) &&
+								isset( $the_settings['enable_language_fallback'] ) &&
+								$the_settings['enable_language_fallback'] &&
+								isset( $the_settings['language_fallback_locale'] ) &&
+								$the_settings['language_fallback_locale']
+							)
+							{
+								$language_key = substr( $the_settings['language_fallback_locale'], 0, 2 );
+							}
+							else
+							{
+								$language_key = $currentAndSupportedLanguages['multilang_default_lang'];
+							}
+
+
+							$content = $_map_translations_decoded[ $language_key ]['text'];
 						}
 					}
 				}
@@ -761,6 +774,9 @@ class MyAgilePrivacyFrontend {
 					) ||
 					(
 						$the_settings['scanner_compatibility_mode']
+					) ||
+					(
+						$currentAndSupportedLanguages['is_falang_enabled']
 					)
 				)
 				{
@@ -808,6 +824,8 @@ class MyAgilePrivacyFrontend {
 				{
 					$content = '<div id="myagileprivacy_text_wrapper" class="myagileprivacy_text_wrapper">'.$content.'</div>';
 				}
+
+				$content = '<!--googleoff: all-->'.$content.'<!--googleon: all-->';
 
 				return $content;
 			}
@@ -1071,7 +1089,8 @@ class MyAgilePrivacyFrontend {
 			wp_enqueue_style( $this->plugin_name.'-animate', plugin_dir_url(__FILE__) . 'css/animate.min.css', array(), $this->version, 'all' );
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url(__FILE__) . 'css/my-agile-privacy-frontend.css', array(), $this->version, 'all' );
 
-			if( !function_exists( 'is_plugin_active' ) ) {
+			if( !function_exists( 'is_plugin_active' ) )
+			{
 				include_once(ABSPATH . 'wp-admin/includes/plugin.php' );
 			}
 
@@ -1404,8 +1423,23 @@ class MyAgilePrivacyFrontend {
 								}
 								else
 								{
-									$elem['post_title'] = $_map_translations_decoded[ $currentAndSupportedLanguages['multilang_default_lang'] ]['name'];
-									$elem['post_content'] = $_map_translations_decoded[ $currentAndSupportedLanguages['multilang_default_lang'] ]['text'];
+									if(
+										isset( $the_settings ) &&
+										isset( $the_settings['enable_language_fallback'] ) &&
+										$the_settings['enable_language_fallback'] &&
+										isset( $the_settings['language_fallback_locale'] ) &&
+										$the_settings['language_fallback_locale']
+									)
+									{
+										$language_key = substr( $the_settings['language_fallback_locale'], 0, 2 );
+									}
+									else
+									{
+										$language_key = $currentAndSupportedLanguages['multilang_default_lang'];
+									}
+
+									$elem['post_title'] = $_map_translations_decoded[ $language_key ]['name'];
+									$elem['post_content'] = $_map_translations_decoded[ $language_key ]['text'];
 								}
 							}
 						}
@@ -1742,11 +1776,6 @@ class MyAgilePrivacyFrontend {
 
 				}
 			}
-
-
-
-
-
 
 			$this->scan_config = $parse_config;
 
@@ -2346,7 +2375,7 @@ class MyAgilePrivacyFrontend {
 							'map_ga_consent_checker'		=>	true,
 						)).';'.PHP_EOL;
 						$base_config_script .= "setTimeout( function() {
-												if( typeof window.MyAgilePixelProxyBeacon !== 'undefined ') window.MyAgilePixelProxyBeacon( alt_mpx_settings );
+												if( typeof window.MyAgilePixelProxyBeacon !== 'undefined' ) window.MyAgilePixelProxyBeacon( alt_mpx_settings );
 											}, 500 );".PHP_EOL;
 					}
 				}

@@ -2340,7 +2340,7 @@ var MAP =
 				} );
 			}
 
-			that.tryToUnblockScripts( true );
+			that.tryToUnblockScripts( true, null );
 
 			(async() => {
 
@@ -2458,7 +2458,7 @@ var MAP =
 				} );
 			}
 
-			that.tryToUnblockScripts( true );
+			that.tryToUnblockScripts( true, null );
 
 			setTimeout( function() {
 				that.checkBlockedContent();
@@ -2488,7 +2488,7 @@ var MAP =
 		}
 	},
 
-	tryToUnblockScripts: function( from_user_interaction = false )
+	tryToUnblockScripts: function( from_user_interaction = false, cookieNameReference = null )
 	{
 		try {
 
@@ -2515,12 +2515,16 @@ var MAP =
 				var cookieName = 'map_cookie_' + baseIndex + MAP_POSTFIX;
 				var api_key = $this.getAttribute('data-cookie-api-key');
 
-				if( do_calc_need_reload && $this.classList.contains( 'map_page_reload_on_user_consent' ) )
+				var cookieValue = MAP_Cookie.read( cookieName );
+
+				if( $this.classList &&
+					do_calc_need_reload &&
+					$this.classList.contains( 'map_page_reload_on_user_consent' ) &&
+					cookieName == cookieNameReference &&
+					MAP_Cookie.read( cookieName ) == '1' )
 				{
 					need_reload = true;
 				}
-
-				var cookieValue = MAP_Cookie.read( cookieName );
 
 				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'debug ' + api_key + ' ' + cookieName + ' ' + cookieValue );
 
@@ -2979,7 +2983,7 @@ var MAP =
 
 						that.updateSomeConsentGivenStatus();
 
-						that.tryToUnblockScripts( true );
+						that.tryToUnblockScripts( true, cookieName );
 
 					});
 				});
@@ -3189,7 +3193,7 @@ var MAP =
 
 			if( only_init_status == false )
 			{
-				that.tryToUnblockScripts( false );
+				that.tryToUnblockScripts( false, null );
 			}
 
 		}
@@ -3644,7 +3648,7 @@ var MAP =
 				return;
 			}
 
-			const googleTagRegex = /^G-/;
+			const googleTagRegex = /^(G-|UA-|AW-)/;
 			let is_consent_valid = false;
 			let has_valid_google_tag = false;
 			let error_motivation = '';
@@ -3708,7 +3712,7 @@ var MAP =
 				// Check if no Google Tag was validated
 				if( !has_valid_google_tag && MAP_SYS?.cmode_v2_implementation_type != 'gtm' )
 				{
-					error_motivation = 'Google Tag seems missing';
+					error_motivation = 'A valid Google Tag seems missing';
 					error_code = 50;
 				}
 			}

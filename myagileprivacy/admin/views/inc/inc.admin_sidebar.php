@@ -5,7 +5,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	exit('Not allowed.');
 }
 
-$locale = get_user_locale();
+if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+{
+	$locale = get_locale();
+}
+else
+{
+	$locale = get_user_locale();
+}
 
 if( $the_settings['pa'] == 1 )
 {

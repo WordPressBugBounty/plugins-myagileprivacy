@@ -223,7 +223,7 @@ $showagain_tab = $the_settings['showagain_tab'];
 $custom_css = $the_settings['custom_css'];
 $notify_position_horizontal = $the_settings['notify_position_horizontal'];
 $blocked_content_notify = $the_settings['blocked_content_notify'];
-$wl_b = intval( $the_settings['wl_b'] );
+$wl_b = ( isset( $the_settings['wl_b'] ) ) ? intval( $the_settings['wl_b'] ) : 0;
 
 $cookie_policy_html_inside_banner = "";
 $cookie_policy_html_inside_popup = "";
@@ -342,12 +342,7 @@ else
 
 $notify_logo_color = ( $the_settings['heading_background_color'] == '#ffffff' ) ? '#F93F00' : $the_settings['heading_background_color'];
 
-$the_empty_href = "";
-
-if( isset( $the_settings['scanner_compatibility_mode'] ) && $the_settings['scanner_compatibility_mode'] )
-{
-	$the_empty_href = "#";
-}
+$the_empty_href = "#";
 
 $notify_html .= '<div data-nosnippet class="'.esc_attr( $showagain_div_classes ).'" id="' . esc_attr( $the_settings["showagain_div_id"] ) . '" style="'.esc_attr( $border_radius_style ).'"><div class="map_logo_container" style="background-color:'.$notify_logo_color.';"></div><a role="button" class="showConsent" href="'.$the_empty_href.'" data-nosnippet>' . wp_kses( $show_again, MyAgilePrivacy::allowed_html_tags() ) . '</a>'.$spacing_text.$cookie_policy_html_inside_banner.'</div>';
 
@@ -395,7 +390,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 		<div class="map-container-fluid map-tab-container">
 
 			<div class="map-privacy-overview">
-				<h4 data-nosnippet><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></h4>
+				<p class="map-h4-heading" data-nosnippet><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></p>
 			</div>
 
 			<p data-nosnippet

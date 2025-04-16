@@ -923,8 +923,21 @@ class MyAgilePrivacy {
 							&& strpos( $_GET['rest_route'], '/', 0 ) === 0)
 					 $skip = 'true';
 
-			//post
-			if( !empty( $_POST ) ) $skip = 'true_due_to_post';
+
+			if( $skip == 'true' )
+			{
+				return $skip;
+			}
+
+			$the_settings = self::get_settings();
+
+			//legacy mode check
+			if( !( isset( $the_settings ) && $the_settings['forced_legacy_mode'] ) )
+			{
+				//post
+				if( !empty( $_POST ) ) $skip = 'true_due_to_post';
+			}
+
 		}
 
 		return $skip;
@@ -1879,12 +1892,40 @@ class MyAgilePrivacy {
 		return $global_integrity_checks;
 	}
 
-	//f for avoiding polylang filters
+
+	//f for checking if to use alternative loading method, necessary for multilang plugin
+	public static function use_alt_option_method()
+	{
+		if( !function_exists( 'is_plugin_active' ) )
+		{
+			include_once(ABSPATH . 'wp-admin/includes/plugin.php' );
+		}
+
+		if( (
+				defined( 'POLYLANG_FILE' ) &&
+				function_exists( 'pll_default_language' ) &&
+				function_exists( 'pll_languages_list' )
+			) ||
+			(
+				is_plugin_active( 'wpml-string-translation/plugin.php' )
+			) ||
+			(
+				function_exists( 'FALANG') && function_exists( 'falang_default_language' )
+			)
+		)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	//f for getting data
 	public static function get_option( $option_name, $default = false )
 	{
-		if( !( defined( 'POLYLANG_FILE' ) &&
-			function_exists( 'pll_default_language' ) &&
-			function_exists( 'pll_languages_list' ) ) )
+		$use_alt_option_method = self::use_alt_option_method();
+
+		if( !$use_alt_option_method )
 		{
 			return get_option( $option_name, $default );
 		}
@@ -1893,7 +1934,7 @@ class MyAgilePrivacy {
 			global $wpdb;
 
 			// Check the cache first
-			$cached_value = wp_cache_get($option_name, 'options');
+			$cached_value = wp_cache_get( $option_name, 'options' );
 
 			if( $cached_value !== false )
 			{
@@ -1929,9 +1970,9 @@ class MyAgilePrivacy {
 	//f for avoiding polylang filters
 	public static function update_option( $option_name, $new_value )
 	{
-		if( !( defined( 'POLYLANG_FILE' ) &&
-			function_exists( 'pll_default_language' ) &&
-			function_exists( 'pll_languages_list' ) ) )
+		$use_alt_option_method = self::use_alt_option_method();
+
+		if( !$use_alt_option_method )
 		{
 			return update_option( $option_name, $new_value );
 		}
@@ -1940,7 +1981,7 @@ class MyAgilePrivacy {
 			global $wpdb;
 
 			// Ensure the option name is not empty
-			if( empty($option_name ) )
+			if( empty( $option_name ) )
 			{
 				return false;
 			}
@@ -2536,6 +2577,7 @@ class MyAgilePrivacy {
 			'is_polylang_enabled'			=>	false,
 			'is_translatepress_enabled'		=> 	false,
 			'is_weglot_enabled'				=>	false,
+			'is_falang_enabled'				=>	false,
 			'language_list_codes'			=>	null,
 			'current_language'				=>	get_locale(),
 			'multilang_default_lang' 		=> 	null,
@@ -2604,6 +2646,28 @@ class MyAgilePrivacy {
 
 			$return_data['language_list_codes'] = $language_list_codes;
 			$return_data['current_language'] = pll_current_language();
+			$return_data['multilang_default_lang'] = $multilang_default_lang;
+		}
+
+		//Falang
+		if( function_exists( 'FALANG' ) && function_exists( 'falang_default_language' ) )
+		{
+			$return_data['is_falang_enabled'] = true;
+			$return_data['with_multilang'] = true;
+
+			$multilang_default_lang = falang_default_language();
+
+			$language_list_codes = array();
+			$language_list = FALANG()->model->get_languages_list();
+
+			foreach( $language_list as $k => $v )
+			{
+				$the_language_code = $v->slug;
+				$language_list_codes[] = $the_language_code;
+			}
+
+			$return_data['language_list_codes'] = $language_list_codes;
+			$return_data['current_language'] = falang_current_language();
 			$return_data['multilang_default_lang'] = $multilang_default_lang;
 		}
 

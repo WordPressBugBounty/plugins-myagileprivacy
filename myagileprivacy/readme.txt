@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.7
-Stable tag: 3.1.5
+Stable tag: 3.1.7
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 == Description ==
 
-**My Agile Privacy** is the solution for managing **privacy regulations compliance**, with support for **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek** languages. This plugin is one of the **best WordPress cookie and personal data compliance plugins** for privacy regulations, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress,** or **Weglot**.
+**My Agile Privacy** is the solution for managing **privacy regulations compliance**, with support for **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek** languages. This plugin is one of the **best WordPress cookie and personal data compliance plugins** for privacy regulations, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot** or **Falang**.
 
 [youtube https://youtu.be/2lphC4YTUfM]
 
@@ -36,7 +36,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 - ⭐ Consent Mode v2 Support
 
-- ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot)
+- ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
 
 == Frequently Asked Questions ==
 
@@ -99,6 +99,16 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.7
+* Added support for Falang
+* Multilang fix and language fallback fix
+* Frontend fix
+* Better compatibility when using legacy mode
+* Better compatibility for older WordPress version
+
+= 3.1.6
+* Internal release
 
 = 3.1.5
 * Frontend fix

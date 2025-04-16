@@ -7,7 +7,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 $caller = 'genericOptionsWrapper';
 
-$locale = get_user_locale();
+if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+{
+	$locale = get_locale();
+}
+else
+{
+	$locale = get_user_locale();
+}
 
 ?>
 
