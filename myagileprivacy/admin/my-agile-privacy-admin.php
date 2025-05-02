@@ -2179,7 +2179,7 @@ class MyAgilePrivacyAdmin {
 			if( isset( $_POST['scan_mode_field'] ) &&
 				( $_POST['scan_mode_field'] == 'turned_off' || $_POST['scan_mode_field'] == 'config_finished' ) )
 			{
-				MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, null );
+				MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' );
 			}
 
 			if( isset( $_POST['reset_consent'] ) )

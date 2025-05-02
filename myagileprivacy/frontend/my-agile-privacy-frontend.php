@@ -2068,6 +2068,15 @@ class MyAgilePrivacyFrontend {
 		$cookie_reset_timestamp = ( isset( $the_settings['cookie_reset_timestamp'] ) ) ? $the_settings['cookie_reset_timestamp'] : null;
 		$video_advanced_privacy = ( isset( $the_settings['video_advanced_privacy'] ) ) ? intval( $the_settings['video_advanced_privacy'] ) : 0;
 		$enforce_youtube_privacy = ( isset( $the_settings['enforce_youtube_privacy'] ) ) ? intval( $the_settings['enforce_youtube_privacy'] ) : 0;
+		$enforce_youtube_privacy_v2 = 0;
+
+		if( $enforce_youtube_privacy &&
+			isset( $rconfig ) &&
+			isset( $rconfig['enforce_youtube_privacy_v2'] ) &&
+			$rconfig['enforce_youtube_privacy_v2'] )
+		{
+			$enforce_youtube_privacy_v2 = 1;
+		}
 
 		$mapx_ga4 = 0;
 
@@ -2109,7 +2118,7 @@ class MyAgilePrivacyFrontend {
 
 		if( $the_settings['pa'] == 1 )
 		{
-			if( $enforce_youtube_privacy )
+			if( $enforce_youtube_privacy && !$enforce_youtube_privacy_v2 )
 			{
 				$the_script = plugin_dir_url(__FILE__).'js/youtube_enforced_privacy.js';
 
@@ -2288,6 +2297,7 @@ class MyAgilePrivacyFrontend {
 			'cookie_api_key_friendly_name_map' 							=> 	$cookie_api_key_friendly_name_map,
 			'cookie_api_key_not_to_block' 								=> 	null,
 			'enforce_youtube_privacy' 									=> 	$enforce_youtube_privacy,
+			'enforce_youtube_privacy_v2'								=>	$enforce_youtube_privacy_v2,
 			'video_advanced_privacy' 									=> 	$video_advanced_privacy,
 			'manifest_assoc'											=> 	$manifest_assoc_public,
 			'js_shield_url' 											=> 	$js_shield_url,
@@ -2454,7 +2464,7 @@ class MyAgilePrivacyFrontend {
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'start internal_save_detected_keys' );
 
 		// Get settings
-		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, null ) );
+		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 
 		if( !$js_cookie_shield_detected_keys )
 		{
@@ -3645,7 +3655,7 @@ class MyAgilePrivacyFrontend {
 			$output = $output_ori;
 		}
 
-		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, null ) );
+		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 		$js_cookie_shield_detected_keys = array_unique( array_filter( $js_cookie_shield_detected_keys ) );
 
 		if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $js_cookie_shield_detected_keys );
@@ -3770,7 +3780,7 @@ class MyAgilePrivacyFrontend {
 						}
 					}
 
-					MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, null );
+					MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' );
 				}
 				else
 				{

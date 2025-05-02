@@ -5,7 +5,7 @@
 
 var MAP_SYS = {
 	'plugin_version' 					: null,
-	'internal_version' 					: "2.0015",
+	'internal_version' 					: "2.0016",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -19,6 +19,7 @@ var MAP_SYS = {
 	'map_detectedKeys' 					: null,
 	'map_notify_title'					: false,
 	'map_first_layer_branded'			: false,
+	'enforce_youtube_privacy_v2'		: false,
 	'in_iab_context' 					: false,
 	'dependencies' 						: [],
 	'cmode_v2' 							: null,
@@ -175,6 +176,13 @@ var MAP =
 			if( !!this?.settings?.map_first_layer_branded )
 			{
 				MAP_SYS.map_first_layer_branded = this?.settings?.map_first_layer_branded;
+			}
+
+			if( typeof map_full_config !== 'undefined' &&
+				typeof map_full_config.enforce_youtube_privacy_v2 !== 'undefined'
+			)
+			{
+				MAP_SYS.enforce_youtube_privacy_v2 = map_full_config.enforce_youtube_privacy_v2;
 			}
 
 			if( typeof CookieShield !== 'undefined' &&

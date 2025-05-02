@@ -33,7 +33,7 @@ define( 'MAP_SCANNER', true );
 define( 'MAP_DASHBOARD', false );
 define( 'MAP_IAB_TCF', true );
 define( 'MAP_MY_AGILE_PIXEL_TEXT_FIX', false );
-define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
+define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-minify="1" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
 define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
 define( 'MAP_PLUGIN_ACTIVATION_DATE', MAP_PLUGIN_DB_KEY_PREFIX.'-activation_date' );
