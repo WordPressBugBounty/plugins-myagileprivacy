@@ -1,11 +1,11 @@
 /*!
 * MyAgilePrivacy (https://www.myagileprivacy.com/)
-* plain version
+* plain js version
 */
 
 var MAP_SYS = {
 	'plugin_version' 					: null,
-	'internal_version' 					: "2.0016",
+	'internal_version' 					: "2.0017",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -22,12 +22,15 @@ var MAP_SYS = {
 	'enforce_youtube_privacy_v2'		: false,
 	'in_iab_context' 					: false,
 	'dependencies' 						: [],
+	'microsoft_cmode' 					: null,
 	'cmode_v2' 							: null,
 	'cmode_v2_implementation_type' 		: null,
 	'cmode_v2_forced_off_ga4_advanced' 	: null,
 	'cmode_v2_js_on_error'				: null,
 	'starting_gconsent' 				: [],
 	'current_gconsent'					: [],
+	'starting_mconsent' 				: [],
+	'current_mconsent'					: [],
 	'map_accept_all_button'				: null,
 	'map_reject_all_button'				: null,
 	'user_uuid'							: null,
@@ -41,6 +44,7 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 	MAP_ACCEPTED_ALL_COOKIE_NAME = 'map_accepted_all_cookie_policy';
 	MAP_ACCEPTED_SOMETHING_COOKIE_NAME = 'map_accepted_something_cookie_policy';
 	MAP_CONSENT_STATUS = 'map_consent_status';
+	MAP_MICROSOFT_CONSENT_STATUS = 'map_microsoft_consent_status';
 	MAP_USER_UUID = 'map_user_uuid';
 	MAP_LAST_CONSENT_MODIFY_DATE = 'map_last_c_m_date';
 
@@ -386,11 +390,22 @@ var MAP =
 		}
 	},
 
-	//get consent status for consent mode
+	//get consent status for consent mode (Microsoft)
+	getMicrosoftConsentStatus: function( key )
+	{
+		try {
+			return MAP_SYS?.current_mconsent[ key ];
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//get consent status for consent mode (Google)
 	getGoogleConsentStatus: function( key )
 	{
 		try {
-
 			return MAP_SYS?.current_gconsent[ key ];
 		}
 		catch( error )
@@ -399,7 +414,47 @@ var MAP =
 		}
 	},
 
-	//f for updating given consent
+	//f for updating given consent (Microsoft)
+	updateMicrosoftConsent: function( key, value, updateStatusCookie = false)
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.microsoft_cmode )
+			{
+				var newConsent = {};
+				let key_fixed = key.startsWith( 'microsoft_' ) ? key.slice( 'microsoft_'.length ) : key;
+				newConsent[ key_fixed ] = value;
+
+				window.uetq.push( 'consent', 'update', newConsent );
+
+				var currentMConsent = {...MAP_SYS?.current_mconsent};
+				currentMConsent[key] = value;
+				MAP_SYS.current_mconsent = currentMConsent;
+
+				if( updateStatusCookie )
+				{
+					that.saveMicrosoftConsentStatusToCookie( MAP_SYS?.current_mconsent );
+				}
+
+				that.updateLastConsentRecords();
+
+				return true;
+			}
+
+			return false;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+
+	//f for updating given consent (Google)
 	updateGoogleConsent: function( key, value, updateStatusCookie = false)
 	{
 		//for preserving scope
@@ -451,7 +506,13 @@ var MAP =
 
 	},
 
-	//from cookie value to object
+	//from cookie value to object (Microsoft)
+	parseMicrosoftConsentStatus: function( consentStatusValue )
+	{
+		return this.parseGoogleConsentStatus( consentStatusValue );
+	},
+
+	//from cookie value to object (Google)
 	parseGoogleConsentStatus: function( consentStatusValue )
 	{
 		try {
@@ -483,7 +544,32 @@ var MAP =
 		}
 	},
 
-	//from consent object to cookie
+	//from consent object to cookie (Microsoft)
+	saveMicrosoftConsentStatusToCookie : function( consentObject )
+	{
+		try {
+
+			// Convert object values to a string
+			var encodedString = Object.keys( consentObject )
+				.map(function( key ) {
+				return key + ':' + ( consentObject[key] === 'granted' );
+				})
+				.join('|');
+
+
+			MAP_Cookie.set( MAP_MICROSOFT_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire );
+
+			return true;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+
+	//from consent object to cookie (Google)
 	saveGoogleConsentStatusToCookie : function( consentObject )
 	{
 		try {
@@ -581,7 +667,95 @@ var MAP =
 		}
 	},
 
-	//init data for consent mode
+	//init data for Microsoft consent mode
+	setupMicrosoftConsentMode: function()
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupMicrosoftConsentMode' );
+
+			if( typeof map_full_config === 'undefined' )
+			{
+				return false;
+			}
+
+			MAP_SYS.microsoft_cmode = map_full_config?.enable_microsoft_cmode;
+
+			if( MAP_SYS.microsoft_cmode )
+			{
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (Microsoft)' );
+
+				//save starting consent
+				MAP_SYS.starting_mconsent = map_full_config?.cmode_microsoft_default_consent_obj;
+
+				var cookieValue = MAP_Cookie.read( MAP_MICROSOFT_CONSENT_STATUS );
+
+				if( cookieValue )
+				{
+					var this_mconsent = that.parseMicrosoftConsentStatus( cookieValue );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_mconsent = { ...this_mconsent };
+
+					try {
+
+						var current_mconsent_fixed = Object.fromEntries(
+						  Object.entries( this_mconsent ).map( ([key, value] ) => [
+							key.startsWith( 'microsoft_' ) ? key.slice( 'microsoft_'.length) : key,
+							value
+						  ])
+						);
+
+						window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+					}
+					catch( error )
+					{
+						console.error( error );
+					}
+				}
+				else
+				{
+					//no cookie value case
+
+					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (Microsoft)' );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_mconsent = { ...MAP_SYS.starting_mconsent };
+
+					try {
+
+						var current_mconsent_fixed = Object.fromEntries(
+						  Object.entries( MAP_SYS.starting_mconsent ).map( ([key, value] ) => [
+							key.startsWith( 'microsoft_' ) ? key.slice( 'microsoft_'.length) : key,
+							value
+						  ])
+						);
+
+						window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+
+					}
+					catch( error )
+					{
+						console.error( error );
+					}
+
+					that.saveMicrosoftConsentStatusToCookie( MAP_SYS.current_mconsent );
+				}
+			}
+
+			return true;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//init data for Google consent mode
 	setupConsentModeV2 : function()
 	{
 		//for preserving scope
@@ -756,7 +930,6 @@ var MAP =
 			console.error( error );
 		}
 	},
-
 
 	//uuid generation
 	generateUUID : function()
@@ -1067,7 +1240,8 @@ var MAP =
 
 				while( levelsToCheck > 0 && targetElement )
 				{
-					if (targetElement.matches('.showConsentAgain')) {
+					if( targetElement.matches( '.showConsentAgain' ) )
+					{
 						matchFound = true;
 						break;
 					}
@@ -1081,11 +1255,10 @@ var MAP =
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					var event = new CustomEvent('triggerShowAgainDisplay');
+					var event = new CustomEvent( 'triggerShowAgainDisplay' );
 					that.bar_elm.dispatchEvent( event );
 				}
 			});
-
 
 			//eof user consent review trigger
 		}
@@ -1236,7 +1409,6 @@ var MAP =
 
 						if( !document.querySelector( '.map-settings-mobile' ).offsetWidth )
 						{
-							// MAP.settingsModal.find( '.map-nav-link:eq(0)' ).click();
 							MAP.settingsModal.querySelector('.map-nav-link').click();
 						}
 
@@ -1542,7 +1714,15 @@ var MAP =
 
 					var consent_key = elem.getAttribute( 'data-consent-key' );
 
-					that.updateGoogleConsent( consent_key, 'granted', true );
+					if( elem.classList.contains( 'map-consent-microsoft' ) )
+					{
+						that.updateMicrosoftConsent( consent_key, 'granted', true );
+					}
+
+					if( elem.classList.contains( 'map-consent-google' ) )
+					{
+						that.updateGoogleConsent( consent_key, 'granted', true );
+					}
 				});
 
 				//check user-preference checkbox
@@ -1602,7 +1782,16 @@ var MAP =
 
 						var consent_key = elem.getAttribute( 'data-consent-key' );
 
-						that.updateGoogleConsent( consent_key, 'denied', true );
+						if( elem.classList.contains( 'map-consent-microsoft' ) )
+						{
+							that.updateMicrosoftConsent( consent_key, 'denied', true );
+						}
+
+						if( elem.classList.contains( 'map-consent-google' ) )
+						{
+							that.updateGoogleConsent( consent_key, 'denied', true );
+						}
+
 					});
 
 					//uncheck user-preference checkbox
@@ -2998,54 +3187,92 @@ var MAP =
 			}
 
 			//bof init part ( consent mode)
-			that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( $this ) {
+			that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
 
-				var consent_key = $this.getAttribute( 'data-consent-key' );
+				var consent_key = elem.getAttribute( 'data-consent-key' );
 
-				var consentStatus = that.getGoogleConsentStatus( consent_key );
+				var consentStatus = null;
+				let consentVendor = '';
+
+				if( elem.classList.contains( 'map-consent-microsoft' ) )
+				{
+					consentStatus = that.getMicrosoftConsentStatus( consent_key );
+					consentVendor = '(Microsoft)';
+				}
+
+				if( elem.classList.contains( 'map-consent-google' ) )
+				{
+					consentStatus = that.getGoogleConsentStatus( consent_key );
+					consentVendor = '(Google)';
+				}
 
 				if( consentStatus === 'granted' )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting checked for consent_key' + consent_key );
+					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting checked for consent_key=${consent_key} ${consentVendor}` );
 
-					$this.checked = true;
+					elem.checked = true;
 				}
 				else if( consentStatus === 'denied' )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting unchecked for consent_key' + consent_key );
+					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting unchecked for consent_key=${consent_key} ${consentVendor}` );
 
-					$this.checked = false;
+					elem.checked = false;
 				}
+
 			});
 			//eof init part ( consent mode)
 
 			//bof consent mode - click event
 			if( only_init_status == false )
 			{
-				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach(function($this) {
-					$this.addEventListener('click', function(e) {
+				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach(function( elem ) {
+					elem.addEventListener('click', function(e) {
 
 						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox click' );
 
 						e.stopImmediatePropagation();
 
-						var consent_key = $this.getAttribute( 'data-consent-key' );
+						var consent_key = elem.getAttribute( 'data-consent-key' );
 
 						var currentToggleElm = that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox[data-consent-key="' + consent_key + '"]' );
 
-						if( $this.checked )
+						if( elem.checked )
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key}` );
+							let consentVendor = '';
 
-							that.updateGoogleConsent( consent_key, 'granted', true );
+							if( elem.classList.contains( 'map-consent-microsoft' ) )
+							{
+								consentVendor = '(Microsoft)';
+								that.updateMicrosoftConsent( consent_key, 'granted', true );
+							}
+
+							if( elem.classList.contains( 'map-consent-google' ) )
+							{
+								consentVendor = '(Google)';
+								that.updateGoogleConsent( consent_key, 'granted', true );
+							}
+
+							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
 
 							currentToggleElm.forEach( elm => elm.checked = true );
 						}
 						else
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key}` );
+							let consentVendor = '';
 
-							that.updateGoogleConsent( consent_key, 'denied', true );
+							if( elem.classList.contains( 'map-consent-microsoft' ) )
+							{
+								consentVendor = '(Microsoft)';
+								that.updateMicrosoftConsent( consent_key, 'denied', true );
+							}
+
+							if( elem.classList.contains( 'map-consent-google' ) )
+							{
+								consentVendor = '(Google)';
+								that.updateGoogleConsent( consent_key, 'denied', true );
+							}
+
+							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key} ${consentVendor}` );
 
 							currentToggleElm.forEach( elm => elm.checked = false );
 						}
@@ -3646,6 +3873,7 @@ var MAP =
 		}
 	},
 
+	//f. for checking Google Consent Mode
 	checkConsentModeStatus: function()
 	{
 		try {
@@ -4257,9 +4485,15 @@ function map_trigger_custom_patch_3()
 	}
 }
 
-//consent mode early as possible initialization
+//Google consent mode early as possible initialization
 if( typeof MAP !== 'undefined' && typeof MAP.setupConsentModeV2 !== 'undefined' )
 {
 	MAP.setupConsentModeV2();
+}
+
+//Microsoft consent mode early as possible initialization
+if( typeof MAP !== 'undefined' && typeof MAP.setupMicrosoftConsentMode !== 'undefined' )
+{
+	MAP.setupMicrosoftConsentMode();
 }
 

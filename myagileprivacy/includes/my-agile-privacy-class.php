@@ -651,6 +651,7 @@ class MyAgilePrivacy {
 			case 'forced_auto_update':
 			case 'enable_iab_tcf':
 			case 'enable_metadata_sync':
+			case 'enable_microsoft_cmode':
 			case 'enable_cmode_v2':
 			case 'enable_cmode_url_passthrough':
 			case 'cmode_v2_forced_off_ga4_advanced':
@@ -1073,6 +1074,9 @@ class MyAgilePrivacy {
 			'enable_iab_tcf'							=>	false,
 			'enable_metadata_sync'						=>	true,
 
+			'enable_microsoft_cmode'					=>	false,
+			'microsoft_consent_ad_storage'				=> 	'denied',
+
 			'bypass_cmode_enable'						=> 	false,
 			'enable_cmode_v2'							=>	false,
 			'enable_cmode_url_passthrough'				=> 	false,
@@ -1125,8 +1129,9 @@ class MyAgilePrivacy {
 				'data-animation-effect' => array(),
 				'data-animation-delay'=>array(),
 				'data-animation-repeat'=>array(),
-				'tabindex'=>array(),
-				'aria-pressed'=>array(),
+				'tabindex' => array(),
+				'aria-pressed' => array(),
+				'aria-label' => array(),
 			),
 			'input' => array(
 				'id' => array(),
@@ -1153,6 +1158,7 @@ class MyAgilePrivacy {
 				'data-cookie-baseindex'=>array(),
 				'data-cookie-name'=>array(),
 				'data-animation'=>array(),
+				'role'=>array(),
 			),
 			'em' => array (
 				'id' => array(),
@@ -1170,12 +1176,14 @@ class MyAgilePrivacy {
 			'p' => array (
 				'id' => array(),
 				'class' => array(),
-				'style' => array()
+				'style' => array(),
+				'role' => array()
 			),
 			'span' => array(
 				'id' => array(),
 				'class' => array(),
-				'style' => array()
+				'style' => array(),
+				'role' => array(),
 			),
 			'strong' => array(
 				'id' => array(),
@@ -1219,6 +1227,7 @@ class MyAgilePrivacy {
 				'for' => array(),
 				'data-map-enable' => array(),
 				'data-map-disable' => array(),
+				'role' => array(),
 			),
 			'option' => array(
 				'name' => array(),
@@ -1316,6 +1325,8 @@ class MyAgilePrivacy {
 			'scan_mode'									=>	$the_settings['scan_mode'],
 			'cookie_reset_timestamp'					=>	( isset( $the_settings['cookie_reset_timestamp'] ) ) ? '_'.$the_settings['cookie_reset_timestamp'] : null,
 			'show_ntf_bar_on_not_yet_consent_choice'	=>	$the_settings['show_ntf_bar_on_not_yet_consent_choice'],
+
+			'enable_microsoft_cmode'					=> 	$the_settings['enable_microsoft_cmode'],
 
 			'enable_cmode_v2'							=> 	$the_settings['enable_cmode_v2'],
 			'enable_cmode_url_passthrough'				=>	$the_settings['enable_cmode_url_passthrough'],
@@ -1772,15 +1783,23 @@ class MyAgilePrivacy {
 
 
 	/**
-	* sort frontend cookies in order to give priority to google_tag_manager / stape presentation
+	* sort frontend cookies
 	*/
 	public static function frontendCookieSort( $a, $b )
 	{
-		if( $a['api_key'] == 'google_tag_manager' || $a['api_key'] == 'stape' )
+		$priority_list = array(
+			'my_agile_pixel_ga',
+			'google_analytics',
+			'google_tag_manager',
+			'stape',
+			'microsoft_ads',
+		);
+
+		if( in_array( $a['api_key'], $priority_list ) )
 		{
 			return -1;
 		}
-		elseif( $b['api_key'] == 'google_tag_manager' || $b['api_key'] == 'stape' )
+		elseif( in_array( $b['api_key'], $priority_list ) )
 		{
 			return 1;
 		}
@@ -2068,6 +2087,7 @@ class MyAgilePrivacy {
 		$default_txt['it_IT']['ad_user_data'] = 'Ad User Data';
 		$default_txt['it_IT']['ad_personalization'] = 'Ad Personalization';
 		$default_txt['it_IT']['analytics_storage'] = 'Analytics Storage';
+		$default_txt['it_IT']['ad_storage_microsoft_desc'] = 'Definisce se i cookie relativi alla pubblicità possono essere letti o scritti da Microsoft.';
 		$default_txt['it_IT']['ad_storage_desc'] = 'Definisce se i cookie relativi alla pubblicità possono essere letti o scritti da Google.';
 		$default_txt['it_IT']['ad_user_data_desc'] = "Determina se i dati dell'utente possono essere inviati a Google per scopi pubblicitari.";
 		$default_txt['it_IT']['ad_personalization_desc'] = 'Controlla se la pubblicità personalizzata (ad esempio, il remarketing) può essere abilitata.';
@@ -2117,6 +2137,7 @@ class MyAgilePrivacy {
 		$default_txt['en_US']['ad_user_data'] = 'Ad User Data';
 		$default_txt['en_US']['ad_personalization'] = 'Ad Personalization';
 		$default_txt['en_US']['analytics_storage'] = 'Analytics Storage';
+		$default_txt['en_US']['ad_storage_microsoft_desc'] = 'Defines whether cookies related to advertising can be read or written by Microsoft.';
 		$default_txt['en_US']['ad_storage_desc'] = 'Defines whether cookies related to advertising can be read or written by Google.';
 		$default_txt['en_US']['ad_user_data_desc'] = 'Determines whether user data can be sent to Google for advertising purposes.';
 		$default_txt['en_US']['ad_personalization_desc'] = 'Controls whether personalized advertising (for example, remarketing) can be enabled.';
@@ -2165,6 +2186,7 @@ class MyAgilePrivacy {
 		$default_txt['fr_FR']['ad_user_data'] = 'Ad User Data';
 		$default_txt['fr_FR']['ad_personalization'] = 'Ad Personalization';
 		$default_txt['fr_FR']['analytics_storage'] = 'Analytics Storage';
+		$default_txt['fr_FR']['ad_storage_microsoft_desc'] = 'Définit si les cookies liés à la publicité peuvent être lus ou écrits par Microsoft.';
 		$default_txt['fr_FR']['ad_storage_desc'] = 'Définit si les cookies liés à la publicité peuvent être lus ou écrits par Google.';
 		$default_txt['fr_FR']['ad_user_data_desc'] = 'Détermine si les données utilisateur peuvent être envoyées à Google à des fins publicitaires.';
 		$default_txt['fr_FR']['ad_personalization_desc'] = 'Contrôle si la publicité personnalisée (par exemple, le remarketing) peut être activée.';
@@ -2213,7 +2235,8 @@ class MyAgilePrivacy {
 		$default_txt['es_ES']['ad_user_data'] = 'Ad User Data';
 		$default_txt['es_ES']['ad_personalization'] = 'Ad Personalization';
 		$default_txt['es_ES']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['es_ES']['ad_storage_desc'] = 'Defines whether cookies related to advertising can be read or written by Google.';
+		$default_txt['es_ES']['ad_storage_microsoft_desc'] = 'Define si las cookies relacionadas con la publicidad pueden ser leídas o escritas por Microsoft.';
+		$default_txt['es_ES']['ad_storage_desc'] = 'Define si las cookies relacionadas con la publicidad pueden ser leídas o escritas por Google.';
 		$default_txt['es_ES']['ad_user_data_desc'] = 'Determina si los datos del usuario pueden ser enviados a Google con fines publicitarios.';
 		$default_txt['es_ES']['ad_personalization_desc'] = 'Controla si se puede habilitar la publicidad personalizada (por ejemplo, remarketing).';
 		$default_txt['es_ES']['analytics_storage_desc'] = 'Define si se pueden leer o escribir cookies asociadas a Google Analytics.';
@@ -2261,6 +2284,7 @@ class MyAgilePrivacy {
 		$default_txt['de_DE']['ad_user_data'] = 'Ad User Data';
 		$default_txt['de_DE']['ad_personalization'] = 'Ad Personalization';
 		$default_txt['de_DE']['analytics_storage'] = 'Analytics Storage';
+		$default_txt['de_DE']['ad_storage_microsoft_desc'] = 'Legt fest, ob Cookies im Zusammenhang mit Werbung von Microsoft gelesen oder geschrieben werden können.';
 		$default_txt['de_DE']['ad_storage_desc'] = 'Legt fest, ob Cookies im Zusammenhang mit Werbung von Google gelesen oder geschrieben werden können.';
 		$default_txt['de_DE']['ad_user_data_desc'] = 'Legt fest, ob Benutzerdaten zu Werbezwecken an Google gesendet werden können.';
 		$default_txt['de_DE']['ad_personalization_desc'] = 'Steuert, ob personalisierte Werbung (zum Beispiel Remarketing) aktiviert werden kann.';
@@ -2309,6 +2333,7 @@ class MyAgilePrivacy {
 		$default_txt['pt_PT']['ad_user_data'] = 'Dados de usuário de anúncios';
 		$default_txt['pt_PT']['ad_personalization'] = 'Personalização de anúncios';
 		$default_txt['pt_PT']['analytics_storage'] = 'Armazenamento de análises';
+		$default_txt['pt_PT']['ad_storage_microsoft_desc'] = 'Define se cookies relacionados à publicidade podem ser lidos ou escritos pelo Microsoft.';
 		$default_txt['pt_PT']['ad_storage_desc'] = 'Define se cookies relacionados à publicidade podem ser lidos ou escritos pelo Google.';
 		$default_txt['pt_PT']['ad_user_data_desc'] = 'Determina se dados de usuário podem ser enviados ao Google para fins publicitários.';
 		$default_txt['pt_PT']['ad_personalization_desc'] = 'Controla se a publicidade personalizada (por exemplo, remarketing) pode ser ativada.';
@@ -2357,6 +2382,7 @@ class MyAgilePrivacy {
 		$default_txt['nl_NL']['ad_user_data'] = 'Advertentiegebruikersgegevens';
 		$default_txt['nl_NL']['ad_personalization'] = 'Advertentiepersonalisatie';
 		$default_txt['nl_NL']['analytics_storage'] = 'AnalysegOpslag';
+		$default_txt['nl_NL']['ad_storage_microsoft_desc'] = 'Bepaalt of cookies gerelateerd aan advertenties kunnen worden gelezen of geschreven door Microsoft.';
 		$default_txt['nl_NL']['ad_storage_desc'] = 'Bepaalt of cookies gerelateerd aan advertenties kunnen worden gelezen of geschreven door Google.';
 		$default_txt['nl_NL']['ad_user_data_desc'] = 'Bepaalt of gebruikersgegevens naar Google kunnen worden verzonden voor advertentiedoeleinden.';
 		$default_txt['nl_NL']['ad_personalization_desc'] = 'Bepaalt of gepersonaliseerde advertenties (bijvoorbeeld remarketing) kunnen worden ingeschakeld.';
@@ -2406,6 +2432,7 @@ class MyAgilePrivacy {
 		$default_txt['pl_PL']['ad_user_data'] = 'Dane użytkowników reklam';
 		$default_txt['pl_PL']['ad_personalization'] = 'Personalizacja reklam';
 		$default_txt['pl_PL']['analytics_storage'] = 'Przechowywanie analityki';
+		$default_txt['pl_PL']['ad_storage_microsoft_desc'] = 'Określa, czy pliki cookie związane z reklamami mogą być odczytywane lub zapisywane przez Microsoft.';
 		$default_txt['pl_PL']['ad_storage_desc'] = 'Określa, czy pliki cookie związane z reklamami mogą być odczytywane lub zapisywane przez Google.';
 		$default_txt['pl_PL']['ad_user_data_desc'] = 'Określa, czy dane użytkowników mogą być wysyłane do Google w celach reklamowych.';
 		$default_txt['pl_PL']['ad_personalization_desc'] = 'Kontroluje, czy personalizowane reklamy (np. remarketing) mogą być włączone.';
@@ -2455,6 +2482,7 @@ class MyAgilePrivacy {
 		$default_txt['el']['ad_user_data'] = 'Δεδομένα χρήστη διαφημίσεων';
 		$default_txt['el']['ad_personalization'] = 'Εξατομίκευση διαφημίσεων';
 		$default_txt['el']['analytics_storage'] = 'Αποθήκευση αναλύσεων';
+		$default_txt['el']['ad_storage_microsoft_desc'] = 'Καθορίζει εάν τα cookies που σχετίζονται με τη διαφήμιση μπορούν να διαβαστούν ή να γραφτούν από την Microsoft.';
 		$default_txt['el']['ad_storage_desc'] = 'Καθορίζει εάν τα cookies που σχετίζονται με τη διαφήμιση μπορούν να διαβαστούν ή να γραφτούν από την Google.';
 		$default_txt['el']['ad_user_data_desc'] = 'Καθορίζει εάν τα δεδομένα χρήστη μπορούν να σταλούν στην Google για διαφημιστικούς σκοπούς.';
 		$default_txt['el']['ad_personalization_desc'] = 'Ελέγχει εάν μπορεί να ενεργοποιηθεί η εξατομικευμένη διαφήμιση (π.χ. επαναληπτικό μάρκετινγκ).';

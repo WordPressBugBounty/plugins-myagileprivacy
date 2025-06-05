@@ -116,7 +116,7 @@ if( isset( $the_settings ) &&
 									?>
 
 									<label for="enable_cmode_v2_field">
-										<?php echo sprintf(__('Enable Google Consent Mode v2 - %1$sOnline Help%2$s', 'MAP_txt'), '<a href="' . esc_attr($cmode_link) . '" target="_blank">', '</a>'); ?>
+										<?php echo sprintf(__('Enable Google Consent Mode v2 - %1$sOnline Help%2$s', 'MAP_txt'), '<a href="' . esc_attr( $cmode_link ) . '" target="_blank">', '</a>'); ?>
 									</label>
 								</div>
 							</div> <!-- ./ styled_radio -->

@@ -974,7 +974,7 @@ class MyAgilePrivacyFrontend {
 				}
 			}
 
-			$html = '<p class="map_custom_notify map_api_key_'.esc_attr( $api_key ).'">'. $text .'</p>';
+			$html = '<p class="map_custom_notify map_api_key_'.esc_attr( $api_key ).'" role="button">'. $text .'</p>';
 
 			return wp_kses( $html, MyAgilePrivacy::allowed_html_tags() );;
 		}
@@ -1018,6 +1018,23 @@ class MyAgilePrivacyFrontend {
 			$is_polylang_enabled = $this->check_if_polylang_enabled();
 
 			$is_wpml_enabled = $this->check_if_wpml_enabled();
+
+
+			$microsoft_consent_mode_consents = null;
+
+			if( $the_settings['pa'] == 1 &&
+				isset( $the_settings['enable_microsoft_cmode'] ) && $the_settings['enable_microsoft_cmode'] )
+			{
+				$microsoft_consent_mode_consents = array();
+
+				$item = array(
+					'key'			=>	'microsoft_ad_storage',
+					'human_name'  	=>	esc_html( $the_translations[ $current_lang ]['ad_storage'] ),
+					'human_desc'	=>	esc_html( $the_translations[ $current_lang ]['ad_storage_microsoft_desc'] ),
+				);
+
+				$microsoft_consent_mode_consents[] = $item;
+			}
 
 			$consent_mode_consents = null;
 
@@ -1493,6 +1510,7 @@ class MyAgilePrivacyFrontend {
 		if( version_compare( $currentPHPVersion, $requiredPHPVersion, '>=' ) )
 		{
 			usort( $cookie_categories['necessary'], array( 'MyAgilePrivacy', 'frontendCookieSort' ) );
+			usort( $cookie_categories['not-necessary'], array( 'MyAgilePrivacy', 'frontendCookieSort' ) );
 		}
 
 		return $cookie_categories;
@@ -2303,6 +2321,8 @@ class MyAgilePrivacyFrontend {
 			'js_shield_url' 											=> 	$js_shield_url,
 			'load_iab_tcf'												=> 	false,
 			'iab_tcf_script_url'										=>	null,
+			'enable_microsoft_cmode'									=>	null,
+			'cmode_microsoft_default_consent_obj'						=>	null,
 			'enable_cmode_v2'											=>	null,
 			'cmode_v2_implementation_type'								=>	null,
 			'enable_cmode_url_passthrough'								=>	null,
@@ -2317,6 +2337,16 @@ class MyAgilePrivacyFrontend {
 		{
 			$map_full_config['load_iab_tcf'] = true;
 			$map_full_config['iab_tcf_script_url'] = $iab_tcf_script_url;
+		}
+
+		if( isset( $the_settings ) &&
+			isset( $the_settings['enable_microsoft_cmode'] ) && $the_settings['enable_microsoft_cmode']
+		)
+		{
+			$map_full_config['enable_microsoft_cmode'] = true;
+			$map_full_config['cmode_microsoft_default_consent_obj'] = array(
+				'microsoft_ad_storage'		=>	$the_settings['microsoft_consent_ad_storage'],
+			);
 		}
 
 		if( isset( $the_settings ) &&
@@ -2365,6 +2395,11 @@ class MyAgilePrivacyFrontend {
 		$map_full_config['cookie_api_key_not_to_block'] = $cookie_api_key_not_to_block;
 
 		$base_config_script .= 'var map_full_config='.json_encode( $map_full_config ).';'.PHP_EOL;
+
+		if( $map_full_config['enable_microsoft_cmode'] )
+		{
+			$base_config_script .= 'window.uetq = window.uetq || [];'.PHP_EOL;
+		}
 
 		if( $map_full_config['enable_cmode_v2'] )
 		{

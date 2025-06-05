@@ -164,8 +164,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<!-- eof hidden original input -->
 
 						<p>
-							<?php echo wp_kses_post( __( "Do you want to revert to the default content?", 'MAP_txt' ) ); ?> <a role="button" class="reset_lang_values"><?php echo wp_kses_post( __( "Click here to reset the current language", 'MAP_txt' ) ); ?></a>
+							<?php echo wp_kses_post( __( "Do you want to revert to the default content?", 'MAP_txt' ) ); ?> <a role="button" class="reset_lang_values"><?php echo wp_kses_post( __( "Click here to reset the current language", 'MAP_txt' ) ); ?></a><br>
+							<?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?>
 						</p>
+
 
 
 						<div class="text-preview">

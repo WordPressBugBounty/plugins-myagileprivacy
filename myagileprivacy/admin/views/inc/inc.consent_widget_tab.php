@@ -23,6 +23,8 @@ else
 
 		<?php include 'fields.consent_mode_tab.php'; ?>
 
+		<?php include 'fields.microsoft_consent_mode_tab.php'; ?>
+
 		<?php
 
 			$display_iab = false;

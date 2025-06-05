@@ -1187,6 +1187,40 @@
 							});
 						}
 
+						$( "select[name^='microsoft_consent_']" ).each( function(){
+
+							var $this = $( this );
+							var $row = $this.closest( '.row' );
+							var $alertDiv = $this.siblings( '.suggested-value-alert' );
+
+							if( $this.val() === 'granted' )
+							{
+								$this.addClass( 'is-invalid' );
+								$row.addClass( 'alert-warning' );
+								$alertDiv.removeClass( 'd-none' );
+							}
+						});
+
+						$( "select[name^='microsoft_consent_']" ).on( 'change', function() {
+
+							var $this = $( this );
+							var $row = $this.closest( '.row' );
+							var $alertDiv = $this.siblings( '.suggested-value-alert' );
+
+							if( $this.val() === 'granted')
+							{
+								$this.addClass( 'is-invalid' );
+								$row.addClass( 'alert-warning' );
+								$alertDiv.removeClass( 'd-none' );
+							}
+							else if( $this.val() === 'denied' )
+							{
+								$this.removeClass( 'is-invalid' );
+								$row.removeClass( 'alert-warning' );
+								$alertDiv.addClass( 'd-none' );
+							}
+						});
+
 						$( ".cmode_v2_implementation_type_options[data-value='native'] select[name^='cmode_v2_gtag_']" ).each( function(){
 
 							var $this = $( this );

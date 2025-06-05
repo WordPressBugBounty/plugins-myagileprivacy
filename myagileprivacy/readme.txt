@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.8
-Stable tag: 3.1.8
+Stable tag: 3.1.9
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -34,7 +34,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 - ⭐ IAB TCF 2.2 Support
 
-- ⭐ Consent Mode v2 Support
+- ⭐ Google Consent Mode v2 and Microsoft UET Consent Mode Support
 
 - ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
 
@@ -99,6 +99,10 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.9
+* Microsoft UET Consent Mode support
+* Accessibility fix
 
 = 3.1.8
 * YouTube better nocookie src rewrite

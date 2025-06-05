@@ -42,6 +42,16 @@ if( isset( $the_settings ) &&
 	$enable_cmode_v2 = true;
 }
 
+
+$enable_microsoft_cmode = false;
+
+if( isset( $the_settings ) &&
+	isset( $the_settings['enable_microsoft_cmode'] ) && $the_settings['enable_microsoft_cmode'] )
+{
+	$enable_microsoft_cmode = true;
+}
+
+
 $always_enable_text = esc_html( $the_translations[ $current_lang ]['always_enable'] );
 $is_enabled_text = esc_html( $the_translations[ $current_lang ]['is_enabled'] );
 $is_disabled_text = esc_html( $the_translations[ $current_lang ]['is_disabled'] );
@@ -279,12 +289,12 @@ if( !$is_personal_data_policy_url && $personal_data_policy_page )
 
 if( $the_cookie_policy_url )
 {
-	$cookie_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_cookie_policy_url ).'" tabindex="-1">'.esc_html( $the_translations[ $current_lang ]['view_the_cookie_policy'] ).'</a>';
+	$cookie_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_cookie_policy_url ).'" tabindex="-1" aria-label="Cookie Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_cookie_policy'] ).'</a>';
 }
 
 if( $the_personal_data_policy_url )
 {
-	$personal_data_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_personal_data_policy_url ).'" tabindex="-1">'.esc_html( $the_translations[ $current_lang ]['view_the_personal_data_policy'] ).'</a>';
+	$personal_data_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_personal_data_policy_url ).'" tabindex="-1" aria-label="Personal Data Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_personal_data_policy'] ).'</a>';
 }
 
 if( $cookie_policy_link && $the_cookie_policy_url )
@@ -383,14 +393,14 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 	<div class="map-modal-content map-bar-popup <?php echo esc_attr( $with_css_effects_class ); ?>">
 	  <button type="button" class="map-modal-close" id="mapModalClose" tabindex='-1'>
 			&#x2715;
-		  <span class="map-sr-only"><?php echo esc_html( $the_translations[ $current_lang ]['close'] );  ?></span>
+		  <span class="sr-only"><?php echo esc_html( $the_translations[ $current_lang ]['close'] );  ?></span>
 	  </button>
 	  <div class="map-modal-body">
 
 		<div class="map-container-fluid map-tab-container">
 
 			<div class="map-privacy-overview">
-				<p class="map-h4-heading" data-nosnippet><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></p>
+				<p class="map-h4-heading" data-nosnippet role="heading"><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></p>
 			</div>
 
 			<p data-nosnippet
@@ -424,10 +434,16 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 
 				$consent_mode_options_shown = false;
 				$consent_mode_valid_post_api_key = array(
-					'google_tag_manager',
-					'google_analytics',
 					'my_agile_pixel_ga',
+					'google_analytics',
+					'google_tag_manager',
 					'stape'
+				);
+
+
+				$microsoft_consent_mode_options_shown = false;
+				$microsoft_consent_mode_valid_post_api_key = array(
+					'microsoft_ads',
 				);
 
 				//preventing double cookie print
@@ -459,6 +475,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 						$page_reload_on_user_consent = isset( $value['post_meta']['_map_page_reload_on_user_consent'][0] ) ? $value['post_meta']['_map_page_reload_on_user_consent'][0] : null;
 
 						$this_to_show_consent_mode = false;
+						$this_to_show_microsoft_consent_mode = false;
 						$this_extra_header_class = "";
 						$this_extra_content_class = "";
 						$this_content_display = 'display:none;';
@@ -476,6 +493,22 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 							$this_extra_content_class = " map-do-not-collapse";
 							$this_content_display = 'display:block;';
 						}
+
+
+						if( !$microsoft_consent_mode_options_shown &&
+							$enable_microsoft_cmode &&
+							$the_post_api_key &&
+							is_array( $microsoft_consent_mode_valid_post_api_key ) &&
+							in_array( $the_post_api_key, $microsoft_consent_mode_valid_post_api_key ) )
+						{
+							$this_to_show_microsoft_consent_mode = true;
+							$microsoft_consent_mode_options_shown = true;
+
+							$this_extra_header_class = " map-tab-active map-do-not-collapse";
+							$this_extra_content_class = " map-do-not-collapse";
+							$this_content_display = 'display:block;';
+						}
+
 
 						$map_cookie_description_wrapper_added_class = "";
 
@@ -523,9 +556,10 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 														<label
 															for="map-checkbox-' . esc_attr( $the_remote_id ) . '"
 															class="map-slider"
+															role="button"
 															data-map-enable="'.esc_attr( $is_enabled_text ).'"
 															data-map-disable="'.esc_attr( $is_disabled_text ).'">
-															<span class="map-sr-only">' .
+															<span class="sr-only">' .
 																esc_html( $value['post_title'] ) .
 															'</span>
 														</label>
@@ -548,22 +582,53 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 							</div>
 
 								<?php
-									if( $the_settings['pa'] == 1 && $this_to_show_consent_mode ):
+									if( $the_settings['pa'] == 1 && $this_to_show_microsoft_consent_mode ):
 								?>
 
 								<p><?php echo esc_html( $the_translations[ $current_lang ]['additional_consents'] ) ?>:</p>
 
 								<?php
-										foreach( $consent_mode_consents as $kk => $vv ):
+									foreach( $microsoft_consent_mode_consents as $kk => $vv ):
 								?>
 
 									<div class="map-tab-section map_consent_description_wrapper" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
 										<div class="map-tab-header map-standard-header map-nocursor withEffects">
 											<a role="button" class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" tabindex='-1'><?php echo esc_html( $vv['human_name'] ) ?></a>
 											<div class="map-switch">
-												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
-												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>">
-												<span class="map-sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
+												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-microsoft MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
+												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="button">
+												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
+											</div>
+										</div>
+										<div class="map-tab-content" style="display: none;">
+											<div data-nosnippet="" class="map-tab-pane map-fade">
+											<?php echo esc_html( $vv['human_desc'] ); ?>
+											</div>
+										</div>
+									</div>
+
+								<?php
+									endforeach;
+									endif;
+								?>
+
+								<?php
+									if( $the_settings['pa'] == 1 && $this_to_show_consent_mode ):
+								?>
+
+								<p><?php echo esc_html( $the_translations[ $current_lang ]['additional_consents'] ) ?>:</p>
+
+								<?php
+									foreach( $consent_mode_consents as $kk => $vv ):
+								?>
+
+									<div class="map-tab-section map_consent_description_wrapper" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
+										<div class="map-tab-header map-standard-header map-nocursor withEffects">
+											<a role="button" class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" tabindex='-1'><?php echo esc_html( $vv['human_name'] ) ?></a>
+											<div class="map-switch">
+												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-google MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
+												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="button">
+												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
 											</div>
 										</div>
 										<div class="map-tab-content" style="display: none;">
@@ -679,7 +744,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 			?>
 				<div data-nosnippet class="modal_credits">
 					<?php if( $the_settings['pa'] == 1 ): ?>
-						<a href="<?php echo esc_attr( $about_url ); ?>" target="_blank" rel="nofollow" tabindex='-1'><img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-pro.png" alt="Privacy by My Agile Privacy"  width="111" height="50"></a>
+						<a href="<?php echo esc_attr( $about_url ); ?>" target="_blank" rel="nofollow" tabindex='-1' aria-label="Privacy by My Agile Privacy"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-pro.png" alt="Privacy by My Agile Privacy"  width="111" height="50"></a>
 					<?php else: ?>
 						<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-basic.png" alt="Privacy by My Agile Privacy" width="111" height="50">
 					<?php endif; ?>

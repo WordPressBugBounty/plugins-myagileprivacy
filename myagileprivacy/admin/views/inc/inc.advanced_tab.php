@@ -129,8 +129,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						?>
 					</select>
+					
+					<p class="mt-2 lh-sm"><em><?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?></em></p>
+				
 
-				</div> <!-- /.col-sm-6 -->
+				</div> <!-- /.col-sm-7 -->
 			</div> <!-- row -->
 
 
@@ -210,6 +213,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						?>
 					</select>
+
+					<p class="mt-2 lh-sm"><em><?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?></em></p>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
