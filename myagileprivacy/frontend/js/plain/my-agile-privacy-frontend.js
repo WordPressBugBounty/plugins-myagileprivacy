@@ -5,7 +5,7 @@
 
 var MAP_SYS = {
 	'plugin_version' 					: null,
-	'internal_version' 					: "2.0017",
+	'internal_version' 					: "2.0018",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -257,6 +257,7 @@ var MAP =
 			this.accept_button = this.bar_elm.querySelector( '.map-accept-button' );
 			this.reject_button = this.bar_elm.querySelectorAll( '.map-reject-button' );
 			this.customize_button = this.bar_elm.querySelector( '.map-customize-button' );
+			this.show_consent_elems = document.querySelectorAll( '.showConsent, .showConsentAgain' );
 
 			MAP_SYS.map_accept_all_button = this.accept_button;
 			MAP_SYS.map_reject_all_button = this.reject_button[0];
@@ -290,6 +291,8 @@ var MAP =
 
 			this.setupIabTCF();
 			this.updateSomeConsentGivenStatus();
+
+			this.usabilityEvents();
 
 		}
 		catch( error )
@@ -567,7 +570,6 @@ var MAP =
 			console.error( error );
 		}
 	},
-
 
 	//from consent object to cookie (Google)
 	saveGoogleConsentStatusToCookie : function( consentObject )
@@ -1025,6 +1027,7 @@ var MAP =
 
 					setTimeout( function() {
 						MAP.showagain_elm.style.display = 'none';
+						MAP.bar_elm.focus();
 					}, 150 );
 
 					anime( {
@@ -1034,6 +1037,7 @@ var MAP =
 						opacity: 0,
 						complete: function( anim ) {
 							MAP.showagain_elm.style.display = 'none';
+							MAP.bar_elm.focus();
 						}
 					} );
 
@@ -1107,6 +1111,7 @@ var MAP =
 							}
 
 							that.bar_open = true;
+							that.bar_elm.focus();
 							that.optimizeMobile();
 
 						}
@@ -1222,6 +1227,7 @@ var MAP =
 						}
 
 						that.bar_open = true;
+						that.bar_elm.focus();
 						that.optimizeMobile();
 					}
 					catch( error )
@@ -1402,6 +1408,8 @@ var MAP =
 
 						MAP.settingsModal.classList.remove( 'map-blowup', 'map-out' );
 						MAP.settingsModal.classList.add( 'map-blowup' );
+
+						MAP.settingsModal.focus();
 
 						document.body.classList.add( 'map-modal-open' );
 
@@ -1695,7 +1703,6 @@ var MAP =
 			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function attachEvents' );
 
 			//for preserving scope
-
 			var that = this;
 
 			that.accept_button.addEventListener( 'click', function( e ) {
@@ -1723,6 +1730,7 @@ var MAP =
 					{
 						that.updateGoogleConsent( consent_key, 'granted', true );
 					}
+
 				});
 
 				//check user-preference checkbox
@@ -1739,6 +1747,7 @@ var MAP =
 
 				//check iab-preference checkbox
 				that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
+
 					elem.checked = true;
 				});
 
@@ -1778,6 +1787,7 @@ var MAP =
 
 					//uncheck consent-mode checkbox
 					that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
+
 						elem.checked = false;
 
 						var consent_key = elem.getAttribute( 'data-consent-key' );
@@ -1806,6 +1816,7 @@ var MAP =
 
 					//uncheck iab-preference checkbox
 					that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
+
 						elem.checked = false;
 					});
 
@@ -1922,6 +1933,110 @@ var MAP =
 		}
 	},
 
+	usabilityEvents: function()
+	{
+		try {
+
+			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function usabilityEvents' );
+
+			//for preserving scope
+			var that = this;
+
+			//usability fix - align checkbox - label
+			document.querySelectorAll( 'input[type="checkbox"][id]' ).forEach(function(checkbox) {
+			  var id = checkbox.id;
+			  if( !id ) return;
+			  document.querySelectorAll( `label[for="${id}"]` ).forEach( function( label ) {
+				label.setAttribute( 'aria-checked', checkbox.checked ? 'true' : 'false' );
+			  });
+			});
+
+			//usability fix - keep checkbox - label aligned
+			that.settingsModal.addEventListener( 'change', function( e ) {
+			  if (e.target.matches( 'input[type="checkbox"][id]' ) ) {
+				var id = e.target.id;
+				if( !id ) return;
+
+				document.querySelectorAll( `label[for="${id}"]` ).forEach( function( label ) {
+				  label.setAttribute( 'aria-checked', e.target.checked ? 'true' : 'false' );
+				});
+			  }
+			});
+
+			//usability fix - clickable elements with keydown
+			const usability_fix_items = [ that.accept_button,
+				that.reject_button,
+				that.customize_button,
+				that.show_consent_elems,
+				document.querySelectorAll( '.map-triggerGotoIABTCF' )
+			];
+
+			usability_fix_items.forEach( item => {
+				if( !item ) return;
+
+				// NodeList/HTMLCollection
+				if( typeof item.forEach === 'function' )
+				{
+					item.forEach( el => {
+						el.addEventListener( 'keydown', function( e ) {
+							if( e.key === 'Enter' || e.key === ' ' )
+							{
+								e.preventDefault();
+								this.click();
+							}
+						});
+					});
+				}
+
+				//single element
+				else if( item.addEventListener )
+				{
+					item.addEventListener( 'keydown', function( e ) {
+						if( e.key === 'Enter' || e.key === ' ' )
+						{
+							e.preventDefault();
+							this.click();
+						}
+					});
+				}
+			});
+
+			that.settingsModal.addEventListener( 'keydown', function( e ) {
+
+				if( e.target.matches( '.map_expandItem' ) ||
+					e.target.matches( '.map-tab-navigation' ) ||
+					e.target.matches( '.map-privacy-iab-button' )
+				)
+				{
+					if( e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter' )
+					{
+						e.preventDefault();
+						e.target.click();
+					}
+				}
+
+				//usability fix - checkbox
+				if( e.target.matches( '[role="checkbox"]' ) )
+				{
+					if( e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter' )
+					{
+						e.preventDefault();
+						let for_attribute = e.target.getAttribute( 'for' );
+						const final_target = document.getElementById( for_attribute );
+						if( final_target )
+						{
+							final_target.click();
+						}
+					}
+				}
+			});
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
 
 	attachAnimations: function()
 	{
@@ -2249,6 +2364,7 @@ var MAP =
 			} );
 
 			that.bar_open = true;
+			that.bar_elm.focus();
 
 			that.optimizeMobile();
 
@@ -2257,7 +2373,6 @@ var MAP =
 		{
 			console.error( error );
 		}
-
 	},
 
 	hideBar: function()
@@ -2441,6 +2556,12 @@ var MAP =
 				}
 
 				that.setOverflowMaxHeight();
+
+				//second-layer image fix (wprocket)
+				document.querySelectorAll( '.map-modal-body img' ).forEach( function( img ) {
+					img.style.width = "unset!important";
+					img.style.height = "unset!important";
+				});
 
 			}
 			catch( error )
@@ -3255,6 +3376,7 @@ var MAP =
 							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
 
 							currentToggleElm.forEach( elm => elm.checked = true );
+
 						}
 						else
 						{
@@ -3492,7 +3614,6 @@ var MAP =
 		{
 			console.error( error );
 		}
-
 	},
 
 	administratorNotices: function()
@@ -3592,13 +3713,11 @@ var MAP =
 			{
 
 			}
-
 		}
 		catch( error )
 		{
 			console.error( error );
 		}
-
 	 },
 
 	//slideDown equivalent function (show)

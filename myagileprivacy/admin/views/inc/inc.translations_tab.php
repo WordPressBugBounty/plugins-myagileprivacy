@@ -253,18 +253,62 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 										</div>
 										<div class="preview-button-container">
-											<div class="preview-button" id="preview-accept">
-												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][accept]"
-													style="background:<?php echo esc_attr( $the_settings['button_accept_button_color'] ); ?>; color:<?php echo esc_html( $the_settings['button_accept_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['accept'] ); ?></span>
-											</div>
-											<div class="preview-button" id="preview-refuse">
-												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][refuse]"
-													style="background:<?php echo esc_attr( $the_settings['button_reject_button_color'] ); ?>; color:<?php echo esc_attr( $the_settings['button_reject_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['refuse'] ); ?></span>
-											</div>
-											<div class="preview-button" id="preview-customize">
-												<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][customize]"
-													style="background:<?php echo esc_attr( $the_settings['button_customize_button_color'] ); ?>; color:<?php echo esc_attr( $the_settings['button_customize_link_color'] ); ?>;"><?php echo esc_html( $the_translations[$lang_code]['customize'] ); ?></span>
-											</div>
+
+											<?php
+
+												$layer_1_button_order = $the_settings['layer_1_button_order'];
+
+												$layer_1_button_order_array = explode( '_', $layer_1_button_order );
+
+												$button_key_map = array(
+													'accept'    => 'accept',
+													'reject'    => 'refuse',
+													'customize' => 'customize',
+												);
+
+												$button_configs = array(
+													'accept' => array(
+														'id'    => 'preview-accept',
+														'edit'  => 'accept',
+														'bg'    => $the_settings['button_accept_button_color'],
+														'color' => $the_settings['button_accept_link_color'],
+														'label' => $the_translations[$lang_code]['accept'],
+													),
+													'refuse' => array(
+														'id'    => 'preview-refuse',
+														'edit'  => 'refuse',
+														'bg'    => $the_settings['button_reject_button_color'],
+														'color' => $the_settings['button_reject_link_color'],
+														'label' => $the_translations[$lang_code]['refuse'],
+													),
+													'customize' => array(
+														'id'    => 'preview-customize',
+														'edit'  => 'customize',
+														'bg'    => $the_settings['button_customize_button_color'],
+														'color' => $the_settings['button_customize_link_color'],
+														'label' => $the_translations[$lang_code]['customize'],
+													),
+												);
+
+
+												foreach( $layer_1_button_order_array as $button_key )
+												{
+													if( isset( $button_key_map[$button_key] ) )
+													{
+														$normalized = $button_key_map[$button_key];
+														$config = $button_configs[$normalized];
+														?>
+														<div class="preview-button" id="<?php echo esc_attr( $config['id'] ); ?>">
+															<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][<?php echo esc_attr( $config['edit'] ); ?>]"
+																style="background:<?php echo esc_attr( $config['bg'] ); ?>; color:<?php echo esc_attr( $config['color'] ); ?>;">
+																<?php echo esc_html($config['label']); ?>
+															</span>
+														</div>
+														<?php
+													}
+												}
+											?>
+
 										</div>
 									</div>
 								</div> <!-- cookie banner -->

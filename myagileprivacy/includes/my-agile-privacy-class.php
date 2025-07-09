@@ -740,6 +740,7 @@ class MyAgilePrivacy {
 			case 'missing_cookie_shield_timestamp':
 			case 'cookie_shield_running_timestamp':
 			case 'fixed_translations_encoded':
+			case 'layer_1_button_order':
 				$ret = $value;
 				break;
 			// Basic sanitisation for other fields
@@ -1098,6 +1099,7 @@ class MyAgilePrivacy {
 
 			'enable_language_fallback' 					=> 	false,
 			'language_fallback_locale'					=>	null,
+			'layer_1_button_order'						=>	'accept_reject_customize',
 		);
 
 		$settings = apply_filters( 'map_plugin_settings', $settings);
@@ -1228,6 +1230,8 @@ class MyAgilePrivacy {
 				'data-map-enable' => array(),
 				'data-map-disable' => array(),
 				'role' => array(),
+				'tabindex' => array(),
+				'aria-checked' => array(),
 			),
 			'option' => array(
 				'name' => array(),
@@ -1795,17 +1799,36 @@ class MyAgilePrivacy {
 			'microsoft_ads',
 		);
 
-		if( in_array( $a['api_key'], $priority_list ) )
+		$a_priority = array_search($a['api_key'], $priority_list);
+		$b_priority = array_search($b['api_key'], $priority_list);
+
+		// If both are in the priority list
+		if( $a_priority !== false && $b_priority !== false )
+		{
+			// Order according to their position in the list
+			if( $a_priority === $b_priority )
+			{
+				// If they have the same priority, sort by post_title
+				return strcasecmp($a['post_title'], $b['post_title']);
+			}
+			return $a_priority - $b_priority;
+		}
+
+		// If ONLY $a is priority
+		if( $a_priority !== false )
 		{
 			return -1;
 		}
-		elseif( in_array( $b['api_key'], $priority_list ) )
+
+		// If ONLY $b is priority
+		if( $b_priority !== false )
 		{
 			return 1;
 		}
-		return 0;
-	}
 
+		// If neither one is priority, sort by post_title
+		return strcasecmp($a['post_title'], $b['post_title']);
+	}
 
 	//f for getting global integrity checks
 	public static function getGlobalIntegrityChesks()

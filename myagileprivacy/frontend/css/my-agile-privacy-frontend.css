@@ -14,6 +14,10 @@ My Agile Privacy Main Css
     font-display:swap !important;
 }
 
+#my-agile-privacy-notification-area:focus{
+    outline: 0px !important;
+}
+
 #mapSettingsPopup{
     font-family:-apple-system,sans-serif !important;
     font-display:swap !important;
@@ -82,11 +86,13 @@ My Agile Privacy Main Css
 }
 
 #my-agile-privacy-notification-area .map-area-container .map_notification-message {
+    align-content: center;
 }
 
 #my-agile-privacy-notification-area .map-area-container .map_notification-message.map_flex {
     display: flex;
     flex-wrap: wrap;
+    align-content: center;
 }
 
 
@@ -253,6 +259,7 @@ My Agile Privacy Main Css
     flex-direction: row;
     justify-content: flex-start;
     padding-bottom: 25px;
+    min-height: 150px;
 }
 
 #my-agile-privacy-notification-area.mapSizeWide.mapButtonsAside .map-area-container .map_notification-message {
@@ -465,6 +472,11 @@ My Agile Privacy Main Css
     text-decoration: underline;
 }
 
+.map-modal-body .map-modal-cookie-policy-link a:focus {
+    outline: 1px solid rgb(33, 37, 41)!important;
+    outline-offset: 1px!important;
+}
+
 .map-modal-body img{
     max-width: 100% !important;
     max-height: 30px!important;
@@ -629,6 +641,12 @@ My Agile Privacy Main Css
 	display: block!important;
     color: #444!important;
 }
+
+.map-modal .map-modal-close:focus {
+    outline: 1px solid rgb(33, 37, 41)!important;
+    outline-offset: 1px!important;
+}
+
 
 .map-modal .map-modal-close:hover {
     color: unset;
@@ -823,20 +841,20 @@ My Agile Privacy Main Css
     align-items: center;
     font-size: 1em;
     color: #000;
-    /*
-    text-transform: capitalize;
-    */
     margin:0px;
     max-width: 80%;
 }
 
+.map-tab-header a.map-nav-link:focus,
+.map-tab-header a.map-nav-link-equivalent:focus{
+    outline: 1px solid rgb(33, 37, 41)!important;
+    outline-offset: 1px!important;
+}
+
+
 
 .map-tab-header .map-nav-link-wrapper {
     position: relative;
-    /*
-    display: flex;
-    align-items: center;
-    */
     font-size: inherit;
     color: inherit;
     margin:0px;
@@ -1155,6 +1173,11 @@ span.map-necessary-caption {
     transition: all 200ms;
 }
 
+#mapSettingsPopup .map-wrappertab-navigation li a:focus{
+    outline: 1px solid rgb(33, 37, 41)!important;
+    outline-offset: 1px!important;
+}
+
 #mapSettingsPopup .map-wrappertab-navigation li a.active-wrappertab-nav,
 #mapSettingsPopup .map-wrappertab-navigation li a:hover{
     background-color: #0092baa8;
@@ -1217,9 +1240,14 @@ span.map-necessary-caption {
     color: inherit;
 }
 
+#mapSettingsPopup .map-privacy-iab-button:focus{
+    outline: 1px solid rgb(33, 37, 41)!important;
+    outline-offset: 1px!important;
+}
+
+
 #mapSettingsPopup .map-privacy-iab-button:hover{
     text-decoration: none;
-
 }
 
 #mapSettingsPopup .map-item-tooltip{
@@ -1392,3 +1420,5 @@ span.map-necessary-caption {
         max-width: 70px!important;
     }
 }
+
+

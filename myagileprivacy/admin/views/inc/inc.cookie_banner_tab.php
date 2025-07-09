@@ -290,6 +290,47 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+			<div class="row mb-4">
+				<label for="layer_1_button_order_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Button order', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<select name="layer_1_button_order_field" class="form-control" id="layer_1_button_order_field">
+
+						<option value="accept_reject_customize" <?php selected( $the_settings['layer_1_button_order'], 'accept_reject_customize' ); ?>>
+
+							<?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?>
+
+						</option>
+						<option value="accept_customize_reject" <?php selected( $the_settings['layer_1_button_order'], 'accept_customize_reject' ); ?>>
+
+							<?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?>
+
+						</option>
+						<option value="reject_accept_customize" <?php selected( $the_settings['layer_1_button_order'], 'reject_accept_customize' ); ?>>
+
+							<?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?>
+
+						</option>
+						<option value="reject_customize_accept" <?php selected( $the_settings['layer_1_button_order'], 'reject_customize_accept' ); ?>>
+
+							<?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?>
+
+						</option>
+						<option value="customize_accept_reject" <?php selected( $the_settings['layer_1_button_order'], 'customize_accept_reject' ); ?>>
+
+							<?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?>
+
+						</option>
+						<option value="customize_reject_accept" <?php selected( $the_settings['layer_1_button_order'], 'customize_reject_accept' ); ?>>
+
+							<?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?>
+
+						</option>
+
+					</select>
+				</div> <!-- col-sm-7 -->
+			</div> <!-- row -->
 
 			<!-- banner flat css-->
 			<div class="row mb-4 d-none">

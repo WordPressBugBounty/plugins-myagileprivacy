@@ -6,7 +6,7 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2025-05-16 09:19+0000\n"
+"POT-Creation-Date: 2025-07-03 22:18+0000\n"
 "X-Generator: Loco https://localise.biz/"
 
 #: admin/views/inc/inc.policies_tab.php:316
@@ -73,19 +73,28 @@ msgid ""
 "and tell us what you like most about our service."
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:532
+#: admin/views/inc/inc.cookie_banner_tab.php:302
+#: admin/views/inc/inc.cookie_banner_tab.php:307
+#: admin/views/inc/inc.cookie_banner_tab.php:312
+#: admin/views/inc/inc.cookie_banner_tab.php:317
+#: admin/views/inc/inc.cookie_banner_tab.php:322
+#: admin/views/inc/inc.cookie_banner_tab.php:327
+msgid "Accept"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:573
 msgid "Accept button"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:707
+#: admin/views/inc/inc.cookie_banner_tab.php:748
 msgid "Accept button detailed preview"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:79
+#: admin/views/inc/inc.consent_widget_tab.php:78
 msgid "Activate IAB TCF"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:64
+#: admin/views/inc/inc.consent_widget_tab.php:63
 msgid "Activate IAB Transparency and Consent Framework"
 msgstr ""
 
@@ -94,7 +103,7 @@ msgid "Ad Personalization"
 msgstr ""
 
 #: admin/views/inc/fields.consent_mode_tab.php:213
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:91
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:89
 msgid "Ad Storage"
 msgstr ""
 
@@ -160,7 +169,7 @@ msgstr ""
 msgid "Analytics Storage"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:358
+#: admin/views/inc/inc.cookie_banner_tab.php:399
 msgid "Ancient Parchment"
 msgstr ""
 
@@ -170,7 +179,7 @@ msgid ""
 "loss of compliance."
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:462
+#: admin/views/inc/inc.cookie_banner_tab.php:503
 msgid ""
 "Attention: We strongly recommend keeping the background colors of the "
 "buttons aligned and identical."
@@ -189,9 +198,9 @@ msgstr ""
 msgid "Auto Detected"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:556
-#: admin/views/inc/inc.cookie_banner_tab.php:592
-#: admin/views/inc/inc.cookie_banner_tab.php:626
+#: admin/views/inc/inc.cookie_banner_tab.php:597
+#: admin/views/inc/inc.cookie_banner_tab.php:633
+#: admin/views/inc/inc.cookie_banner_tab.php:667
 msgid "Background colour"
 msgstr ""
 
@@ -264,7 +273,11 @@ msgstr ""
 msgid "Boxed"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:455
+#: admin/views/inc/inc.cookie_banner_tab.php:295
+msgid "Button order"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:496
 msgid "Buttons Customization"
 msgstr ""
 
@@ -319,7 +332,7 @@ msgid ""
 "texts and notifications in the event of an unsupported language."
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:360
+#: admin/views/inc/inc.translations_tab.php:404
 msgid "Cancel"
 msgstr ""
 
@@ -349,7 +362,7 @@ msgstr ""
 msgid "Check this if you see page loading error or no cookies detected"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:250
+#: admin/views/inc/inc.consent_widget_tab.php:249
 msgid ""
 "Check this option to remove My Agile Privacy logo on the consent review "
 "widget"
@@ -380,7 +393,7 @@ msgstr ""
 msgid "Click here to reset the current language"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:350
+#: admin/views/inc/inc.cookie_banner_tab.php:391
 msgid "Color Preset"
 msgstr ""
 
@@ -455,7 +468,7 @@ msgstr ""
 msgid "Consent Mode v2 Status"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:106
+#: admin/views/inc/inc.consent_widget_tab.php:105
 msgid "Consent Widget"
 msgstr ""
 
@@ -486,15 +499,15 @@ msgstr ""
 msgid "Cookie Banner"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:377
+#: admin/views/inc/inc.cookie_banner_tab.php:418
 msgid "Cookie Banner Color"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:316
+#: admin/views/inc/inc.cookie_banner_tab.php:357
 msgid "Cookie Banner Font Size"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:333
+#: admin/views/inc/inc.cookie_banner_tab.php:374
 msgid "Cookie Banner Line Height"
 msgstr ""
 
@@ -566,7 +579,16 @@ msgstr ""
 msgid "Customizations"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:603
+#: admin/views/inc/inc.cookie_banner_tab.php:302
+#: admin/views/inc/inc.cookie_banner_tab.php:307
+#: admin/views/inc/inc.cookie_banner_tab.php:312
+#: admin/views/inc/inc.cookie_banner_tab.php:317
+#: admin/views/inc/inc.cookie_banner_tab.php:322
+#: admin/views/inc/inc.cookie_banner_tab.php:327
+msgid "Customize"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:644
 msgid "Customize button"
 msgstr ""
 
@@ -574,7 +596,7 @@ msgstr ""
 msgid "Customize cookie banner, text and translations, and user notifications"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:357
+#: admin/views/inc/inc.cookie_banner_tab.php:398
 msgid "Dark"
 msgstr ""
 
@@ -594,7 +616,7 @@ msgid ""
 "Google."
 msgstr ""
 
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:93
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:91
 msgid ""
 "Defines whether cookies related to advertising can be read or written by "
 "Microsoft."
@@ -604,7 +626,7 @@ msgstr ""
 #: admin/views/inc/fields.consent_mode_tab.php:283
 #: admin/views/inc/fields.consent_mode_tab.php:340
 #: admin/views/inc/fields.consent_mode_tab.php:396
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:103
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:101
 msgid "Denied"
 msgstr ""
 
@@ -632,11 +654,11 @@ msgstr ""
 msgid "Disable Advanced Consent Mode"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:244
+#: admin/views/inc/inc.consent_widget_tab.php:243
 msgid "Disable logo on Cookie Bar"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:230
+#: admin/views/inc/inc.consent_widget_tab.php:229
 msgid "Disable My Agile Privacy logo"
 msgstr ""
 
@@ -656,7 +678,7 @@ msgstr ""
 msgid "Do block Maps widget"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:283
+#: admin/views/inc/inc.consent_widget_tab.php:282
 msgid "Do reset given consent"
 msgstr ""
 
@@ -767,7 +789,7 @@ msgstr ""
 msgid "Enable Microsoft UET Consent Mode"
 msgstr ""
 
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:77
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:75
 #, php-format
 msgid "Enable Microsoft UET Consent Mode - %1$sOnline Help%2$s"
 msgstr ""
@@ -784,13 +806,13 @@ msgstr ""
 msgid "Enable policy wrapping for CSS customization purposes"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:112
-#: admin/views/inc/inc.consent_widget_tab.php:126
+#: admin/views/inc/inc.consent_widget_tab.php:111
+#: admin/views/inc/inc.consent_widget_tab.php:125
 msgid "Enable revisit consent widget"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:297
-#: admin/views/inc/inc.cookie_banner_tab.php:306
+#: admin/views/inc/inc.cookie_banner_tab.php:338
+#: admin/views/inc/inc.cookie_banner_tab.php:347
 msgid "Enable shadows and rounding effects"
 msgstr ""
 
@@ -847,7 +869,7 @@ msgstr ""
 msgid "Fallback language"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:49
+#: admin/views/inc/inc.consent_widget_tab.php:48
 msgid "Feature not available for your license"
 msgstr ""
 
@@ -915,19 +937,19 @@ msgstr ""
 #: admin/views/inc/fields.consent_mode_tab.php:285
 #: admin/views/inc/fields.consent_mode_tab.php:342
 #: admin/views/inc/fields.consent_mode_tab.php:398
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:105
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:103
 msgid "Granted"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:361
+#: admin/views/inc/inc.cookie_banner_tab.php:402
 msgid "Green Tea"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:398
+#: admin/views/inc/inc.cookie_banner_tab.php:439
 msgid "Heading background Color"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:414
+#: admin/views/inc/inc.cookie_banner_tab.php:455
 msgid "Heading text Color"
 msgstr ""
 
@@ -1127,14 +1149,14 @@ msgstr ""
 msgid "Insert the border radius value for cookie banner and buttons, in pixel"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:325
+#: admin/views/inc/inc.cookie_banner_tab.php:366
 msgid ""
 "Insert the font size for the cookie banner heading, text buttons and for the "
 "blocked content notification bar text, in pixel <small>(suggested value: 18)"
 "</small>"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:342
+#: admin/views/inc/inc.cookie_banner_tab.php:383
 msgid ""
 "Insert the line height for the cookie banner heading, text buttons and for "
 "the blocked content notification bar text, in pixel <small>(suggested value: "
@@ -1149,14 +1171,14 @@ msgstr ""
 msgid "Is necessary?"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:73
+#: admin/views/inc/inc.consent_widget_tab.php:72
 msgid ""
 "It is highly recommended to enable the IAB TCF if you use ad channel banners "
 "such as Google Adsense, Ad Manager, AdMob, or similar platforms on your "
 "website."
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:72
+#: admin/views/inc/inc.consent_widget_tab.php:71
 msgid ""
 "It serves as a mechanism that allows websites and digital advertising "
 "platforms to effectively obtain and manage user consent for the processing "
@@ -1195,7 +1217,7 @@ msgid ""
 "may possibly transfer the data subject to processing."
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:362
+#: admin/views/inc/inc.cookie_banner_tab.php:403
 msgid "Lavender Blooms"
 msgstr ""
 
@@ -1208,7 +1230,7 @@ msgid "Leave it blank, if not applicabile"
 msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:125
-#: admin/views/inc/inc.consent_widget_tab.php:153
+#: admin/views/inc/inc.consent_widget_tab.php:152
 msgid "Left"
 msgstr ""
 
@@ -1228,7 +1250,7 @@ msgstr ""
 msgid "License summary"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:356
+#: admin/views/inc/inc.cookie_banner_tab.php:397
 msgid "Light"
 msgstr ""
 
@@ -1252,12 +1274,12 @@ msgstr ""
 msgid "Microsoft UET Consent Mode"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:360
+#: admin/views/inc/inc.cookie_banner_tab.php:401
 msgid "Misty Forest"
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:354
-#: admin/views/inc/inc.translations_tab.php:361
+#: admin/views/inc/inc.translations_tab.php:398
+#: admin/views/inc/inc.translations_tab.php:405
 msgid "Modify text"
 msgstr ""
 
@@ -1321,8 +1343,8 @@ msgstr ""
 #: admin/my-agile-privacy-admin.php:4158 admin/my-agile-privacy-admin.php:4177
 #: admin/my-agile-privacy-admin.php:4237 admin/my-agile-privacy-admin.php:4301
 #: admin/views/inc/inc.cookie_banner_tab.php:142
-#: admin/views/inc/inc.cookie_banner_tab.php:512
-#: admin/views/inc/inc.cookie_banner_tab.php:520
+#: admin/views/inc/inc.cookie_banner_tab.php:553
+#: admin/views/inc/inc.cookie_banner_tab.php:561
 msgid "No"
 msgstr ""
 
@@ -1447,7 +1469,7 @@ msgstr ""
 #: admin/views/admin_page_html.php:210 admin/views/inc/inc.policies_tab.php:252
 #: admin/views/inc/inc.policies_tab.php:301
 #: admin/views/inc/inc.cookie_banner_tab.php:74
-#: admin/views/inc/inc.consent_widget_tab.php:53
+#: admin/views/inc/inc.consent_widget_tab.php:52
 #: admin/views/inc/fields.consent_mode_tab.php:36
 #: admin/views/inc/fields.cookieshield_tab.php:27
 #: admin/views/inc/inc.translations_tab.php:45
@@ -1502,7 +1524,16 @@ msgstr ""
 msgid "Raw Html Code"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:569
+#: admin/views/inc/inc.cookie_banner_tab.php:302
+#: admin/views/inc/inc.cookie_banner_tab.php:307
+#: admin/views/inc/inc.cookie_banner_tab.php:312
+#: admin/views/inc/inc.cookie_banner_tab.php:317
+#: admin/views/inc/inc.cookie_banner_tab.php:322
+#: admin/views/inc/inc.cookie_banner_tab.php:327
+msgid "Refuse"
+msgstr ""
+
+#: admin/views/inc/inc.cookie_banner_tab.php:610
 msgid "Refuse button"
 msgstr ""
 
@@ -1545,8 +1576,8 @@ msgstr ""
 msgid "Reset all settings"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:264
-#: admin/views/inc/inc.consent_widget_tab.php:271
+#: admin/views/inc/inc.consent_widget_tab.php:263
+#: admin/views/inc/inc.consent_widget_tab.php:270
 msgid "Reset given consent"
 msgstr ""
 
@@ -1557,7 +1588,7 @@ msgid ""
 msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:126
-#: admin/views/inc/inc.consent_widget_tab.php:151
+#: admin/views/inc/inc.consent_widget_tab.php:150
 msgid "Right"
 msgstr ""
 
@@ -1604,11 +1635,11 @@ msgstr ""
 msgid "Search Policy"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:367
+#: admin/views/inc/inc.cookie_banner_tab.php:408
 msgid "Select a color preset for the cookie banner, or customize by your own"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:355
+#: admin/views/inc/inc.cookie_banner_tab.php:396
 msgid "Select a preset"
 msgstr ""
 
@@ -1621,11 +1652,11 @@ msgstr ""
 msgid "Select the background color of the blocked content inline widget"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:388
+#: admin/views/inc/inc.cookie_banner_tab.php:429
 msgid "Select the background color of the cookie banner"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:185
+#: admin/views/inc/inc.consent_widget_tab.php:184
 msgid "Select the horizontal position where to show the consent again widget "
 msgstr ""
 
@@ -1644,9 +1675,9 @@ msgstr ""
 msgid "Select the text color of the blocked content inline widget"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:406
-#: admin/views/inc/inc.cookie_banner_tab.php:422
-#: admin/views/inc/inc.cookie_banner_tab.php:442
+#: admin/views/inc/inc.cookie_banner_tab.php:447
+#: admin/views/inc/inc.cookie_banner_tab.php:463
+#: admin/views/inc/inc.cookie_banner_tab.php:483
 msgid "Select the text color of the cookie banner"
 msgstr ""
 
@@ -1682,12 +1713,12 @@ msgstr ""
 msgid "Settings updated."
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:482
+#: admin/views/inc/inc.cookie_banner_tab.php:523
 msgid "Show Buttons icon"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:207
-#: admin/views/inc/inc.consent_widget_tab.php:219
+#: admin/views/inc/inc.consent_widget_tab.php:206
+#: admin/views/inc/inc.consent_widget_tab.php:218
 msgid "Show Cookie Policy link"
 msgstr ""
 
@@ -1746,7 +1777,7 @@ msgstr ""
 #: admin/views/inc/fields.consent_mode_tab.php:318
 #: admin/views/inc/fields.consent_mode_tab.php:375
 #: admin/views/inc/fields.consent_mode_tab.php:431
-#: admin/views/inc/fields.microsoft_consent_mode_tab.php:139
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:137
 msgid "Suggested value for compliance:"
 msgstr ""
 
@@ -1758,7 +1789,7 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:143
+#: admin/views/inc/inc.consent_widget_tab.php:142
 msgid "Tab Position"
 msgstr ""
 
@@ -1766,19 +1797,19 @@ msgstr ""
 msgid "Template Redirect / Shutdown"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:540
-#: admin/views/inc/inc.cookie_banner_tab.php:577
-#: admin/views/inc/inc.cookie_banner_tab.php:611
+#: admin/views/inc/inc.cookie_banner_tab.php:581
+#: admin/views/inc/inc.cookie_banner_tab.php:618
+#: admin/views/inc/inc.cookie_banner_tab.php:652
 msgid "Text"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:432
+#: admin/views/inc/inc.cookie_banner_tab.php:473
 msgid "Text Color"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:549
-#: admin/views/inc/inc.cookie_banner_tab.php:585
-#: admin/views/inc/inc.cookie_banner_tab.php:619
+#: admin/views/inc/inc.cookie_banner_tab.php:590
+#: admin/views/inc/inc.cookie_banner_tab.php:626
+#: admin/views/inc/inc.cookie_banner_tab.php:660
 msgid "Text colour"
 msgstr ""
 
@@ -1811,7 +1842,7 @@ msgstr ""
 msgid "The email address linked to the license key"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:70
+#: admin/views/inc/inc.consent_widget_tab.php:69
 msgid ""
 "The IAB TCF, which stands for Interactive Advertising Bureau Transparency "
 "and Consent Framework, is a standardized framework specifically developed to "
@@ -1896,10 +1927,10 @@ msgstr ""
 msgid "This feature allows you to implement Microsoft's UET Consent Mode."
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:314
-#: admin/views/inc/inc.translations_tab.php:315
-#: admin/views/inc/inc.translations_tab.php:316
-#: admin/views/inc/inc.translations_tab.php:317
+#: admin/views/inc/inc.translations_tab.php:358
+#: admin/views/inc/inc.translations_tab.php:359
+#: admin/views/inc/inc.translations_tab.php:360
+#: admin/views/inc/inc.translations_tab.php:361
 msgid "This is an example cookie"
 msgstr ""
 
@@ -1944,7 +1975,7 @@ msgstr ""
 msgid "This will sync Cookies And Policy in the next five minute"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:194
+#: admin/views/inc/inc.consent_widget_tab.php:193
 msgid "Title for show again policy"
 msgstr ""
 
@@ -1978,7 +2009,7 @@ msgstr ""
 msgid "Url Passthrough"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:468
+#: admin/views/inc/inc.cookie_banner_tab.php:509
 msgid ""
 "Using different colors might be perceived as a \"dark pattern,\" potentially "
 "misleading users and conflicting with privacy regulations. To ensure the "
@@ -2026,7 +2057,7 @@ msgstr ""
 msgid "Warning! Unsaved changes. Are you sure you want to leave?"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:132
+#: admin/views/inc/inc.consent_widget_tab.php:131
 msgid ""
 "Warning: if you disable this, add the proper link for consent revisit in the "
 "foote area, in order to stay GDPR compliant. You can use the "
@@ -2053,7 +2084,7 @@ msgstr ""
 msgid "Warning: this will reset all the plugin settings."
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:289
+#: admin/views/inc/inc.consent_widget_tab.php:288
 msgid ""
 "Warning: this will reset all the user consent given. Use this only if you "
 "change your cookie list and you would like to ask consent again."
@@ -2090,7 +2121,7 @@ msgstr ""
 msgid "Wide"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:359
+#: admin/views/inc/inc.cookie_banner_tab.php:400
 msgid "Winter Sky"
 msgstr ""
 
@@ -2123,8 +2154,8 @@ msgstr ""
 #: admin/my-agile-privacy-admin.php:4154 admin/my-agile-privacy-admin.php:4173
 #: admin/my-agile-privacy-admin.php:4233 admin/my-agile-privacy-admin.php:4297
 #: admin/views/inc/inc.cookie_banner_tab.php:143
-#: admin/views/inc/inc.cookie_banner_tab.php:493
-#: admin/views/inc/inc.cookie_banner_tab.php:500
+#: admin/views/inc/inc.cookie_banner_tab.php:534
+#: admin/views/inc/inc.cookie_banner_tab.php:541
 msgid "Yes"
 msgstr ""
 
@@ -2132,7 +2163,7 @@ msgstr ""
 msgid "Yes, enable Cookie metadata synchronization."
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:93
+#: admin/views/inc/inc.consent_widget_tab.php:92
 msgid ""
 "Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on "
 "my website and I would to activate the IAB Transparency and Consent Framework"
@@ -2181,10 +2212,10 @@ msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:260
 #: admin/views/inc/inc.cookie_banner_tab.php:273
-#: admin/views/inc/inc.cookie_banner_tab.php:541
-#: admin/views/inc/inc.cookie_banner_tab.php:578
-#: admin/views/inc/inc.cookie_banner_tab.php:612
-#: admin/views/inc/inc.consent_widget_tab.php:195
+#: admin/views/inc/inc.cookie_banner_tab.php:582
+#: admin/views/inc/inc.cookie_banner_tab.php:619
+#: admin/views/inc/inc.cookie_banner_tab.php:653
+#: admin/views/inc/inc.consent_widget_tab.php:194
 msgid "You can edit this text from the Texts and Translations section."
 msgstr ""
 
@@ -2200,7 +2231,7 @@ msgid ""
 "%1$sClick here%2$s to go to the guide."
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:475
+#: admin/views/inc/inc.cookie_banner_tab.php:516
 msgid ""
 "You can use the default color settings or <a href=\"#\" role=\"button\" "
 "class=\"standardize_colors_button\">click here to standardize the colors</a>."
@@ -2249,6 +2280,6 @@ msgstr ""
 msgid "Your license status"
 msgstr ""
 
-#: admin/views/inc/inc.cookie_banner_tab.php:656
+#: admin/views/inc/inc.cookie_banner_tab.php:697
 msgid "Your website preview"
 msgstr ""

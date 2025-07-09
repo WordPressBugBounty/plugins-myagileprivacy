@@ -190,8 +190,30 @@ $banner_logo_color = $the_settings['heading_text_color'];
 
 $map_notification_container_extra_class = implode( ' ', array( $iab_extra_class, $map_notification_container_flex ) );
 
+//bof button order
+$button_shortcode_string = "";
+$default_button_shortcode_string = '[myagileprivacy_cookie_accept][myagileprivacy_cookie_reject][myagileprivacy_cookie_customize]';
+
+$layer_1_button_order = $the_settings['layer_1_button_order'];
+
+$layer_1_button_order_array = explode( '_', $layer_1_button_order );
+
+if( count( $layer_1_button_order_array ) == 3 )
+{
+	foreach( $layer_1_button_order_array as $shortcode_base_elem )
+	{
+		$button_shortcode_string .= "[myagileprivacy_cookie_".$shortcode_base_elem."]";
+	}
+}
+else
+{
+	$button_shortcode_string = $default_button_shortcode_string;
+}
+//eof button order
+
+
 //apply shortcodes
-$notify_message_v2 = do_shortcode( '<div class="map-area-container"><div data-nosnippet class="map_notification-message '.esc_attr( $map_notification_container_extra_class ).'">'. $notify_message_v2.'</div><div class="map_notification_container '. esc_attr( $iab_extra_class ).'">[myagileprivacy_cookie_accept][myagileprivacy_cookie_reject][myagileprivacy_cookie_customize]</div></div>' );
+$notify_message_v2 = do_shortcode( '<div class="map-area-container"><div data-nosnippet class="map_notification-message '.esc_attr( $map_notification_container_extra_class ).'">'. $notify_message_v2.'</div><div class="map_notification_container '. esc_attr( $iab_extra_class ).'">'.esc_attr( $button_shortcode_string ).'</div></div>' );
 
 $banner_title = esc_html( $the_translations[ $current_lang ]['banner_title'] );
 
@@ -199,13 +221,15 @@ $notify_title = '<div class="map_notify_title '.esc_attr( $map_heading_class ).'
 						( $banner_title != '' ? esc_html( $banner_title ) : '<div class="banner-title-logo" style="background:'.esc_attr( $banner_logo_color ).';"></div> My Agile Privacy' )
 					. '</div>';
 
-$notify_close_button = '<div class="map-closebutton-right"><a role="button" class="map-button map-reject-button" data-map_action="reject" style="'.esc_attr( $map_close_button_style ).'">&#x2715;</a></div>';
+$notify_close_button = '<div class="map-closebutton-right"><a tabindex="0" role="button" class="map-button map-reject-button" data-map_action="reject" style="'.esc_attr( $map_close_button_style ).'">&#x2715;</a></div>';
 
 $notify_html = '<div
-				id="my-agile-privacy-notification-area"
-				class="'.esc_attr( $composed_class ).' mapButtonsAside"
-				data-nosnippet="true"
-				style="'.esc_attr( $composed_style ).'" data-animation="'.$the_settings['cookie_banner_animation'].'">'.
+					role="dialog"
+					tabindex="0"
+					id="my-agile-privacy-notification-area"
+					class="'.esc_attr( $composed_class ).' mapButtonsAside"
+					data-nosnippet="true"
+					style="'.esc_attr( $composed_style ).'" data-animation="'.$the_settings['cookie_banner_animation'].'">'.
 					$notify_title.
 					$notify_close_button.
 					'<div id="my-agile-privacy-notification-content">'.
@@ -289,12 +313,12 @@ if( !$is_personal_data_policy_url && $personal_data_policy_page )
 
 if( $the_cookie_policy_url )
 {
-	$cookie_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_cookie_policy_url ).'" tabindex="-1" aria-label="Cookie Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_cookie_policy'] ).'</a>';
+	$cookie_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_cookie_policy_url ).'" tabindex="0" aria-label="Cookie Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_cookie_policy'] ).'</a>';
 }
 
 if( $the_personal_data_policy_url )
 {
-	$personal_data_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_personal_data_policy_url ).'" tabindex="-1" aria-label="Personal Data Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_personal_data_policy'] ).'</a>';
+	$personal_data_policy_html_inside_popup = '<a target="blank" href="'.esc_url( $the_personal_data_policy_url ).'" tabindex="0" aria-label="Personal Data Policy">'.esc_html( $the_translations[ $current_lang ]['view_the_personal_data_policy'] ).'</a>';
 }
 
 if( $cookie_policy_link && $the_cookie_policy_url )
@@ -354,7 +378,7 @@ $notify_logo_color = ( $the_settings['heading_background_color'] == '#ffffff' ) 
 
 $the_empty_href = "#";
 
-$notify_html .= '<div data-nosnippet class="'.esc_attr( $showagain_div_classes ).'" id="' . esc_attr( $the_settings["showagain_div_id"] ) . '" style="'.esc_attr( $border_radius_style ).'"><div class="map_logo_container" style="background-color:'.$notify_logo_color.';"></div><a role="button" class="showConsent" href="'.$the_empty_href.'" data-nosnippet>' . wp_kses( $show_again, MyAgilePrivacy::allowed_html_tags() ) . '</a>'.$spacing_text.$cookie_policy_html_inside_banner.'</div>';
+$notify_html .= '<div data-nosnippet class="'.esc_attr( $showagain_div_classes ).'" id="' . esc_attr( $the_settings["showagain_div_id"] ) . '" style="'.esc_attr( $border_radius_style ).'"><div class="map_logo_container" style="background-color:'.$notify_logo_color.';"></div><a tabindex="0" role="button" class="showConsent" href="'.$the_empty_href.'" data-nosnippet>' . wp_kses( $show_again, MyAgilePrivacy::allowed_html_tags() ) . '</a>'.$spacing_text.$cookie_policy_html_inside_banner.'</div>';
 
 echo $notify_html;
 
@@ -386,12 +410,12 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 	id="mapSettingsPopup"
 	data-nosnippet="true"
 	role="dialog"
+	tabindex="0"
 	aria-labelledby="mapSettingsPopup"
-	aria-hidden="true"
 	>
-  <div class="map-modal-dialog" role="document">
+  <div class="map-modal-dialog">
 	<div class="map-modal-content map-bar-popup <?php echo esc_attr( $with_css_effects_class ); ?>">
-	  <button type="button" class="map-modal-close" id="mapModalClose" tabindex='-1'>
+	  <button type="button" tabindex="0" class="map-modal-close" id="mapModalClose">
 			&#x2715;
 		  <span class="sr-only"><?php echo esc_html( $the_translations[ $current_lang ]['close'] );  ?></span>
 	  </button>
@@ -419,8 +443,8 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 
 						<ul class="map-wrappertab-navigation">
 
-							<li><a href="#map-privacy-cookie-thirdypart-wrapper" class="active-wrappertab-nav" tabindex='-1'><?php echo esc_html( $the_translations[ $current_lang ]['cookies_and_thirdy_part_software'] );  ?></a></li>
-							<li><a href="#map-privacy-iab-tcf-wrapper" tabindex='-1'><?php echo esc_html( $the_translations[ $current_lang ]['advertising_preferences'] );  ?></a></li>
+							<li><a href="#map-privacy-cookie-thirdypart-wrapper" class="map-tab-navigation active-wrappertab-nav" role="button" tabindex="0"><?php echo esc_html( $the_translations[ $current_lang ]['cookies_and_thirdy_part_software'] );  ?></a></li>
+							<li><a href="#map-privacy-iab-tcf-wrapper" class="map-tab-navigation" role="button" tabindex="0"><?php echo esc_html( $the_translations[ $current_lang ]['advertising_preferences'] );  ?></a></li>
 
 						</ul>
 
@@ -536,13 +560,13 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 						data-cookie-name="<?php echo esc_attr( $cleaned_cookie_name ); ?>"
 						data-cookie-api-key="<?php echo esc_attr( $the_post_api_key ); ?>">
 						<div class="map-tab-header map-standard-header <?php echo esc_attr( $with_css_effects_class.$this_extra_header_class ); ?>">
-							<a role="button" class="map_expandItem map-nav-link map-settings-mobile" data-toggle="map-toggle-tab" tabindex='-1'>
+							<a class="map_expandItem map-nav-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0">
 							<?php echo esc_html( $value['post_title'] ); ?>
 							</a>
 							<?php
 								if( $k == 'necessary' ):
 							?>
-								<span class="map-necessary-caption"><?php echo esc_html( $always_enable_text ) ?></span>
+								<span class="map-necessary-caption" role="button" tabindex="0"><?php echo esc_html( $always_enable_text ) ?></span>
 							<?php
 								else:
 
@@ -556,7 +580,9 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 														<label
 															for="map-checkbox-' . esc_attr( $the_remote_id ) . '"
 															class="map-slider"
-															role="button"
+															role="checkbox"
+															tabindex="0"
+															aria-checked="mixed"
 															data-map-enable="'.esc_attr( $is_enabled_text ).'"
 															data-map-disable="'.esc_attr( $is_disabled_text ).'">
 															<span class="sr-only">' .
@@ -593,10 +619,10 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 
 									<div class="map-tab-section map_consent_description_wrapper" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
 										<div class="map-tab-header map-standard-header map-nocursor withEffects">
-											<a role="button" class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" tabindex='-1'><?php echo esc_html( $vv['human_name'] ) ?></a>
-											<div class="map-switch">
+											<a class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0"><?php echo esc_html( $vv['human_name'] ) ?></a>
+											<div class="map-switch" >
 												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-microsoft MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
-												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="button">
+												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="checkbox" tabindex="0" aria-checked="mixed">
 												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
 											</div>
 										</div>
@@ -624,10 +650,10 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 
 									<div class="map-tab-section map_consent_description_wrapper" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
 										<div class="map-tab-header map-standard-header map-nocursor withEffects">
-											<a role="button" class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" tabindex='-1'><?php echo esc_html( $vv['human_name'] ) ?></a>
+											<a class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0"><?php echo esc_html( $vv['human_name'] ) ?></a>
 											<div class="map-switch">
 												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-google MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
-												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="button">
+												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="checkbox" tabindex="0" aria-checked="mixed">
 												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
 											</div>
 										</div>
@@ -744,7 +770,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 			?>
 				<div data-nosnippet class="modal_credits">
 					<?php if( $the_settings['pa'] == 1 ): ?>
-						<a href="<?php echo esc_attr( $about_url ); ?>" target="_blank" rel="nofollow" tabindex='-1' aria-label="Privacy by My Agile Privacy"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-pro.png" alt="Privacy by My Agile Privacy"  width="111" height="50"></a>
+						<a href="<?php echo esc_attr( $about_url ); ?>" target="_blank" rel="nofollow" tabindex="-1" aria-label="Privacy by My Agile Privacy"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-pro.png" alt="Privacy by My Agile Privacy"  width="111" height="50"></a>
 					<?php else: ?>
 						<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>img/privacy-by-basic.png" alt="Privacy by My Agile Privacy" width="111" height="50">
 					<?php endif; ?>

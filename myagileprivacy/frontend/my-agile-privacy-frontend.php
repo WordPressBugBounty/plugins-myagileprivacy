@@ -938,7 +938,7 @@ class MyAgilePrivacyFrontend {
 		$the_translations = MyAgilePrivacy::getFixedTranslations();
 		$current_lang = MyAgilePrivacy::getCurrentLang4Char();
 
-		$html = '<a role="button" href="#" class="showConsentAgain">'.esc_html( $the_translations[ $current_lang ]['manage_consent'] ).'</a>';
+		$html = '<a tabindex="0" role="button" href="#" class="showConsentAgain">'.esc_html( $the_translations[ $current_lang ]['manage_consent'] ).'</a>';
 
 		return $html;
 	}
@@ -969,7 +969,7 @@ class MyAgilePrivacyFrontend {
 				switch( $api_key )
 				{
 					case 'google_recaptcha':
-						$text = esc_html( $the_translations[ $current_lang ]['google_recaptcha_content_notification_a'] ).' <a href="#" class="showConsentAgain">'.esc_html( $the_translations[ $current_lang ]['google_recaptcha_content_notification_b'] ).'</a>.';
+						$text = esc_html( $the_translations[ $current_lang ]['google_recaptcha_content_notification_a'] ).' <a tabindex="0" role="button" href="#" class="showConsentAgain">'.esc_html( $the_translations[ $current_lang ]['google_recaptcha_content_notification_b'] ).'</a>.';
 						break;
 				}
 			}

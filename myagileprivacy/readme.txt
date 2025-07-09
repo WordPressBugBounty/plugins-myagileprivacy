@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.8
-Stable tag: 3.1.9
+Stable tag: 3.1.10
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -100,12 +100,17 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 == Changelog ==
 
+= 3.1.10
+* Improved frontend Cookie display
+* Accessibility fix
+* Added option to set first layer button order
+
 = 3.1.9
 * Microsoft UET Consent Mode support
 * Accessibility fix
 
 = 3.1.8
-* YouTube better nocookie src rewrite
+* YouTube improved nocookie src rewrite
 * Added data-no-minify support
 * Php 8 minor compatibility fix
 
@@ -113,8 +118,8 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Added support for Falang
 * Multilang fix and language fallback fix
 * Frontend fix
-* Better compatibility when using legacy mode
-* Better compatibility for older WordPress version
+* Improved compatibility when using legacy mode
+* Improved compatibility for older WordPress version
 
 = 3.1.6
 * Internal release
@@ -127,13 +132,13 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * New option for default language fallback in multi-language environment
 * Stape and Google Consent Mode v2 support
 * New banner view option
-* Better blocking for JavaScript modules
+* Improved blocking for JavaScript modules
 * JavaScript code security optimization
 * Backend code security optimization
 
 = 3.1.3
 * Cookie Shield dependency fix
-* WP Rocket better ignore mechanism
+* WP Rocket improved ignore mechanism
 * LCP frontend metric speed up
 * JavaScript code security optimization
 * Backend code security optimization
@@ -160,14 +165,14 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * IAB - Google Consent Mode v2 TCData.enableAdvertiserConsentMode implementation
 
 = 3.0.8
-* Better url skip regexp check condition
+* Improved url skip regexp check condition
 * Added consent-skip-blocker attribute for JavaScript
 
 = 3.0.7
 * Frontend UX improvements
 * Added color themes for further graphic customization
 * Added functionality for cookie / JavaScript dependencies
-* Better cdn sync via manifest file
+* Improved cdn sync via manifest file
 * Security hardening
 * Added compatibility fixes for WPBakery Page Builder
 
@@ -177,10 +182,10 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 3.0.5
 * Usability fix
-* Better internal sync method
+* Improved internal sync method
 
 = 3.0.4
-* Better internal files caching
+* Improved internal files caching
 * WordPress 6.5 compatibility
 * IAB minor fix
 
@@ -204,12 +209,12 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Improved JS modules load
 * Added resilience to ineffective caching mechanisms
 * Removed jQuery dependency
-* Better css reset
+* Improved css reset
 * Polylang fix
 
 = 2.1.9
 * Added option for cookie allowed without notification
-* Better compatibility for servers with SSL stale certificates
+* Improved compatibility for servers with SSL stale certificates
 * WordPress 6.4 compatibility
 
 = 2.1.8
@@ -235,7 +240,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Css/JS code highlight for backend
 
 = 2.1.3
-* Better Cookie Shield detecting
+* Improved Cookie Shield detecting
 * Tag noscript code inject fix
 * Cloudflare Rocket Loader optimization
 
@@ -249,7 +254,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 2.1.0 =
 * IAB TCF 2.2 integration release
-* Better help messages
+* Improved help messages
 * Thrive template manager added support
 * Bugfix
 
@@ -257,26 +262,26 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Bugfix
 
 = 2.0.8 =
-* Better mobile optimization for extra narrow devices
+* Improved mobile optimization for extra narrow devices
 * Optimized debug
 * Internal optimization and speed up
 * Added settings for autoupdate and legacy mode
-* Better Cookie Shield detecting
+* Improved Cookie Shield detecting
 
 = 2.0.7 =
 * WordPress 6.2 compatibility check
 * Bugfix
-* Better "revise consent" functionality
+* Improved "revise consent" functionality
 
 = 2.0.6 =
 * CCPA support
 * DPO edit with detailed data
 * Oxygen pagebuilder fix for live editor
-* Better Cookie Shield compatibility
+* Improved Cookie Shield compatibility
 
 = 2.0.5 =
 * Bugfix for .xml / xsl file
-* Better file caching handling
+* Improved file caching handling
 
 = 2.0.4 =
 * Js inline notify fix for Cookie Shield missing blocked script
@@ -285,7 +290,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 2.0.3 =
 * Backend interface bugfix
-* Better cookie auto detect functions
+* Improved cookie auto detect functions
 * Added internal file caching
 
 = 2.0.2 =
@@ -301,9 +306,9 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Major code refactoring: new backend, new frontend, more compatibility and bugfix
 * Capabilities for cookie banner positioning
 * DNS prefetch / preconnect attributes
-* Better textdomain load/unload algorithm
+* Improved textdomain load/unload algorithm
 * Debug bar for admin users
-* Better performances
+* Improved performances
 * Code refactoring for backend compatibility and speed up (Polylang, WPML, WordPress 6.1)
 * Enhanced Google SEO via data-nosnippet attribute
 * CommerceKit added compatibility
@@ -312,7 +317,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * AMP fix
 * Enhanced PHP compatibility
 * Cookie Shield - Added option for what hook to use
-* Better support for older WordPress version
+* Improved support for older WordPress version
 
 = 1.3.13 =
 * Translations fix
@@ -326,9 +331,9 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 1.3.11 =
 * Restored notify auto shutdown time option
-* Better handling of post pages (WooCommerce basket)
+* Improved handling of post pages (WooCommerce basket)
 * Option for shadows and border radius removal
-* Better JS frontend handling
+* Improved JS frontend handling
 
 = 1.3.10 =
 * AMP added as skip condition for not inject My Agile Privacy code
@@ -349,11 +354,11 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Changed plugin lifecycle with remote support for blocking auto updates
 * Marketing policy feature
 * Bug fixing
-* Better backend usability
+* Improved backend usability
 * Youtube enforced privacy option
-* Better Google Tag Manager script blocking
+* Improved Google Tag Manager script blocking
 * Some compatibility for older 4.5 WordPress version
-* Better handling of Cookie Shield unblock scripts
+* Improved handling of Cookie Shield unblock scripts
 * jQuery reinject option for custom themes forcing jQuery deactivation
 * WPML fix for wrong translation link (frontend)
 
@@ -362,7 +367,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 1.3.5 =
 * Fix for WPML backend
-* Better frontend handling for highly customized themes
+* Improved frontend handling for highly customized themes
 * Elementor fix for video background
 * Fix for compatibility issues
 * Fix for missing jQuery themes
@@ -385,9 +390,9 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 1.2.12 =
 * Cookie Shield log reset if learning mode left active
-* better backend usability
-* better compatibility for policies display
-* better compatibility with WPML
+* improved backend usability
+* improved compatibility for policies display
+* improved compatibility with WPML
 
 = 1.2.11 =
 * more compatibility fixings (cookie scanner / frontend js)
@@ -399,7 +404,7 @@ From the search filter, just type My Agile Privacy. Click the install button and
 = 1.2.9 =
 * backend fixings
 * fronted fixings
-* better onboarding process
+* improved onboarding process
 * general code rewrite
 
 = 1.2.8 =
@@ -453,23 +458,23 @@ From the search filter, just type My Agile Privacy. Click the install button and
 
 = 1.1.8 =
 * simple_html_dom function fix file_get_html
-* better scanner compatibility
+* improved scanner compatibility
 * backend minor fixings
 * review consent now mandatory
 
 = 1.1.7 =
-* better frontend cookie handling (consent all)
+* improved frontend cookie handling (consent all)
 * json scanner fix
 
 = 1.1.6 =
 * scanner fixed compatibility
 * frontend blocked cookies display
 * shortcode fix (elementor)
-* better backend usability
+* improved backend usability
 * frontend bar fix
 
 = 1.1.5 =
-* better frontend usability
+* improved frontend usability
 * Cookie Shield compatibility settings
 * scanner log for detection debug
 * matomo plugin bugfix
@@ -498,16 +503,16 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * minor fix for policy update
 
 = 1.0.12 =
-* better sync cookies via cron and backend
-* added options for custom css for better display on heavy customized themes
-* better consent visualization and customization
+* improved sync cookies via cron and backend
+* added options for custom css for improved display on heavy customized themes
+* improved consent visualization and customization
 * mobile fixings
 * WPML support (beta version)
 * first release of remote-controlled options (beta version)
 * internal debug function for faster debug & fix
 
 = 1.0.11 =
-* Better backend UX
+* Improved backend UX
 
 = 1.0.10 =
 * Code optimization (Divi / Elementor)
@@ -518,13 +523,13 @@ From the search filter, just type My Agile Privacy. Click the install button and
 * Minor fixings for Divi / Elementor
 * Minor internal link fix
 * added MAP.debugCookieScripts(); js frontend function
-* Better licence updates on scheduled jobs
+* Improved licence updates on scheduled jobs
 
 = 1.0.8 =
 * Fixes for custom cookie creation and cronjob updates
 
 = 1.0.7 =
-* Added events for binding to cookie change, advanced customizations for multi-domain installation, better cookie text visualization
+* Added events for binding to cookie change, advanced customizations for multi-domain installation, improved cookie text visualization
 
 = 1.0.6 =
 * Graphic fixes
