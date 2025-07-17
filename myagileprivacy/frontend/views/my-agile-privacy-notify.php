@@ -225,6 +225,7 @@ $notify_close_button = '<div class="map-closebutton-right"><a tabindex="0" role=
 
 $notify_html = '<div
 					role="dialog"
+					aria-label="My Agile Privacy"
 					tabindex="0"
 					id="my-agile-privacy-notification-area"
 					class="'.esc_attr( $composed_class ).' mapButtonsAside"
@@ -424,7 +425,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 		<div class="map-container-fluid map-tab-container">
 
 			<div class="map-privacy-overview">
-				<p class="map-h4-heading" data-nosnippet role="heading"><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></p>
+				<p class="map-h4-heading" data-nosnippet><?php echo esc_html( $the_translations[ $current_lang ]['privacy_settings'] ); ?></p>
 			</div>
 
 			<p data-nosnippet
@@ -577,10 +578,11 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 															id="map-checkbox-' . esc_attr( $the_remote_id ) . '"
 															class="map-user-preference-checkbox MapDoNotTouch"
 														/>
-														<label
-															for="map-checkbox-' . esc_attr( $the_remote_id ) . '"
-															class="map-slider"
+														<div
+															class="map-slider map-for-map-checkbox-' . esc_attr( $the_remote_id ) . '"
 															role="checkbox"
+															aria-label="'.
+																esc_attr( $value['post_title'] ) .'"
 															tabindex="0"
 															aria-checked="mixed"
 															data-map-enable="'.esc_attr( $is_enabled_text ).'"
@@ -588,7 +590,7 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 															<span class="sr-only">' .
 																esc_html( $value['post_title'] ) .
 															'</span>
-														</label>
+														</div>
 													</div>';
 
 									echo wp_kses( $map_switch , MyAgilePrivacy::allowed_html_tags() ) ;
@@ -622,8 +624,15 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 											<a class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0"><?php echo esc_html( $vv['human_name'] ) ?></a>
 											<div class="map-switch" >
 												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-microsoft MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
-												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="checkbox" tabindex="0" aria-checked="mixed">
-												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
+												<div
+													class="map-slider map-nested map-for-map-consent-<?php echo esc_attr( $vv['key'] ); ?>"
+													data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>"
+													role="checkbox"
+													aria-label="<?php echo esc_attr( $vv['human_name'] ); ?>"
+													tabindex="0"
+													aria-checked="mixed">
+													<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span>
+												</div>
 											</div>
 										</div>
 										<div class="map-tab-content" style="display: none;">
@@ -653,8 +662,15 @@ echo wp_kses( $blocked_content_notification_html, MyAgilePrivacy::allowed_html_t
 											<a class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0"><?php echo esc_html( $vv['human_name'] ) ?></a>
 											<div class="map-switch">
 												<input type="checkbox" id="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-consent-mode-preference-checkbox map-consent-google MapDoNotTouch" data-consent-key="<?php echo esc_attr( $vv['key'] ); ?>">
-												<label for="map-consent-<?php echo esc_attr( $vv['key'] ); ?>" class="map-slider map-nested" data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>" role="checkbox" tabindex="0" aria-checked="mixed">
-												<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span></label>
+												<div
+													class="map-slider map-nested map-for-map-consent-<?php echo esc_attr( $vv['key'] ); ?>"
+													data-map-enable="<?php echo esc_attr( $is_enabled_text ); ?>" data-map-disable="<?php echo esc_attr( $is_disabled_text ); ?>"
+													role="checkbox"
+													aria-label="<?php echo esc_attr( $vv['human_name'] ); ?>"
+													tabindex="0"
+													aria-checked="mixed">
+													<span class="sr-only"><?php echo esc_html( $vv['human_name'] ); ?></span>
+												</div>
 											</div>
 										</div>
 										<div class="map-tab-content" style="display: none;">

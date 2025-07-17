@@ -314,8 +314,9 @@ My Agile Privacy Main Css
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a {
-    color: #fff;
-    text-decoration: none;
+    color: #fff!important;
+    text-decoration: none!important;
+    line-height: 30px!important;
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a:hover {
@@ -640,13 +641,13 @@ My Agile Privacy Main Css
     top: 25px!important;
 	display: block!important;
     color: #444!important;
+    cursor: pointer!important;
 }
 
 .map-modal .map-modal-close:focus {
     outline: 1px solid rgb(33, 37, 41)!important;
     outline-offset: 1px!important;
 }
-
 
 .map-modal .map-modal-close:hover {
     color: unset;
@@ -658,7 +659,6 @@ My Agile Privacy Main Css
     -o-transform: scale(1.1);
     background: none;
 }
-
 
 .map-switch {
     display: inline-block;

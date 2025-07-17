@@ -53,11 +53,11 @@
 	}
 
 	//iab and cmode check
-	$iab_enabled = isset( $the_settings['enable_iab_tcf'] ) ? $the_settings['enable_iab_tcf'] : false;
 	$cmode_enabled = isset( $the_settings['enable_cmode_v2'] ) ? $the_settings['enable_cmode_v2'] : false;
+	$bypass_cmode_enable = isset( $the_settings['bypass_cmode_enable'] ) ? $the_settings['bypass_cmode_enable'] : false;
 	$hide_cmode_alert = true;
 
-	if( $the_settings['pa'] == 1 && !$iab_enabled && !$cmode_enabled )
+	if( $the_settings['pa'] == 1 && !$cmode_enabled && !$bypass_cmode_enable)
 	{
 		$hide_cmode_alert = false;
 	}

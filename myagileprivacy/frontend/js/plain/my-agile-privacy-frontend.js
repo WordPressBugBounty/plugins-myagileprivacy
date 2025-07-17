@@ -5,7 +5,8 @@
 
 var MAP_SYS = {
 	'plugin_version' 					: null,
-	'internal_version' 					: "2.0018",
+	'parse_config_version_number' 		: null,
+	'internal_version' 					: "2.0019",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -172,6 +173,11 @@ var MAP =
 				MAP_SYS.plugin_version = this?.settings?.plugin_version;
 			}
 
+			if( !!this?.settings?.parse_config_version_number )
+			{
+				MAP_SYS.parse_config_version_number = this?.settings?.parse_config_version_number;
+			}
+
 			if( !!this?.settings?.map_notify_title )
 			{
 				MAP_SYS.map_notify_title = this?.settings?.map_notify_title;
@@ -285,7 +291,7 @@ var MAP =
 			//for preserving scope
 			var that = this;
 
-			window.addEventListener('resize', function() {
+			window.addEventListener( 'resize', function() {
 				that.optimizeMobile();
 			});
 
@@ -1008,8 +1014,8 @@ var MAP =
 				that.hideBar();
 			}
 
-			this.showagain_elm.querySelectorAll( 'a.showConsent' ).forEach(function( $this ) {
-				$this.addEventListener('click', function(e) {
+			this.showagain_elm.querySelectorAll( 'a.showConsent' ).forEach( function( $this ) {
+				$this.addEventListener( 'click', function( e ) {
 					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered showConsent' );
 
 					e.preventDefault();
@@ -1128,7 +1134,7 @@ var MAP =
 
 			//bof user consent review trigger
 
-			that.bar_elm.addEventListener( 'triggerShowAgainDisplay', function(e) {
+			that.bar_elm.addEventListener( 'triggerShowAgainDisplay', function( e ) {
 				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered triggerShowAgainDisplay' );
 
 				e.preventDefault();
@@ -1238,7 +1244,7 @@ var MAP =
 				}, 100 );
 			});
 
-			document.body.addEventListener('click', function(e) {
+			document.body.addEventListener( 'click', function( e ) {
 
 				var targetElement = e.target;
 				var matchFound = false;
@@ -1292,7 +1298,7 @@ var MAP =
 
 					var api_key = detectedKeys[key];
 
-					var $custom_ref = document.querySelector('.map_custom_notify.map_api_key_' + api_key);
+					var $custom_ref = document.querySelector( '.map_custom_notify.map_api_key_' + api_key );
 
 					if( $custom_ref )
 					{
@@ -1309,7 +1315,7 @@ var MAP =
 
 				var $custom_ref = document.querySelectorAll( '.map_custom_notify.map_api_key_' + api_key );
 
-				$custom_ref.forEach(function( customRef ) {
+				$custom_ref.forEach( function( customRef ) {
 					if( customRef )
 					{
 						customRef.style.display = 'block';
@@ -1417,7 +1423,7 @@ var MAP =
 
 						if( !document.querySelector( '.map-settings-mobile' ).offsetWidth )
 						{
-							MAP.settingsModal.querySelector('.map-nav-link').click();
+							MAP.settingsModal.querySelector( '.map-nav-link' ).click();
 						}
 
 						$map_consent_extrawrapper.querySelectorAll( '.map-wrappertab-navigation li a[href="#map-privacy-iab-tcf-wrapper"]' ).forEach( function( $_this ) {
@@ -1428,7 +1434,7 @@ var MAP =
 				});
 
 				that.bar_elm.querySelectorAll( '.map-triggerGotoIABTCFVendors' ).forEach( function( $this ) {
-					$this.addEventListener('click', function(e) {
+					$this.addEventListener( 'click', function( e ) {
 
 						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-triggerGotoIABTCFVendors click' );
 
@@ -1494,7 +1500,7 @@ var MAP =
 
 				//bof nav part
 				$map_consent_extrawrapper.querySelectorAll( '.map-wrappertab-navigation li a' ).forEach( function( $this ) {
-					$this.addEventListener( 'click', function(e) {
+					$this.addEventListener( 'click', function( e ) {
 
 						e.preventDefault();
 
@@ -1705,6 +1711,31 @@ var MAP =
 			//for preserving scope
 			var that = this;
 
+			//click over pseudo-label
+			that.settingsModal.addEventListener( 'click', function( e ) {
+
+				if( e.target.matches( '.map-slider' ) )
+				{
+					// Find the class that starts with "map-for-"
+					let classList = [...e.target.classList];
+					let mapForClass = classList.find( cls => cls.startsWith( 'map-for-' ) );
+					if( !mapForClass ) return;
+
+					let for_attribute = mapForClass.replace( 'map-for-', '' );
+					if( !for_attribute ) return;
+
+					const final_target = document.getElementById( for_attribute );
+
+					if( final_target )
+					{
+						final_target.checked = !final_target.checked;
+
+						//propagate event
+						final_target.dispatchEvent( new Event( 'click', { bubbles: true } ) );
+					}
+				}
+			});
+
 			that.accept_button.addEventListener( 'click', function( e ) {
 				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-accept-button click' );
 
@@ -1734,7 +1765,7 @@ var MAP =
 				});
 
 				//check user-preference checkbox
-				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach(function( elem ) {
+				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach( function( elem ) {
 
 					var cookieName = 'map_cookie_' + elem.getAttribute( 'data-cookie-baseindex' ) + MAP_POSTFIX;
 
@@ -1773,8 +1804,8 @@ var MAP =
 			});
 
 
-			that.reject_button.forEach(function( button ) {
-				button.addEventListener('click', function(e) {
+			that.reject_button.forEach( function( button ) {
+				button.addEventListener( 'click', function( e ) {
 
 					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-reject-button click' );
 
@@ -1843,7 +1874,7 @@ var MAP =
 			});
 
 
-			that.customize_button.addEventListener( 'click', function(e) {
+			that.customize_button.addEventListener( 'click', function( e ) {
 
 				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-customize-button click' );
 
@@ -1887,7 +1918,7 @@ var MAP =
 
 			});
 
-			document.querySelector('#mapModalClose').addEventListener('click', function(e) {
+			document.querySelector( '#mapModalClose' ).addEventListener( 'click', function( e ) {
 
 				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered mapModalClose click' );
 
@@ -1943,21 +1974,21 @@ var MAP =
 			var that = this;
 
 			//usability fix - align checkbox - label
-			document.querySelectorAll( 'input[type="checkbox"][id]' ).forEach(function(checkbox) {
+			document.querySelectorAll( 'input[type="checkbox"][id]' ).forEach( function( checkbox ) {
 			  var id = checkbox.id;
 			  if( !id ) return;
-			  document.querySelectorAll( `label[for="${id}"]` ).forEach( function( label ) {
+			  document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
 				label.setAttribute( 'aria-checked', checkbox.checked ? 'true' : 'false' );
 			  });
 			});
 
 			//usability fix - keep checkbox - label aligned
 			that.settingsModal.addEventListener( 'change', function( e ) {
-			  if (e.target.matches( 'input[type="checkbox"][id]' ) ) {
+			  if( e.target.matches( 'input[type="checkbox"][id]' ) ) {
 				var id = e.target.id;
 				if( !id ) return;
 
-				document.querySelectorAll( `label[for="${id}"]` ).forEach( function( label ) {
+				document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
 				  label.setAttribute( 'aria-checked', e.target.checked ? 'true' : 'false' );
 				});
 			  }
@@ -2021,11 +2052,23 @@ var MAP =
 					if( e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter' )
 					{
 						e.preventDefault();
-						let for_attribute = e.target.getAttribute( 'for' );
+
+						// Find the class that starts with "map-for-"
+						let classList = [...e.target.classList];
+						let mapForClass = classList.find( cls => cls.startsWith( 'map-for-' ) );
+						if( !mapForClass ) return;
+
+						let for_attribute = mapForClass.replace( 'map-for-', '' );
+						if( !for_attribute ) return;
+
 						const final_target = document.getElementById( for_attribute );
+
 						if( final_target )
 						{
-							final_target.click();
+							final_target.checked = !final_target.checked;
+
+							//propagate event
+							final_target.dispatchEvent( new Event( 'click', { bubbles: true } ) );
 						}
 					}
 				}
@@ -2933,7 +2976,7 @@ var MAP =
 						//bof custom notify
 						var $custom_ref = document.querySelectorAll( '.map_custom_notify.map_api_key_' + api_key );
 
-						$custom_ref.forEach(function( $_this ){
+						$custom_ref.forEach( function( $_this ){
 
 							if( $_this )
 							{
@@ -2966,7 +3009,6 @@ var MAP =
 						{
 							$map_src_script_blocked.forEach( function( $_this ) {
 
-
 								let old_script_type = $_this.getAttribute( 'type' );
 								let new_script_type = 'text/javascript';
 
@@ -2976,8 +3018,6 @@ var MAP =
 								{
 									new_script_type = 'module';
 								}
-
-
 
 								if( !$_this.classList.contains( '_is_activated' ) )
 								{
@@ -2990,7 +3030,7 @@ var MAP =
 									{
 										var classes = $_this.className.split(' ');
 
-										classes.forEach(function(v) {
+										classes.forEach( function(v) {
 											if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
 												setTimeout( function() {
 													window[v]();
@@ -3003,7 +3043,7 @@ var MAP =
 									{
 										var classes = $_this.className.split(' ');
 
-										classes.forEach(function(v) {
+										classes.forEach( function(v) {
 											if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
 												if( !once_functions_to_execute.includes( v )) {
 													once_functions_to_execute.push( v );
@@ -3268,8 +3308,8 @@ var MAP =
 			//click event
 			if( only_init_status == false )
 			{
-				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach(function($this) {
-					$this.addEventListener('click', function(e) {
+				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach(function( $this ) {
+					$this.addEventListener( 'click', function( e ) {
 
 						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-user-preference-checkbox click' );
 
@@ -3347,7 +3387,7 @@ var MAP =
 			if( only_init_status == false )
 			{
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach(function( elem ) {
-					elem.addEventListener('click', function(e) {
+					elem.addEventListener( 'click', function( e ) {
 
 						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox click' );
 
@@ -4355,15 +4395,9 @@ var MAP =
 	}
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener( 'DOMContentLoaded', function() {
 
 	try {
-
-		if( window !== window.parent )
-		{
-			console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
-			return false;
-		}
 
 		if( typeof map_cookiebar_settings !== 'undefined' )
 		{
@@ -4377,12 +4411,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		setTimeout( function() {
-
-			if( window !== window.parent )
-			{
-				console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
-				return false;
-			}
 
 			if( !MAP_SYS.map_initted &&
 				typeof map_cookiebar_settings !== 'undefined' )
@@ -4420,17 +4448,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-window.addEventListener('load', function() {
+window.addEventListener( 'load', function() {
 
 	try {
 
 		MAP_SYS.map_document_load = true;
-
-		if( window !== window.parent )
-		{
-			console.debug( MAP_SYS.maplog + 'prevent run on iframe' );
-			return false;
-		}
 
 		if( !MAP_SYS.map_initted &&
 				typeof map_cookiebar_settings !== 'undefined' )
@@ -4567,7 +4589,7 @@ function map_trigger_custom_patch_1()
 	try {
 		internalRecreateNode( document.querySelector( 'form.wpcf7-form' ), true );
 	}
-	catch (e) {
+	catch ( e ) {
 		console.debug( e );
 	}
 
@@ -4577,7 +4599,7 @@ function map_trigger_custom_patch_1()
 
 	try {
 		wpcf7.submit = null;
-	} catch (e) {
+	} catch ( e ) {
 		console.debug( e );
 	}
 }
@@ -4598,7 +4620,7 @@ function map_trigger_custom_patch_3()
 {
 	try {
 		octorate.octobook.Widget.show();
-	} catch (e) {
+	} catch ( e ) {
 		setTimeout( map_trigger_custom_patch_3, 100 );
 		console.debug( e );
 	}

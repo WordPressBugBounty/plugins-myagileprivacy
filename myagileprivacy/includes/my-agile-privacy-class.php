@@ -79,6 +79,10 @@ define( 'MAP_SUPPORTED_LANGUAGES', array(
 							'2char' => 	'el',
 						),
 ) );
+define( 'MAP_ASSETS_EXCLUSION_PATTERNS', array(
+	'plugins/myagileprivacy/',
+	'wp-content/local-cache/'
+) );
 define( 'MAP_DB_PATCH_1_DONE', false );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
 
@@ -552,6 +556,9 @@ class MyAgilePrivacy {
 
 		//add cookieshield link in admin topbar
 		add_action( 'wp_before_admin_bar_render', array( $plugin_admin, 'map_adminbar_cookieshield_link' ) );
+
+		//add actions to plugins_loaded
+		add_action( 'plugins_loaded', array( $plugin_admin, 'map_plugins_loaded_action' ) );
 	}
 
 	/**
@@ -734,6 +741,7 @@ class MyAgilePrivacy {
 			case 'last_sync':
 			case 'last_legit_sync':
 			case 'parse_config':
+			case 'parse_config_version_number':
 			case 'alt_accepted_all_cookie_name':
 			case 'alt_accepted_something_cookie_name':
 			case 'learning_mode_last_active_timestamp':
@@ -1052,6 +1060,7 @@ class MyAgilePrivacy {
 			'maps_block'								=>	true,
 			'captcha_block'								=>	true,
 			'parse_config'								=>	null,
+			'parse_config_version_number'				=>	null,
 			'scanner_compatibility_mode'				=>	false,
 			'scanner_hook_type'							=>	'init-shutdown',
 			'scanner_start_hook_prio'					=>	-10000,
@@ -1161,6 +1170,12 @@ class MyAgilePrivacy {
 				'data-cookie-name'=>array(),
 				'data-animation'=>array(),
 				'role'=>array(),
+				'aria-label' => array(),
+				'data-map-enable' => array(),
+				'data-map-disable' => array(),
+				'role' => array(),
+				'tabindex' => array(),
+				'aria-checked' => array()
 			),
 			'em' => array (
 				'id' => array(),
@@ -1179,7 +1194,8 @@ class MyAgilePrivacy {
 				'id' => array(),
 				'class' => array(),
 				'style' => array(),
-				'role' => array()
+				'role' => array(),
+				'aria-label' => array(),
 			),
 			'span' => array(
 				'id' => array(),
@@ -1232,6 +1248,7 @@ class MyAgilePrivacy {
 				'role' => array(),
 				'tabindex' => array(),
 				'aria-checked' => array(),
+				'aria-label' => array(),
 			),
 			'option' => array(
 				'name' => array(),
@@ -1338,6 +1355,7 @@ class MyAgilePrivacy {
 			'map_notify_title'							=>	$map_notify_title,
 			'map_first_layer_branded'					=>	$map_first_layer_branded,
 			'plugin_version'							=>	MAP_PLUGIN_VERSION,
+			'parse_config_version_number'				=>	$the_settings['parse_config_version_number'],
 		);
 
 		return $return_settings;
@@ -1831,7 +1849,7 @@ class MyAgilePrivacy {
 	}
 
 	//f for getting global integrity checks
-	public static function getGlobalIntegrityChesks()
+	public static function getGlobalIntegrityChecks()
 	{
 		$the_settings = self::get_settings();
 

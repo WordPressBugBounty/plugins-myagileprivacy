@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/
 Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
 Requires at least: 4.4.0
 Tested up to: 6.8
-Stable tag: 3.1.10
+Stable tag: 3.1.11
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -99,6 +99,11 @@ From the search filter, just type My Agile Privacy. Click the install button and
 8. Backup & Restore settings
 
 == Changelog ==
+
+= 3.1.11
+* WP Rocket better compatibility for JS deferred execution
+* Accessibility fix
+* Minor iframe fix
 
 = 3.1.10
 * Improved frontend Cookie display

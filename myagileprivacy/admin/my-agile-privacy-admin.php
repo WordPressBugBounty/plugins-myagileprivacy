@@ -845,6 +845,7 @@ class MyAgilePrivacyAdmin {
 			$the_settings['summary_text'] = $summary_text;
 			$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
 			$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
+			$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
 			$the_settings['last_legit_sync'] = strtotime( "now" );
 			$the_settings['pa'] = $pa;
 			$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
@@ -1797,6 +1798,44 @@ class MyAgilePrivacyAdmin {
 
 	}
 
+	//plugins_loaded further actions
+	public function map_plugins_loaded_action()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['enable_plugins_loaded_filter'] ) &&
+			$rconfig['enable_plugins_loaded_filter']
+		)
+		{
+			//WP Rocket check
+			if( function_exists( 'get_rocket_option' ) )
+			{
+				add_filter( 'rocket_defer_inline_exclusions', array( $this, 'map_rocket_defer_inline_exclusions' ) );
+			}
+		}
+	}
+
+	//WP Rocket deferred file esclusion
+	public function map_rocket_defer_inline_exclusions( $inline_exclusions_list )
+	{
+		if( !is_array( $inline_exclusions_list ) )
+		{
+			$inline_exclusions_list = array();
+		}
+
+		if( defined( 'MAP_ASSETS_EXCLUSION_PATTERNS' ) )
+		{
+			foreach( MAP_ASSETS_EXCLUSION_PATTERNS as $item )
+			{
+				$inline_exclusions_list[] = $item;
+			}
+		}
+
+		return $inline_exclusions_list;
+	}
+
+
 	/**
 	 * get options summary for remote validation
 	 *
@@ -2372,6 +2411,7 @@ class MyAgilePrivacyAdmin {
 				$the_settings['summary_text'] = $summary_text;
 				$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
 				$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
+				$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
 				$the_settings['last_legit_sync'] = strtotime( "now" );
 				$the_settings['pa'] = $pa;
 				$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
@@ -2925,7 +2965,7 @@ class MyAgilePrivacyAdmin {
 		global $wpdb;
 
 		//get global integrity checks
-		$global_integrity_checks = MyAgilePrivacy::getGlobalIntegrityChesks();
+		$global_integrity_checks = MyAgilePrivacy::getGlobalIntegrityChecks();
 
 		$is_on = isset( $the_settings['is_on'] ) ? $the_settings['is_on'] : false; // Option to check if the banner is on
 
@@ -3293,7 +3333,14 @@ class MyAgilePrivacyAdmin {
 	public function metabox_map_remote_id()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
+
 		$_map_remote_id = ( isset( $custom["_map_remote_id"][0] ) ) ? $custom["_map_remote_id"][0] : '';
 
 		?>
@@ -3311,6 +3358,12 @@ class MyAgilePrivacyAdmin {
 	public function metabox_map_name()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 		$_map_name = ( isset( $custom["_map_name"][0] ) ) ? $custom["_map_name"][0] : '';
 		?>
@@ -3328,6 +3381,12 @@ class MyAgilePrivacyAdmin {
 	public function metabox_is_free()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 		$_map_is_free = ( isset( $custom["_map_is_free"][0] ) ) ? $custom["_map_is_free"][0] : '';
 		?>
@@ -3339,6 +3398,11 @@ class MyAgilePrivacyAdmin {
 	public function metabox_map_page_reload_on_user_consent()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
 
 		$custom = get_post_custom( $post->ID );
 		$selected = ( isset( $custom["_map_page_reload_on_user_consent"][0] ) ) ? $custom["_map_page_reload_on_user_consent"][0] : '';
@@ -3374,6 +3438,12 @@ class MyAgilePrivacyAdmin {
 	public function metabox_map_allow_sync()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 
 		$map_remote_id = ( isset( $custom["_map_remote_id"][0] ) ) ? $custom["_map_remote_id"][0] : '';
@@ -3416,6 +3486,12 @@ class MyAgilePrivacyAdmin {
 	public function metabox_map_is_necessary()
 	{
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 
 		$selected = ( isset( $custom["_map_is_necessary"][0] ) ) ? $custom["_map_is_necessary"][0] : '';
@@ -3457,8 +3533,13 @@ class MyAgilePrivacyAdmin {
 	{
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/my-agile-privacy-admin.js', array( 'jquery' , 'wp-color-picker' ), $this->version, false );
 
-
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 
 		$_map_remote_id = $custom["_map_remote_id"][0];
@@ -3551,6 +3632,12 @@ class MyAgilePrivacyAdmin {
 		) );
 
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
+
 		$custom = get_post_custom( $post->ID );
 
 		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
@@ -3962,6 +4049,11 @@ class MyAgilePrivacyAdmin {
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		global $post;
+
+		if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+		{
+			return;
+		}
 
 		$custom = get_post_custom( $post->ID );
 
@@ -4513,6 +4605,12 @@ class MyAgilePrivacyAdmin {
 		{
 			function add_content_after_editor() {
 				global $post;
+
+				if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+				{
+					return;
+				}
+
 				$the_id = $post->ID;
 
 				$_map_translations = get_post_meta( $the_id, '_map_translations', true );
@@ -4747,6 +4845,12 @@ class MyAgilePrivacyAdmin {
 		if( is_admin() && ( $screen->id == MAP_POST_TYPE_COOKIES ) )
 		{
 			global $post;
+
+			if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+			{
+				return;
+			}
+
 			$the_id = $post->ID;
 
 			$_map_translations = get_post_meta( $the_id, '_map_translations', true );
@@ -4759,6 +4863,12 @@ class MyAgilePrivacyAdmin {
 				function add_content_after_editor()
 				{
 					global $post;
+
+					if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
+					{
+						return;
+					}
+
 					$the_id = $post->ID;
 
 					$_map_translations = get_post_meta( $the_id, '_map_translations', true );
