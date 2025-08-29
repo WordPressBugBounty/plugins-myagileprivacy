@@ -1455,8 +1455,16 @@ class MyAgilePrivacyFrontend {
 										$language_key = $currentAndSupportedLanguages['multilang_default_lang'];
 									}
 
-									$elem['post_title'] = $_map_translations_decoded[ $language_key ]['name'];
-									$elem['post_content'] = $_map_translations_decoded[ $language_key ]['text'];
+									if( isset( $_map_translations_decoded[ $language_key ] ) )
+									{
+										$elem['post_title'] = $_map_translations_decoded[ $language_key ]['name'];
+										$elem['post_content'] = $_map_translations_decoded[ $language_key ]['text'];
+									}
+									else
+									{
+										$elem['post_title'] = '';
+										$elem['post_content'] = '';
+									}
 								}
 							}
 						}

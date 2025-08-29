@@ -79,7 +79,7 @@ $map_shadow_class = ( $the_settings['cookie_banner_shadow'] == false ) ? '' : $t
 $map_heading_class = ( $the_settings['title_is_on'] == true ) ? '' : 'map_displayNone';
 $map_heading_style = 'background-color:'.$the_settings['heading_background_color'].'; color: '.$the_settings['heading_text_color'].';';
 
-$map_close_button_style = ( $the_settings['title_is_on'] == true ) ? 'color: '.$the_settings['heading_text_color'].';' : 'color: '.$the_settings['text'].';';
+$map_close_button_style = ( $the_settings['title_is_on'] == true ) ? 'color: '.$the_settings['heading_text_color'].'!important;' : 'color: '.$the_settings['text'].'!important;';
 
 //graphic settings
 $cookie_banner_vertical_position = $the_settings['cookie_banner_vertical_position'];
