@@ -1,19 +1,21 @@
-=== My Agile Privacy - The only GDPR solution for WP that you can truly trust ===
+=== The only WP Privacy Solution you can truly trust — compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, and 14 other regulations. ===
 Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/
-Tags: GDPR, DSGVO, cookie banner, Consent Mode v2, privacy policy
+Tags: GDPR, DSGVO, CCPA/CPRA, privacy cookie banner, Consent Mode v2
 Requires at least: 4.4.0
 Tested up to: 6.8
-Stable tag: 3.1.12
+Stable tag: 3.2.0
 Requires PHP: 5.6
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-**Ensure cookie compliance** with GDPR, RGPD, UAVG, RODO, DSGVO, LPD, and CCPA using this plugin: effortlessly set up **cookie notices**, **privacy policies**, and **personal data policies**. **Avoid penalties and fines** by staying compliant.
+**Effortlessly set up cookie notices and privacy policies**.
+Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 14 more.
 
 == Description ==
 
-**My Agile Privacy** is the solution for managing **privacy regulations compliance**, with support for **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek** languages. This plugin is one of the **best WordPress cookie and personal data compliance plugins** for privacy regulations, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot** or **Falang**.
+**My Agile Privacy** is the solution for managing **compliance with privacy regulations**—compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, and VCDPA.
+It supports **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek**. This plugin is one of the **best WordPress plugins for cookie and personal data compliance**, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
 [youtube https://youtu.be/2lphC4YTUfM]
 
@@ -22,19 +24,17 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 - 🚀 Highly customizable
 
-- ⭐ Options to accept, reject & revisit consent
+- ⭐ Options to accept, reject and revisit consent
 
 - ⚡️ Granular user consent
 
-- ⭐ Cookie Consent and Personal Data Consent management
+- ⭐ Cookie consent and personal data consent management
 
-- 🇺🇸 CCPA Support
+- 🇺🇸 Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, VCDPA
 
-- 🇨🇭 LPD Support
+- ⭐ IAB TCF 2.2 support
 
-- ⭐ IAB TCF 2.2 Support
-
-- ⭐ Google Consent Mode v2 and Microsoft UET Consent Mode Support
+- ⭐ Google Consent Mode v2 and Microsoft UET Consent Mode support
 
 - ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
 
@@ -43,24 +43,24 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 = What does this plugin do? =
 This plugin will:
 
-1. Add the cokie banner to all pages on your website, telling the visitor of your privacy policy
-2. Makes your visitor to enable or disable cookies
-3. Help you to be GDPR, LPD and CCPA compliant, blocking unwantend cookies and third-party software as per GDPR specifications
+1. Add the cookie banner to all pages on your website, telling the visitor of your privacy policy
+2. Allow your visitors to enable or disable cookies
+3. Help you stay compliant by blocking unwanted cookies and third-party scripts in line with privacy regulations.
 
 == Certified with Industry Standards ==
-My Agile Privacy is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest standards of the industry. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
+My Agile Privacy is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
 
 == Designed for Web Agencies ==
 
 [youtube https://youtu.be/5mw3xq0zEpI]
 
 == Features ==
-**This tool allows you to make your website privacy-compliant** through a guided procedure that is simple to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy scans your website, informing you about cookies/third-party services that need to be reported.
+**This tool allows you to make your website privacy-compliant** through a guided process that is easy to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy scans your website, informing you about cookies and third-party services that need to be disclosed.
 **Our solution is responsive** and tested on desktop computers, tablets, and mobile devices.
 
 == Privacy and Cookie Policy Generator ==
-Through a **simple and guided interface**, you can use pre-written policy texts to ensure compliance.
-**The texts are auto-updated** in case of regulatory changes or updates to references, and they are **written by recognized and certified privacy professionals**.
+Through a **simple and guided interface**, you can use pre-written policy templates to ensure compliance.
+**The texts are automatically updated** in case of regulatory changes or updates to legal references, and they are **written by recognized and certified privacy professionals**.
 
 == Languages ==
 Our services are currently available in the following languages:
@@ -76,29 +76,34 @@ Our services are currently available in the following languages:
 
 == Support and Updates ==
 **My Agile Privacy is regularly updated** and maintained to ensure regulatory compliance.
-Our support, provided **exclusively by humans** and not chatbots or artificial intelligence, can be reached [here](https://www.myagileprivacy.com/en/contact-us/).
+Our support **—provided exclusively by humans, not chatbots or AI—** can be reached [here](https://www.myagileprivacy.com/en/contact-us/).
 
 **Other links:**
 * [Facebook Reviews](https://www.facebook.com/MyAgilePrivacy/reviews)
-* [TrustPilot Reviews](https://trustpilot.com/review/myagileprivacy.com)
+* [Trustpilot Reviews](https://trustpilot.com/review/myagileprivacy.com)
 
 == Installation ==
 
 Installation is quick and easy. Just go to your WordPress dashboard, then Plugins > Add New.
-From the search filter, just type My Agile Privacy. Click the install button and then activate the plugin.
+In the search field, type “My Agile Privacy”. Click Install, then Activate.
 
 == Screenshots ==
 
-1. Cookie Banner settings
-2. Consent Widget settings
-3. Policies settings
-4. Identity management
-5. License management
-6. Cookie Shield for automatic cookie detection & block
-7. Advanced settings
-8. Backup & Restore settings
+1. Dashboard
+2. Policy Assistant
+3. Translations
+4. Cookie Banner settings
+5. Advanced settings
+6. Backup & Restore settings
+7. Help Desk
 
 == Changelog ==
+
+= 3.2.0
+* Added support for more regulation
+* Policy Assistant new functionality
+* Backend refactoring
+* Better compatibility with minify / combine / optimizations plugins
 
 = 3.1.12
 * Frontend fix

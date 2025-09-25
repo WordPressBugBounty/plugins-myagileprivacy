@@ -9,8 +9,7 @@ $first_class = '';
 $second_class = 'd-none';
 $wrap_early_content = false;
 
-if( isset( $the_settings ) &&
-	isset( $the_settings['pa'] ) &&
+if( isset( $the_settings['pa'] ) &&
 	$the_settings['pa'] == 1
 )
 {
@@ -32,7 +31,7 @@ if( isset( $the_settings ) &&
 
 <?php endif; ?>
 
-		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] ){echo 'd-none';} ?>">
+		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] ){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
 		<div class="consistent-box">
@@ -44,7 +43,7 @@ if( isset( $the_settings ) &&
 			<?php if( $caller == 'genericOptionsWrapper') : ?>
 
 				<div class="row mb-4">
-					<label for="showagain_tab_field" class="col-sm-5 col-form-label">
+					<label for="bypass_cmode_enable_field" class="col-sm-5 col-form-label">
 						<?php echo esc_html__('Consent Mode v2 Ignore', 'MAP_txt'); ?>
 					</label>
 
@@ -54,7 +53,14 @@ if( isset( $the_settings ) &&
 
 								<input type="hidden" name="bypass_cmode_enable_field" value="false" id="enable_cmode_v2_field_no">
 
-								<input name="bypass_cmode_enable_field" class="hideShowInput reverseHideShow" data-hide-show-ref="cmode_fields" type="checkbox" value="true" id="bypass_cmode_enable_field" <?php checked( $the_settings['bypass_cmode_enable'], true ); ?>>
+								<input
+									name="bypass_cmode_enable_field"
+									class="hideShowInput reverseHideShow"
+									data-hide-show-ref="cmode_fields"
+									type="checkbox"
+									value="true"
+									id="bypass_cmode_enable_field"
+									<?php checked( $the_settings['bypass_cmode_enable'], true ); ?>>
 
 								<label for="bypass_cmode_enable_field" class="me-2 label-checkbox"></label>
 								<label for="bypass_cmode_enable_field">
@@ -101,8 +107,14 @@ if( isset( $the_settings ) &&
 
 									<input type="hidden" name="enable_cmode_v2_field" value="false" id="enable_cmode_v2_field_no">
 
-									<input name="enable_cmode_v2_field" type="checkbox" value="true" id="enable_cmode_v2_field"
-										class="hideShowInput" data-hide-show-ref="enable_cmode_v2_options" <?php checked($the_settings['enable_cmode_v2'], true); ?>>
+									<input
+										name="enable_cmode_v2_field"
+										type="checkbox"
+										value="true"
+										id="enable_cmode_v2_field"
+										class="hideShowInput"
+										data-hide-show-ref="enable_cmode_v2_options"
+										<?php checked( $the_settings['enable_cmode_v2'], true ); ?>>
 
 									<label for="enable_cmode_v2_field" class="me-2 label-checkbox"></label>
 									<?php
@@ -133,9 +145,12 @@ if( isset( $the_settings ) &&
 
 							<div class="col-sm-7">
 
-								<select id="cmode_v2_implementation_type_field" name="cmode_v2_implementation_type_field"
-									class="hideShowInput form-control" style="max-width:100%;"
-									data-hide-show-ref="cmode_v2_implementation_type_options">
+								<select
+									id="cmode_v2_implementation_type_field"
+									name="cmode_v2_implementation_type_field"
+									class="hideShowInput form-control"
+									data-hide-show-ref="cmode_v2_implementation_type_options"
+									style="max-width:100%;">
 									<?php
 
 										$valid_options = array(
@@ -163,7 +178,7 @@ if( isset( $the_settings ) &&
 											else
 											{
 												?>
-												<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+												<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 												<?php
 											}
 										}
@@ -192,11 +207,17 @@ if( isset( $the_settings ) &&
 								<div class="col-sm-7">
 									<div class="styled_radio d-inline-flex">
 										<div class="round d-flex me-4">
+
 											<input type="hidden" name="enable_cmode_url_passthrough_field" value="false"
 												id="enable_cmode_url_passthrough_field_no">
-											<input name="enable_cmode_url_passthrough_field" type="checkbox" value="true"
-												id="enable_cmode_url_passthrough_field" class="hideShowInput"
-												data-hide-show-ref="enable_cmode_url_passthrough_options" <?php checked($the_settings['enable_cmode_url_passthrough'], true); ?>>
+
+											<input
+												name="enable_cmode_url_passthrough_field"
+												type="checkbox"
+												value="true"
+												id="enable_cmode_url_passthrough_field"
+												class="hideShowInput"
+												data-hide-show-ref="enable_cmode_url_passthrough_options" <?php checked( $the_settings['enable_cmode_url_passthrough'], true ); ?>>
 											<label for="enable_cmode_url_passthrough_field" class="me-2 label-checkbox"></label>
 											<label for="enable_cmode_url_passthrough_field">
 												<?php echo wp_kses_post( __( 'Enable Url Passthrough', 'MAP_txt' ) ); ?>
@@ -218,7 +239,11 @@ if( isset( $the_settings ) &&
 
 								<div class="col-sm-7">
 
-									<select id="cmode_v2_gtag_ad_storage_field" name="cmode_v2_gtag_ad_storage_field" class="form-control" style="max-width:100%;">
+									<select
+										id="cmode_v2_gtag_ad_storage_field"
+										name="cmode_v2_gtag_ad_storage_field"
+										class="form-control"
+										style="max-width:100%;">
 										<?php
 
 										$valid_options = array(
@@ -246,7 +271,7 @@ if( isset( $the_settings ) &&
 											else
 											{
 												?>
-												<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+												<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 												<?php
 											}
 										}
@@ -276,7 +301,12 @@ if( isset( $the_settings ) &&
 								</label>
 
 								<div class="col-sm-7">
-									<select id="cmode_v2_gtag_ad_user_data_field" name="cmode_v2_gtag_ad_user_data_field" class="form-control" style="max-width:100%;">
+
+									<select
+										id="cmode_v2_gtag_ad_user_data_field"
+										name="cmode_v2_gtag_ad_user_data_field"
+										class="form-control"
+										style="max-width:100%;">
 										<?php
 
 										$valid_options = array(
@@ -304,7 +334,7 @@ if( isset( $the_settings ) &&
 											else
 											{
 												?>
-												<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+												<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 												<?php
 											}
 										}
@@ -333,7 +363,11 @@ if( isset( $the_settings ) &&
 
 								<div class="col-sm-7">
 
-									<select id="cmode_v2_gtag_ad_personalization_field" name="cmode_v2_gtag_ad_personalization_field" class="form-control" style="max-width:100%;">
+									<select
+										id="cmode_v2_gtag_ad_personalization_field"
+										name="cmode_v2_gtag_ad_personalization_field"
+										class="form-control"
+										style="max-width:100%;">
 										<?php
 
 										$valid_options = array(
@@ -361,7 +395,7 @@ if( isset( $the_settings ) &&
 											else
 											{
 												?>
-												<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+												<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 												<?php
 											}
 										}
@@ -389,7 +423,11 @@ if( isset( $the_settings ) &&
 
 								<div class="col-sm-7">
 
-									<select id="cmode_v2_gtag_analytics_storage_field" name="cmode_v2_gtag_analytics_storage_field" class="form-control" style="max-width:100%;">
+									<select
+										id="cmode_v2_gtag_analytics_storage_field"
+										name="cmode_v2_gtag_analytics_storage_field"
+										class="form-control"
+										style="max-width:100%;">
 										<?php
 
 										$valid_options = array(
@@ -417,7 +455,7 @@ if( isset( $the_settings ) &&
 											else
 											{
 												?>
-												<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+												<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
 												<?php
 											}
 										}
@@ -443,11 +481,19 @@ if( isset( $the_settings ) &&
 								<div class="col-sm-7">
 									<div class="styled_radio d-inline-flex">
 										<div class="round d-flex me-4">
+
 											<input type="hidden" name="cmode_v2_forced_off_ga4_advanced_field" value="false"
 												id="cmode_v2_forced_off_ga4_advanced_field_no">
-											<input name="cmode_v2_forced_off_ga4_advanced_field" type="checkbox" value="true"
-												id="cmode_v2_forced_off_ga4_advanced_field" class="hideShowInput"
-												data-hide-show-ref="cmode_v2_forced_off_ga4_advanced_description" <?php checked($the_settings['cmode_v2_forced_off_ga4_advanced'], true); ?>>
+
+											<input
+												name="cmode_v2_forced_off_ga4_advanced_field"
+												type="checkbox"
+												value="true"
+												id="cmode_v2_forced_off_ga4_advanced_field"
+												class="hideShowInput"
+												data-hide-show-ref="cmode_v2_forced_off_ga4_advanced_description"
+												<?php checked( $the_settings['cmode_v2_forced_off_ga4_advanced'], true ); ?>>
+
 											<label for="cmode_v2_forced_off_ga4_advanced_field" class="me-2 label-checkbox"></label>
 											<label for="cmode_v2_forced_off_ga4_advanced_field">
 												<?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?>

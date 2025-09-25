@@ -23,16 +23,6 @@
 	);
 	$all_pages_for_policies_select = get_pages( $get_pages_args );
 
-
-	$display_dpo_class = "displayNone";
-
-	if( isset( $rconfig ) &&
-		isset( $rconfig['allow_dpo_edit'] ) &&
-		$rconfig['allow_dpo_edit'] )
-	{
-		$display_dpo_class = "";
-	}
-
 	//retrocompatibility
 	$cookie_banner_vertical_position = $the_settings['cookie_banner_vertical_position'];
 
@@ -57,7 +47,10 @@
 	$bypass_cmode_enable = isset( $the_settings['bypass_cmode_enable'] ) ? $the_settings['bypass_cmode_enable'] : false;
 	$hide_cmode_alert = true;
 
-	if( $the_settings['pa'] == 1 && !$cmode_enabled && !$bypass_cmode_enable)
+	if( isset( $the_settings['pa'] ) &&
+		$the_settings['pa'] == 1 &&
+		!$cmode_enabled &&
+		!$bypass_cmode_enable )
 	{
 		$hide_cmode_alert = false;
 	}
@@ -105,16 +98,11 @@ endif;
 
 	<div id="mapx_banner" class="d-none">
 		<?php
-			if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
-			{
-				$locale = get_locale();
-			}
-			else
-			{
-				$locale = get_user_locale();
-			}
 
-			if( $the_settings['pa'] == 1 )
+			$locale = MyAgilePrivacy::get_locale();
+
+			if( isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1 )
 			{
 				if( $locale && $locale == 'it_IT' )
 				{
@@ -174,16 +162,9 @@ endif;
 				</li>
 
 				<li class="nav-item" role="presentation">
-					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#consent_widget" type="button" role="tab">
-						<i class="fa-regular fa-tablet-screen"></i>
-						<?php echo wp_kses_post( __( 'Consent', 'MAP_txt' ) ); ?>
-					</button>
-				</li>
-
-				<li class="nav-item" role="presentation">
-					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#policies" type="button" role="tab">
-						<i class="fa-regular fa-files"></i>
-						<?php echo wp_kses_post( __( 'Policies and Regulations', 'MAP_txt' ) ); ?>
+					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#license" type="button" role="tab">
+						<i class="fa-regular fa-key"></i>
+						<?php echo wp_kses_post( __( 'License', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
 
@@ -195,9 +176,16 @@ endif;
 				</li>
 
 				<li class="nav-item" role="presentation">
-					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#license" type="button" role="tab">
-						<i class="fa-regular fa-key"></i>
-						<?php echo wp_kses_post( __( 'License', 'MAP_txt' ) ); ?>
+					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#policies" type="button" role="tab">
+						<i class="fa-regular fa-files"></i>
+						<?php echo wp_kses_post( __( 'Policies and Regulations', 'MAP_txt' ) ); ?>
+					</button>
+				</li>
+
+				<li class="nav-item" role="presentation">
+					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#consent_widget" type="button" role="tab">
+						<i class="fa-regular fa-tablet-screen"></i>
+						<?php echo wp_kses_post( __( 'Consent', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
 
@@ -206,7 +194,7 @@ endif;
 						<i class="fa-regular fa-shield"></i>
 						<?php echo wp_kses_post( __( 'Cookie Shield', 'MAP_txt' ) ); ?>
 
-						<span class="position-absolute top-0 end-0 translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
+						<span class="position-absolute top-0 end-0 translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
 							<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 						</span>
 					</button>

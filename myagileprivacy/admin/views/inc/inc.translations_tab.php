@@ -41,10 +41,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	</div>
 </div>
 
-<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
+<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
 	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
-<div class="row  <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
+<div class="row  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 	<div class="col-sm-2">
 		<div class="nav flex-column nav-pills me-3" id="map-translations-tab" role="tablist"
 			aria-orientation="vertical">
@@ -118,11 +118,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								value="<?php echo esc_attr( $the_translations[$lang_code]['with_anonymous_data_transmission_via_proxy'] ); ?>">
 						<?php endif; ?>
 
-						<?php if( $show_lpd ): ?>
-							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_lpd_compliance_text" name="translations[<?php echo esc_attr( $lang_code ); ?>][lpd_compliance_text]"
-								value="<?php echo esc_attr( $the_translations[$lang_code]['lpd_compliance_text'] ); ?>">
-						<?php endif; ?>
-
 						<?php if( $iab_tcf_context ): ?>
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_1" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_1]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_1'] ); ?>">
@@ -178,13 +173,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									<?php if( $the_settings['title_is_on'] ): ?>
 										<div class="preview-title">
 											<span
+												role="button" tabindex="0"
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][banner_title]"><?php echo ($the_translations[$lang_code]['banner_title']) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy' ?></span>
 										</div>
 									<?php endif; ?>
 									<div class="preview-content">
 										<div class="preview-text-container">
 
-											<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
+											<span
+												role="button" tabindex="0"
+												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
 												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span>
 
 											<?php
@@ -204,49 +202,54 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 												<div class="my-2">
 
 													<span
+														role="button" tabindex="0"
 														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][in_addition_this_site_installs]"><?php echo esc_attr( $the_translations[$lang_code]['in_addition_this_site_installs'] ); ?></span>
 
 													<?php echo esc_html( $mapx_items_string ); ?>
 
 													<span
+														role="button" tabindex="0"
 														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][with_anonymous_data_transmission_via_proxy]"><?php echo esc_attr( $the_translations[$lang_code]['with_anonymous_data_transmission_via_proxy'] ); ?></span>
 
 												</div>
 											<?php endif; ?>
 
-											<?php if( $show_lpd ): ?>
-												<div class="my-2">
-													<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][lpd_compliance_text]"
-														data-input-type="textarea"><?php echo esc_attr( $the_translations[$lang_code]['lpd_compliance_text'] ); ?></span>
-												</div>
-											<?php endif; ?>
-
 											<?php if( $iab_tcf_context ): ?>
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_1]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_1'] ); ?></span><br>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_a]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_a'] ); ?></span>
 
-												<span class="text-wrap"
+												<span
+													class="text-wrap"
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_link]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_link'] ); ?></span>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_b]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_b'] ); ?></span><br><br>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_3]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_3'] ); ?></span>:<br>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_4_a]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_4_a'] ); ?></span>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_4_b]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_4_b'] ); ?></span>,
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_5]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_5'] ); ?></span>
 
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_6]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_6'] ); ?></span>
 											<?php endif; ?>
 
@@ -299,7 +302,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 														$config = $button_configs[$normalized];
 														?>
 														<div class="preview-button" id="<?php echo esc_attr( $config['id'] ); ?>">
-															<span data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][<?php echo esc_attr( $config['edit'] ); ?>]"
+															<span
+																role="button" tabindex="0"
+																data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][<?php echo esc_attr( $config['edit'] ); ?>]"
 																style="background:<?php echo esc_attr( $config['bg'] ); ?>; color:<?php echo esc_attr( $config['color'] ); ?>;">
 																<?php echo esc_html($config['label']); ?>
 															</span>
@@ -316,6 +321,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<div class="my-agile-privacy-consent-again" style="border-radius: 15px; opacity: 1; display: block;">
 									<div class="map_logo_container" style="background-color:#f14307;"></div>
 									<span
+										role="button" tabindex="0"
 										data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][manage_consent]"><?php echo esc_html( $the_translations[$lang_code]['manage_consent'] ); ?></span>
 								</div>
 
@@ -335,6 +341,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 											<p>
 												<span
+													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][this_website_uses_cookies]"><?php echo esc_attr( $the_translations[$lang_code]['this_website_uses_cookies'] ); ?></span>
 											</p>
 											<div class="map-cookielist-overflow-container" style="max-height: 307px;">
@@ -345,10 +352,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 															<div class="second-layer-tab">
 																<span
+																	role="button" tabindex="0"
 																	data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][cookies_and_thirdy_part_software]"><?php echo esc_attr( $the_translations[$lang_code]['cookies_and_thirdy_part_software'] ); ?></span>
 															</div>
 															<div class="second-layer-tab">
 																<span
+																	role="button" tabindex="0"
 																	data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][advertising_preferences]"><?php echo esc_attr( $the_translations[$lang_code]['advertising_preferences'] ); ?></span>
 															</div>
 														</div>

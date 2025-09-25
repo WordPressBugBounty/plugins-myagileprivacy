@@ -36,9 +36,17 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_cookie_policy_url'] == true ): ?>
-								<input type="radio" id="is_cookie_policy_url_yes" name="is_cookie_policy_url_field" value="true" checked="checked" />
+								<input
+									type="radio"
+									id="is_cookie_policy_url_yes"
+									name="is_cookie_policy_url_field"
+									value="true"
+									checked="checked" />
 							<?php else: ?>
-								<input type="radio" id="is_cookie_policy_url_yes" name="is_cookie_policy_url_field" value="true" />
+								<input
+									type="radio"
+									id="is_cookie_policy_url_yes"
+									name="is_cookie_policy_url_field" value="true" />
 							<?php endif; ?>
 
 							<label for="is_cookie_policy_url_yes" class="me-2 label-radio"></label>
@@ -52,9 +60,20 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<div class="round d-flex">
 							<?php if( $the_settings['is_cookie_policy_url'] == false ): ?>
-								<input type="radio" id="is_cookie_policy_url_no" name="is_cookie_policy_url_field" class="" value="false" checked="checked" />
+								<input
+									type="radio"
+									id="is_cookie_policy_url_no"
+									name="is_cookie_policy_url_field"
+									class=""
+									value="false"
+									checked="checked" />
 							<?php else: ?>
-								<input type="radio" id="is_cookie_policy_url_no" name="is_cookie_policy_url_field" class="" value="false" />
+								<input
+									type="radio"
+									id="is_cookie_policy_url_no"
+									name="is_cookie_policy_url_field"
+									class=""
+									value="false" />
 							<?php endif; ?>
 
 							<label for="is_cookie_policy_url_no" class="me-2 label-radio"></label>
@@ -75,7 +94,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="cookie_policy_url_field" name="cookie_policy_url_field" value="<?php echo esc_attr(stripslashes($the_settings['cookie_policy_url'])) ?>" />
+					<input
+						type="text"
+						class="form-control"
+						id="cookie_policy_url_field"
+						name="cookie_policy_url_field"
+						value="<?php echo esc_attr ( stripslashes( $the_settings['cookie_policy_url'] ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the cookie policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -93,26 +117,29 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="col-sm-7">
 
-					<select name="cookie_policy_page_field" class="form-control" id="cookie_policy_page_field">
+					<select
+						name="cookie_policy_page_field"
+						class="form-control"
+						id="cookie_policy_page_field">
 						<option value="0">--<?php esc_attr_e('Select One', 'MAP_txt' ); ?>--</option>
 						<?php
-						foreach( $all_pages_for_policies_select as $page )
-						{
-							?>
+							foreach( $all_pages_for_policies_select as $page )
+							{
+								?>
 
-							<?php
-							if( $the_settings['cookie_policy_page']==$page->ID ):
-							?>
-								<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title); ?> </option>
-							<?php
-							else:
-							?>
-								<option value="<?php echo esc_attr( $page->ID ); ?>"> <?php echo esc_attr( $page->post_title); ?> </option>
-							<?php
-							endif;
-							?>
-							<?php
-						}
+								<?php
+								if( $the_settings['cookie_policy_page']==$page->ID ):
+								?>
+									<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title); ?> </option>
+								<?php
+								else:
+								?>
+									<option value="<?php echo esc_attr( $page->ID ); ?>"> <?php echo esc_attr( $page->post_title); ?> </option>
+								<?php
+								endif;
+								?>
+								<?php
+							}
 						?>
 					</select>
 
@@ -123,15 +150,45 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+
+			<div class="row mb-4">
+				<label for="add_cookie_policy_to_first_layer_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Show the policy link in the banner', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+							<input type="hidden" name="add_cookie_policy_to_first_layer_field" value="false"
+								id="add_cookie_policy_to_first_layer_no">
+
+							<input
+								name="add_cookie_policy_to_first_layer_field"
+								type="checkbox"
+								value="true"
+								id="add_cookie_policy_to_first_layer_field"
+								<?php checked( $the_settings['add_cookie_policy_to_first_layer'], true ); ?>>
+
+							<label for="add_cookie_policy_to_first_layer_field" class="me-2 label-checkbox"></label>
+
+							<label for="add_cookie_policy_to_first_layer_field">
+								<?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+
 		</div> <!-- consistent-box -->
 
 		<div class="consistent-box">
-			<h4 class="mb-5">
+			<h4 class="mb-4">
 				<i class="fa-regular fa-user-secret"></i>
 				<?php echo wp_kses_post( __( 'Personal Data Policy', 'MAP_txt' ) ); ?>
 			</h4>
 
-			<div class="row mb-5">
+			<div class="row mb-4">
 				<div class="col-sm-12">
 					<?php echo wp_kses_post( __( "The personal data page is the place where you tell user about how do you use personal data, for example for answering back a user form submission.", 'MAP_txt' ) ); ?><br>
 					<br>
@@ -156,9 +213,18 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_personal_data_policy_url'] == true ): ?>
-								<input type="radio" id="is_personal_data_policy_url_yes" name="is_personal_data_policy_url_field" value="true" checked="checked" />
+								<input
+									type="radio"
+									id="is_personal_data_policy_url_yes"
+									name="is_personal_data_policy_url_field"
+									value="true"
+									checked="checked" />
 							<?php else: ?>
-								<input type="radio" id="is_personal_data_policy_url_yes" name="is_personal_data_policy_url_field" value="true" />
+								<input
+									type="radio"
+									id="is_personal_data_policy_url_yes"
+									name="is_personal_data_policy_url_field"
+									value="true" />
 							<?php endif; ?>
 
 							<label for="is_personal_data_policy_url_yes" class="me-2 label-radio"></label>
@@ -171,9 +237,20 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<div class="round d-flex">
 							<?php if( $the_settings['is_personal_data_policy_url'] == false ): ?>
-								<input type="radio" id="is_personal_data_policy_url_no" name="is_personal_data_policy_url_field" class="" value="false" checked="checked" />
+								<input
+									type="radio"
+									id="is_personal_data_policy_url_no"
+									name="is_personal_data_policy_url_field"
+									class=""
+									value="false"
+									checked="checked" />
 							<?php else: ?>
-								<input type="radio" id="is_personal_data_policy_url_no" name="is_personal_data_policy_url_field" class="" value="false" />
+								<input
+									type="radio"
+									id="is_personal_data_policy_url_no"
+									name="is_personal_data_policy_url_field"
+									class=""
+									value="false" />
 							<?php endif; ?>
 
 							<label for="is_personal_data_policy_url_no" class="me-2 label-radio"></label>
@@ -194,7 +271,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" class="form-control" id="personal_data_policy_url_field" name="personal_data_policy_url_field" value="<?php echo esc_attr( stripslashes( $the_settings['personal_data_policy_url'] ) ) ?>" />
+					<input
+						type="text"
+						class="form-control"
+						id="personal_data_policy_url_field"
+						name="personal_data_policy_url_field"
+						value="<?php echo esc_attr( stripslashes( $the_settings['personal_data_policy_url'] ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the personal data policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -212,27 +294,30 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="col-sm-7">
 
-					<select name="personal_data_policy_page_field" class="form-control" id="personal_data_policy_page_field">
+					<select
+						name="personal_data_policy_page_field"
+						class="form-control"
+						id="personal_data_policy_page_field">
 						<option value="0">--<?php esc_attr_e('Select One', 'MAP_txt' ); ?>--</option>
 
 						<?php
-						foreach( $all_pages_for_policies_select as $page )
-						{
-							?>
+							foreach( $all_pages_for_policies_select as $page )
+							{
+								?>
 
-							<?php
-							if( $the_settings['personal_data_policy_page']==$page->ID ):
-							?>
-								<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title ); ?> </option>
-							<?php
-							else:
-							?>
-								<option value="<?php echo esc_attr( $page->ID ); ?>"> <?php echo esc_attr( $page->post_title); ?> </option>
-							<?php
-							endif;
-							?>
-							<?php
-						}
+								<?php
+								if( $the_settings['personal_data_policy_page']==$page->ID ):
+								?>
+									<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title ); ?> </option>
+								<?php
+								else:
+								?>
+									<option value="<?php echo esc_attr( $page->ID ); ?>"> <?php echo esc_attr( $page->post_title); ?> </option>
+								<?php
+								endif;
+								?>
+								<?php
+							}
 						?>
 
 					</select>
@@ -245,104 +330,94 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</div> <!-- row -->
 
 
+			<div class="row mb-4">
+				<label for="add_personal_policy_to_first_layer_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Show the policy link in the banner', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+							<input type="hidden" name="add_personal_policy_to_first_layer_field" value="false"
+								id="add_personal_policy_to_first_layer_no">
+
+							<input
+								name="add_personal_policy_to_first_layer_field"
+								type="checkbox"
+								value="true"
+								id="add_personal_policy_to_first_layer_field"
+								<?php checked( $the_settings['add_personal_policy_to_first_layer'], true ); ?>>
+
+							<label for="add_personal_policy_to_first_layer_field" class="me-2 label-checkbox"></label>
+
+							<label for="add_personal_policy_to_first_layer_field">
+								<?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+
 		</div> <!-- consistent-box -->
 
 
-		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
-			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
-		</span>
+		<?php
 
-		<div class="consistent-box <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
+			if( !( isset( $rconfig ) && isset( $rconfig['keep_v1_policies'] ) && $rconfig['keep_v1_policies'] ) ):
+		?>
 
-			<h4 class="mb-4">
-				<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>../img/flag-switzerland.png" alt="" width="24">
-				<?php echo wp_kses_post( __( 'LPD Privacy Regulation', 'MAP_txt' ) ); ?>
-			</h4>
 
-			<div class="row mb-4">
-				<div class="col-sm-12">
+			<div class="consistent-box">
 
-					<b><?php echo wp_kses_post( __( "The LPD is Switzerland's Privacy regulation.", 'MAP_txt' ) ); ?></b><br>
-					<?php echo wp_kses_post( __( 'By activating the management of Swiss LPD, you declare to be familiar with Swiss privacy legislation and to fall within its scope of application.', 'MAP_txt' ) ); ?><br>
-					<?php echo wp_kses_post( __( 'You acknowledge that, depending on the personal data processing activities you will undertake, you will need to comply with both GDPR and LPD as well as other local regulations where applicable.', 'MAP_txt' ) ); ?><br>
-					<?php echo wp_kses_post( __( 'You have also considered the potential appointment of a Data Protection Advisor as provided by Swiss LPD.', 'MAP_txt' ) ); ?><br>
-					<?php echo wp_kses_post( __( 'Lastly, you declare that you have reviewed the <a href="https://www.bj.admin.ch/bj/en/home/staat/datenschutz/internationales/anerkennung-staaten.html" target="_blank">list of States</a> where, according to the LPD, you may possibly transfer the data subject to processing.', 'MAP_txt' ) ); ?>
+				<h4 class="mb-4">
+					<i class="fa-solid fa-scale-balanced"></i>
+					<?php echo wp_kses_post( __( 'Active regulations', 'MAP_txt' ) ); ?>
+				</h4>
+
+				<div class="row mb-4">
+					<div class="col-sm-12">
+
+						<?php echo wp_kses_post( __( 'Below is the list of policies currently active on your site. You can modify them at any time using the "Policy Assistant" feature.', 'MAP_txt' ) ); ?><br>
+
+
+						<div class="mt-4 mb-4">
+							<?php
+
+								$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+
+								$regulation_selected = $MyAgilePrivacyRegulationHelper->getRegulationsSelected( true );
+
+								if( count( $regulation_selected ) > 0 )
+								{
+									foreach( $regulation_selected as $reg )
+									{
+										?>
+											<span class="badge rounded-pill bg-primary">
+												<?php echo esc_html( $reg ); ?>
+											</span>
+										<?php
+									}
+								}
+								else
+								{
+									echo "-";
+								}
+
+							?>
+						</div>
+
+						<?php echo wp_kses_post( __( 'You can review your configuration at any time using the', 'MAP_txt' ) ); ?> <a href="<?php echo esc_url( $policy_assistant_menu_link ); ?>"><?php echo wp_kses_post( __( 'Policy Assistant.', 'MAP_txt' ) ); ?></a>
+
+					</div>
 				</div>
+
 			</div>
 
-			<div class="row mb-4">
-				<label for="display_lpd_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Enable LPD notice', 'MAP_txt' ) ); ?>
-				</label>
+		<?php
 
-				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
-						<div class="round d-flex me-4">
-
-							<input type="hidden" name="display_lpd_field" value="false" id="display_lpd_field_no">
-
-							<input name="display_lpd_field" type="checkbox" value="true" id="display_lpd_field" <?php checked( $the_settings['display_lpd'], true); ?>>
-
-							<label for="display_lpd_field" class="me-2 label-checkbox"></label>
-
-							<label for="display_lpd_field">
-								<?php echo wp_kses_post( __( 'Yes, I fall under the scope of LPD and I want to display the corresponding notice.', 'MAP_txt' ) ); ?>
-							</label>
-						</div>
-					</div> <!-- ./ styled_radio -->
-
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-		</div>
-
-
-		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( $the_settings['pa'] == 1){echo 'd-none';} ?>">
-			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
-		</span>
-
-		<div class="consistent-box <?php if( $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
-
-			<h4 class="mb-4">
-				<i class="fa-regular fa-flag-usa"></i>
-				<?php echo wp_kses_post( __( 'CCPA Privacy Regulation', 'MAP_txt' ) ); ?>
-			</h4>
-
-			<div class="row mb-4">
-				<div class="col-sm-12">
-
-					<b><?php echo wp_kses_post( __( 'The CCPA is the California Privacy regulation.', 'MAP_txt' ) ); ?></b><br>
-					<?php echo wp_kses_post( __( 'You fall under the scope of CCPA when both of these conditions apply:', 'MAP_txt' ) ); ?><br>
-					<?php echo wp_kses_post( __( '-you have a business with an annual gross revenue exceeding $25 million, or 50% of the revenue comes from selling personal data, or you buy, receive, sell, or share personal information of 50000 or more consumers annually for commercial purposes', 'MAP_txt' ) ); ?><br>
-					<?php echo wp_kses_post( __( '-you target California residents.', 'MAP_txt' ) ); ?><br>
-				</div>
-			</div>
-
-			<div class="row mb-4">
-				<label for="display_ccpa_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Enable CCPA notice', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
-						<div class="round d-flex me-4">
-
-							<input type="hidden" name="display_ccpa_field" value="false" id="display_ccpa_field_no">
-
-							<input name="display_ccpa_field" type="checkbox" value="true" id="display_ccpa_field" <?php checked( $the_settings['display_ccpa'], true); ?>>
-
-							<label for="display_ccpa_field" class="me-2 label-checkbox"></label>
-
-							<label for="display_ccpa_field">
-								<?php echo wp_kses_post( __( 'Yes, I fall under the scope of CCPA and I want to display the corresponding notice.', 'MAP_txt' ) ); ?>
-							</label>
-						</div>
-					</div> <!-- ./ styled_radio -->
-
-				</div> <!-- /.col-sm-6 -->
-			</div> <!-- row -->
-
-		</div>
+			endif;
+		?>
 
 
 	</div> <!-- /.col-sm-8 -->

@@ -25,13 +25,11 @@ define( 'MAP_PLUGIN_DB_VERSION', MAP_PLUGIN_DB_KEY_PREFIX . 'db_version_number' 
 define( 'MAP_PLUGIN_DB_VERSION_NUMBER', 1 );
 define( 'MAP_PLUGIN_SYNC_IN_PROGRESS', MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
 define( 'MAP_MANIFEST_ASSOC', MAP_PLUGIN_DB_KEY_PREFIX . 'manifest' );
+define( 'MAP_PLUGIN_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_countries' );
 define( 'MAP_POST_TYPE_COOKIES', 'my-agile-privacy-c' );
 define( 'MAP_POST_TYPE_POLICY', 'my-agile-privacy-p' );
 define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
 define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
-define( 'MAP_SCANNER', true );
-define( 'MAP_DASHBOARD', false );
-define( 'MAP_IAB_TCF', true );
 define( 'MAP_MY_AGILE_PIXEL_TEXT_FIX', false );
 define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-minify="1" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
@@ -39,6 +37,7 @@ define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
 define( 'MAP_PLUGIN_ACTIVATION_DATE', MAP_PLUGIN_DB_KEY_PREFIX.'-activation_date' );
 define( 'MAP_REVIEW_STATUS', MAP_PLUGIN_DB_KEY_PREFIX.'-review_status' );
 define( 'MAP_NOTICE_LAST_SHOW_TIME', MAP_PLUGIN_DB_KEY_PREFIX.'-notice_last_show_time' );
+define( 'MAP_BYPASS_LICENSE_TRESHOLD', 86400 ); // 1 day: 24 * 60 * 60
 define( 'MAP_NOTICE_FIRST_TRESHOLD', 604800 ); // 7 days: 7 * 24 * 60 * 60
 define( 'MAP_NOTICE_SECOND_TRESHOLD', 12960000 ); // 5 months: 5 * 30 * 24 * 60 * 60
 define( 'MAP_SUPPORTED_LANGUAGES', array(
@@ -83,14 +82,15 @@ define( 'MAP_ASSETS_EXCLUSION_PATTERNS', array(
 	'plugins/myagileprivacy/',
 	'wp-content/local-cache/'
 ) );
-define( 'MAP_DB_PATCH_1_DONE', false );
+define( 'MAP_DB_PATCH_2_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_2_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
+define( 'MAP_SUMMARY_VERSION', '2.0.0' );
+define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
 
 /**
  * Core definitions
  * *
  * @link       https://www.myagileprivacy.com/
- * @since      1.0.12
  *
  * @package    MyAgilePrivacy
  * @subpackage MyAgilePrivacy/includes
@@ -100,7 +100,6 @@ define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
  * Core plugin class.
  *
  *
- * @since      1.0.12
  * @package    MyAgilePrivacy
  * @subpackage MyAgilePrivacy/includes
  * @author     https://www.myagileprivacy.com/
@@ -110,7 +109,6 @@ class MyAgilePrivacy {
 	/**
 	 * Unique identifier of this plugin.
 	 *
-	 * @since    1.0.12
 	 * @access   protected
 	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
@@ -119,7 +117,6 @@ class MyAgilePrivacy {
 	/**
 	 * Current version of the plugin.
 	 *
-	 * @since    1.0.12
 	 * @access   protected
 	 * @var      string    $version    The current version of the plugin.
 	 */
@@ -134,15 +131,14 @@ class MyAgilePrivacy {
 	 * It sets plugin name, plugin version.
 	 * It loads dependencies, set the locale, and hoocks for admin and frontend area
 	 *
-	 * @since    1.0.12
 	 */
 	public function __construct()
 	{
 		$this->version = MAP_PLUGIN_VERSION;
 		$this->plugin_name = MAP_PLUGIN_NAME;
 
-		register_activation_hook( MAP_PLUGIN_FILENAME, [ self::class, 'map_plugin_activate'] );
-		register_deactivation_hook( MAP_PLUGIN_FILENAME, [ self::class, 'map_plugin_deactivate'] );
+		register_activation_hook( MAP_PLUGIN_FILENAME, array( self::class, 'map_plugin_activate' ) );
+		register_deactivation_hook( MAP_PLUGIN_FILENAME, array( self::class, 'map_plugin_deactivate' ) );
 
 		$this->load_classes_and_dependencies();
 		$this->admin_hooks();
@@ -152,8 +148,8 @@ class MyAgilePrivacy {
 	/**
 	 * f for plugin activation
 	 */
-	public static function map_plugin_activate() {
-
+	public static function map_plugin_activate()
+	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'calling map_plugin_activate' );
 
 		if ( !self::get_option( MAP_PLUGIN_ACTIVATION_DATE, null ) )
@@ -165,13 +161,38 @@ class MyAgilePrivacy {
 	/**
 	 * f for plugin deactivation
 	 */
-	public static function map_plugin_deactivate() {
-
+	public static function map_plugin_deactivate()
+	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'calling map_plugin_deactivate' );
 
 		if( defined( 'MAP_PLUGIN_ACTIVATION_DATE' ) && self::get_option( MAP_PLUGIN_ACTIVATION_DATE, null ) ) delete_option( MAP_PLUGIN_ACTIVATION_DATE );
 		if( defined( 'MAP_REVIEW_STATUS' ) && self::get_option( MAP_REVIEW_STATUS, null ) ) delete_option( MAP_REVIEW_STATUS );
 		if( defined( 'MAP_NOTICE_LAST_SHOW_TIME' ) && self::get_option( MAP_NOTICE_LAST_SHOW_TIME, null ) ) delete_option( MAP_NOTICE_LAST_SHOW_TIME );
+	}
+
+	//f. for check and reset do not ask license code
+	public static function checkDoNotAskLicenseCode()
+	{
+		$the_settings = MyAgilePrivacy::get_settings();
+
+		$now = time();
+
+		//don't ask license code part
+		if(
+			isset( $the_settings['dont_ask_license_code'] ) &&
+			$the_settings['dont_ask_license_code'] &&
+			isset( $the_settings['dont_ask_license_code_timestamp'] ) &&
+			$the_settings['dont_ask_license_code_timestamp'] > 0 &&
+			$the_settings['dont_ask_license_code_timestamp'] <= $now - MAP_BYPASS_LICENSE_TRESHOLD
+		)
+		{
+			$the_settings['dont_ask_license_code'] = false;
+			$the_settings['dont_ask_license_code_timestamp'] = 0;
+
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+		}
+
+		return true;
 	}
 
 	/**
@@ -265,11 +286,15 @@ class MyAgilePrivacy {
 	/**
 	 * Load the required dependencies.
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 */
 	private function load_classes_and_dependencies()
 	{
+		/**
+		 * The class for handling regulation
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/my-agile-privacy-regulation-helper.php';
+
 		/**
 		 * The class for defining all actions that occur in the backend area.
 		 */
@@ -284,7 +309,6 @@ class MyAgilePrivacy {
 	/**
 	 * Register all of the hooks related to the frontend part
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 */
 	private function frontend_hooks()
@@ -296,6 +320,9 @@ class MyAgilePrivacy {
 
 		/* Frontend scripts*/
 		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_scripts' ), PHP_INT_MIN );
+
+		/* inline script attribute rewrite */
+		add_filter( 'wp_inline_script_attributes', array( $plugin_frontend, 'add_attrs_to_inline_script' ), 10, 2 );
 
 		/* set locale, register custom post type */
 		add_action( 'init', array( $plugin_frontend, 'plugin_init' ) );
@@ -317,15 +344,14 @@ class MyAgilePrivacy {
 
 		$skip = $this::check_buffer_skip_conditions( false );
 
-		if( $skip == 'false' && $the_settings['pa'] == 1 && MAP_SCANNER )
+		if( $skip == 'false' && isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
 		{
 			$rconfig = self::get_rconfig();
 
 			$logic_legacy_mode = false;
 
 			if(
-				(
-					$rconfig &&
+				($rconfig &&
 					isset( $rconfig['js_legacy_mode'] ) &&
 					$rconfig['js_legacy_mode'] == 1
 				) ||
@@ -389,7 +415,6 @@ class MyAgilePrivacy {
 	/**
 	 * Register all of the hooks related to the backend area
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 */
 	private function admin_hooks()
@@ -601,7 +626,6 @@ class MyAgilePrivacy {
 
 	/**
 	 * Get current settings.
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function get_settings()
@@ -614,154 +638,270 @@ class MyAgilePrivacy {
 		{
 			foreach( self::$stored_options as $key => $option )
 			{
-				$settings[$key] = self::sanitise_settings( $key, $option );
+				if( is_array( $option ) )
+				{
+					$settings[ $key ] = self::sanitise_array_settings( $key, $option );
+				}
+				else
+				{
+					$settings[ $key ] = self::sanitise_settings( $key, $option );
+				}
 			}
 		}
 
 		return $settings;
 	}
 
+	//recursive array validation
+	public static function sanitise_array_settings( $key, $values = array() )
+	{
+		if( isset( $key ) &&
+			$key &&
+			isset( self::$stored_options ) &&
+			isset( self::$stored_options[ $key ] ) )
+		{
+	    	$sanitised = self::$stored_options[ $key ];
+		}
+		else
+		{
+	    	$sanitised = array();
+		}
+
+	    foreach( $values as $k => $v )
+	    {
+	        if( is_array( $v ) )
+	        {
+	            $sanitised[ $k ] = self::sanitise_array_settings( $k, $v );
+	        }
+	        else
+	        {
+	            $sanitised[ $k ] = self::sanitise_settings( $k, $v );
+	        }
+	    }
+
+	    return $sanitised;
+	}
+
+
 	/**
 	* Returns sanitised content
-	 * @since    1.0.12
 	 * @access   public
 	*/
 	public static function sanitise_settings( $key, $value )
 	{
-		$ret = null;
-		switch( $key ){
-			// text to bool conversion
-			case 'is_on':
-			case 'is_bottom':
-			case 'showagain_tab':
-			case 'wrap_shortcodes':
-			case 'cookie_policy_link':
-			case 'disable_logo':
-			case 'is_cookie_policy_url':
-			case 'is_personal_data_policy_url':
-			case 'blocked_content_notify':
-			case 'blocked_content_notify_auto_shutdown':
-			case 'video_advanced_privacy':
-			case 'maps_block':
-			case 'captcha_block':
-			case 'scanner_compatibility_mode':
-			case 'enforce_youtube_privacy':
-			case 'display_dpo':
-			case 'display_ccpa':
-			case 'display_lpd':
-			case 'show_ntf_bar_on_not_yet_consent_choice':
-			case 'with_css_effects':
-			case 'show_buttons_icons':
-			case 'title_is_on':
-			case 'forced_legacy_mode':
-			case 'missing_cookie_shield':
-			case 'forced_auto_update':
-			case 'enable_iab_tcf':
-			case 'enable_metadata_sync':
-			case 'enable_microsoft_cmode':
-			case 'enable_cmode_v2':
-			case 'enable_cmode_url_passthrough':
-			case 'cmode_v2_forced_off_ga4_advanced':
-			case 'bypass_cmode_enable':
-			case 'cmode_v2_js_on_error':
-			case 'enable_language_fallback':
-				if ( $value === 'true' || $value === true )
-				{
-					$ret = true;
-				}
-				elseif ( $value === 'false' || $value === false )
-				{
-					$ret = false;
-				}
-				else
-				{
-					$ret = false;
-				}
-				break;
-			//integer
-			case 'scanner_start_hook_prio':
-			case 'scanner_end_hook_prio':
-			case 'blocked_content_notify_auto_shutdown_time':
-			case 'floating_banner':
-			case 'cmode_v2_js_error_code':
-			case 'cmode_v2_js_on_error_first_relevation':
-				$ret = intval( $value );
-				break;
-			// hex colors
-			case 'background':
-			case 'text':
-			case 'button_accept_link_color':
-			case 'button_accept_button_color':
-			case 'button_reject_link_color':
-			case 'button_reject_button_color':
-			case 'button_customize_link_color':
-			case 'button_customize_button_color':
-			case 'map_inline_notify_color':
-			case 'map_inline_notify_background':
-				if ( preg_match( '/^#[a-f0-9]{6}|#[a-f0-9]{3}$/i', $value ) )
-				{
-					$ret =  $value;
-				}
-				else {
-					// Failover = assign '#000' (black)
-					$ret =  '#000';
-				}
-				break;
-			// html (no js code )
-			case 'bar_heading_text':
-			case 'website_name':
-			case 'identity_name':
-			case 'identity_address':
-			case 'identity_vat_id':
-				$ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
-				break;
-			case 'cookie_policy_url':
-			case 'personal_data_policy_url':
-			case 'license_code':
-			case 'identity_email':
-			case 'dpo_email':
-			case 'dpo_name':
-			case 'dpo_address':
-				$ret = wp_kses( $value , self::allowed_html_tags(), self::allowed_protocols() );
+	    $ret   = null;
+	    $logic = null;
 
-				if( !is_null( $ret ) ) $ret = trim( $ret );
+	    // get logic validation criteria
+	    if (
+	    	strpos( $key, 'customer_area_' ) === 0  ||
+	    	strpos( $key, 'regulation_' ) === 0  ||
+	    	strpos( $key, 'site_features_' ) === 0 ||
+	    	strpos( $key, 'outside_country_' ) === 0 ||
+	    	strpos( $key, 'protection_system_' ) === 0
+		)
+	    {
+	        $logic = 'bool';
+	    }
+	    else
+	    {
+	        switch ( $key )
+	        {
+	            // boolean
+	            case 'is_on':
+	            case 'is_bottom':
+	            case 'showagain_tab':
+	            case 'wrap_shortcodes':
+	            case 'cookie_policy_link':
+	            case 'disable_logo':
+	            case 'is_cookie_policy_url':
+	            case 'is_personal_data_policy_url':
+	            case 'blocked_content_notify':
+	            case 'blocked_content_notify_auto_shutdown':
+	            case 'video_advanced_privacy':
+	            case 'maps_block':
+	            case 'captcha_block':
+	            case 'scanner_compatibility_mode':
+	            case 'enforce_youtube_privacy':
+	            case 'display_dpo':
+	            case 'show_ntf_bar_on_not_yet_consent_choice':
+	            case 'with_css_effects':
+	            case 'show_buttons_icons':
+	            case 'title_is_on':
+	            case 'forced_legacy_mode':
+	            case 'dev_mode':
+	            case 'missing_cookie_shield':
+	            case 'forced_auto_update':
+	            case 'enable_iab_tcf':
+	            case 'enable_metadata_sync':
+	            case 'enable_microsoft_cmode':
+	            case 'enable_cmode_v2':
+	            case 'enable_cmode_url_passthrough':
+	            case 'cmode_v2_forced_off_ga4_advanced':
+	            case 'bypass_cmode_enable':
+	            case 'cmode_v2_js_on_error':
+	            case 'enable_language_fallback':
+	            case 'outside_adequate_suppliers':
+	            case 'add_cookie_policy_to_first_layer':
+	            case 'add_personal_policy_to_first_layer':
+	            case 'dont_ask_license_code':
+	                $logic = 'bool';
+	                break;
 
-				break;
-			case 'custom_css':
-				$ret = esc_html( $value );
-				break;
-			//no processing
-			case 'last_scan_date_internal':
-			case 'cmode_v2_js_error_motivation':
-			case 'cookie_banner_vertical_position':
-			case 'cookie_banner_horizontal_position':
-			case 'cookie_banner_size':
-			case 'customer_email':
-			case 'summary_text':
-			case 'last_sync':
-			case 'last_legit_sync':
-			case 'parse_config':
-			case 'parse_config_version_number':
-			case 'alt_accepted_all_cookie_name':
-			case 'alt_accepted_something_cookie_name':
-			case 'learning_mode_last_active_timestamp':
-			case 'missing_cookie_shield_timestamp':
-			case 'cookie_shield_running_timestamp':
-			case 'fixed_translations_encoded':
-			case 'layer_1_button_order':
-				$ret = $value;
-				break;
-			// Basic sanitisation for other fields
-			default:
-				$ret = sanitize_text_field( $value );
-				break;
-		}
-		return $ret;
+	            // integer
+	            case 'scanner_start_hook_prio':
+	            case 'scanner_end_hook_prio':
+	            case 'blocked_content_notify_auto_shutdown_time':
+	            case 'floating_banner':
+	            case 'cmode_v2_js_error_code':
+	            case 'cmode_v2_js_on_error_first_relevation':
+	            case 'completion_percentage':
+	            case 'last_update_timestamp':
+	            case 'dont_ask_license_code_timestamp':
+	                $logic = 'int';
+	                break;
+
+	            // hex colors
+	            case 'background':
+	            case 'text':
+	            case 'button_accept_link_color':
+	            case 'button_accept_button_color':
+	            case 'button_reject_link_color':
+	            case 'button_reject_button_color':
+	            case 'button_customize_link_color':
+	            case 'button_customize_button_color':
+	            case 'map_inline_notify_color':
+	            case 'map_inline_notify_background':
+	                $logic = 'hexcolor';
+	                break;
+
+	            // html (no js code)
+	            case 'bar_heading_text':
+	            case 'website_name':
+	            case 'identity_name':
+	            case 'identity_address':
+	            case 'identity_vat_id':
+	                $logic = 'html';
+	                break;
+
+	            // html + trim
+	            case 'cookie_policy_url':
+	            case 'personal_data_policy_url':
+	            case 'license_code':
+	            case 'identity_email':
+	            case 'dpo_email':
+	            case 'dpo_name':
+	            case 'dpo_address':
+	                $logic = 'html_trim';
+	                break;
+
+	            // custom css
+	            case 'custom_css':
+	                $logic = 'esc_html';
+	                break;
+
+	            // attributes
+	            case 'base_location':
+	                $logic = 'esc_attr';
+	                break;
+
+	            // no processing
+	            case 'last_scan_date_internal':
+	            case 'cmode_v2_js_error_motivation':
+	            case 'cookie_banner_vertical_position':
+	            case 'cookie_banner_horizontal_position':
+	            case 'cookie_banner_size':
+	            case 'customer_email':
+	            case 'summary_text':
+	            case 'last_sync':
+	            case 'last_legit_sync':
+	            case 'parse_config':
+	            case 'parse_config_version_number':
+	            case 'alt_accepted_all_cookie_name':
+	            case 'alt_accepted_something_cookie_name':
+	            case 'learning_mode_last_active_timestamp':
+	            case 'missing_cookie_shield_timestamp':
+	            case 'cookie_shield_running_timestamp':
+	            case 'fixed_translations_encoded':
+	            case 'layer_1_button_order':
+	                $logic = 'raw';
+	                break;
+
+	            // default
+	            default:
+	                $logic = 'text';
+	                break;
+	        }
+	    }
+
+	    // apply validation logic
+	    switch ( $logic )
+	    {
+	        case 'bool':
+	            if ( $value === 'true' || $value === true )
+	            {
+	                $ret = true;
+	            }
+	            elseif ( $value === 'false' || $value === false )
+	            {
+	                $ret = false;
+	            }
+	            else
+	            {
+	                $ret = false;
+	            }
+	            break;
+
+	        case 'int':
+	            $ret = intval( $value );
+	            break;
+
+	        case 'hexcolor':
+	            if ( preg_match( '/^#[a-f0-9]{6}|#[a-f0-9]{3}$/i', $value ) )
+	            {
+	                $ret = $value;
+	            }
+	            else
+	            {
+	                // Failover = assign '#000' (black)
+	                $ret = '#000';
+	            }
+	            break;
+
+	        case 'html':
+	            $ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
+	            break;
+
+	        case 'html_trim':
+	            $ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
+	            if ( ! is_null( $ret ) ) {
+	                $ret = trim( $ret );
+	            }
+	            break;
+
+	        case 'esc_html':
+	            $ret = esc_html( $value );
+	            break;
+
+	        case 'esc_attr':
+	            $ret = esc_attr( $value );
+	            break;
+
+	        case 'raw':
+	            $ret = $value;
+	            break;
+
+	        case 'text':
+	        default:
+	            $ret = sanitize_text_field( $value );
+	            break;
+	    }
+
+	    return $ret;
 	}
 
 	/**
 	 * check for wp login page
-	 * @since    1.3.5
 	 * @access   public
 	*/
 	public static function is_wplogin()
@@ -783,7 +923,6 @@ class MyAgilePrivacy {
 
 	/**
 	 * check for buffer / script inclusion skip
-	 * @since    1.3.5
 	 * @access   public
 	*/
 	public static function check_buffer_skip_conditions( $added_regexp_limited_check = false )
@@ -947,7 +1086,6 @@ class MyAgilePrivacy {
 				//post
 				if( !empty( $_POST ) ) $skip = 'true_due_to_post';
 			}
-
 		}
 
 		return $skip;
@@ -980,12 +1118,98 @@ class MyAgilePrivacy {
 
 	/**
 	 * Returns default settings
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function get_default_settings( $key='' )
 	{
-		$default_locale = get_locale();
+		$default_locale = MyAgilePrivacy::get_locale();
+
+		$site_and_policy_settings = array(
+
+			'completion_percentage'							=>	0,
+
+			'last_update_timestamp'							=>	null,
+
+			'base_location'									=> 	null,
+			'customer_location' 							=> 	null,
+
+			'customer_area_eu'								=>	false,
+			'customer_area_gb'								=>	false,
+			'customer_area_ch'								=>	false,
+			'customer_area_ca'								=>	false,
+			'customer_area_br'								=>	false,
+
+			'customer_area_california'						=>	false,
+			'customer_area_colorado'						=>	false,
+			'customer_area_connecticut'						=>	false,
+			'customer_area_delaware'						=>	false,
+			'customer_area_minnesota'						=>	false,
+			'customer_area_montana'							=>	false,
+			'customer_area_nebraska'						=>	false,
+			'customer_area_nevada'							=>	false,
+			'customer_area_new_hampshire'					=>	false,
+			'customer_area_new_jersey'						=>	false,
+			'customer_area_oregon'							=>	false,
+			'customer_area_tennessee'						=>	false,
+			'customer_area_texas'							=>	false,
+			'customer_area_utah'							=>	false,
+			'customer_area_virginia'						=>	false,
+
+
+			'regulation_gdpr_like'							=>	false,
+			'regulation_gdpr_gb'							=>	false,
+
+
+			'regulation_ccpa'								=>	false,
+			'regulation_cpa'								=>	false,
+			'regulation_ctdpa'								=>	false,
+			'regulation_dpdpa'								=>	false,
+			'regulation_mcdpa'								=>	false,
+			'regulation_mtcdpa'								=>	false,
+			'regulation_ndpa'								=>	false,
+			'regulation_nevada'								=>	false,
+			'regulation_nhpa'								=>	false,
+			'regulation_njdpa'								=>	false,
+			'regulation_ocpa'								=>	false,
+			'regulation_tipa'								=>	false,
+			'regulation_tdpsa'								=>	false,
+			'regulation_ucpa'								=>	false,
+			'regulation_vcdpa'								=>	false,
+
+
+			'regulation_lpd'								=>	false,
+			'regulation_lgpd'								=>	false,
+			'regulation_pipeda'								=>	false,
+
+
+			'identity_name'									=> 	null,
+			'identity_address'								=>	null,
+			'identity_vat_id'								=>	null,
+			'identity_email'								=>	null,
+			'display_dpo'									=> 	false,
+
+			'dpo_email'										=> 	null,
+			'dpo_name'										=> 	null,
+			'dpo_address'									=> 	null,
+
+			'site_features_contact_forms'					=>	false,
+			'site_features_payments'						=>	false,
+			'site_features_account_reg'						=>	false,
+			'site_features_newsletter'						=>	false,
+			'site_features_show_marketing_data_retention'	=>	false,
+			'site_features_reviews_collect'					=>	false,
+			'site_features_minors_data'						=>	false,
+			'site_features_sensitive_data'					=>	false,
+			'outside_adequate_suppliers'					=>	false,
+
+
+			'protection_system_https'						=>	false,
+			'protection_system_log_control'					=>	false,
+			'protection_system_backup'						=>	false,
+			'protection_system_audit'						=>	false,
+			'protection_system_access_limited'				=>	false,
+		);
+
 
 		$settings = array(
 			'is_on' 									=> 	true,
@@ -1019,15 +1243,10 @@ class MyAgilePrivacy {
 			'map_inline_notify_color'					=>	'#444444',
 			'map_inline_notify_background'				=>	'#FFF3CD',
 			'website_name'								=>	'',
-			'identity_name'								=>	'',
-			'identity_address'							=>	'',
-			'identity_vat_id'							=>	'',
-			'identity_email'							=>	'',
-			'dpo_email'									=> 	'',
-			'dpo_name'									=> 	'',
-			'dpo_address'								=> 	'',
 			'license_code'								=>	'',
 			'license_user_status'						=>	'Demo License',
+			'dont_ask_license_code'						=>	false,
+			'dont_ask_license_code_timestamp'			=>	0,
 			'is_dm'										=>	true,
 			'license_valid'								=>	true,
 			'grace_period'								=>	false,
@@ -1052,7 +1271,7 @@ class MyAgilePrivacy {
 			'pa'										=>	0,
 			'last_legit_sync'							=>	null,
 			'custom_css'								=>	null,
-			'scan_mode'									=>	'turned_off',
+			'scan_mode'									=>	'learning_mode',
 			'blocked_content_notify'					=>	false,
 			'blocked_content_notify_auto_shutdown'		=>	true,
 			'blocked_content_notify_auto_shutdown_time'	=>	3000,
@@ -1061,7 +1280,7 @@ class MyAgilePrivacy {
 			'captcha_block'								=>	true,
 			'parse_config'								=>	null,
 			'parse_config_version_number'				=>	null,
-			'scanner_compatibility_mode'				=>	false,
+			'scanner_compatibility_mode'				=>	true,
 			'scanner_hook_type'							=>	'init-shutdown',
 			'scanner_start_hook_prio'					=>	-10000,
 			'scanner_end_hook_prio'						=>	-10000,
@@ -1069,13 +1288,10 @@ class MyAgilePrivacy {
 			'alt_accepted_something_cookie_name'		=>	null,
 			'learning_mode_last_active_timestamp'		=>	null,
 			'enforce_youtube_privacy'					=>	false,
-			'display_dpo'								=>	false,
-			'dpo_email'									=>	null,
-			'display_ccpa'								=>	false,
-			'display_lpd'								=>	false,
 			'show_ntf_bar_on_not_yet_consent_choice'	=>	false,
 			'with_css_effects'							=>	true,
 			'forced_legacy_mode'						=>	false,
+			'dev_mode'									=>	false,
 			'missing_cookie_shield'						=> 	false,
 			'missing_cookie_shield_timestamp'			=> 	null,
 			'cookie_shield_running'						=>	false,
@@ -1109,7 +1325,13 @@ class MyAgilePrivacy {
 			'enable_language_fallback' 					=> 	false,
 			'language_fallback_locale'					=>	null,
 			'layer_1_button_order'						=>	'accept_reject_customize',
+			'site_and_policy_settings'					=>	$site_and_policy_settings,
+
+			'add_cookie_policy_to_first_layer'			=>	true,
+			'add_personal_policy_to_first_layer'		=>	true,
+
 		);
+
 
 		$settings = apply_filters( 'map_plugin_settings', $settings);
 
@@ -1119,7 +1341,6 @@ class MyAgilePrivacy {
 
 	/**
 	 * Returns list of HTML tags allowed in HTML fields for use in declaration of wp_kset field validation.
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function allowed_html_tags()
@@ -1277,7 +1498,6 @@ class MyAgilePrivacy {
 
 	/**
 	 * Returns list of allowed protocols, used in wp_kset field validation.
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function allowed_protocols()
@@ -1287,7 +1507,6 @@ class MyAgilePrivacy {
 
 	/**
 	 * Returns JSON object containing user settings
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function get_json_settings()
@@ -1302,7 +1521,7 @@ class MyAgilePrivacy {
 		$the_translations = MyAgilePrivacy::getFixedTranslations();
 		$current_lang = MyAgilePrivacy::getCurrentLang4Char();
 
-		if( current_user_can( 'manage_options' ) && $the_settings['pa'] == 1 )
+		if( current_user_can( 'manage_options' ) && isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
 		{
 			$logged_in_and_admin = true;
 			$internal_debug = true;
@@ -1325,7 +1544,7 @@ class MyAgilePrivacy {
 		}
 
 		$map_first_layer_branded = '0';
-		if( !$the_settings['pa'] || $the_settings['cookie_banner_size'] == 'sizeWideBranded' )
+		if( !( isset( $the_settings['pa'] ) && $the_settings['pa'] ) || $the_settings['cookie_banner_size'] == 'sizeWideBranded' )
 		{
 			$map_first_layer_branded = '1';
 		}
@@ -1388,7 +1607,6 @@ class MyAgilePrivacy {
 	 *
 	 * @param $params   array   The parameters for the API call
 	 * @return          array   The API response
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function call_api( $params )
@@ -1498,7 +1716,6 @@ class MyAgilePrivacy {
 		return $current_plugin_dir . '/local-cache/'.MAP_PLUGIN_NAME.'/';
 	}
 
-
 	/**
 	 * check for file exists
 	 */
@@ -1572,7 +1789,6 @@ class MyAgilePrivacy {
 						'version_check'					=>	version_compare( $manifest_assoc['files'][ $local_filename ]['version'], $version_number , '>=' ),
 						'local_alt_filename_fullpath'	=> 	$local_alt_filename_fullpath,
 						'local_alt_filename_check'		=>	is_file( $local_alt_filename_fullpath ),
-
 					);
 
 					MyAgilePrivacy::write_log( $debug_info );
@@ -1849,96 +2065,228 @@ class MyAgilePrivacy {
 	}
 
 	//f for getting global integrity checks
-	public static function getGlobalIntegrityChecks()
+	public static function getGlobalIntegrityChecks( $caller = 'frontend' )
 	{
 		$the_settings = self::get_settings();
 
-		$global_integrity_checks = [
-			'version' 						=> '1.0',
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
+
+		$global_integrity_checks = array(
+			'integrity_check_version' 		=> 	MAP_INTEGRITY_CHECK_VERSION,
 			'dashboard_checks'				=>	null,
 			'dashboard_checks_count'		=>	0,
 			'dashboard_checks_passed_count'	=>	0,
+			'other_frontend_checks'			=>	null,
+			'backend_checks'				=>	null,
 			'summary'						=>	array(
 													'status_class_name'				=>	'bg-success',
 													'completion_percentage'			=>	0,
 													'completion_percentage_width'	=>	0,
-												)
-		];
+												),
+			'template_config'				=>	$MyAgilePrivacyRegulationHelper->getTemplateConfig(),
+			'regulations_selected'			=>	$MyAgilePrivacyRegulationHelper->getRegulationsSelected( true ),
+		);
 
-		//check identity information
-		//check cookie shield status
-		//check consent mode status
 
-		$dashboard_checks =  array(
-			'identity' => array(
-				'check' 		=> (
-									isset( $the_settings['identity_name'] ) &&
-									$the_settings['identity_name'] &&
-									isset( $the_settings['identity_address'] ) &&
-									$the_settings['identity_address'] &&
-									isset( $the_settings['identity_email'] ) &&
-									$the_settings['identity_email']
-								)
+		$is_pa            = isset( $the_settings['pa'] ) && $the_settings['pa'] == 1;
+
+		$dont_ask_license = isset( $the_settings['dont_ask_license_code'] ) && $the_settings['dont_ask_license_code'];
+		$has_license_code = isset( $the_settings['license_code'] ) && $the_settings['license_code'] !== '';
+
+		$enable_cmode     = isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'];
+		$bypass_cmode     = isset( $the_settings['bypass_cmode_enable'] ) && $the_settings['bypass_cmode_enable'];
+
+		$the_settingscan_mode             = isset( $the_settings['scan_mode'] ) ? $the_settings['scan_mode'] : null;
+		$the_settingscan_is_learning      = $is_pa && $the_settingscan_mode === 'learning_mode';
+		$the_settingscan_is_config_finish = $is_pa && $the_settingscan_mode === 'config_finished';
+		$the_settingscan_is_turned_off    = $is_pa && $the_settingscan_mode === 'turned_off';
+
+
+		$license_ok          = $is_pa && $has_license_code;
+		$consent_mode_ok     = $is_pa && $enable_cmode;
+		$consent_status_skip = ($the_settingscan_is_learning || $the_settingscan_is_turned_off) || $bypass_cmode;
+		$consent_status_ok   = $is_pa
+			&& ( $the_settingscan_mode === 'config_finished' || $the_settingscan_mode === 'learning_mode' )
+			&& ( $enable_cmode || $bypass_cmode );
+
+		$policy_config        = isset( $site_and_policy_settings['completion_percentage'] ) &&
+								$site_and_policy_settings['completion_percentage'] >= 100;
+
+		$dashboard_checks = array(
+			// license code status
+			'license_code' => array(
+				'is_skipped' => $dont_ask_license,
+				'is_enabled' => $license_ok,
+				'check'      => $license_ok,
+				'do_count'   => true,
 			),
+
+			// consent mode status
 			'consent_mode' => array(
-				'is_skipped'	=>	( isset( $the_settings['bypass_cmode_enable'] ) &&
-										$the_settings['bypass_cmode_enable'] ),
-				'is_enabled' 	=> ( isset( $the_settings['pa'] ) &&
-									$the_settings['pa'] == 1 &&
-									isset( $the_settings['enable_cmode_v2'] ) &&
-									$the_settings['enable_cmode_v2'] ),
-				'check' 		=> (
-										( isset( $the_settings['pa'] ) &&
-										$the_settings['pa'] == 1 ) &&
-										(
-											( isset( $the_settings['enable_cmode_v2'] ) &&
-												$the_settings['enable_cmode_v2'] )  ||
-											( isset( $the_settings['bypass_cmode_enable'] ) &&
-												$the_settings['bypass_cmode_enable'] )
-										)
-								)
+				'is_skipped' => $bypass_cmode,
+				'is_enabled' => $consent_mode_ok,
+				'check'      => $consent_mode_ok,
+				'do_count'   => false,
 			),
+
+			// cookie shield status
 			'cookie_shield' => array(
-				'check' 		=> ( isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] !== 'turned_off')
+				'is_skipped' => $the_settingscan_is_learning,
+				'is_enabled' => $the_settingscan_is_config_finish,
+				'check'      => $the_settingscan_is_config_finish,
+				'do_count'   => false,
+			),
+
+			// consent status
+			'consent_status' => array(
+				'is_skipped' => $consent_status_skip,
+				'check'      => $consent_status_ok,
+				'do_count'   => true,
+			),
+
+			//policies
+			'policy_config' => array(
+
+				'is_enabled' => $policy_config,
+				'check'		 =>	$policy_config,
+				'do_count'   => true,
+
 			),
 		);
 
 		$global_integrity_checks['dashboard_checks'] = $dashboard_checks;
-		$global_integrity_checks['dashboard_checks_count'] = count( $global_integrity_checks['dashboard_checks'] );
+
+		$dashboard_checks_count = 0;
 
 		foreach( $global_integrity_checks['dashboard_checks'] as $key => &$item )
 		{
+			if( isset( $item['do_count'] ) && $item['do_count'] )
+			{
+				$dashboard_checks_count++;
+			}
+
 			switch( $key )
 			{
-				case 'identity':
-					$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+				case 'policy_config':
+
+						if( $item['check'] )
+						{
+							if( $caller == 'frontend' )
+							{
+
+								$item['status_class_name'] = 'success';
+								$item['status_class_desc'] = wp_kses_post( __( 'Configuration complete', 'MAP_txt' ) );
+							}
+
+							if( isset( $item['do_count'] ) && $item['do_count'] )
+							{
+								$global_integrity_checks['dashboard_checks_passed_count'] = $global_integrity_checks['dashboard_checks_passed_count'] + 1;
+							}
+						}
+						else
+						{
+							if( $caller == 'frontend' )
+							{
+								$item['status_class_name'] = 'danger';
+								$item['status_class_desc'] = wp_kses_post( __( 'Needs attention', 'MAP_txt' ) );
+							}
+
+						}
+
 					break;
+
 				case 'consent_mode':
+				case 'license_code':
+				case 'cookie_shield':
 
 					if( $item['is_skipped'] )
 					{
-						$item['status_class_name'] = 'warning';
+						if( $caller == 'frontend' )
+						{
+
+							$item['status_class_name'] = 'warning';
+							$item['status_class_desc'] = wp_kses_post( __( 'Needs attention', 'MAP_txt' ) );
+						}
 					}
 					else
 					{
-						$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+						if( $item['check'] )
+						{
+							if( $caller == 'frontend' )
+							{
+								$item['status_class_name'] = 'success';
+								$item['status_class_desc'] = wp_kses_post( __( 'Configuration complete', 'MAP_txt' ) );
+							}
+
+							if( isset( $item['do_count'] ) && $item['do_count'] )
+							{
+								$global_integrity_checks['dashboard_checks_passed_count'] = $global_integrity_checks['dashboard_checks_passed_count'] + 1;
+							}
+						}
+						else
+						{
+							if( $caller == 'frontend' )
+							{
+								$item['status_class_name'] = 'danger';
+								$item['status_class_desc'] = wp_kses_post( __( 'Needs attention', 'MAP_txt' ) );
+							}
+						}
 					}
 
 					break;
-				case 'cookie_shield':
-					$item['status_class_name'] = $item['check'] ? 'success' : 'danger';
+
+				/**/
+
+				case 'consent_status':
+
+					if( !$item['check'] )
+					{
+						if( $caller == 'frontend' )
+						{
+							$item['status_class_name'] = 'danger';
+							$item['status_class_desc'] = wp_kses_post( __( 'Needs attention', 'MAP_txt' ) );
+						}
+					}
+					else
+					{
+						if( $item['is_skipped'] )
+						{
+							if( $caller == 'frontend' )
+							{
+								$item['status_class_name'] = 'warning';
+								$item['status_class_desc'] = wp_kses_post( __( 'Needs attention', 'MAP_txt' ) );
+							}
+						}
+						else
+						{
+							if( $caller == 'frontend' )
+							{
+								$item['status_class_name'] = 'success';
+								$item['status_class_desc'] = wp_kses_post( __( 'Configuration complete', 'MAP_txt' ) );
+							}
+
+							if( isset( $item['do_count'] ) && $item['do_count'] )
+							{
+								$global_integrity_checks['dashboard_checks_passed_count'] = $global_integrity_checks['dashboard_checks_passed_count'] + 1;
+							}
+						}
+					}
+
 					break;
+				/**/
 
 				default:
-					$check['status_class_name'] = '';
+					if( $caller == 'frontend' )
+					{
+						$check['status_class_name'] = '';
+						$item['status_class_desc'] = '';
+					}
 					break;
 			}
-
-			if( $item['check'] )
-			{
-				$global_integrity_checks['dashboard_checks_passed_count'] = $global_integrity_checks['dashboard_checks_passed_count'] + 1;
-			}
 		}
+
+		$global_integrity_checks['dashboard_checks_count'] = $dashboard_checks_count;
 
 		$global_integrity_checks['summary']['completion_percentage'] = intval( ( $global_integrity_checks['dashboard_checks_passed_count'] / $global_integrity_checks['dashboard_checks_count'] ) * 100 );
 		$global_integrity_checks['summary']['completion_percentage_width'] = $global_integrity_checks['summary']['completion_percentage'];
@@ -1947,6 +2295,72 @@ class MyAgilePrivacy {
 		{
 			$global_integrity_checks['summary']['status_class_name'] = 'bg-danger';
 			$global_integrity_checks['summary']['completion_percentage_width'] = 100;
+		}
+
+		$other_frontend_checks = array(
+
+			//check identity information
+			'identity' 		=> array(
+				'check' 		=> (
+										isset( $the_settings['identity_name'] ) &&
+										$the_settings['identity_name'] &&
+										isset( $the_settings['identity_address'] ) &&
+										$the_settings['identity_address'] &&
+										isset( $the_settings['identity_email'] ) &&
+										$the_settings['identity_email']
+								),
+			),
+			//bg colors dark patterns
+			'not_using_dark_patterns'	=> array(
+				'check' 		=> (
+										isset( $the_settings['button_accept_button_color'] ) &&
+										isset( $the_settings['button_reject_button_color'] ) &&
+										isset( $the_settings['button_customize_button_color'] ) &&
+
+										$the_settings['button_accept_button_color'] == $the_settings['button_reject_button_color'] &&
+										$the_settings['button_reject_button_color'] == $the_settings['button_customize_button_color']
+
+									),
+			),
+		);
+
+		$global_integrity_checks['other_frontend_checks'] = $other_frontend_checks;
+
+		if( $caller == 'backend' )
+		{
+			/**
+			 * The class for handling policies
+			 */
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/my-agile-privacy-policies-helper.php';
+
+
+			//find [myagileprivacy_fixed_text text="cookie_policy"]
+			$pattern_cookie = '/\[\s*myagileprivacy_fixed_text\b(?=[^\]]*\btext=(["\'])cookie_policy\1)[^\]]*\]/i';
+
+			$result_cookie_policy_page = MyAgilePrivacyPoliciesHelper::find_shortcode_in_pages(
+			    'myagileprivacy_fixed_text',
+			    array(
+			        'custom_pattern' => $pattern_cookie
+			    )
+			);
+
+			//find [myagileprivacy_fixed_text text="personal_data_policy"]
+			$pattern_personal = '/\[\s*myagileprivacy_fixed_text\b(?=[^\]]*\btext=(["\'])personal_data_policy\1)[^\]]*\]/i';
+
+			$result_personal_data_policy_page = MyAgilePrivacyPoliciesHelper::find_shortcode_in_pages(
+			    'myagileprivacy_fixed_text',
+			    array(
+			        'custom_pattern' => $pattern_personal
+			    )
+			);
+
+			$backend_checks = array(
+				'cookie_policy_page'		=>	$result_cookie_policy_page,
+				'personal_data_policy_page'	=>	$result_personal_data_policy_page,
+
+			);
+
+			$global_integrity_checks['backend_checks'] = $backend_checks;
 		}
 
 		return $global_integrity_checks;
@@ -2143,7 +2557,6 @@ class MyAgilePrivacy {
 		$default_txt['it_IT']['in_addition_this_site_installs'] = 'Inoltre, questo sito installa';
 		$default_txt['it_IT']['with_anonymous_data_transmission_via_proxy'] = 'con trasmissione di dati anonimi tramite proxy.';
 		$default_txt['it_IT']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = "Prestando il consenso, l'invio dei dati sarà effettuato in maniera anonima, tutelando così la tua privacy.";
-		$default_txt['it_IT']['lpd_compliance_text'] = 'Questo sito è conforme alla Legge sulla Protezione dei Dati (LPD), Legge Federale Svizzera del 25 settembre 2020, e al GDPR, Regolamento UE 2016/679, relativi alla protezione dei dati personali nonché alla libera circolazione di tali dati.';
 		$default_txt['it_IT']['iab_bannertext_1'] = 'Noi e i nostri partner pubblicitari selezionati possiamo archiviare e/o accedere alle informazioni sul tuo dispositivo, come i cookie, identificatori unici, dati di navigazione.';
 		$default_txt['it_IT']['iab_bannertext_2_a'] = 'Puoi sempre scegliere gli scopi specifici legati al profilo accedendo al';
 		$default_txt['it_IT']['iab_bannertext_2_link'] = 'pannello delle preferenze pubblicitarie';
@@ -2193,7 +2606,6 @@ class MyAgilePrivacy {
 		$default_txt['en_US']['in_addition_this_site_installs'] = 'In addition, this site installs';
 		$default_txt['en_US']['with_anonymous_data_transmission_via_proxy'] = 'with anonymous data transmission via proxy.';
 		$default_txt['en_US']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'By giving your consent, the data will be sent anonymously, thus protecting your privacy.';
-		$default_txt['en_US']['lpd_compliance_text'] = 'This site complies with the Data Protection Act (LPD), Swiss Federal Law of September 25, 2020, and the GDPR, EU Regulation 2016/679, regarding the protection of personal data and the free movement of such data.';
 		$default_txt['en_US']['iab_bannertext_1'] = 'We and our selected ad partners can store and/or access information on your device, such as cookies, unique identifiers and browsing data.';
 		$default_txt['en_US']['iab_bannertext_2_a'] = 'You can always choose the specific purposes related to profiling by accessing the';
 		$default_txt['en_US']['iab_bannertext_2_link'] = 'advertising preferences panel';
@@ -2242,7 +2654,6 @@ class MyAgilePrivacy {
 		$default_txt['fr_FR']['in_addition_this_site_installs'] = 'En outre, ce site installe';
 		$default_txt['fr_FR']['with_anonymous_data_transmission_via_proxy'] = 'avec transmission de données anonymes via un proxy.';
 		$default_txt['fr_FR']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'En donnant votre consentement, l’envoi des données sera effectué de manière anonyme, protégeant ainsi votre vie privée.';
-		$default_txt['fr_FR']['lpd_compliance_text'] = 'Ce site est conforme à la Loi sur la Protection des Données (LPD), Loi Fédérale Suisse du 25 septembre 2020, et au RGPD, Règlement UE 2016/679, concernant la protection des données personnelles ainsi que la libre circulation de ces données.';
 		$default_txt['fr_FR']['iab_bannertext_1'] = 'Nous et nos partenaires publicitaires sélectionnés pouvons stocker et/ou accéder aux informations sur votre appareil, telles que les cookies, les identifiants uniques, les données de navigation.';
 		$default_txt['fr_FR']['iab_bannertext_2_a'] = 'Vous pouvez toujours choisir les objectifs spécifiques liés au profilage en accédant au';
 		$default_txt['fr_FR']['iab_bannertext_2_link'] = 'panneau des préférences publicitaires';
@@ -2291,7 +2702,6 @@ class MyAgilePrivacy {
 		$default_txt['es_ES']['in_addition_this_site_installs'] = 'Además, este sitio instala';
 		$default_txt['es_ES']['with_anonymous_data_transmission_via_proxy'] = 'con transmisión de datos anónimos mediante «proxy».';
 		$default_txt['es_ES']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Al dar tu consentimiento, el envío de los datos se realizará de forma anónima y así tu privacidad quedará protegida.';
-		$default_txt['es_ES']['lpd_compliance_text'] = 'Este sitio cumple con la Ley de Protección de Datos (LPD), Ley Federal Suiza del 25 de septiembre de 2020, y el GDPR, Reglamento de la UE 2016/679, respecto a la protección de datos personales así como la libre circulación de dichos datos.';
 		$default_txt['es_ES']['iab_bannertext_1'] = 'Nosotros y nuestros socios publicitarios seleccionados podemos almacenar y/o acceder a información en su dispositivo, como cookies, identificadores únicos, datos de navegación.';
 		$default_txt['es_ES']['iab_bannertext_2_a'] = 'Siempre puedes elegir los propósitos específicos relacionados con el perfilado accediendo al';
 		$default_txt['es_ES']['iab_bannertext_2_link'] = 'panel de preferencias de publicidad';
@@ -2340,7 +2750,6 @@ class MyAgilePrivacy {
 		$default_txt['de_DE']['in_addition_this_site_installs'] = 'Darüber hinaus installiert diese Website';
 		$default_txt['de_DE']['with_anonymous_data_transmission_via_proxy'] = 'mit anonymer Datenübertragung über Proxy.';
 		$default_txt['de_DE']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Wenn Sie Ihre Zustimmung geben, werden die Daten anonym übermittelt, so dass Ihre Privatsphäre geschützt ist.';
-		$default_txt['de_DE']['lpd_compliance_text'] = 'Diese Website entspricht dem Datenschutzgesetz (LPD), Schweizer Bundesgesetz vom 25. September 2020, und der DSGVO, EU-Verordnung 2016/679, bezüglich des Schutzes personenbezogener Daten sowie des freien Verkehrs solcher Daten.';
 		$default_txt['de_DE']['iab_bannertext_1'] = 'Wir und unsere ausgewählten Werbepartner können Informationen auf Ihrem Gerät speichern und/oder darauf zugreifen, wie z.B. Cookies, eindeutige Kennungen und Browserdaten.';
 		$default_txt['de_DE']['iab_bannertext_2_a'] = 'Sie können jederzeit die spezifischen Zwecke in Bezug auf das Profiling auswählen, indem Sie auf das';
 		$default_txt['de_DE']['iab_bannertext_2_link'] = 'Werbepräferenz-Panel';
@@ -2389,7 +2798,6 @@ class MyAgilePrivacy {
 		$default_txt['pt_PT']['in_addition_this_site_installs'] = 'Além disso, este site instala';
 		$default_txt['pt_PT']['with_anonymous_data_transmission_via_proxy'] = 'com transmissão de dados anônima via proxy.';
 		$default_txt['pt_PT']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Ao dar seu consentimento, os dados serão enviados anonimamente, protegendo assim sua privacidade.';
-		$default_txt['pt_PT']['lpd_compliance_text'] = 'Este site está em conformidade com a Lei Federal de Proteção de Dados (LPD) da Suíça, de 25 de setembro de 2020 e com o RGPD, Regulamento da UE 2016/679, em relação à proteção de dados pessoais, bem como a livre circulação de tais dados.';
 		$default_txt['pt_PT']['iab_bannertext_1'] = 'Nós e nossos parceiros publicitários selecionados podemos armazenar e/ou acessar informações em seu dispositivo, como cookies, identificadores únicos e dados de navegação.';
 		$default_txt['pt_PT']['iab_bannertext_2_a'] = 'Você sempre pode escolher os propósitos específicos relacionados ao perfil acessando o';
 		$default_txt['pt_PT']['iab_bannertext_2_link'] = 'painel de preferências de publicidade';
@@ -2438,7 +2846,6 @@ class MyAgilePrivacy {
 		$default_txt['nl_NL']['in_addition_this_site_installs'] = 'Daarnaast installeert deze site';
 		$default_txt['nl_NL']['with_anonymous_data_transmission_via_proxy'] = 'met anonieme gegevensoverdracht via proxy.';
 		$default_txt['nl_NL']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Door uw toestemming te geven, worden de gegevens anoniem verzonden, waardoor uw privacy wordt beschermd.';
-		$default_txt['nl_NL']['lpd_compliance_text'] = 'Deze site voldoet aan de Data Protection Act (LPD), de Zwitserse federale wet van 25 september 2020, en de GDPR, EU-verordening 2016/679, met betrekking tot de bescherming van persoonsgegevens en de vrije gegevensoverdracht.';
 		$default_txt['nl_NL']['iab_bannertext_1'] = 'Wij en onze geselecteerde advertentiepartners kunnen informatie opslaan en/of openen op uw apparaat, zoals cookies, unieke identificatoren en browsegegevens.';
 		$default_txt['nl_NL']['iab_bannertext_2_a'] = 'U kunt altijd de specifieke doeleinden met betrekking tot profilering kiezen door toegang te krijgen tot het';
 		$default_txt['nl_NL']['iab_bannertext_2_link'] = 'advertentievoorkeurenpaneel';
@@ -2488,7 +2895,6 @@ class MyAgilePrivacy {
 		$default_txt['pl_PL']['in_addition_this_site_installs'] = 'Dodatkowo, ta strona instaluje';
 		$default_txt['pl_PL']['with_anonymous_data_transmission_via_proxy'] = 'z anonimową transmisją danych za pośrednictwem proxy.';
 		$default_txt['pl_PL']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Dając swoją zgodę, dane będą przesyłane anonimowo, chroniąc w ten sposób Twoją prywatność.';
-		$default_txt['pl_PL']['lpd_compliance_text'] = 'Ta strona jest zgodna z Ustawą o Ochronie Danych (LPD), Szwajcarską Federalną Ustawą z dnia 25 września 2020 r., oraz RODO, Rozporządzeniem EU 2016/679, dotyczącym ochrony danych osobowych oraz swobodnego przepływu tych danych.';
 		$default_txt['pl_PL']['iab_bannertext_1'] = 'My i wybrani partnerzy reklamowi możemy przechowywać i/lub uzyskiwać dostęp do informacji na Twoim urządzeniu, takich jak pliki cookie, unikalne identyfikatory, dane przeglądania.';
 		$default_txt['pl_PL']['iab_bannertext_2_a'] = 'Zawsze możesz wybrać konkretne cele związane z profilowaniem, uzyskując dostęp do';
 		$default_txt['pl_PL']['iab_bannertext_2_link'] = 'panelu preferencji reklamowych';
@@ -2538,7 +2944,6 @@ class MyAgilePrivacy {
 		$default_txt['el']['in_addition_this_site_installs'] = 'Επιπλέον, αυτός ο ιστότοπος εγκαθιστά';
 		$default_txt['el']['with_anonymous_data_transmission_via_proxy'] = 'με ανώνυμη μετάδοση δεδομένων μέσω διακομιστή μεσολάβησης.';
 		$default_txt['el']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Δίνοντας τη συγκατάθεσή σας, τα δεδομένα θα αποστέλλονται ανώνυμα, προστατεύοντας έτσι το απόρρητό σας.';
-		$default_txt['el']['lpd_compliance_text'] = 'Αυτός ο ιστότοπος συμμορφώνεται με τον νόμο περί προστασίας δεδομένων (LPD), τον ελβετικό ομοσπονδιακό νόμο της 25ης Σεπτεμβρίου 2020, και τον ΓΚΠΔ, κανονισμό ΕΕ 2016/679, σχετικά με την προστασία των προσωπικών δεδομένων καθώς και την ελεύθερη κυκλοφορία αυτών των δεδομένων.';
 		$default_txt['el']['iab_bannertext_1'] = 'Εμείς και οι επιλεγμένοι διαφημιστικοί συνεργάτες μας μπορούμε να αποθηκεύσουμε και/ή να έχουμε πρόσβαση σε πληροφορίες στη συσκευή σας, όπως cookies, μοναδικά αναγνωριστικά και δεδομένα περιήγησης.';
 		$default_txt['el']['iab_bannertext_2_a'] = 'Μπορείτε πάντα να επιλέγετε συγκεκριμένους σκοπούς σχετικά με το προφίλ αποκτώντας πρόσβαση στον';
 		$default_txt['el']['iab_bannertext_2_link'] = 'πίνακα προτιμήσεων διαφημίσεων';
@@ -2837,6 +3242,234 @@ class MyAgilePrivacy {
 		return $return_data;
 	}
 
+	//f. for text cleanup & compile
+	public static function internalMAPCleanupAndCompilePolicy( $text, $the_translations, $current_lang, $caller, $cookie_list_html )
+	{
+		$the_settings = MyAgilePrivacy::get_settings();
+		$rconfig = MyAgilePrivacy::get_rconfig();
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
+		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
+		$regulationList = $MyAgilePrivacyRegulationHelper->getRegulationList();
+
+		$set_list = array();
+		$unset_list = array();
+		$processed_keys = array();
+
+		$debug_mode = false;
+
+		$empty_text = '';
+
+		$remove_dpo_text = true;
+		$remove_dpo_other_text = true;
+
+		$website_name = get_site_url();
+
+		if( isset( $the_settings['website_name'] ) && $the_settings['website_name'] != '' )
+		{
+			$website_name = stripslashes( $the_settings['website_name'] );
+
+			//block_the_content_filter mode
+			if(
+				( isset( $rconfig ) &&
+				isset( $rconfig['block_the_content_filter'] ) &&
+				$rconfig['block_the_content_filter'] == 1 ) ||
+				(
+					$the_settings['scanner_compatibility_mode']
+				)
+			)
+			{
+				//no action
+			}
+			else
+			{
+				//add paragraphs to text
+				$website_name = apply_filters( 'the_content', $website_name );
+			}
+		}
+
+		$text = str_replace( '[website_name]', $website_name, $text );
+
+		$text = str_replace( '[identity_vat_id]', ( isset( $templateConfig['map_identity_vat_id'] ) && $templateConfig['map_identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.stripslashes( $templateConfig['map_identity_vat_id'] ) : '', $text );
+
+		$processed_keys[] = 'shortcode_identity_vat_id';
+
+		if( isset( $rconfig ) && $rconfig['allow_dpo_edit'] &&
+			isset( $templateConfig['map_dpo_text'] ) && $templateConfig['map_dpo_text'] == 1 )
+		{
+			$remove_dpo_text = false;
+
+			if(
+				( isset( $templateConfig['shortcode_dpo_email'] ) && $templateConfig['shortcode_dpo_email'] ) ||
+				( isset( $templateConfig['shortcode_dpo_name'] ) && $templateConfig['shortcode_dpo_name'] ) ||
+				( isset( $templateConfig['shortcode_dpo_address'] ) && $templateConfig['shortcode_dpo_address'] )
+
+			)
+			{
+				$remove_dpo_other_text = false;
+			}
+		}
+
+		if( !$templateConfig['map_using_newsletter']  )
+		{
+			$text = preg_replace( '#(<p class="map_marketing_consent">).*?(</p>)#s', '' , $text );
+			$text = preg_replace( '#(<span class="map_marketing_consent">).*?(</span>)#s', '' , $text );
+			$text = preg_replace( '#(<ul class="map_marketing_consent">).*?(</ul>)#s', '' , $text );
+			$text = preg_replace( '#(<li class="map_marketing_consent">).*?(</li>)#s', '' , $text );
+		}
+
+		if( $remove_dpo_text )
+		{
+			$text = preg_replace( '#(<p class="map_dpo_text">).*?(</p>)#s', '' , $text );
+			$text = preg_replace( '#(<span class="map_dpo_text">).*?(</span>)#s', '' , $text );
+			$text = preg_replace( '#(<ul class="map_dpo_text">).*?(</ul>)#s', '' , $text );
+			$text = preg_replace( '#(<li class="map_dpo_text">).*?(</li>)#s', '' , $text );
+		}
+
+		if( $remove_dpo_other_text )
+		{
+			$text = preg_replace( '#(<p class="map_dpo_other_text">).*?(</p>)#s', '' , $text );
+			$text = preg_replace( '#(<span class="map_dpo_other_text">).*?(</span>)#s', '' , $text );
+			$text = preg_replace( '#(<ul class="map_dpo_other_text">).*?(</ul>)#s', '' , $text );
+			$text = preg_replace( '#(<li class="map_dpo_other_text">).*?(</li>)#s', '' , $text );
+		}
+		else
+		{
+			if( $templateConfig['shortcode_dpo_email'] )
+			{
+				$text = str_replace( 'MAP_DPO_MAIL', stripslashes( $templateConfig['shortcode_dpo_email'] ), $text );
+			}
+			else
+			{
+				$text = str_replace( 'MAP_DPO_MAIL<br>', '', $text );
+			}
+
+			$processed_keys[] = 'shortcode_dpo_email';
+
+			if( $templateConfig['shortcode_dpo_name'] )
+			{
+				$text = str_replace( 'MAP_DPO_NAME', stripslashes( $templateConfig['shortcode_dpo_name'] ), $text );
+			}
+			else
+			{
+				$text = str_replace( 'MAP_DPO_NAME<br>', '', $text );
+			}
+
+			$processed_keys[] = 'shortcode_dpo_name';
+
+			if( $templateConfig['shortcode_dpo_address'] )
+			{
+				$text = str_replace( 'MAP_DPO_ADDRESS', stripslashes( $templateConfig['shortcode_dpo_address'] ), $text );
+			}
+			else
+			{
+				$text = str_replace( 'MAP_DPO_ADDRESS<br>', '', $text );
+			}
+
+			$processed_keys[] = 'shortcode_dpo_address';
+		}
+
+		foreach( $regulationList as $regulation )
+		{
+			$key = 'map_'.$regulation.'_text';
+
+			$processed_keys[] = $key;
+
+			if( !$templateConfig[ $key ] )
+			{
+				if( $debug_mode ) $empty_text = strtoupper( '['.$key.']' );
+
+				$text = preg_replace( '#(<p class="'.$key.'">).*?(</p>)#s', $empty_text , $text );
+				$text = preg_replace( '#(<span class="'.$key.'">).*?(</span>)#s', $empty_text , $text );
+				$text = preg_replace( '#(<ul class="'.$key.'">).*?(</ul>)#s', $empty_text , $text );
+				$text = preg_replace( '#(<li class="'.$key.'">).*?(</li>)#s', $empty_text , $text );
+
+				$unset_list[] = $key;
+			}
+			else
+			{
+				$set_list[] = $key;
+			}
+		}
+
+		foreach( $templateConfig as $templateConfigKey => $templateConfigItem )
+		{
+			if(  !in_array( $templateConfigKey, $processed_keys ) )
+			{
+				$processed_keys[] = $templateConfigKey;
+
+				//css class
+				if( strncmp( $templateConfigKey, 'map_', strlen( 'map_' ) ) === 0 )
+				{
+					if( !$templateConfigItem )
+					{
+						if( $debug_mode ) $empty_text = strtoupper( '['.$templateConfigKey.']' );
+
+						$text = preg_replace( '#(<p class="'.$templateConfigKey.'">).*?(</p>)#s', $empty_text , $text );
+						$text = preg_replace( '#(<span class="'.$templateConfigKey.'">).*?(</span>)#s', $empty_text , $text );
+						$text = preg_replace( '#(<ul class="'.$templateConfigKey.'">).*?(</ul>)#s', $empty_text , $text );
+						$text = preg_replace( '#(<li class="'.$templateConfigKey.'">).*?(</li>)#s', $empty_text , $text );
+
+						$unset_list[] = $templateConfigKey;
+					}
+					else
+					{
+						$set_list[] = $templateConfigKey;
+					}
+				}
+
+				//shortcodes
+				if( strncmp( $templateConfigKey, 'shortcode_', strlen( 'shortcode_' ) ) === 0 )
+				{
+					$cleaned_string = preg_replace('/^shortcode_/i', '', $templateConfigKey );
+					$shortcode_to_search = '['.$cleaned_string.']';
+
+					$processed_keys[] = $templateConfigKey;
+
+					if( isset( $templateConfig[ $templateConfigKey ] ) &&
+						is_string( $templateConfig[ $templateConfigKey ] ) )
+					{
+						$text = str_replace( $shortcode_to_search, stripslashes( $templateConfig[ $templateConfigKey ] ), $text );
+
+						$set_list[] = $templateConfigKey;
+					}
+					else
+					{
+						if( $debug_mode ) $empty_text = strtoupper( '['.$templateConfigKey.']' );
+
+						$text = str_replace( $shortcode_to_search, $empty_text, $text );
+
+						$unset_list[] = $templateConfigKey;
+					}
+				}
+			}
+		}
+
+		$processed_keys[] = 'shortcode_identity_name';
+
+		$text = str_replace( '[identity_address]', stripslashes( $templateConfig['shortcode_identity_address'] ), $text );
+		$processed_keys[] = 'shortcode_identity_address';
+
+		$text = str_replace( '[identity_email]', stripslashes( $templateConfig['shortcode_identity_email'] ), $text );
+		$processed_keys[] = 'shortcode_identity_email';
+
+		if( $caller == 'frontend' )
+		{
+			$text = str_replace( '[cookie_list]', $cookie_list_html, $text );
+
+			if( $the_settings['wrap_shortcodes'] )
+			{
+				$text = '<div id="myagileprivacy_text_wrapper" class="myagileprivacy_text_wrapper">'.$content.'</div>';
+			}
+
+			$text = '<!--googleoff: all-->'.$text.'<!--googleon: all-->';
+
+		}
+
+		return $text;
+	}
+
+
 	//clean up custom post type posts
 	public static function dropCustomPostTypesPosts()
 	{
@@ -2921,37 +3554,40 @@ class MyAgilePrivacy {
 			$element_type = 'post_' . $post_type_escaped;
 
 			// Delete translations from the Polylang translations table
-			$wpdb->query($wpdb->prepare(
+			$sql1 = $wpdb->prepare(
 				"DELETE FROM {$wpdb->prefix}icl_translations
-				WHERE element_id IN (
-					SELECT ID
-					FROM {$wpdb->posts}
-					WHERE post_type = %s
-				)
-				AND element_type = %s",
+				 WHERE element_id IN (
+					 SELECT ID
+					 FROM {$wpdb->posts}
+					 WHERE post_type = %s
+				 )
+				 AND element_type = %s",
 				$post_type_escaped,
 				$element_type
-			));
+			);
+			$wpdb->query( $sql1 );
 
 			// Delete translation posts
-			$wpdb->query($wpdb->prepare(
+			$sql2 = $wpdb->prepare(
 				"DELETE FROM {$wpdb->posts}
-				WHERE ID IN (
-					SELECT translation_id
-					FROM {$wpdb->prefix}icl_translations
-					WHERE element_id IN (
-						SELECT ID
-						FROM {$wpdb->posts}
-						WHERE post_type = %s
-					)
-				)",
+				 WHERE ID IN (
+					 SELECT translation_id
+					 FROM {$wpdb->prefix}icl_translations
+					 WHERE element_id IN (
+						 SELECT id FROM (
+							 SELECT ID
+							 FROM {$wpdb->posts}
+							 WHERE post_type = %s
+						 ) AS tmp
+					 )
+				 )",
 				$post_type_escaped
-			));
+			);
+			$wpdb->query( $sql2 );
 		}
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) self::write_log( 'end dropPolyLangTranslations' );
 	}
-
 
 	//clean up WPML translations
 	public static function dropWPMLTranslations()
@@ -3016,9 +3652,140 @@ class MyAgilePrivacy {
 	}
 
 
+	//db migration patch 2
+	public static function dbMigrateDbasePatch2()
+	{
+		$the_settings = self::get_settings();
+
+		$raw_settings = self::get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $raw_settings );
+
+		if(
+			isset( $raw_settings['identity_name'] ) ||
+			isset( $raw_settings['identity_vat_id'] )
+		)
+		{
+			$display_ccpa = false;
+
+			if( isset( $raw_settings['display_ccpa'] ) && $raw_settings['display_ccpa']  )
+			{
+				$display_ccpa = true;
+			}
+
+			$display_lpd = false;
+
+			if( isset( $raw_settings['display_lpd'] ) && $raw_settings['display_lpd']  )
+			{
+				$display_lpd = true;
+			}
+
+			$newsletter = false;
+
+			//check if exists
+			$cc_args = array(
+				'posts_per_page'   => 	-1,
+				'post_type'        =>	MAP_POST_TYPE_POLICY,
+				'meta_key'         => 	'_map_remote_id',
+				'meta_value'       => 	'personal_data_policy',
+			);
+
+			$cc_query = new WP_Query( $cc_args );
+
+			if( $cc_query->have_posts() )
+			{
+				foreach ( $cc_query->get_posts() as $p )
+				{
+					$the_id = $p->ID;
+					$map_option1_ack = get_post_meta( $the_id, '_map_option1_ack', true );
+					$map_option1_on = get_post_meta( $the_id, '_map_option1_on', true );
+
+					if( $map_option1_ack == 1 && $map_option1_on == 1 )
+					{
+						$newsletter = true;
+					}
+				}
+			}
+
+			$to_migrate_settings = array(
+				'identity_name'					=> 	( isset( $raw_settings['identity_name'] ) )
+													? $raw_settings['identity_name']
+													: null,
+				'identity_address'				=> 	( isset( $raw_settings['identity_address'] ) )
+													? $raw_settings['identity_address']
+													: null,
+				'identity_vat_id'				=> 	( isset( $raw_settings['identity_vat_id'] ) )
+													? $raw_settings['identity_vat_id']
+													: null,
+				'identity_email'				=> 	( isset( $raw_settings['identity_email'] ) )
+													? $raw_settings['identity_email']
+													: null,
+				'display_dpo'					=> 	( isset( $raw_settings['display_dpo'] ) )
+													? $raw_settings['display_dpo']
+													: false,
+				'dpo_email'						=> 	( isset( $raw_settings['dpo_email'] ) )
+													? $raw_settings['dpo_email']
+													: null,
+				'dpo_name'						=> 	( isset( $raw_settings['dpo_name'] ) )
+													? $raw_settings['dpo_name']
+													: null,
+				'dpo_address'					=> 	( isset( $raw_settings['dpo_address'] ) )
+													? $raw_settings['dpo_address']
+													: null,
+
+				'customer_location'				=>	'select_countries',
+				'customer_area_eu'				=>	true,
+				'regulation_gdpr_like'			=>	true,
+
+				'customer_area_california'		=>	$display_ccpa,
+				'regulation_ccpa'				=>	$display_ccpa,
+
+				'customer_area_ch'				=>	$display_lpd,
+				'regulation_lpd'				=>	$display_lpd,
+
+
+				'site_features_newsletter'		=>	$newsletter,
+
+			);
+
+
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $to_migrate_settings );
+
+			foreach( $to_migrate_settings as $k => $v )
+			{
+				$the_settings['site_and_policy_settings'][ $k ] = $v;
+			}
+
+			$the_settings['add_cookie_policy_to_first_layer'] = false;
+			$the_settings['add_personal_policy_to_first_layer'] = false;
+
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//fixed get_locale / get_user_locale
+	public static function get_locale()
+	{
+		if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
+		{
+			$locale = get_locale();
+		}
+		else
+		{
+			$locale = get_user_locale();
+		}
+
+		return 	$locale;
+	}
+
 	/**
 	 * write to log file
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public static function write_log($log)

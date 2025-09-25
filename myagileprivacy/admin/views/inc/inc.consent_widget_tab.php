@@ -7,14 +7,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 $caller = 'genericOptionsWrapper';
 
-if( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) )
-{
-	$locale = get_locale();
-}
-else
-{
-	$locale = get_user_locale();
-}
+$locale = MyAgilePrivacy::get_locale();
 
 ?>
 
@@ -29,7 +22,7 @@ else
 
 			$display_iab = false;
 
-			if( defined( 'MAP_IAB_TCF' ) && MAP_IAB_TCF && isset( $rconfig ) && isset( $rconfig['allow_iab'] ) && $rconfig['allow_iab'] == 1 )
+			if( isset( $rconfig ) && isset( $rconfig['allow_iab'] ) && $rconfig['allow_iab'] == 1 )
 			{
 				$display_iab = true;
 			}
@@ -41,9 +34,8 @@ else
 
 				<?php
 
-					if( isset( $the_settings ) &&
-					isset( $the_settings['pa'] ) &&
-					$the_settings['pa'] == 1 )
+					if( isset( $the_settings['pa'] ) &&
+						$the_settings['pa'] == 1 )
 					{
 						echo wp_kses_post( __( 'Feature not available for your license', 'MAP_txt' ) );
 					}
@@ -74,7 +66,7 @@ else
 			</div>
 
 			<div class="row mb-4">
-				<label for="display_ccpa_field" class="col-sm-5 col-form-label">
+				<label for="enable_iab_tcf_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Activate IAB TCF', 'MAP_txt' ) ); ?>
 				</label>
 
@@ -84,7 +76,13 @@ else
 
 							<input type="hidden" name="enable_iab_tcf_field" value="false" id="enable_iab_tcf_field_no" data-preview="iab">
 
-							<input name="enable_iab_tcf_field" type="checkbox" value="true" id="enable_iab_tcf_field" <?php checked( $the_settings['enable_iab_tcf'], true); ?> data-preview="iab">
+							<input
+								name="enable_iab_tcf_field"
+								type="checkbox"
+								value="true"
+								id="enable_iab_tcf_field"
+								<?php checked( $the_settings['enable_iab_tcf'], true ); ?>
+								data-preview="iab">
 
 							<label for="enable_iab_tcf_field" class="me-2 label-checkbox"></label>
 
@@ -117,7 +115,14 @@ else
 
 							<input type="hidden" name="showagain_tab_field" value="false" id="showagain_tab_field_no">
 
-							<input name="showagain_tab_field" type="checkbox" value="true" id="showagain_tab_field" class="hideShowInput" data-hide-show-ref="showagain_tab" <?php checked( $the_settings['showagain_tab'], true); ?>>
+							<input
+								name="showagain_tab_field"
+								type="checkbox"
+								value="true"
+								id="showagain_tab_field"
+								class="hideShowInput"
+								data-hide-show-ref="showagain_tab"
+								<?php checked( $the_settings['showagain_tab'], true ); ?>>
 
 							<label for="showagain_tab_field" class="me-2 label-checkbox"></label>
 
@@ -143,7 +148,11 @@ else
 					</label>
 
 					<div class="col-sm-7">
-						<select id="notify_position_horizontal_field" name="notify_position_horizontal_field" class="form-control">
+
+						<select
+							id="notify_position_horizontal_field"
+							name="notify_position_horizontal_field"
+							class="form-control">
 						<?php
 
 						$valid_options = array(
@@ -172,7 +181,7 @@ else
 							else
 							{
 								?>
-								<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+								<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] );?></option>
 								<?php
 							}
 						}
@@ -195,7 +204,13 @@ else
 					</label>
 
 					<div class="col-sm-7">
-						<input type="text" class="form-control" id="showagain_text" name="" value="<?php echo esc_attr( $the_translations[$selected_lang]['manage_consent']) ?>" readonly />
+
+						<input
+							type="text"
+							class="form-control"
+							id="showagain_text"
+							name=""
+							value="<?php echo esc_attr( $the_translations[$selected_lang]['manage_consent'] ); ?>" readonly />
 
 					</div> <!-- /.col-sm-6 -->
 				</div> <!-- row -->
@@ -209,9 +224,16 @@ else
 					<div class="col-sm-7">
 						<div class="styled_radio d-inline-flex">
 							<div class="round d-flex me-4">
+
 								<input type="hidden" name="cookie_policy_link_field" value="false" id="cookie_policy_link_field_no">
 
-								<input name="cookie_policy_link_field" type="checkbox" value="true" id="cookie_policy_link_field" <?php checked( $the_settings['cookie_policy_link'], true); ?>>
+								<input
+									name="cookie_policy_link_field"
+									type="checkbox"
+									value="true"
+									id="cookie_policy_link_field"
+									<?php checked( $the_settings['cookie_policy_link'], true ); ?>>
+
 								<label for="cookie_policy_link_field" class="me-2 label-checkbox"></label>
 
 								<label for="cookie_policy_link_field">
@@ -235,7 +257,12 @@ else
 
 								<input type="hidden" name="disable_logo_field" value="false" id="disable_logo_field_no">
 
-								<input name="disable_logo_field" type="checkbox" value="true" id="disable_logo_field" <?php checked($the_settings['disable_logo'], true); ?>>
+								<input
+									name="disable_logo_field"
+									type="checkbox"
+									value="true"
+									id="disable_logo_field"
+									<?php checked( $the_settings['disable_logo'], true ); ?>>
 
 								<label for="disable_logo_field" class="me-2 label-checkbox"></label>
 
@@ -274,7 +301,12 @@ else
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 
-							<input class="uncheck_on_send" name="reset_consent" type="checkbox" value="1" id="reset_consent">
+							<input
+								class="uncheck_on_send"
+								name="reset_consent"
+								type="checkbox"
+								value="1"
+								id="reset_consent">
 
 							<label for="reset_consent" class="me-2 label-checkbox"></label>
 

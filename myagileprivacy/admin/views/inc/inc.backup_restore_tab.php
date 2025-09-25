@@ -27,7 +27,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="row mb-5">
 					<div class="col-sm-12">
-					<?php echo wp_kses_post( __( 'Backup and restore your cookie list configuration.', 'MAP_txt' ) ); ?>
+					<?php echo wp_kses_post( __( 'Backup and restore your Cookie list configuration.', 'MAP_txt' ) ); ?>
 					</div>
 				</div>
 
@@ -35,13 +35,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="row mb-3">
 						<div class="col-sm-12">
 							<h4><?php echo wp_kses_post( __( 'STEP 1', 'MAP_txt' ) ); ?></h4>
-							<?php echo wp_kses_post( __( 'Pressing the following button will download your cookie configuration.', 'MAP_txt' ) ); ?>
+							<?php echo wp_kses_post( __( 'Pressing the following button will download your Cookie configuration.', 'MAP_txt' ) ); ?>
 						</div>
 					</div>
 
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="admin-post.php" method="post" id="">
+
 								<input type="hidden" name="action" value="backup_admin_settings_form" id="action" />
 								<input type="hidden" name="do" value="1" />
 
@@ -62,13 +63,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="row mb-3">
 						<div class="col-sm-12">
 							<h4><?php echo wp_kses_post( __( 'STEP 2', 'MAP_txt' ) ); ?></h4>
-							<?php echo wp_kses_post( __( 'Pressing the following button will clean up your cookie configuration. Warning: do export first, and full page reload before importing again.', 'MAP_txt' ) ); ?>
+							<?php echo wp_kses_post( __( 'Pressing the following button will clean up your Cookie configuration. Warning: do export first, and full page reload before importing again.', 'MAP_txt' ) ); ?>
 						</div>
 					</div>
 
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="admin-ajax.php" method="post" id="map_user_settings_form" class="reload_at_afterfinish">
+
 								<input type="hidden" name="action" value="update_admin_settings_form" id="action" />
 								<input type="hidden" name="reset_cookie_settings"  value="1" id="reset_settings">
 
@@ -95,8 +97,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<form action="admin-post.php" method="post" id="" enctype="multipart/form-data">
+
 						<input type="hidden" name="action" value="import_admin_settings_form" id="action" />
 						<input type="hidden" name="do" value="1" />
+
 						<?php
 							if( function_exists( 'wp_nonce_field' ) )
 							{

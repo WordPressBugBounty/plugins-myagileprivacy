@@ -314,7 +314,7 @@ My Agile Privacy Main Css
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a {
-    color: #fff!important;
+    color: #fff;
     text-decoration: none!important;
     line-height: 30px!important;
 }
@@ -464,16 +464,40 @@ My Agile Privacy Main Css
     cursor: pointer;
 }
 
-.map-modal-body .map-modal-cookie-policy-link a{
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a{
+    all: unset;
+    color: #444 !important;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link {
+    width:100%;
+    display: flex;
+    gap:10px;
+}
+
+@media (max-width: 800px) {
+
+    #my-agile-privacy-notification-area .map-modal-cookie-policy-link {
+        flex-direction: column;
+        gap:0px;
+    }
+}
+
+.map-modal-body .map-modal-cookie-policy-link a,
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a{
     font-size: inherit;
 }
 
-.map-modal-body .map-modal-cookie-policy-link a:hover {
+.map-modal-body .map-modal-cookie-policy-link a:hover,
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:hover{
     color: #444;
     text-decoration: underline;
 }
 
-.map-modal-body .map-modal-cookie-policy-link a:focus {
+.map-modal-body .map-modal-cookie-policy-link a:focus,
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:focus{
     outline: 1px solid rgb(33, 37, 41)!important;
     outline-offset: 1px!important;
 }
@@ -1021,6 +1045,10 @@ span.map-necessary-caption {
 	background: #fff9ec;
 	padding: 15px;
 	border: 2px solid #FFE5A7;
+}
+
+.mapShowItem{
+    display: block !important;
 }
 
 #my-agile-privacy-consent-again {

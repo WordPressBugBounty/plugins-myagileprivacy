@@ -28,13 +28,21 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_on'] == true ): ?>
-								<input type="radio" id="is_on_field_yes" name="is_on_field" value="true" checked="checked" />
+								<input
+									type="radio"
+									id="is_on_field_yes"
+									name="is_on_field"
+									value="true" checked="checked" />
 								<label for="is_on_field_yes" class="me-2 label-radio"></label>
 
 								<label for="is_on_field_yes"><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
 
 							<?php else: ?>
-								<input type="radio" id="is_on_field_yes" name="is_on_field" value="true" />
+								<input
+									type="radio"
+									id="is_on_field_yes"
+									name="is_on_field"
+									value="true" />
 								<label for="is_on_field_yes" class="me-2 label-radio"></label>
 
 								<label for="is_on_field_yes"><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
@@ -44,12 +52,21 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<div class="round d-flex">
 							<?php if( $the_settings['is_on'] == false ): ?>
-								<input type="radio" id="is_on_field_no" name="is_on_field" value="false" checked="checked" />
+								<input
+									type="radio"
+									id="is_on_field_no"
+									name="is_on_field"
+									value="false"
+									checked="checked" />
 								<label for="is_on_field_no" class="me-2 label-radio"></label>
 
 								<label for="is_on_field_no"><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
 							<?php else: ?>
-								<input type="radio" id="is_on_field_no" name="is_on_field" value="false" />
+								<input
+									type="radio"
+									id="is_on_field_no"
+									name="is_on_field"
+									value="false" />
 								<label for="is_on_field_no" class="me-2 label-radio"></label>
 
 								<label for="is_on_field_no"><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
@@ -68,33 +85,44 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- NEW banner width -->
 			<div class="row mb-4">
-				<label for="cookie_banner_size_field" class="col-sm-5 col-form-label">
 
-					<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] ){echo 'd-none';} ?>">
-						<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small><br>
-					</span>
+				<label for="cookie_banner_size_field" class="col-sm-5 col-form-label">
 
 					<?php echo wp_kses_post( __( 'Banner Size', 'MAP_txt' ) ); ?>
 				</label>
 
 				<div class="col-sm-7">
-					<select name="cookie_banner_size_field" class="form-control hideShowInput" id="cookie_banner_size_field" data-preview="mapSize" data-hide-show-ref="cookie_banner_size">
-						<option value="sizeWideBranded" <?php selected( $the_settings['cookie_banner_size'], 'sizeWideBranded' ); ?>><?php esc_attr_e('Big and Branded', 'MAP_txt' ); ?></option>
 
-						<?php
-							if( $the_settings['pa'] ) :
-						?>
+					<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] ){echo 'd-none';} ?>">
+						<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small><br>
+					</span>
 
-							<option value="sizeBig" <?php selected( $the_settings['cookie_banner_size'], 'sizeBig' ); ?>><?php esc_attr_e('Big', 'MAP_txt' ); ?></option>
-							<option value="sizeWide" <?php selected( $the_settings['cookie_banner_size'], 'sizeWide' ); ?>><?php esc_attr_e('Wide', 'MAP_txt' ); ?></option>
-							<option value="sizeBoxed" <?php selected( $the_settings['cookie_banner_size'], 'sizeBoxed' ); ?>><?php esc_attr_e('Boxed', 'MAP_txt' ); ?></option>
+					<div class="<?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
+
+						<select
+							name="cookie_banner_size_field"
+							class="form-control hideShowInput"
+							id="cookie_banner_size_field"
+							data-preview="mapSize"
+							data-hide-show-ref="cookie_banner_size">
+							<option value="sizeWideBranded" <?php selected( $the_settings['cookie_banner_size'], 'sizeWideBranded' ); ?>><?php esc_attr_e('Big and Branded', 'MAP_txt' ); ?></option>
+
+							<?php
+								if( isset( $the_settings['pa'] ) && $the_settings['pa'] ) :
+							?>
+
+								<option value="sizeBig" <?php selected( $the_settings['cookie_banner_size'], 'sizeBig' ); ?>><?php esc_attr_e('Big', 'MAP_txt' ); ?></option>
+								<option value="sizeWide" <?php selected( $the_settings['cookie_banner_size'], 'sizeWide' ); ?>><?php esc_attr_e('Wide', 'MAP_txt' ); ?></option>
+								<option value="sizeBoxed" <?php selected( $the_settings['cookie_banner_size'], 'sizeBoxed' ); ?>><?php esc_attr_e('Boxed', 'MAP_txt' ); ?></option>
 
 
-						<?php
-							endif;
-						?>
+							<?php
+								endif;
+							?>
 
-					</select>
+						</select>
+
+					</div>
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -103,12 +131,18 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<?php echo wp_kses_post( __( 'Vertical Banner Position', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
-					<select name="cookie_banner_vertical_position_field" class="form-control" id="cookie_banner_vertical_position_field" data-preview="mapPosition">
+
+					<select
+						name="cookie_banner_vertical_position_field"
+						class="form-control"
+						id="cookie_banner_vertical_position_field"
+						data-preview="mapPosition">
 
 						<option value="Top" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Top' ); ?>><?php esc_attr_e('Top', 'MAP_txt' ); ?></option>
 						<option value="Center" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
 						<option value="Bottom" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Bottom' ); ?>><?php esc_attr_e('Bottom', 'MAP_txt' ); ?></option>
 					</select>
+
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -119,12 +153,18 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<?php echo wp_kses_post( __( 'Horizontal Banner Position', 'MAP_txt' ) ); ?>
 					</label>
 					<div class="col-sm-7">
-						<select name="cookie_banner_horizontal_position_field" class="form-control" id="cookie_banner_horizontal_position_field" data-preview="mapPosition">
+
+						<select
+							name="cookie_banner_horizontal_position_field"
+							class="form-control"
+							id="cookie_banner_horizontal_position_field"
+							data-preview="mapPosition">
 
 							<option value="Center" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
 							<option value="Left" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Left' ); ?>><?php esc_attr_e('Left', 'MAP_txt' ); ?></option>
 							<option value="Right" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Right' ); ?>><?php esc_attr_e('Right', 'MAP_txt' ); ?></option>
 						</select>
+
 					</div> <!-- col-sm-7 -->
 				</div> <!-- row -->
 
@@ -138,10 +178,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 
 				<div class="col-sm-7">
-					<select name="floating_banner_field" class="form-control" id="floating_banner_field" data-preview="floating_banner">
+
+					<select
+						name="floating_banner_field"
+						class="form-control"
+						id="floating_banner_field"
+						data-preview="floating_banner">
 						<option value="0" <?php selected( $the_settings['floating_banner'], 0 ); ?>><?php esc_attr_e('No', 'MAP_txt' ); ?></option>
 						<option value="1" <?php selected( $the_settings['floating_banner'], 1 ); ?>><?php esc_attr_e('Yes', 'MAP_txt' ); ?></option>
 					</select>
+
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
@@ -152,7 +198,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<?php echo wp_kses_post( __( 'Cookie Banner Shadow', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
-					<select name="cookie_banner_shadow_field" class="form-control" id="cookie_banner_shadow_field" data-preview="shadow">
+
+					<select
+						name="cookie_banner_shadow_field"
+						class="form-control"
+						id="cookie_banner_shadow_field"
+						data-preview="shadow">
 						<option value="false" <?php selected( $the_settings['cookie_banner_shadow'], 'false' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
 
 						<option value="map-shadow-soft" <?php selected( $the_settings['cookie_banner_shadow'], 'map-shadow-soft' ); ?>><?php esc_attr_e('Soft', 'MAP_txt' ); ?></option>
@@ -173,7 +224,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="0" max="50" data-preview="border_radius" class="form-control" id="elements_border_radius_field" name="elements_border_radius_field" value="<?php echo esc_attr( stripslashes( $the_settings['elements_border_radius'] ) )  ?>" />
+				<input
+					type="number"
+					min="0"
+					max="50"
+					data-preview="border_radius"
+					class="form-control"
+					id="elements_border_radius_field" name="elements_border_radius_field"
+					value="<?php echo esc_attr( stripslashes( $the_settings['elements_border_radius'] ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -189,11 +247,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<?php echo wp_kses_post( __( 'Banner Animation Effect', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
-				<select name="cookie_banner_animation_field" class="form-control" id="cookie_banner_animation_field">
-					<option value="none" <?php selected( $the_settings['cookie_banner_animation'], 'none' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
-					<option value="slide" <?php selected( $the_settings['cookie_banner_animation'], 'slide' ); ?>><?php esc_attr_e('Slide', 'MAP_txt' ); ?></option>
-					<option value="fade" <?php selected( $the_settings['cookie_banner_animation'], 'fade' ); ?>><?php esc_attr_e('Fade', 'MAP_txt' ); ?></option>
-				</select>
+
+					<select
+						name="cookie_banner_animation_field"
+						class="form-control"
+						id="cookie_banner_animation_field">
+						<option value="none" <?php selected( $the_settings['cookie_banner_animation'], 'none' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
+						<option value="slide" <?php selected( $the_settings['cookie_banner_animation'], 'slide' ); ?>><?php esc_attr_e('Slide', 'MAP_txt' ); ?></option>
+						<option value="fade" <?php selected( $the_settings['cookie_banner_animation'], 'fade' ); ?>><?php esc_attr_e('Fade', 'MAP_txt' ); ?></option>
+					</select>
+
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -207,7 +270,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['title_is_on'] == true ): ?>
-								<input type="radio" id="title_is_on_field_yes" class="hideShowInput" name="title_is_on_field" value="true" checked="checked" data-hide-show-ref="show_banner_title" data-meaning="1" data-preview="bannerTitle" />
+								<input
+									type="radio"
+									id="title_is_on_field_yes"
+									class="hideShowInput"
+									name="title_is_on_field"
+									value="true"
+									checked="checked"
+									data-hide-show-ref="show_banner_title"
+									data-meaning="1"
+									data-preview="bannerTitle" />
 								<label for="title_is_on_field_yes" class="me-2 label-radio"></label>
 
 								<label for="title_is_on_field_yes">
@@ -216,7 +288,15 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 
 							<?php else: ?>
-								<input type="radio" id="title_is_on_field_yes" class="hideShowInput" name="title_is_on_field" value="true" data-hide-show-ref="show_banner_title" data-meaning="1" data-preview="bannerTitle" />
+								<input
+									type="radio"
+									id="title_is_on_field_yes"
+									class="hideShowInput"
+									name="title_is_on_field"
+									value="true"
+									data-hide-show-ref="show_banner_title"
+									data-meaning="1"
+									data-preview="bannerTitle" />
 								<label for="title_is_on_field_yes" class="me-2 label-radio"></label>
 
 								<label for="title_is_on_field_yes">
@@ -229,14 +309,31 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<div class="round d-flex">
 							<?php if( $the_settings['title_is_on'] == false ): ?>
-								<input type="radio" id="title_is_on_field_no" class="hideShowInput" name="title_is_on_field" value="false" checked="checked" data-hide-show-ref="show_banner_title" data-meaning="0" data-preview="bannerTitle" />
+								<input
+									type="radio"
+									id="title_is_on_field_no"
+									class="hideShowInput"
+									name="title_is_on_field"
+									value="false"
+									checked="checked"
+									data-hide-show-ref="show_banner_title"
+									data-meaning="0"
+									data-preview="bannerTitle" />
 								<label for="title_is_on_field_no" class="me-2 label-radio"></label>
 
 								<label for="title_is_on_field_no">
 									<?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?>
 								</label>
 							<?php else: ?>
-								<input type="radio" id="title_is_on_field_no" class="hideShowInput" name="title_is_on_field" value="false" data-hide-show-ref="show_banner_title" data-meaning="0"  data-preview="bannerTitle" />
+								<input
+									type="radio"
+									id="title_is_on_field_no"
+									class="hideShowInput"
+									name="title_is_on_field"
+									value="false"
+									data-hide-show-ref="show_banner_title"
+									data-meaning="0"
+									data-preview="bannerTitle" />
 								<label for="title_is_on_field_no" class="me-2 label-radio"></label>
 
 								<label for="title_is_on_field_no">
@@ -262,7 +359,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 
 				<div class="col-sm-7">
-					<input type="text" data-preview="title_text" class="form-control" id="bar_heading_text_field" name="" value="<?php echo esc_attr( $the_translations[$selected_lang]['banner_title'] ); ?>" readonly />
+					<input
+						type="text"
+						data-preview="title_text"
+						class="form-control"
+						id="bar_heading_text_field"
+						name=""
+						value="<?php echo esc_attr( $the_translations[$selected_lang]['banner_title'] ); ?>" readonly />
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
@@ -295,7 +398,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<?php echo wp_kses_post( __( 'Button order', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
-					<select name="layer_1_button_order_field" class="form-control" id="layer_1_button_order_field">
+
+					<select
+						name="layer_1_button_order_field"
+						class="form-control"
+						id="layer_1_button_order_field">
 
 						<option value="accept_reject_customize" <?php selected( $the_settings['layer_1_button_order'], 'accept_reject_customize' ); ?>>
 
@@ -329,6 +436,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						</option>
 
 					</select>
+
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -343,7 +451,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div class="round d-flex me-4">
 							<input type="hidden" name="with_css_effects_field" value="false" id="with_css_effects_field_no">
 
-							<input name="with_css_effects_field" type="checkbox" value="true" id="with_css_effects_field" <?php checked($the_settings['with_css_effects'], true); ?>>
+							<input
+								name="with_css_effects_field"
+								type="checkbox"
+								value="true"
+								id="with_css_effects_field"
+								<?php checked( $the_settings['with_css_effects'], true ); ?>>
 							<label for="with_css_effects_field" class="me-2 label-checkbox"></label><?php echo wp_kses_post( __( 'Enable shadows and rounding effects', 'MAP_txt' ) ); ?>
 
 						</div>
@@ -358,7 +471,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="4" max="50" class="form-control" id="text_size_field" name="text_size_field" value="<?php echo esc_attr( stripslashes( $the_settings['text_size'] ) ); ?>" />
+				<input
+					type="number"
+					min="4"
+					max="50"
+					class="form-control"
+					id="text_size_field"
+					name="text_size_field"
+					value="<?php echo esc_attr( stripslashes( $the_settings['text_size'] ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -375,7 +495,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 				<div class="col-sm-7">
 				<div class="input-group">
-				<input type="number" min="0" max="100" class="form-control" id="text_lineheight_field" name="text_lineheight_field" value="<?php echo esc_attr( stripslashes( $the_settings['text_lineheight'] ) ); ?>" />
+				<input
+					type="number"
+					min="0"
+					max="100"
+					class="form-control"
+					id="text_lineheight_field"
+					name="text_lineheight_field"
+					value="<?php echo esc_attr( stripslashes( $the_settings['text_lineheight'] ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -392,7 +519,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 
 				<div class="col-sm-7">
-					<select name="color_preset" class="form-control" id="color_preset">
+
+					<select
+						name="color_preset"
+						class="form-control"
+						id="color_preset">
 						<option value="none"><?php esc_attr_e( 'Select a preset', 'MAP_txt' ); ?></option>
 						<option value="light"><?php esc_attr_e( 'Light', 'MAP_txt' ); ?></option>
 						<option value="dark"><?php esc_attr_e( 'Dark', 'MAP_txt' ); ?></option>
@@ -527,26 +658,51 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['show_buttons_icons'] == true ): ?>
-								<input type="radio" id="show_buttons_icons_field_yes" name="show_buttons_icons_field" value="true" checked="checked" data-meaning="1" data-preview="button_icon" />
+
+								<input
+									type="radio"
+									id="show_buttons_icons_field_yes"
+									name="show_buttons_icons_field"
+									value="true"
+									checked="checked"
+									data-meaning="1"
+									data-preview="button_icon" />
 								<label for="show_buttons_icons_field_yes" class="me-2 label-radio"></label>
 
 								<label for="show_buttons_icons_field_yes">
 									<?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?>
 								</label>
+
 							<?php else: ?>
-								<input type="radio" id="show_buttons_icons_field_yes" name="show_buttons_icons_field" value="true" data-meaning="1" data-preview="button_icon" />
+
+								<input
+									type="radio"
+									id="show_buttons_icons_field_yes"
+									name="show_buttons_icons_field"
+									value="true"
+									data-meaning="1"
+									data-preview="button_icon" />
 								<label for="show_buttons_icons_field_yes" class="me-2 label-radio"></label>
 
 								<label for="show_buttons_icons_field_yes">
 									<?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?>
 								</label>
+
 							<?php endif; ?>
 
 						</div>
 
 						<div class="round d-flex">
 							<?php if( $the_settings['show_buttons_icons'] == false ): ?>
-								<input type="radio" id="show_buttons_icons_field_no" name="show_buttons_icons_field" value="false" checked="checked" data-meaning="0" data-preview="button_icon" />
+
+								<input
+									type="radio"
+									id="show_buttons_icons_field_no"
+									name="show_buttons_icons_field"
+									value="false"
+									checked="checked"
+									data-meaning="0" data-preview="button_icon" />
+
 								<label for="show_buttons_icons_field_no" class="me-2 label-radio"></label>
 
 								<label for="show_buttons_icons_field_no">
@@ -554,7 +710,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								</label>
 
 							<?php else: ?>
-								<input type="radio" id="show_buttons_icons_field_no" name="show_buttons_icons_field" value="false" data-meaning="0" data-preview="button_icon" />
+
+								<input
+									type="radio"
+									id="show_buttons_icons_field_no"
+									name="show_buttons_icons_field"
+									value="false" data-meaning="0"
+									data-preview="button_icon" />
+
 								<label for="show_buttons_icons_field_no" class="me-2 label-radio"></label>
 
 								<label for="show_buttons_icons_field_no">
@@ -580,9 +743,15 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<label for="button_accept_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
 								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
-						</label>
+							</label>
 						</div>
-						<input type="text" class="form-control" id="button_accept_text_field" name="" data-preview="accept-text" value="<?php echo esc_attr( $the_translations[$selected_lang]['accept'] ); ?>" readonly />
+						<input
+							type="text"
+							class="form-control"
+							id="button_accept_text_field"
+							name=""
+							data-preview="accept-text"
+							value="<?php echo esc_attr( $the_translations[$selected_lang]['accept'] ); ?>" readonly />
 					</div>
 
 					<div class="col-sm-4 text-center">
@@ -619,7 +788,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
 							</label>
 						</div>
-						<input type="text" class="form-control" id="button_reject_text_field" name="" value="<?php echo esc_attr( $the_translations[$selected_lang]['refuse'] ); ?>" readonly />
+						<input
+							type="text"
+							class="form-control"
+							id="button_reject_text_field"
+							name=""
+							value="<?php echo esc_attr( $the_translations[$selected_lang]['refuse'] ); ?>" readonly />
 					</div>
 
 					<div class="col-sm-4 text-center">
@@ -653,7 +827,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
 							</label>
 						</div>
-						<input type="text" class="form-control" id="button_customize_text_field" name="" value="<?php echo esc_attr( $the_translations[$selected_lang]['customize'] ); ?>" readonly />
+						<input
+							type="text"
+							class="form-control"
+							id="button_customize_text_field"
+							name=""
+							value="<?php echo esc_attr( $the_translations[$selected_lang]['customize'] ); ?>"
+							readonly />
 					</div>
 
 					<div class="col-sm-4 text-center">
@@ -673,6 +853,185 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</div><!-- /.card -->
 
 		</div> <!-- consistent-box -->
+
+
+		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
+			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
+		</span>
+
+		<div class="consistent-box <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
+			<h4 class="mb-4">
+				<i class="fa-regular fa-circle-exclamation"></i>
+				<?php echo wp_kses_post( __( 'Notification bar', 'MAP_txt' ) ); ?>
+			</h4>
+
+			<!-- content blocked notification checkbox -->
+			<div class="row mb-4">
+				<label for="blocked_content_notify_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Enable Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+
+							<input type="hidden" name="blocked_content_notify_field" value="false" id="blocked_content_notify_field_no">
+
+							<input
+								class="hideShowInput"
+								data-hide-show-ref="blocked_content_reladed_options"
+								name="blocked_content_notify_field"
+								type="checkbox"
+								value="true"
+								id="blocked_content_notify_field"
+								<?php checked( $the_settings['blocked_content_notify'], true ); ?>>
+
+							<label for="blocked_content_notify_field" class="me-2 label-checkbox"></label>
+
+							<label for="blocked_content_notify_field">
+								<?php echo wp_kses_post( __( 'Enable Notification Bar', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div>
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+			<!-- notification bar on "no choice" checkbox -->
+			<div class="row mb-4 blocked_content_reladed_options displayNone">
+				<label for="show_ntf_bar_on_not_yet_consent_choice_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+
+							<input type="hidden" name="show_ntf_bar_on_not_yet_consent_choice_field" value="false" id="show_ntf_bar_on_not_yet_consent_choice_field_no">
+
+							<input
+								name="show_ntf_bar_on_not_yet_consent_choice_field"
+								type="checkbox"
+								value="true"
+								id="show_ntf_bar_on_not_yet_consent_choice_field"
+								<?php checked( $the_settings['show_ntf_bar_on_not_yet_consent_choice'], true ); ?>>
+
+							<label for="show_ntf_bar_on_not_yet_consent_choice_field" class="me-2 label-checkbox"></label>
+
+							<label for="show_ntf_bar_on_not_yet_consent_choice_field">
+								<?php echo wp_kses_post( __( 'Show the bar even if there is no consent choice', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Show the Blocked Content Notification Bar even if the user has not yet expressed a consent choice', 'MAP_txt' ) ); ?>
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+			<!-- autoclose notification bar checkbox -->
+			<div class="row mb-4 blocked_content_reladed_options displayNone">
+				<label for="blocked_content_notify_auto_shutdown_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Auto Close Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+
+							<input type="hidden" name="blocked_content_notify_auto_shutdown_field" value="false" id="blocked_content_notify_auto_shutdown_field_no">
+
+							<input
+								name="blocked_content_notify_auto_shutdown_field"
+								type="checkbox"
+								value="true"
+								id="blocked_content_notify_auto_shutdown_field"
+								<?php checked( $the_settings['blocked_content_notify_auto_shutdown'], true ); ?>>
+
+							<label for="blocked_content_notify_auto_shutdown_field" class="me-2 label-checkbox"></label>
+
+
+							<label for="blocked_content_notify_auto_shutdown_field">
+								<?php echo wp_kses_post( __( 'Auto Close Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'This will close automatically the blocked content notification bar after some second', 'MAP_txt' ) ); ?>.
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+			<!-- autoclose notification timinig -->
+			<div class="row mb-4 blocked_content_reladed_options displayNone">
+				<label for="blocked_content_notify_auto_shutdown_time_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Auto Close Timeout', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+
+					<input
+						type="text"
+						class="form-control"
+						id="blocked_content_notify_auto_shutdown_time_field"
+						name="blocked_content_notify_auto_shutdown_time_field"
+						value="<?php echo esc_attr( stripslashes( $the_settings['blocked_content_notify_auto_shutdown_time' ] ) ); ?>" />
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'The value is in milliseconds. (Default value: 3000).', 'MAP_txt' ) ); ?>
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+
+		</div> <!-- consistent-box -->
+
+
+		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
+			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
+		</span>
+
+		<div class="consistent-box <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
+			<h4 class="mb-4">
+				<i class="fa-regular fa-square-t"></i>
+				<?php echo wp_kses_post( __( 'Blocked content widget', 'MAP_txt' ) ); ?>
+			</h4>
+
+			<!-- blocked content widget text color -->
+			<div class="row mb-4">
+				<label for="map_inline_notify_color_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Blocked Content Widget text colour', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<?php
+						echo wp_kses( '<input type="color" id="map_inline_notify_color_field" name="map_inline_notify_color_field" value="' . esc_attr( $the_settings['map_inline_notify_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+					?>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Select the text color of the blocked content inline widget', 'MAP_txt' ) ); ?>.
+					</div>
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+			<!-- blocked content widget background color -->
+			<div class="row mb-4">
+				<label for="map_inline_notify_background_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Blocked Content Widget background colour', 'MAP_txt' ) ); ?>
+				</label>
+				<div class="col-sm-7">
+					<?php
+						echo wp_kses( '<input type="color" id="map_inline_notify_background_field" name="map_inline_notify_background_field" value="' . esc_attr( $the_settings['map_inline_notify_background'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+					?>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Select the background color of the blocked content inline widget', 'MAP_txt' ) ); ?>.
+					</div>
+				</div> <!-- /.col-sm-6 -->
+			</div> <!-- row -->
+
+		</div> <!-- consistent-box -->
+
+
 	</div> <!-- /.col-sm-8 -->
 
 <?php

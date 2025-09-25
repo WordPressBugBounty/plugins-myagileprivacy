@@ -1,7 +1,6 @@
 (function( $ ) {
 	'use strict';
 
-
 	var map_backend_prefix = '[MAP_BACKEND] ';
 
 	$(function() {
@@ -99,13 +98,19 @@
 								{
 									if( $this.is( '.reverseHideShow' ) )
 									{
+										var $alt_ref = $( '.' + hide_show_ref +'_reverse' );
+
 										if( $this.is( ':checked' ) )
 										{
 											$ref.addClass( 'displayNone' );
+
+											if( $alt_ref.length ) $alt_ref.removeClass( 'displayNone' );
 										}
 										else
 										{
 											$ref.removeClass( 'displayNone' );
+
+											if( $alt_ref.length ) $alt_ref.addClass( 'displayNone' );
 										}
 									}
 									else
@@ -556,7 +561,24 @@
 
 						reload_at_afterfinish = true;
 
-						$( '#map_user_settings_form' ).submit( function(e){
+						var isDirty = false;
+
+ 						// Mark the page as "dirty" when the user interacts with fields
+						$my_agile_privacy_backend
+							.on( 'input.unsaved change.unsaved keyup.unsaved keydown.unsaved', 'input, textarea, select', function() {
+								isDirty = true;
+							});
+
+						$( window ).on( 'beforeunload.unsaved', function( e ) {
+							if (!isDirty) return;
+							e.preventDefault();
+							e.returnValue = map_leaveout_text;
+							return map_leaveout_text;
+						});
+
+						$( '#map_user_settings_form' ).submit( function( e ){
+
+							isDirty = false;
 
 							e.preventDefault();
 							var $this = $( this );
@@ -613,7 +635,6 @@
 								}
 							});
 						});
-
 					}
 
 					if( $my_agile_privacy_backend.hasClass( 'translationsWrapper' ) )
@@ -621,6 +642,35 @@
 						init_generic_options = true;
 
 						console.debug( map_backend_prefix + '.translationsWrapper context');
+
+						$( 'span[data-edit]', $my_agile_privacy_backend )
+							.on( 'keydown', function( e ) {
+								const key = e.key || e.originalEvent.key;
+								const code = e.which || e.keyCode;
+
+								if( key === 'Enter' || code === 13 )
+								{
+									e.preventDefault();
+									$( this ).trigger( 'click' );
+								} else if( key === ' ' || code === 32 )
+								{
+									e.preventDefault(); // prevents scroll
+									$( this ).data( 'spacePressed', true );
+								}
+							})
+							.on( 'keyup', function( e ) {
+								const key = e.key || e.originalEvent.key;
+								const code = e.which || e.keyCode;
+
+								if( ( key === ' ' || code === 32 ) && $( this ).data('spacePressed') )
+								{
+									$( this ).removeData( 'spacePressed' );
+									$( this ).trigger( 'click' );
+								}
+							})
+							.on('blur', function() {
+								$( this ).removeData( 'spacePressed' );
+							});
 
 						$('.reset_lang_values').each( function(){
 
@@ -655,7 +705,7 @@
 
 								var $this = $( this );
 
-								console.log( 'Element clicked:', $this.attr('data-edit'));
+								console.debug( map_backend_prefix + 'Element clicked:', $this.attr('data-edit'));
 
 								currentEditField = $this.attr( 'data-edit' );
 								var inputType = $this.attr( 'data-input-type' ) || 'input';
@@ -744,6 +794,476 @@
 								}
 							});
 						});
+					}
+
+					if( $my_agile_privacy_backend.hasClass( 'siteAndPoliciesSettingsWrapper' ) )
+					{
+						console.debug( map_backend_prefix + '.siteAndPoliciesSettingsWrapper context');
+
+						let currentStep = 1;
+						const totalSteps = 6;
+
+						// Read regulation_config (support both local scope and window)
+						let cfg = {};
+
+						try
+						{
+							if( typeof regulation_config !== 'undefined' ) cfg = regulation_config;
+						}
+						catch ( error )
+						{
+							console.error( error );
+						}
+
+						if( !cfg || typeof cfg !== 'object' ) cfg = window.regulation_config || {};
+
+						// Collects baseLocation + selected area keys (checked checkboxes), all lowercase and unique
+						function collectSelectedAreas()
+						{
+							const $w = $my_agile_privacy_backend;
+
+							const baseLocation = (($w.find( '[name="site_and_policy_settings[base_location]"]' ).val() || '') + '')
+							.trim().toLowerCase() || null;
+							const customerLocation = (($w.find( '[name="site_and_policy_settings[customer_location]"]' ).val() || '') + '')
+							.trim().toLowerCase() || null;
+
+							const set = new Set();
+
+							if( baseLocation == 'us' )
+							{
+								cfg?.usa_sub_list.forEach( ( value, index ) => {
+									set.add( value );
+								});
+							}
+							else
+							{
+								// Always include baseLocation if present
+								if( baseLocation ) set.add( baseLocation );
+							}
+
+							// Only collect customer areas when the selector is "select_countries"
+							if( customerLocation === 'select_countries' )
+							{
+								const re = /^site_and_policy_settings\[customer_area_([^\]]+)\]$/;
+								$w.find( ':checkbox[name^="site_and_policy_settings[customer_area_"]' ).each( function()
+									{
+										const $chk = $( this );
+
+										if( $chk.is( ':checked' ) )
+										{
+											const name = $chk.attr( 'name' ) || '';
+											const m = name.match( re );
+											if( m && m[1] ) set.add( String( m[1] ).toLowerCase() );
+										}
+									});
+							}
+
+							return { baseLocation, customerLocation, values: Array.from( set ) };
+						}
+
+						// Hides all .regulation_wrapper and the error message, then shows matching wrappers
+						// If nothing is shown, reveals .regulation_wrapper_error_message
+						function applyRegulationConfig()
+						{
+							const $w = $my_agile_privacy_backend;
+
+							// Hide all wrappers and the error message first
+							$w.find( '.regulation_wrapper, .regulation_wrapper_error_message' ).addClass( 'displayNone' );
+
+							// Collect values and normalize to lowercase
+							const { values } = collectSelectedAreas();
+							const valueSet = new Set( values.map( v => String( v ).toLowerCase() ) );
+
+							//console.log( valueSet );
+
+							const toShowSet = new Set();
+
+							// Match values against each list in regulation_config
+							Object.keys( cfg ).forEach( listKey => {
+
+
+
+								const list = Array.isArray( cfg[listKey] ) ? cfg[listKey] : [];
+								const listLC = list.map( x => String( x ).toLowerCase() );
+
+								//for site_and_policy_settings[customer_area_eu] selection
+								if( listKey == 'gdpr_like_list' )
+								{
+									const hasUEMatch = valueSet.has( 'eu' );
+
+									if( hasUEMatch )
+									{
+										const regulationKey = 'regulation_gdpr_like';
+										toShowSet.add( regulationKey );
+
+										//console.log( listKey );
+										//console.log( regulationKey );
+									}
+								}
+
+								const hasMatch = listLC.some( code => valueSet.has( code ) );
+
+								if( hasMatch )
+								{
+									const regulationKey = 'regulation_' + listKey.replace(/_list$/, '' );
+									toShowSet.add( regulationKey );
+
+									//console.log( listKey );
+									//console.log( regulationKey );
+								}
+
+							});
+
+							// Show all matching wrappers
+							let shownCount = 0;
+
+							//console.log( toShowSet );
+
+							toShowSet.forEach( regKey => {
+
+								const $targets = $w.find( `.regulation_wrapper[data-regulation="${regKey}"]` );
+								if( $targets.length )
+								{
+									$targets.removeClass( 'displayNone' );
+									shownCount += $targets.length;
+								}
+							});
+
+							// If nothing is shown, display the error message
+							if( shownCount === 0 )
+							{
+								$w.find( '.regulation_wrapper_error_message' ).removeClass( 'displayNone' );
+							}
+						}
+
+						// Wizard navigation functions
+						function updateWizardUI()
+						{
+							//console.debug( map_backend_prefix + 'updateWizardUI, currentStep=' + currentStep );
+
+							// Hide all steps
+							$( '.wizard-step', $my_agile_privacy_backend ).removeClass( 'active' );
+
+							// Show current step
+							$( '#step-' + currentStep, $my_agile_privacy_backend ).addClass( 'active' );
+
+							// Update progress bar
+							const progressPercent = ( currentStep / totalSteps ) * 100;
+							$( '#map_policy_assistant_progress-bar' ).css( 'width', progressPercent + '%' );
+
+							// Update hidden input with completion percentage only if it's higher than saved value
+							const currentSavedPercent = parseInt( $( '#policy_completion_percentage' ).val() ) || 0;
+
+							if( currentSavedPercent > 100 )
+							{
+								currentSavedPercent = 100;
+							}
+
+							if( progressPercent > currentSavedPercent )
+							{
+								$( '#policy_completion_percentage' ).val( progressPercent );
+							}
+
+							// Update step indicators
+							$( '.step-indicator', $my_agile_privacy_backend ).removeClass( 'active' );
+							$( '.step-indicator[data-step="' + currentStep + '"]', $my_agile_privacy_backend ).addClass( 'active' );
+
+							// Update navigation buttons
+							if( currentStep === 1 )
+							{
+								$( '.map-wizard-prev-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
+
+								$( '.map-wizard-next-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
+
+								$( '.map-wizard-next-btn-first-step', $my_agile_privacy_backend ).removeClass(' displayNone' );
+							}
+							else
+							{
+								$( '.map-wizard-prev-btn', $my_agile_privacy_backend ).removeClass(' displayNone' );
+
+								$( '.map-wizard-next-btn', $my_agile_privacy_backend ).removeClass(' displayNone' );
+
+								$( '.map-wizard-next-btn-first-step', $my_agile_privacy_backend ).addClass(' displayNone' );
+							}
+
+							if( currentStep === totalSteps )
+							{
+								$( '.map-wizard-next-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
+								$( '.map-wizard-finish-btn', $my_agile_privacy_backend ).removeClass(' displayNone' );
+							}
+							else
+							{
+								$( '.map-wizard-finish-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
+							}
+
+							// Show "Save and Complete" button only if wizard was completed (100%) and not on completion step
+							// Read the actual saved percentage from PHP data, not from the input field
+							const actualSavedPercent = 0;
+
+							// Show button only if actual saved percentage is 100% and not on completion step
+							if( actualSavedPercent >= 100 && currentStep < 6 )
+							{
+								$( '.map-wizard-save-complete-btn', $my_agile_privacy_backend ).removeClass(' displayNone' );
+							}
+							else
+							{
+								$( '.map-wizard-save-complete-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
+							}
+						}
+
+						//validation func
+						function validateCurrentStep()
+						{
+							const currentStepElement = $( '#step-' + currentStep );
+							let isValid = true;
+
+							// Check required fields in current step
+							currentStepElement
+								.find( 'input[required], select[required]' )
+								.each( function() {
+
+								var $elem = $( this );
+
+								if( !$elem.val() )
+								{
+									isValid = false;
+									$elem.addClass( 'is-invalid' );
+								}
+								else
+								{
+									$elem.removeClass( 'is-invalid' );
+								}
+							});
+
+							// Collect all checkboxes with data-checkbox-group
+							var boxes = currentStepElement
+										.find( 'input[type="checkbox"][data-checkbox-group]' )
+										.get();
+
+							// Build the set of present groups
+							var groupsMap = Object.create( null );
+							for( var i = 0; i < boxes.length; i++ )
+							{
+								var g = boxes[i].getAttribute( 'data-checkbox-group' );
+								if (g !== null && g !== '')
+								{
+									//check for wrapper visibility
+									var $this_wrapper = $( '.' + g );
+
+									if( $this_wrapper.length )
+									{
+										if( !$this_wrapper.hasClass( 'displayNone' ) )
+										{
+											groupsMap[g] = true;
+										}
+									}
+									else
+									{
+										groupsMap[g] = true;
+									}
+								}
+							}
+
+							//console.log( groupsMap );
+
+							var keys = Object.keys( groupsMap );
+							for( var k = 0; k < keys.length; k++ )
+							{
+								var val = keys[k];
+
+								var map_group_message_warning = $( '.map_group_message_warning[data-checkbox-group-message="'+ val + '"]');
+
+								if( map_group_message_warning.length )
+								{
+									map_group_message_warning.addClass( 'displayNone' );
+								}
+
+								if( currentStepElement.find( 'input[type="checkbox"][data-checkbox-group="' + val + '"]:checked:not(:disabled)' ).length === 0 )
+								{
+									isValid = false;
+
+									if( map_group_message_warning.length )
+									{
+										map_group_message_warning.removeClass( 'displayNone' );
+									}
+
+									break;
+								}
+							}
+
+							//console.debug( map_backend_prefix + 'isValid for currentStep=' + currentStep + ', status=' + isValid );
+
+							return isValid;
+						}
+
+						//save function
+						function saveStepData( callback )
+						{
+							var $form = $( '#map_policy_assistant_form' );
+
+							$( '#last_update_timestamp' ).val( Math.floor( Date.now() / 1000 ) );
+
+							var data = $form.serialize();
+							var url = $form.attr( 'action' );
+
+							$( '.map_wait' ).fadeIn();
+
+							return $.ajax({
+								url: url,
+								type: 'POST',
+								data: data,
+								success: function( response )
+								{
+									$( '.map_wait' ).fadeOut();
+
+									if( response.success )
+									{
+										map_pupup_notify.success( map_settings_step_saved_text );
+
+										if( callback )
+										{
+											callback();
+										}
+									}
+									else
+									{
+										map_pupup_notify.error( map_settings_error_message_text );
+									}
+								},
+								error: function()
+								{
+									map_pupup_notify.error( map_settings_connection_error );
+								}
+							});
+						}
+
+						$( '#step-2 :input', $my_agile_privacy_backend ).on( 'change keyup', function(){
+
+							//console.debug( map_backend_prefix + 'change' );
+
+							applyRegulationConfig();
+
+						}).first().trigger('change');
+
+						// Next button click
+						$( '.map-wizard-next-btn, .map-wizard-next-btn-first-step', $my_agile_privacy_backend ).on( 'click', function() {
+
+							//console.debug( map_backend_prefix + 'click on next' );
+
+							if( validateCurrentStep() )
+							{
+								if( currentStep == 1 )
+								{
+									currentStep++;
+									updateWizardUI();
+								}
+								else
+								{
+									// Save current step data before proceeding
+									saveStepData().done( function( response )
+									{
+										if( response.success )
+										{
+											if( currentStep < totalSteps )
+											{
+												currentStep++;
+												updateWizardUI();
+
+												$('html, body').animate({
+												    scrollTop: $my_agile_privacy_backend.offset().top
+												  }, 600);
+
+
+											}
+										}
+										else
+										{
+											map_pupup_notify.error( map_settings_connection_error );
+										}
+									}).fail( function() {
+										map_pupup_notify.error( map_settings_error_message_text );
+									});
+								}
+							}
+							else
+							{
+								// Show validation error
+								map_pupup_notify.warning( map_settings_need_validation_text );
+							}
+						});
+
+
+						// Previous button click
+						$( '.map-wizard-prev-btn', $my_agile_privacy_backend ).on( 'click', function() {
+
+							//console.debug( map_backend_prefix + 'click on prev' );
+
+							if( currentStep > 1 )
+							{
+								currentStep--;
+								updateWizardUI();
+
+								$('html, body').animate({
+								    scrollTop: $my_agile_privacy_backend.offset().top
+								  }, 600);
+
+							}
+						});
+
+						// Form submission - Complete Configuration button
+						$( '.map-wizard-finish-btn', $my_agile_privacy_backend ).on( 'click', function( e ) {
+
+							//console.debug( map_backend_prefix + 'click on finish' );
+
+							e.preventDefault();
+
+							if( validateCurrentStep() )
+							{
+								// Save final step data
+								saveStepData().done( function( response )
+								{
+									if( response.success )
+									{
+										// Move to completion step
+										currentStep = 7; // Go to completion step
+										updateWizardUI();
+
+										// Hide navigation buttons on completion step
+										$( '.wizard-navigation', $my_agile_privacy_backend ).hide();
+
+										// Hide progress bar on completion step
+										$( '.wizard-progress', $my_agile_privacy_backend ).hide();
+									}
+									else
+									{
+										map_pupup_notify.error( map_settings_error_message_text );
+									}
+								}).fail( function() {
+									map_pupup_notify.error( map_settings_connection_error );
+								});
+							} else {
+								// Show validation error
+								ap_pupup_notify.error( map_settings_error_message_text );
+							}
+						});
+
+						$( '.map-sensitive-data-toggle', $my_agile_privacy_backend ).on( 'click', function( e ) {
+							e.preventDefault();
+							$( '.map-sensitive-data-examples', $my_agile_privacy_backend ).slideToggle();
+						});
+
+						// Toggle checkbox on policy-card click when data-clickable is true
+						$('.policy-card[data-clickable="true"]', $my_agile_privacy_backend).on('click', function(e) {
+							// Prevent triggering if clicking on checkbox or label
+							if (!$(e.target).is('input[type="checkbox"], label')) {
+								var $checkbox = $(this).find('.card-footer input[type="checkbox"]');
+								if ($checkbox.length && !$checkbox.prop('disabled')) {
+									$checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
+								}
+							}
+						});
+
+						updateWizardUI();
 					}
 
 					if( init_generic_options )
@@ -1022,7 +1542,7 @@
 						var $save_trigger_buttons = $( '.fake-save-button' );
 						if( $save_trigger_buttons.length )
 						{
-							console.debug( map_backend_prefix + '.fake-save-button context');
+							//console.debug( map_backend_prefix + '.fake-save-button context');
 
 							$save_trigger_buttons.on( 'click', function()
 							{
@@ -1034,7 +1554,7 @@
 
 						if( $color_preset_select.length )
 						{
-							console.debug( map_backend_prefix + '#color_preset context');
+							//console.debug( map_backend_prefix + '#color_preset context');
 
 							$color_preset_select.on( 'change', function(){
 								var preset = $color_preset_select.val();
@@ -1270,7 +1790,7 @@
 
 						if( $textarea_code_editor.length )
 						{
-							console.debug( map_backend_prefix + '#color_preset context');
+							//console.debug( map_backend_prefix + '#color_preset context');
 
 							$textarea_code_editor.each(function (){
 								var $this = $(this);
@@ -1352,6 +1872,8 @@
 						return new bootstrap.Tooltip(tooltipTriggerEl)
 					});
 				}
+
+
 			});
 
 			console.debug( map_backend_prefix + 'backend init end.');
@@ -1391,7 +1913,7 @@
 			//add button
 			$( $extrawrapper ).on( 'click', '.map-btn-add', function( e ){
 
-				//console.log( 'click on mapx-btn-add' );
+				//console.debug( map_backend_prefix + 'click on mapx-btn-add' );
 
 				e.preventDefault();
 

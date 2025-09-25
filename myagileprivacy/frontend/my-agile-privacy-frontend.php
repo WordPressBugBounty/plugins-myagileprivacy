@@ -9,7 +9,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
  * The frontend-specific functionality of the plugin.
  *
  * @link       https://www.myagileprivacy.com/
- * @since      1.0.12
  *
  * @package    MyAgilePrivacy
  * @subpackage MyAgilePrivacy/frontend
@@ -30,7 +29,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
@@ -39,7 +37,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
@@ -49,7 +46,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Scan vars
 	 *
-	 * @since    1.0.14
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
@@ -66,7 +62,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.12
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
@@ -116,7 +111,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 * Rewritten func to ignore messy mofile
-	 * @since    1.3.9
 	 * @access   private
 	 */
 	private function my_load_plugin_textdomain( $domain, $deprecated = false, $plugin_rel_path = false )
@@ -162,7 +156,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Function for checking if polylang is enabled
 	 *
-	 * @since    1.3.7
 	 * @access   private
 	 */
 	public function check_if_polylang_enabled()
@@ -176,7 +169,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Function for checking if wpml is enabled
 	 *
-	 * @since    1.3.7
 	 * @access   private
 	 */
 	public function check_if_wpml_enabled()
@@ -186,10 +178,28 @@ class MyAgilePrivacyFrontend {
 		return $currentAndSupportedLanguages['is_wpml_enabled'];
 	}
 
+	//f for setting WPML config
+	public function map_wpml_config_array( $config )
+	{
+		$post_type_array = array(
+			MAP_POST_TYPE_COOKIES,
+			MAP_POST_TYPE_POLICY
+		);
+
+		foreach( $post_type_array as $to_clean_post_type )
+		{
+			$config['post_types'][ $to_clean_post_type ] = array(
+				'translate' => 0,
+			);
+		}
+
+		return $config;
+	}
+
+
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * @since    1.0.12
 	 * @access   private
 	 */
 	private function set_locale()
@@ -226,7 +236,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * cookie accept button shortcode
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function myagileprivacy_cookie_accept_button( $atts )
@@ -267,7 +276,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * cookie reject button shortcode
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function myagileprivacy_cookie_reject_button( $atts )
@@ -307,7 +315,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * cookie customize button shortcode
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function myagileprivacy_cookie_customize_button( $atts )
@@ -347,13 +354,14 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * myagileprivacy_extra_info shortcode
-	 * @since    1.3.12
 	 * @access   public
 	 */
 	public function myagileprivacy_extra_info( $atts )
 	{
 		$the_settings = MyAgilePrivacy::get_settings();
-
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
+		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		//get translations
@@ -431,7 +439,6 @@ class MyAgilePrivacyFrontend {
 		$iab_tcf_context = false;
 
 		if(
-			defined( 'MAP_IAB_TCF' ) && MAP_IAB_TCF &&
 			$rconfig &&
 			isset( $rconfig['allow_iab'] ) &&
 			$rconfig['allow_iab'] == 1 &&
@@ -442,7 +449,7 @@ class MyAgilePrivacyFrontend {
 
 		$show_lpd = false;
 
-		if( isset( $the_settings['display_lpd'] ) && $the_settings['display_lpd'] )
+		if( isset( $templateConfig['map_lpd_text'] ) && $templateConfig['map_lpd_text'] == 1 )
 		{
 			$show_lpd = true;
 		}
@@ -508,11 +515,6 @@ class MyAgilePrivacyFrontend {
 			}
 		}
 
-		if( $show_lpd )
-		{
-			$output_text .= '<br> '.esc_html( $the_translations[ $current_lang ]['lpd_compliance_text'] );
-		}
-
 		if( $iab_tcf_context )
 		{
 			$output_text .= ' '.esc_html( $the_translations[ $current_lang ]['iab_bannertext_1'] ).' '.esc_html( $the_translations[ $current_lang ]['iab_bannertext_2_a'] ).' <a href="#" class="map-triggerGotoIABTCF">'.esc_html( $the_translations[ $current_lang ]['iab_bannertext_2_link'] ).'</a> '.esc_html( $the_translations[ $current_lang ]['iab_bannertext_2_b'] ).'<br><br>'.esc_html( $the_translations[ $current_lang ]['iab_bannertext_3'] ).':<br><span id="map-vendor-stack-description"></span><br>';
@@ -543,13 +545,14 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * fixed_text shortcode
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function myagileprivacy_fixed_text( $atts )
 	{
 		$the_settings = MyAgilePrivacy::get_settings();
-
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
+		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		//get translations
@@ -566,32 +569,35 @@ class MyAgilePrivacyFrontend {
 		$remove_ccpa_text = true;
 		$remove_lpd_text = true;
 
-		if( $the_settings['pa'] == 1 &&
+		if( isset( $the_settings['pa'] ) &&
+			$the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_dpo_edit'] &&
-			isset( $the_settings['display_dpo'] ) && $the_settings['display_dpo'] == 1 &&
-			isset( $the_settings['dpo_email'] ) && $the_settings['dpo_email'] )
+			isset( $templateConfig['map_dpo_text'] ) && $templateConfig['map_dpo_text'] == 1 &&
+			isset( $templateConfig['map_dpo_email'] ) && $templateConfig['map_dpo_email'] )
 		{
 			$remove_dpo_text = false;
 
 			if(
-				( isset( $the_settings['dpo_name'] ) && $the_settings['dpo_name'] ) ||
-				( isset( $the_settings['dpo_address'] ) && $the_settings['dpo_address'] )
+				( isset( $templateConfig['map_dpo_name'] ) && $templateConfig['map_dpo_name'] ) ||
+				( isset( $templateConfig['map_dpo_address'] ) && $templateConfig['map_dpo_address'] )
 			)
 			{
 				$remove_dpo_other_text = false;
 			}
 		}
 
-		if( $the_settings['pa'] == 1 &&
+		if( isset( $the_settings['pa'] ) &&
+			$the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_ccpa_text'] &&
-			isset( $the_settings['display_ccpa'] ) && $the_settings['display_ccpa'] == 1 )
+			isset( $templateConfig['map_ccpa_text'] ) && $templateConfig['map_ccpa_text'] == 1 )
 		{
 			$remove_ccpa_text = false;
 		}
 
-		if( $the_settings['pa'] == 1 &&
+		if( isset( $the_settings['pa'] ) &&
+			$the_settings['pa'] == 1 &&
 			isset( $rconfig ) && $rconfig['allow_lpd_text'] &&
-			isset( $the_settings['display_lpd'] ) && $the_settings['display_lpd'] == 1 )
+			isset( $templateConfig['map_lpd_text'] ) && $templateConfig['map_lpd_text'] == 1 )
 		{
 			$remove_lpd_text = false;
 		}
@@ -687,145 +693,7 @@ class MyAgilePrivacyFrontend {
 					$content = get_post_field( 'post_content', $the_id );
 				}
 
-				if( $text == 'personal_data_policy' )
-				{
-					$map_option1_ack = get_post_meta( $the_id, '_map_option1_ack', true );
-					$map_option1_on = get_post_meta( $the_id, '_map_option1_on', true );
-
-					if( $the_settings['pa'] == 1 )
-					{
-						if( $map_option1_ack == 1 && $map_option1_on == 1 )
-						{
-							//no action
-						}
-						else
-						{
-							$content = preg_replace( '#(<li class="map_marketing_consent">).*?(</li>)#', '' , $content );
-							$content = preg_replace( '#(<p class="map_marketing_consent">).*?(</p>)#', '' , $content );
-						}
-					}
-					else
-					{
-						$content = preg_replace( '#(<li class="map_marketing_consent">).*?(</li>)#', '' , $content );
-						$content = preg_replace( '#(<p class="map_marketing_consent">).*?(</p>)#', '' , $content );
-					}
-				}
-
-				if( $remove_dpo_text )
-				{
-					$content = preg_replace( '#(<p class="map_dpo_text">).*?(</p>)#', '' , $content );
-				}
-				else
-				{
-					$content = str_replace( 'MAP_DPO_MAIL', stripslashes( $the_settings['dpo_email'] ), $content );
-				}
-
-				if( $remove_dpo_other_text )
-				{
-					$content = preg_replace( '#(<p class="map_dpo_other_text">).*?(</p>)#', '' , $content );
-				}
-				else
-				{
-					if( $the_settings['dpo_name'] )
-					{
-						$content = str_replace( 'MAP_DPO_NAME', stripslashes( $the_settings['dpo_name'] ), $content );
-					}
-					else
-					{
-						$content = str_replace( 'MAP_DPO_NAME<br>', '', $content );
-					}
-
-					if( $the_settings['dpo_address'] )
-					{
-						$content = str_replace( 'MAP_DPO_ADDRESS', stripslashes( $the_settings['dpo_address'] ), $content );
-					}
-					else
-					{
-						$content = str_replace( 'MAP_DPO_ADDRESS<br>', '', $content );
-					}
-				}
-
-				if( $remove_ccpa_text )
-				{
-					$content = preg_replace( '#(<p class="map_ccpa_text">).*?(</p>)#', '' , $content );
-				}
-				else
-				{
-					//no action
-				}
-
-				if( $remove_lpd_text )
-				{
-					$content = preg_replace( '#(<p class="map_lpd_text">).*?(</p>)#', '' , $content );
-					$content = preg_replace( '#(<span class="map_lpd_text">).*?(</span>)#', '' , $content );
-				}
-				else
-				{
-					//no action
-				}
-
-
-				//block_the_content_filter mode
-				if(
-					(
-						isset( $rconfig ) &&
-						isset( $rconfig['block_the_content_filter'] ) &&
-						$rconfig['block_the_content_filter'] == 1
-					) ||
-					(
-						$the_settings['scanner_compatibility_mode']
-					) ||
-					(
-						$currentAndSupportedLanguages['is_falang_enabled']
-					)
-				)
-				{
-					//no action
-				}
-				else
-				{
-					//add paragraphs to text
-					$content = apply_filters( 'the_content', $content );
-				}
-
-				$website_name = get_site_url();
-
-				if( isset( $the_settings['website_name'] ) && $the_settings['website_name'] != '' )
-				{
-					$website_name = stripslashes( $the_settings['website_name'] );
-
-					//block_the_content_filter mode
-					if(
-						( isset( $rconfig ) &&
-						isset( $rconfig['block_the_content_filter'] ) &&
-						$rconfig['block_the_content_filter'] == 1 ) ||
-						(
-							$the_settings['scanner_compatibility_mode']
-						)
-					)
-					{
-						//no action
-					}
-					else
-					{
-						//add paragraphs to text
-						$website_name = apply_filters( 'the_content', $website_name );
-					}
-				}
-
-				$content = str_replace( '[website_name]', $website_name, $content );
-				$content = str_replace( '[identity_name]', stripslashes( $the_settings['identity_name'] ), $content );
-				$content = str_replace( '[identity_vat_id]', ( $the_settings['identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.stripslashes( $the_settings['identity_vat_id'] ) : '', $content );
-				$content = str_replace( '[identity_address]', stripslashes( $the_settings['identity_address'] ), $content );
-				$content = str_replace( '[identity_email]', stripslashes( $the_settings['identity_email'] ), $content );
-				$content = str_replace( '[cookie_list]', $cookie_list_html, $content );
-
-				if( $the_settings['wrap_shortcodes'] )
-				{
-					$content = '<div id="myagileprivacy_text_wrapper" class="myagileprivacy_text_wrapper">'.$content.'</div>';
-				}
-
-				$content = '<!--googleoff: all-->'.$content.'<!--googleon: all-->';
+				$content = MyAgilePrivacy::internalMAPCleanupAndCompilePolicy( $content, $the_translations, $current_lang, 'frontend', $cookie_list_html );
 
 				return $content;
 			}
@@ -837,7 +705,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * link shortcode
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function myagileprivacy_link( $atts )
@@ -927,7 +794,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * showconsent shortcode
-	 * @since    1.2.8
 	 * @access   public
 	 */
 	public function myagileprivacy_showconsent( $atts )
@@ -946,7 +812,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * link shortcode
-	 * @since    1.2.8
 	 * @access   public
 	 */
 	public function myagileprivacy_blocked_content_notification( $atts )
@@ -984,7 +849,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * inject html code in the site footer
-	 * @since    1.0.12
 	 * @access   public
 	 */
 	public function inject_html_code()
@@ -1019,10 +883,10 @@ class MyAgilePrivacyFrontend {
 
 			$is_wpml_enabled = $this->check_if_wpml_enabled();
 
-
 			$microsoft_consent_mode_consents = null;
 
-			if( $the_settings['pa'] == 1 &&
+			if( isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1 &&
 				isset( $the_settings['enable_microsoft_cmode'] ) && $the_settings['enable_microsoft_cmode'] )
 			{
 				$microsoft_consent_mode_consents = array();
@@ -1038,7 +902,8 @@ class MyAgilePrivacyFrontend {
 
 			$consent_mode_consents = null;
 
-			if( $the_settings['pa'] == 1 &&
+			if( isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1 &&
 				isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'] &&
 				!( isset( $the_settings['bypass_cmode_enable'] ) && $the_settings['bypass_cmode_enable'] == true )
 			)
@@ -1082,113 +947,17 @@ class MyAgilePrivacyFrontend {
 		}
 	}
 
-
 	/**
-	 * Register the stylesheets for the frontend area.
-	 * @since    1.0.12
+	 * head inject
 	 * @access   public
-	 */
-	public function enqueue_styles()
+	*/
+	public function wp_head_inject()
 	{
-		$the_settings = MyAgilePrivacy::get_settings();
+		$skip = MyAgilePrivacy::check_buffer_skip_conditions( false );
 
-		if( $the_settings['is_on'] == true )
+		if( $skip == 'false' )
 		{
-			$rconfig = MyAgilePrivacy::get_rconfig();
-
-			if( isset( $rconfig ) &&
-				isset( $rconfig['use_css_reset'] ) &&
-				$rconfig['use_css_reset'] == 1 )
-			{
-				wp_enqueue_style( $this->plugin_name.'-reset', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-reset.css', array(), $this->version, 'all' );
-			}
-
-			wp_enqueue_style( $this->plugin_name.'-animate', plugin_dir_url(__FILE__) . 'css/animate.min.css', array(), $this->version, 'all' );
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url(__FILE__) . 'css/my-agile-privacy-frontend.css', array(), $this->version, 'all' );
-
-			if( !function_exists( 'is_plugin_active' ) )
-			{
-				include_once(ABSPATH . 'wp-admin/includes/plugin.php' );
-			}
-
-			if( !is_plugin_active( 'myagilepixel/myagilepixel.php' ) )
-			{
-				wp_enqueue_style( $this->plugin_name.'-notification-bar', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-notification-bar.css', array(), $this->version, 'all' );
-			}
-		}
-	}
-
-	/**
-	 * Register the js for the frontend area.
-	 * @since    1.0.12
-	 * @access   public
-	 */
-	public function enqueue_scripts()
-	{
-		$the_settings = MyAgilePrivacy::get_settings();
-
-		if( $the_settings['is_on'] == true )
-		{
-			$load_type = 'std';
-
-			$rconfig = MyAgilePrivacy::get_rconfig();
-
-			$skip = MyAgilePrivacy::check_buffer_skip_conditions( false );
-
-			//skip banner display on skip rules
-			if( $skip == 'true' )
-			{
-				return;
-			}
-
-			if( $skip == 'true_due_to_post' )
-			{
-				wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . 'js/empty.js', array(), $this->version, false );
-
-				$blocks_to_inject = $this->get_head_script_string( true );
-
-				foreach( $blocks_to_inject['inline'] as $k => $elem )
-				{
-					wp_add_inline_script( $this->plugin_name, $elem );
-				}
-
-				foreach( $blocks_to_inject['enqueue'] as $k => $elem )
-				{
-					wp_enqueue_script( $this->plugin_name.'_enqueue_'.$k, $elem, array( 'jquery' ), $this->version, false );
-				}
-			}
-
-			$js_frontend_filepath = 'js/plain/my-agile-privacy-frontend.js';
-
-			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array( 'jquery' ), $this->version, false );
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array( 'jquery' ), $this->version, false );
-
-			wp_localize_script( $this->plugin_name, 'map_cookiebar_settings', MyAgilePrivacy::get_json_settings() );
-
-			$cookie_process_delayed_mode = false;
-
-			if( $rconfig &&
-				isset( $rconfig['cookie_process_delayed_mode'] ) &&
-				$rconfig['cookie_process_delayed_mode'] == 1
-			)
-			{
-				$cookie_process_delayed_mode = true;
-			}
-
-			wp_localize_script( $this->plugin_name, 'map_ajax',
-				array(
-					'ajax_url' 						=> 	admin_url( 'admin-ajax.php' ),
-					'security' 						=> 	wp_create_nonce( 'map_js_shield_callback' ),
-					'force_js_learning_mode' 		=> 	$rconfig['force_js_learning_mode'],
-					'scanner_compatibility_mode'	=> 	$the_settings['scanner_compatibility_mode'],
-					'cookie_process_delayed_mode'	=> 	intval( $cookie_process_delayed_mode ),
-			) );
-
-			if( $the_settings['scan_mode'] == 'learning_mode' &&
-				$the_settings['scanner_compatibility_mode'] )
-			{
-				$this->internal_save_detected_keys();
-			}
+			echo $this->get_head_script_string( false );
 		}
 	}
 
@@ -1347,28 +1116,211 @@ class MyAgilePrivacyFrontend {
 		}
 	}
 
-	//f for setting WPML config
-	public function map_wpml_config_array( $config )
+	/**
+	 * Register the stylesheets for the frontend area.
+	 * @access   public
+	 */
+	public function enqueue_styles()
 	{
-		$post_type_array = array(
-			MAP_POST_TYPE_COOKIES,
-			MAP_POST_TYPE_POLICY
-		);
+		$the_settings = MyAgilePrivacy::get_settings();
 
-		foreach( $post_type_array as $to_clean_post_type )
+		if( $the_settings['is_on'] == true )
 		{
-			$config['post_types'][ $to_clean_post_type ] = [
-				'translate' => 0,
-			];
+			$rconfig = MyAgilePrivacy::get_rconfig();
+
+			if( isset( $rconfig ) &&
+				isset( $rconfig['use_css_reset'] ) &&
+				$rconfig['use_css_reset'] == 1 )
+			{
+				wp_enqueue_style( $this->plugin_name.'-reset', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-reset.css', array(), $this->version, 'all' );
+			}
+
+			wp_enqueue_style( $this->plugin_name.'-animate', plugin_dir_url(__FILE__) . 'css/animate.min.css', array(), $this->version, 'all' );
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url(__FILE__) . 'css/my-agile-privacy-frontend.css', array(), $this->version, 'all' );
+
+			if( !function_exists( 'is_plugin_active' ) )
+			{
+				include_once(ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+
+			if( !is_plugin_active( 'myagilepixel/myagilepixel.php' ) )
+			{
+				wp_enqueue_style( $this->plugin_name.'-notification-bar', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-notification-bar.css', array(), $this->version, 'all' );
+			}
+		}
+	}
+
+	/**
+	 * Register the js for the frontend area.
+	 * @access   public
+	 */
+	public function enqueue_scripts()
+	{
+		$the_settings = MyAgilePrivacy::get_settings();
+
+		if( $the_settings['is_on'] == true )
+		{
+			$load_type = 'std';
+
+			$rconfig = MyAgilePrivacy::get_rconfig();
+
+			$skip = MyAgilePrivacy::check_buffer_skip_conditions( false );
+
+			//skip banner display on skip rules
+			if( $skip == 'true' )
+			{
+				return;
+			}
+
+			if( $skip == 'true_due_to_post' )
+			{
+				wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . 'js/empty.js', array(), $this->version, false );
+
+				$blocks_to_inject = $this->get_head_script_string( true );
+
+				foreach( $blocks_to_inject['inline'] as $k => $elem )
+				{
+					wp_add_inline_script( $this->plugin_name, $elem );
+				}
+
+				foreach( $blocks_to_inject['enqueue'] as $k => $elem )
+				{
+					wp_enqueue_script( $this->plugin_name.'_enqueue_'.$k, $elem, array( 'jquery' ), $this->version, false );
+				}
+			}
+
+			$js_frontend_filepath = 'js/plain/my-agile-privacy-frontend.js';
+
+			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array( 'jquery' ), $this->version, false );
+
+			wp_localize_script( $this->plugin_name, 'map_cookiebar_settings', MyAgilePrivacy::get_json_settings() );
+
+			$cookie_process_delayed_mode = false;
+
+			if( $rconfig &&
+				isset( $rconfig['cookie_process_delayed_mode'] ) &&
+				$rconfig['cookie_process_delayed_mode'] == 1
+			)
+			{
+				$cookie_process_delayed_mode = true;
+			}
+
+			wp_localize_script( $this->plugin_name, 'map_ajax',
+				array(
+					'ajax_url' 						=> 	admin_url( 'admin-ajax.php' ),
+					'security' 						=> 	wp_create_nonce( 'map_js_shield_callback' ),
+					'force_js_learning_mode' 		=> 	$rconfig['force_js_learning_mode'],
+					'scanner_compatibility_mode'	=> 	$the_settings['scanner_compatibility_mode'],
+					'cookie_process_delayed_mode'	=> 	intval( $cookie_process_delayed_mode ),
+			) );
+
+			if(
+				isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1 &&
+				$the_settings['scan_mode'] == 'learning_mode' &&
+				$the_settings['scanner_compatibility_mode'] )
+			{
+				$this->internal_save_detected_keys();
+			}
+		}
+	}
+
+	/**
+	 * Adds extra attributes to inline <script> tags tied to this plugin's handle.
+	 * Works with inline generated by wp_localize_script (…-js-extra)
+	 * and wp_add_inline_script (…-js-before / …-js-after).
+	 * This works on WP 4.4+
+	 *
+	 */
+	public function add_attrs_to_inline_script( $attributes, $id )
+	{
+		// Determine the inline script ID reliably.
+		$inline_id = '';
+		if ( isset( $attributes['id'] ) && is_string( $attributes['id'] ) )
+		{
+			$inline_id = $attributes['id'];
+		}
+		elseif( is_string( $id ) )
+		{
+			$inline_id = $id;
 		}
 
-		return $config;
+		// Only target inline scripts tied to this handle.
+		// WP uses "{$handle}-js-extra|before|after".
+		$prefix = $this->plugin_name . '-js-';
+		if ( $inline_id === '' || strpos( $inline_id, $prefix ) !== 0 )
+		{
+			return $attributes;
+		}
+
+		// Parse the attributes string constant into an associative array.
+		$extra = $this->parse_attrs_string( MAP_INLINE_SCRIPT_EXTRA_ATTRS );
+
+		// Merge without overwriting existing attributes.
+		foreach ( $extra as $name => $value )
+		{
+			if ( array_key_exists( $name, $attributes ) )
+			{
+				continue;
+			}
+
+			// For inline scripts, use string values even for boolean attributes.
+			$attributes[ $name ] = ( $value === true ) ? '1' : (string) $value;
+		}
+
+		return $attributes;
+	}
+
+
+	/**
+	 * Converts an HTML attributes string into a map [name => value].
+	 * - Attributes without an explicit value are treated as boolean true (e.g., nowprocket).
+	 * - Example input: data-no-minify="1" nowprocket data-cfasync="false"
+	 *
+	 */
+	private function parse_attrs_string( $attr_string )
+	{
+		$result = array();
+
+		// Match name[=value] pairs, supporting quoted and unquoted values.
+		if( preg_match_all( '/([^\s=]+)(?:=("[^"]*"|\'[^\']*\'|[^"\']+))?/', $attr_string, $matches, PREG_SET_ORDER ) ) {
+			foreach( $matches as $m )
+			{
+				$name = strtolower( trim( $m[1] ) );
+				if ( $name === '' )
+				{
+					continue;
+				}
+
+				if ( isset( $m[2] ) && $m[2] !== '' )
+				{
+					$val = trim( $m[2] );
+
+					// Strip surrounding quotes if present.
+					$first = substr( $val, 0, 1 );
+					$last  = substr( $val, -1 );
+					if ( ( $first === '"' && $last === '"' ) || ( $first === "'" && $last === "'" ) )
+					{
+						$val = substr( $val, 1, -1 );
+					}
+
+					$result[ $name ] = $val;
+				}
+				else
+				{
+					// Boolean attribute (no value specified).
+					$result[ $name ] = true;
+				}
+			}
+		}
+
+		return $result;
 	}
 
 
 	/**
 	* function for getting cookie list displayed
-	 * @since    1.0.12
 	 * @access   public
 	*/
 	public function get_cookie_categories_description( $the_post_status='publish' )
@@ -1526,7 +1478,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * Plugin auto update
-	 * @since    1.1.9
 	 * @access   public
 	 */
 	public function auto_update_plugins( $update, $item )
@@ -1568,7 +1519,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * buffer start
-	 * @since    1.0.14
 	 * @access   public
 	*/
 	public function map_buffer_start()
@@ -1591,13 +1541,11 @@ class MyAgilePrivacyFrontend {
 
 			$this->saved_settings = $the_settings;
 
-			$this->scan_mode = $the_settings['scan_mode'];
+			$this->scan_mode = ( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 ) ? $the_settings['scan_mode'] : 'turned_off';
 
 			if( !isset( $this->scan_mode ) || $this->scan_mode == 'turned_off' )
 			{
 				$skip = true;
-
-				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'turned_off' );
 			}
 		}
 
@@ -1830,7 +1778,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * buffer end
-	 * @since    1.0.14
 	 * @access   public
 	*/
 	public function map_buffer_end()
@@ -1843,11 +1790,11 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * get head script string
-	 * @since    1.3.5
 	 * @access   public
 	*/
 	public function get_head_script_string( $block_mode = false )
 	{
+
 		$the_settings = MyAgilePrivacy::get_settings();
 
 		$rconfig = MyAgilePrivacy::get_rconfig();
@@ -1870,7 +1817,6 @@ class MyAgilePrivacyFrontend {
 		$iab_tcf_script_url = null;
 
 		if(
-			defined( 'MAP_IAB_TCF' ) && MAP_IAB_TCF &&
 			$rconfig &&
 			isset( $rconfig['allow_iab'] ) &&
 			$rconfig['allow_iab'] == 1 &&
@@ -2142,7 +2088,8 @@ class MyAgilePrivacyFrontend {
 
 		$head_script = '';
 
-		if( $the_settings['pa'] == 1 )
+		if( isset( $the_settings['pa'] ) &&
+			$the_settings['pa'] == 1 )
 		{
 			if( $enforce_youtube_privacy && !$enforce_youtube_privacy_v2 )
 			{
@@ -2215,12 +2162,15 @@ class MyAgilePrivacyFrontend {
 					{
 						$script_filename = 'cookie-shield.js';
 
-						if( $manifest_assoc &&
-							isset( $manifest_assoc['files'][ $script_filename ] ) &&
-							$manifest_assoc['files'][ $script_filename ]
-						)
+						if( $local_file_exists )
 						{
-							$script_filename = $manifest_assoc['files'][ $script_filename ]['filename'];
+							if( $manifest_assoc &&
+								isset( $manifest_assoc['files'][ $script_filename ] ) &&
+								$manifest_assoc['files'][ $script_filename ]
+							)
+							{
+								$script_filename = $manifest_assoc['files'][ $script_filename ]['filename'];
+							}
 						}
 
 						$the_script = $base_ref.$script_filename;
@@ -2269,12 +2219,15 @@ class MyAgilePrivacyFrontend {
 
 					$script_filename = 'MyAgilePrivacyIabTCF.js';
 
-					if( $manifest_assoc &&
-						isset( $manifest_assoc['files'][ $script_filename ] ) &&
-						$manifest_assoc['files'][ $script_filename ]
-					)
+					if( $local_file_exists )
 					{
-						$script_filename = $manifest_assoc['files'][ $script_filename ]['filename'];
+						if( $manifest_assoc &&
+							isset( $manifest_assoc['files'][ $script_filename ] ) &&
+							$manifest_assoc['files'][ $script_filename ]
+						)
+						{
+							$script_filename = $manifest_assoc['files'][ $script_filename ]['filename'];
+						}
 					}
 
 					$the_script = $base_ref.$script_filename;
@@ -2469,25 +2422,10 @@ class MyAgilePrivacyFrontend {
 		}
 	}
 
-	/**
-	 * head inject
-	 * @since    1.3.2
-	 * @access   public
-	*/
-	public function wp_head_inject()
-	{
-		$skip = MyAgilePrivacy::check_buffer_skip_conditions( false );
-
-		if( $skip == 'false' )
-		{
-			echo $this->get_head_script_string( false );
-		}
-	}
 
 	/**
 	 * Internal functin for detected keys save
 	 *
-	 * @since    1.3.5
 	 */
 	private function internal_save_detected_keys( $key=null )
 	{
@@ -2629,7 +2567,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Save remotely detected keys callback function
 	 *
-	 * @since    1.3.0
 	 */
 	public function map_remote_save_detected_keys_callback()
 	{
@@ -2661,7 +2598,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Missing cookie shield callback function
 	 *
-	 * @since    1.3.0
 	 */
 	public function map_missing_cookie_shield_callback()
 	{
@@ -2678,7 +2614,8 @@ class MyAgilePrivacyFrontend {
 			{
 				$the_settings = MyAgilePrivacy::get_settings();
 
-				if( $the_settings['pa'] == 1 && MAP_SCANNER )
+				if( isset( $the_settings['pa'] ) &&
+					$the_settings['pa'] == 1 )
 				{
 					if( $_POST['detected'] == 0 )
 					{
@@ -2725,7 +2662,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Consent Mode Status Check callback
 	 *
-	 * @since    1.3.0
 	 */
 	public function map_check_consent_mode_status_callback()
 	{
@@ -2777,7 +2713,6 @@ class MyAgilePrivacyFrontend {
 	/**
 	 * Save detected keys callback function
 	 *
-	 * @since    1.3.0
 	 */
 	public function map_save_detected_keys_callback()
 	{
@@ -2794,7 +2729,8 @@ class MyAgilePrivacyFrontend {
 			{
 				$the_settings = MyAgilePrivacy::get_settings();
 
-				if( $the_settings['pa'] == 1 && MAP_SCANNER )
+				if( isset( $the_settings['pa'] ) &&
+					$the_settings['pa'] == 1 )
 				{
 					$success = $this->internal_save_detected_keys();
 				}
@@ -2813,7 +2749,6 @@ class MyAgilePrivacyFrontend {
 
 	/**
 	 * map_callback
-	 * @since    1.0.14
 	 * @access   public
 	*/
 	public function map_callback( $output )

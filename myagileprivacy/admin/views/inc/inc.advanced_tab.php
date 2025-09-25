@@ -29,7 +29,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 							<input type="hidden" name="forced_auto_update_field" value="false" id="forced_auto_update_field_no">
 
-							<input name="forced_auto_update_field" type="checkbox" value="true" id="forced_auto_update_field" <?php checked( $the_settings['forced_auto_update'], true); ?>>
+							<input
+								name="forced_auto_update_field"
+								type="checkbox"
+								value="true"
+								id="forced_auto_update_field"
+								<?php checked( $the_settings['forced_auto_update'], true ); ?>>
 
 							<label for="forced_auto_update_field" class="me-3 label-checkbox"></label>
 
@@ -56,7 +61,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 							<input type="hidden" name="enable_metadata_sync_field" value="false" id="enable_metadata_sync_field_no">
 
-							<input name="enable_metadata_sync_field" type="checkbox" value="true" id="enable_metadata_sync_field" <?php checked( $the_settings['enable_metadata_sync'], true); ?>>
+							<input
+								name="enable_metadata_sync_field"
+								type="checkbox"
+								value="true"
+								id="enable_metadata_sync_field"
+								<?php checked( $the_settings['enable_metadata_sync'], true ); ?>>
 
 							<label for="enable_metadata_sync_field" class="me-3 label-checkbox"></label>
 
@@ -92,7 +102,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="col-sm-7">
 
-					<select id="default_locale_field" name="default_locale_field" class="form-control">
+					<select
+						id="default_locale_field"
+						name="default_locale_field"
+						class="form-control">
 						<?php
 
 							$valid_options = array();
@@ -150,7 +163,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 							<input type="hidden" name="enable_language_fallback_field" value="false" id="enable_language_fallback_field_no">
 
-							<input class="hideShowInput" data-hide-show-ref="language_fallback_locale" name="enable_language_fallback_field" type="checkbox" value="true" id="enable_language_fallback_field" <?php checked( $the_settings['enable_language_fallback'], true); ?>>
+							<input
+								class="hideShowInput"
+								data-hide-show-ref="language_fallback_locale"
+								name="enable_language_fallback_field"
+								type="checkbox"
+								value="true"
+								id="enable_language_fallback_field"
+								<?php checked( $the_settings['enable_language_fallback'], true ); ?>>
 
 							<label for="enable_language_fallback_field" class="me-3 label-checkbox"></label>
 
@@ -176,7 +196,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="col-sm-7">
 
-					<select id="language_fallback_locale_field" name="language_fallback_locale_field" class="form-control">
+					<select
+						id="language_fallback_locale_field"
+						name="language_fallback_locale_field"
+						class="form-control">
 						<?php
 
 							$valid_options = array();
@@ -252,7 +275,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 							<input type="hidden" name="wrap_shortcodes_field" value="false" id="wrap_shortcodes_field_no">
 
-							<input name="wrap_shortcodes_field" type="checkbox" value="true" id="wrap_shortcodes_field" <?php checked($the_settings['wrap_shortcodes'], true); ?>>
+							<input
+								name="wrap_shortcodes_field"
+								type="checkbox"
+								value="true"
+								id="wrap_shortcodes_field"
+								<?php checked( $the_settings['wrap_shortcodes'], true ); ?>>
 
 							<label for="wrap_shortcodes_field" class="me-2 label-checkbox"></label>
 
@@ -281,7 +309,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 
-							<input name="force_sync" class="uncheck_on_send" type="checkbox" value="1" id="force_sync">
+							<input
+								name="force_sync"
+								class="uncheck_on_send"
+								type="checkbox"
+								value="1"
+								id="force_sync">
 
 							<label for="force_sync" class="me-2 label-checkbox"></label>
 
@@ -308,7 +341,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
 
-							<input class="uncheck_on_send" name="reset_settings" type="checkbox" value="1" id="reset_settings">
+							<input
+								class="uncheck_on_send"
+								name="reset_settings"
+								type="checkbox"
+								value="1"
+								id="reset_settings">
 
 							<label for="reset_settings" class="me-2 label-checkbox"></label>
 

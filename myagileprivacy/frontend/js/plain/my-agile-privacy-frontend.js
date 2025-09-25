@@ -6,7 +6,7 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'internal_version' 					: "2.0019",
+	'internal_version' 					: "2.0021",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
 	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
@@ -463,8 +463,8 @@ var MAP =
 	},
 
 
-	//f for updating given consent (Google)
-	updateGoogleConsent: function( key, value, updateStatusCookie = false)
+	//f for updating given consent by key / value (Google)
+	updateGoogleConsentbyKeyValue: function( key, value, updateStatusCookie = false)
 	{
 		//for preserving scope
 		var that = this;
@@ -512,8 +512,54 @@ var MAP =
 		{
 			console.error( error );
 		}
-
 	},
+
+
+	//f for updating given consent by full object (Google)
+	updateGoogleConsentbyObj: function( newConsent, updateStatusCookie = false)
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.cmode_v2 )
+			{
+				if( MAP_SYS?.cmode_v2_implementation_type === 'native' )
+				{
+
+					gtag('consent', 'update', newConsent );
+				}
+
+				if( MAP_SYS?.cmode_v2_implementation_type === 'gtm' )
+				{
+
+					gTagManagerConsentListeners.forEach( ( callback ) => {
+						callback( newConsent );
+					});
+				}
+
+				MAP_SYS.current_gconsent = newConsent;
+
+				if( updateStatusCookie )
+				{
+					that.saveGoogleConsentStatusToCookie( MAP_SYS?.current_gconsent );
+				}
+
+				that.updateLastConsentRecords();
+
+				return true;
+			}
+
+			return false;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
 
 	//from cookie value to object (Microsoft)
 	parseMicrosoftConsentStatus: function( consentStatusValue )
@@ -675,6 +721,95 @@ var MAP =
 		}
 	},
 
+	//init data for Google consent mode
+	setupConsentModeV2 : function()
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupConsentModeV2' );
+
+			if( typeof map_full_config === 'undefined' )
+			{
+				return false;
+			}
+
+			MAP_SYS.cmode_v2 = map_full_config?.enable_cmode_v2;
+			MAP_SYS.cmode_v2_implementation_type = map_full_config?.cmode_v2_implementation_type;
+			MAP_SYS.cmode_v2_forced_off_ga4_advanced = map_full_config?.cmode_v2_forced_off_ga4_advanced;
+			MAP_SYS.cmode_v2_js_on_error = map_full_config?.cmode_v2_js_on_error;
+
+			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'gtm' )
+			{
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
+
+				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
+
+				if( cookieValue )
+				{
+					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = {...this_gconsent};
+				}
+			}
+
+			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'native' )
+			{
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
+
+				//save starting consent
+				MAP_SYS.starting_gconsent = map_full_config?.cmode_v2_default_consent_obj;
+
+				//setting default consent value
+
+				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+
+				//setting initial current_gconsent value (deep copy using spread operator)
+				MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
+
+				try {
+					gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
+				}
+				catch( error )
+				{
+					console.error( error );
+				}
+
+				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
+
+				if( cookieValue )
+				{
+					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = { ...this_gconsent };
+
+					if( JSON.stringify( this_gconsent ) !== JSON.stringify( MAP_SYS.starting_gconsent ) )
+					{
+						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting consent with value=' + cookieValue );
+
+						that.updateGoogleConsentbyObj( this_gconsent, false );
+					}
+				}
+				else
+				{
+					that.saveGoogleConsentStatusToCookie( MAP_SYS.current_gconsent );
+				}
+
+			}
+
+			return true;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+
 	//init data for Microsoft consent mode
 	setupMicrosoftConsentMode: function()
 	{
@@ -751,94 +886,6 @@ var MAP =
 					}
 
 					that.saveMicrosoftConsentStatusToCookie( MAP_SYS.current_mconsent );
-				}
-			}
-
-			return true;
-
-		}
-		catch( error )
-		{
-			console.error( error );
-		}
-	},
-
-	//init data for Google consent mode
-	setupConsentModeV2 : function()
-	{
-		//for preserving scope
-		var that = this;
-
-		try {
-
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupConsentModeV2' );
-
-			if( typeof map_full_config === 'undefined' )
-			{
-				return false;
-			}
-
-			MAP_SYS.cmode_v2 = map_full_config?.enable_cmode_v2;
-			MAP_SYS.cmode_v2_implementation_type = map_full_config?.cmode_v2_implementation_type;
-			MAP_SYS.cmode_v2_forced_off_ga4_advanced = map_full_config?.cmode_v2_forced_off_ga4_advanced;
-			MAP_SYS.cmode_v2_js_on_error = map_full_config?.cmode_v2_js_on_error;
-
-			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'gtm' )
-			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
-
-				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
-
-				if( cookieValue )
-				{
-					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
-					//setting initial current_gconsent value (deep copy using spread operator)
-					MAP_SYS.current_gconsent = {...this_gconsent};
-				}
-			}
-
-			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'native' )
-			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
-
-				//save starting consent
-				MAP_SYS.starting_gconsent = map_full_config?.cmode_v2_default_consent_obj;
-
-				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
-
-				if( cookieValue )
-				{
-					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
-
-					//setting initial current_gconsent value (deep copy using spread operator)
-					MAP_SYS.current_gconsent = { ...this_gconsent };
-
-					try {
-						gtag( 'consent', 'default', { ...MAP_SYS.current_gconsent } );
-					}
-					catch( error )
-					{
-						console.error( error );
-					}
-				}
-				else
-				{
-					//no cookie value case
-
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
-
-					//setting initial current_gconsent value (deep copy using spread operator)
-					MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
-
-					try {
-						gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
-					}
-					catch( error )
-					{
-						console.error( error );
-					}
-
-					that.saveGoogleConsentStatusToCookie( MAP_SYS.current_gconsent );
 				}
 			}
 
@@ -1303,6 +1350,7 @@ var MAP =
 					if( $custom_ref )
 					{
 						$custom_ref.style.display = 'block';
+						$custom_ref.classList.add( 'mapShowItem' );
 					}
 				});
 			}
@@ -1319,6 +1367,7 @@ var MAP =
 					if( customRef )
 					{
 						customRef.style.display = 'block';
+						customRef.classList.add( 'mapShowItem' );
 					}
 				});
 
@@ -1759,7 +1808,7 @@ var MAP =
 
 					if( elem.classList.contains( 'map-consent-google' ) )
 					{
-						that.updateGoogleConsent( consent_key, 'granted', true );
+						that.updateGoogleConsentbyKeyValue( consent_key, 'granted', true );
 					}
 
 				});
@@ -1830,7 +1879,7 @@ var MAP =
 
 						if( elem.classList.contains( 'map-consent-google' ) )
 						{
-							that.updateGoogleConsent( consent_key, 'denied', true );
+							that.updateGoogleConsentbyKeyValue( consent_key, 'denied', true );
 						}
 
 					});
@@ -3410,7 +3459,7 @@ var MAP =
 							if( elem.classList.contains( 'map-consent-google' ) )
 							{
 								consentVendor = '(Google)';
-								that.updateGoogleConsent( consent_key, 'granted', true );
+								that.updateGoogleConsentbyKeyValue( consent_key, 'granted', true );
 							}
 
 							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
@@ -3431,7 +3480,7 @@ var MAP =
 							if( elem.classList.contains( 'map-consent-google' ) )
 							{
 								consentVendor = '(Google)';
-								that.updateGoogleConsent( consent_key, 'denied', true );
+								that.updateGoogleConsentbyKeyValue( consent_key, 'denied', true );
 							}
 
 							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key} ${consentVendor}` );
@@ -4622,6 +4671,22 @@ function map_trigger_custom_patch_3()
 		octorate.octobook.Widget.show();
 	} catch ( e ) {
 		setTimeout( map_trigger_custom_patch_3, 100 );
+		console.debug( e );
+	}
+}
+
+//paypal
+function map_trigger_custom_patch_4()
+{
+	try {
+		setInterval(function() {
+			document.querySelectorAll( '.blockUI.blockOverlay' ).forEach(function( el ) {
+				el.remove();
+			});
+		}, 500);
+
+	} catch ( e ) {
+		setTimeout( map_trigger_custom_patch_4, 100 );
 		console.debug( e );
 	}
 }

@@ -8,8 +8,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 $first_class = '';
 $second_class = 'd-none';
 
-if( isset( $the_settings ) &&
-	isset( $the_settings['pa'] ) &&
+if( isset( $the_settings['pa'] ) &&
 	$the_settings['pa'] == 1
 )
 {
@@ -19,7 +18,7 @@ if( isset( $the_settings ) &&
 
 ?>
 
-<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( $the_settings['pa'] ){echo 'd-none';} ?>">
+<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] ){echo 'd-none';} ?>">
 	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
 
@@ -57,8 +56,14 @@ if( isset( $the_settings ) &&
 
 						<input type="hidden" name="enable_microsoft_cmode_field" value="false" id="enable_microsoft_cmode_field_no">
 
-						<input name="enable_microsoft_cmode_field" type="checkbox" value="true" id="enable_microsoft_cmode_field"
-							class="hideShowInput" data-hide-show-ref="enable_microsoft_cmode_options" <?php checked($the_settings['enable_microsoft_cmode'], true); ?>>
+						<input
+							name="enable_microsoft_cmode_field"
+							type="checkbox"
+							value="true"
+							id="enable_microsoft_cmode_field"
+							class="hideShowInput"
+							data-hide-show-ref="enable_microsoft_cmode_options"
+							<?php checked( $the_settings['enable_microsoft_cmode'], true ); ?>>
 
 						<label for="enable_microsoft_cmode_field" class="me-2 label-checkbox"></label>
 						<?php
@@ -94,7 +99,10 @@ if( isset( $the_settings ) &&
 
 				<div class="col-sm-7">
 
-					<select id="microsoft_consent_ad_storage_field" name="microsoft_consent_ad_storage_field" class="form-control" style="max-width:100%;">
+					<select
+						id="microsoft_consent_ad_storage_field"
+						name="microsoft_consent_ad_storage_field"
+						class="form-control" style="max-width:100%;">
 						<?php
 
 						$valid_options = array(
@@ -122,7 +130,7 @@ if( isset( $the_settings ) &&
 							else
 							{
 								?>
-								<option value="<?php echo esc_attr($key)?>"><?php echo esc_attr($data['label'])?></option>
+								<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] );?></option>
 								<?php
 							}
 						}
