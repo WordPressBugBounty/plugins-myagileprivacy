@@ -5,7 +5,7 @@
  * Plugin Name:       MyAgilePrivacy
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       The only WP Privacy Solution you can truly trust — compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, and 14 other regulations.
- * Version:           3.2.0
+ * Version:           3.2.1
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
@@ -16,7 +16,7 @@
  * Domain Path:       /lang
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.2.0' );
+define( 'MAP_PLUGIN_VERSION', '3.2.1' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_PLUGIN_FILENAME', __FILE__ );

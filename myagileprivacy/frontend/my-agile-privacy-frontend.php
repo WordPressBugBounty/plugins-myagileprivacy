@@ -2258,6 +2258,17 @@ class MyAgilePrivacyFrontend {
 			}
 		}
 
+		$early_gcmode = true;
+
+		//js_shield_test_mode mode
+		if( isset( $rconfig ) &&
+			isset( $rconfig['disable_early_gcmode'] ) &&
+			$rconfig['disable_early_gcmode'] == 1 )
+		{
+			$early_gcmode = false;
+		}
+
+
 		$map_full_config = array(
 			'config_origin'												=>	'myagileprivacy_native',
 			'mapx_ga4' 													=> 	$mapx_ga4,
@@ -2291,6 +2302,7 @@ class MyAgilePrivacyFrontend {
 			'cmode_v2_default_consent_obj'								=> 	null,
 			'cmode_v2_js_on_error'										=>	null,
 			'shield_added_pattern'										=>	$shield_added_pattern,
+			'early_gcmode'												=>	$early_gcmode,
 		);
 
 
@@ -2386,15 +2398,20 @@ class MyAgilePrivacyFrontend {
 					}
 				}
 
-				$base_config_script .= 'window.dataLayer = window.dataLayer || [];'.PHP_EOL;
-				$base_config_script .= 'function gtag(){dataLayer.push(arguments);}'.PHP_EOL;
-
-				$base_config_script .= "gtag('set', 'developer_id.dY2ZhMm', true);".PHP_EOL;
-
-				if( $map_full_config['enable_cmode_url_passthrough'] )
+				//early_gcmode
+				if( !$map_full_config['early_gcmode'] )
 				{
-					$base_config_script .= "gtag('set', 'url_passthrough', true);".PHP_EOL;
+					$base_config_script .= 'window.dataLayer = window.dataLayer || [];'.PHP_EOL;
+					$base_config_script .= 'function gtag(){dataLayer.push(arguments);}'.PHP_EOL;
+
+					$base_config_script .= "gtag('set', 'developer_id.dY2ZhMm', true);".PHP_EOL;
+
+					if( $map_full_config['enable_cmode_url_passthrough'] )
+					{
+						$base_config_script .= "gtag('set', 'url_passthrough', true);".PHP_EOL;
+					}
 				}
+
 			}
 
 			if( $map_full_config['cmode_v2_implementation_type'] == 'gtm' )

@@ -1,10 +1,10 @@
 === The only WP Privacy Solution you can truly trust — compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, and 14 other regulations. ===
 Contributors: FormulaAgile
-Donate link: https://www.myagileprivacy.com/
+Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, privacy cookie banner, Consent Mode v2
 Requires at least: 4.4.0
 Tested up to: 6.8
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -17,26 +17,26 @@ Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 1
 **My Agile Privacy** is the solution for managing **compliance with privacy regulations**—compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, and VCDPA.
 It supports **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek**. This plugin is one of the **best WordPress plugins for cookie and personal data compliance**, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
-[youtube https://youtu.be/2lphC4YTUfM]
+[youtube https://youtu.be/l7960ISPTBw]
 
 == Key Features ==
 - ⭐ Easy to use
 
 - 🚀 Highly customizable
 
-- ⭐ Options to accept, reject and revisit consent
+- ⚡️ Options to accept, reject and revisit consent
 
-- ⚡️ Granular user consent
+- ⭐ Granular user consent
 
-- ⭐ Cookie consent and personal data consent management
+- 🚀 Cookie consent and personal data consent management
 
-- 🇺🇸 Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, VCDPA
+- ⚡️ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, VCDPA
 
 - ⭐ IAB TCF 2.2 support
 
-- ⭐ Google Consent Mode v2 and Microsoft UET Consent Mode support
+- 🚀 Google Consent Mode v2 and Microsoft UET Consent Mode support
 
-- ⭐ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
+- ⚡️ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
 
 == Frequently Asked Questions ==
 
@@ -79,8 +79,9 @@ Our services are currently available in the following languages:
 Our support **—provided exclusively by humans, not chatbots or AI—** can be reached [here](https://www.myagileprivacy.com/en/contact-us/).
 
 **Other links:**
-* [Facebook Reviews](https://www.facebook.com/MyAgilePrivacy/reviews)
+* [Official Website](https://www.myagileprivacy.com/en/)
 * [Trustpilot Reviews](https://trustpilot.com/review/myagileprivacy.com)
+* [Facebook Reviews](https://www.facebook.com/MyAgilePrivacy/reviews)
 
 == Installation ==
 
@@ -98,6 +99,9 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.2.1
+* Minor bugfix
 
 = 3.2.0
 * Added support for more regulation

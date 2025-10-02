@@ -203,8 +203,7 @@ class MyAgilePrivacyRegulationHelper {
 	{
 		$regulation_config = array();
 
-		$to_add_keys = array(
-		);
+		$to_add_keys = array();
 
 		foreach( self::$available_regulations as $item )
 		{
@@ -245,7 +244,8 @@ class MyAgilePrivacyRegulationHelper {
 
 		if( isset( self::$site_and_policy_settings['base_location'] ) )
 		{
-			if( self::$site_and_policy_settings['base_location'] == 'us' )
+			if( isset( self::$site_and_policy_settings['base_location'] ) &&
+				self::$site_and_policy_settings['base_location'] == 'us' )
 			{
 				foreach( self::$available_countries['usa_sub_list'] as $usa_item )
 				{
@@ -378,17 +378,75 @@ class MyAgilePrivacyRegulationHelper {
 
 		$pa = ( isset( self::$the_settings['pa'] ) && self::$the_settings['pa'] == 1 );
 
-		$map_dpo_text = ( $pa && self::$site_and_policy_settings['display_dpo'] == 1 ) ? true : false;
+		$map_dpo_text = ( $pa &&
+							isset( self::$site_and_policy_settings['display_dpo'] ) &&
+							self::$site_and_policy_settings['display_dpo'] == 1
+						) ? true : false;
 
 		$map_dpo_text_unset = ( !$map_dpo_text ) ? true : false;
 
+		$identity_name = (
+							isset( self::$site_and_policy_settings['identity_name'] ) &&
+							self::$site_and_policy_settings['identity_name']
+						) ? self::$site_and_policy_settings['identity_name'] : null;
+
+		$identity_address = (
+							isset( self::$site_and_policy_settings['identity_address'] ) &&
+							self::$site_and_policy_settings['identity_address']
+						) ? self::$site_and_policy_settings['identity_address'] : null;
+
+		$identity_vat_id = (
+							isset( self::$site_and_policy_settings['identity_vat_id'] ) &&
+							self::$site_and_policy_settings['identity_vat_id']
+						) ? self::$site_and_policy_settings['identity_vat_id'] : null;
+
+		$identity_email = (
+							isset( self::$site_and_policy_settings['identity_email'] ) &&
+							self::$site_and_policy_settings['identity_email']
+						) ? self::$site_and_policy_settings['identity_email'] : null;
+
+		$identity_name = (
+							isset( self::$site_and_policy_settings['identity_name'] ) &&
+							self::$site_and_policy_settings['identity_name']
+						) ? self::$site_and_policy_settings['identity_name'] : null;
+
+
+		$dpo_email = (
+							$map_dpo_text &&
+							isset( self::$site_and_policy_settings['dpo_email'] ) &&
+							self::$site_and_policy_settings['dpo_email']
+						) ? self::$site_and_policy_settings['dpo_email'] : null;
+
+		$dpo_name = (
+							$map_dpo_text &&
+							isset( self::$site_and_policy_settings['dpo_name'] ) &&
+							self::$site_and_policy_settings['dpo_name']
+						) ? self::$site_and_policy_settings['dpo_name'] : null;
+
+		$dpo_address = (
+							$map_dpo_text &&
+							isset( self::$site_and_policy_settings['dpo_address'] ) &&
+							self::$site_and_policy_settings['dpo_address']
+						) ? self::$site_and_policy_settings['dpo_address'] : null;
+
+
 		$map_gdpr_text = ( in_array( 'gdpr', $selected_regulations ) ) ? true : false;
+
+
+		//fallback
+		if(
+			!$map_gdpr_text &&
+			isset( self::$site_and_policy_settings['completion_percentage'] ) &&
+			intval( self::$site_and_policy_settings['completion_percentage'] ) < 80
+		)
+		{
+			$map_gdpr_text = true;
+		}
+
 		$map_gdpr_gb_text = ( $pa && in_array( 'gdpr_gb', $selected_regulations ) ) ? true : false;
 		$map_lpd_text = ( $pa && in_array( 'lpd', $selected_regulations ) ) ? true : false;
 		$map_pipeda_text = ( $pa && in_array( 'pipeda', $selected_regulations ) ) ? true : false;
 		$map_lgpd_text = ( $pa && in_array( 'lgpd', $selected_regulations ) ) ? true : false;
-
-
 		$map_ccpa_text = ( $pa && in_array( 'ccpa', $selected_regulations ) ) ? true : false;
 		$map_cpa_text = ( $pa && in_array( 'cpa', $selected_regulations ) ) ? true : false;
 		$map_ctdpa_text = ( $pa && in_array( 'ctdpa', $selected_regulations ) ) ? true : false;
@@ -450,21 +508,71 @@ class MyAgilePrivacyRegulationHelper {
 			$map_any_usa_like_text = true;
 		}
 
-        $map_using_contact_forms = self::$site_and_policy_settings['site_features_contact_forms'];
-        $map_accepting_payments = ( $pa && self::$site_and_policy_settings['site_features_payments'] );
-        $map_account_reg = ( $pa && self::$site_and_policy_settings['site_features_account_reg'] );
-        $map_using_newsletter = ( $pa && self::$site_and_policy_settings['site_features_newsletter'] );
-        $map_show_marketing_data_retention = ( $map_using_newsletter && self::$site_and_policy_settings['site_features_show_marketing_data_retention'] );
-        $map_accepting_reviews = ( $pa && self::$site_and_policy_settings['site_features_reviews_collect'] );
-        $map_using_minors_data = ( $pa && self::$site_and_policy_settings['site_features_minors_data'] );
-        $map_using_minors_data_off = ( !self::$site_and_policy_settings['site_features_minors_data'] ) ? true : false;
-        $map_sensitive_data = ( $pa && self::$site_and_policy_settings['site_features_sensitive_data'] );
+        $map_using_contact_forms = (
+        								isset( self::$site_and_policy_settings['site_features_contact_forms'] ) &&
+        								self::$site_and_policy_settings['site_features_contact_forms']
+        							);
+        $map_accepting_payments = (
+        							$pa &&
+        							isset( self::$site_and_policy_settings['site_features_payments'] ) &&
+        							self::$site_and_policy_settings['site_features_payments']
+        						);
+        $map_account_reg = (
+        						$pa &&
+        						isset( self::$site_and_policy_settings['site_features_account_reg'] ) &&
+        						self::$site_and_policy_settings['site_features_account_reg']
+        					);
+        $map_using_newsletter = (
+        							$pa &&
+        							isset( self::$site_and_policy_settings['site_features_newsletter'] ) &&
+        							self::$site_and_policy_settings['site_features_newsletter']
+        						);
+        $map_show_marketing_data_retention = (
+        										$map_using_newsletter &&
+        										isset( self::$site_and_policy_settings['site_features_show_marketing_data_retention'] ) &&
+        										self::$site_and_policy_settings['site_features_show_marketing_data_retention']
+        									);
+        $map_accepting_reviews = (
+        							$pa &&
+        							isset( self::$site_and_policy_settings['site_features_reviews_collect'] ) &&
+        							self::$site_and_policy_settings['site_features_reviews_collect']
+        						);
+        $map_using_minors_data = (
+        							$pa &&
+        							isset( self::$site_and_policy_settings['site_features_minors_data'] ) &&
+        							self::$site_and_policy_settings['site_features_minors_data']
+        						);
+        $map_using_minors_data_off = ( !$map_using_minors_data ) ? true : false;
+        $map_sensitive_data = (
+        						$pa &&
+        						isset( self::$site_and_policy_settings['site_features_sensitive_data'] ) &&
+        						self::$site_and_policy_settings['site_features_sensitive_data']
+        					);
 
-		$map_https = self::$site_and_policy_settings['protection_system_https'];
-		$map_log_control = ( $pa && self::$site_and_policy_settings['protection_system_log_control'] );
-		$map_backup = ( $pa && self::$site_and_policy_settings['protection_system_backup'] );
-		$map_audit = ( $pa && self::$site_and_policy_settings['protection_system_audit'] );
-		$map_system_access_limited = ( $pa && self::$site_and_policy_settings['protection_system_access_limited'] );
+		$map_https = (
+						isset( self::$site_and_policy_settings['protection_system_https'] ) &&
+						self::$site_and_policy_settings['protection_system_https']
+					);
+		$map_log_control = (
+								$pa &&
+								isset( self::$site_and_policy_settings['protection_system_log_control'] ) &&
+								self::$site_and_policy_settings['protection_system_log_control']
+							);
+		$map_backup = (
+						$pa &&
+						isset( self::$site_and_policy_settings['protection_system_backup'] ) &&
+						self::$site_and_policy_settings['protection_system_backup']
+					);
+		$map_audit = (
+						$pa &&
+						isset( self::$site_and_policy_settings['protection_system_audit'] ) &&
+						self::$site_and_policy_settings['protection_system_audit']
+					);
+		$map_system_access_limited = (
+										$pa &&
+										isset( self::$site_and_policy_settings['protection_system_access_limited'] ) &&
+										self::$site_and_policy_settings['protection_system_access_limited']
+									);
 
 		$map_any_security_measure = false;
 
@@ -483,7 +591,10 @@ class MyAgilePrivacyRegulationHelper {
 		$map_transferring_data_to_other_unapproved_countries_list = "";
 		$map_transferring_data_to_other_unapproved_countries_array = array();
 
-		if( $pa && self::$site_and_policy_settings['outside_adequate_suppliers'] )
+		if( $pa &&
+			isset( self::$site_and_policy_settings['outside_adequate_suppliers'] ) &&
+			self::$site_and_policy_settings['outside_adequate_suppliers']
+		)
 		{
 			foreach( self::$available_countries['not_adequate'] as $k => $v )
 			{
@@ -557,39 +668,41 @@ class MyAgilePrivacyRegulationHelper {
 
 		$config = array(
 
-			'shortcode_identity_name'				=>	self::$site_and_policy_settings['identity_name'],
-			'shortcode_identity_address'			=>	self::$site_and_policy_settings['identity_address'],
-			'shortcode_identity_vat_id'				=>	self::$site_and_policy_settings['identity_vat_id'],
-			'shortcode_identity_email'				=>	self::$site_and_policy_settings['identity_email'],
+			'shortcode_identity_name'				=>	$identity_name,
+			'shortcode_identity_address'			=>	$identity_address,
+			'shortcode_identity_vat_id'				=>	$identity_vat_id,
+			'shortcode_identity_email'				=>	$identity_email,
 
-			'map_identity_name'						=>	self::$site_and_policy_settings['identity_name'],
-			'map_identity_address'					=>	self::$site_and_policy_settings['identity_address'],
-			'map_identity_vat_id'					=>	self::$site_and_policy_settings['identity_vat_id'],
-			'map_identity_email'					=>	self::$site_and_policy_settings['identity_email'],
+			'map_identity_name'						=>	$identity_name,
+			'map_identity_address'					=>	$identity_address,
+			'map_identity_vat_id'					=>	$identity_vat_id,
+			'map_identity_email'					=>	$identity_email,
 
 
 			'map_dpo_text'							=>	$map_dpo_text,
 			'map_dpo_text_unset'					=>	$map_dpo_text_unset,
 
-			'shortcode_dpo_email'					=>	( $map_dpo_text )
-														? self::$site_and_policy_settings['dpo_email']
-														: null,
-			'shortcode_dpo_name'					=>	( $map_dpo_text )
-														? self::$site_and_policy_settings['dpo_name']
-														: null,
-			'shortcode_dpo_address'					=>	( $map_dpo_text )
-														? self::$site_and_policy_settings['dpo_address']
-														: null,
+			'shortcode_dpo_email'					=>	$dpo_email,
+			'shortcode_dpo_name'					=>	$dpo_name,
+			'shortcode_dpo_address'					=>	$dpo_address,
+			'map_dpo_email'							=>	(
+															$dpo_email
+														) ? true : false,
+			'map_dpo_name'							=>	(
+															$dpo_name
+														) ? true : false,
+			'map_dpo_address'						=>	(
+															$dpo_address
+														) ? true : false,
 
-			'map_dpo_email'							=>	( $map_dpo_text && self::$site_and_policy_settings['dpo_email'] ) ? true : false,
-			'map_dpo_name'							=>	( $map_dpo_text && self::$site_and_policy_settings['dpo_name'] ) ? true : false,
-			'map_dpo_address'						=>	( $map_dpo_text && self::$site_and_policy_settings['dpo_address'] ) ? true : false,
 
-
-			'map_dpo_other_text'					=>	( $map_dpo_text && ( self::$site_and_policy_settings['dpo_email'] ||
-																			self::$site_and_policy_settings['dpo_name'] ||
-																			self::$site_and_policy_settings['dpo_address']
-																			) ) ? true : false,
+			'map_dpo_other_text'					=>	( $map_dpo_text &&
+															(
+																$dpo_email ||
+																$dpo_name ||
+																$dpo_address
+															)
+														) ? true : false,
 
 			'map_gdpr_text'							=>	$map_gdpr_text,
 			'map_gdpr_gb_text'						=>	$map_gdpr_gb_text,

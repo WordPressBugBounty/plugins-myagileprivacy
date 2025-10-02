@@ -747,6 +747,11 @@ class MyAgilePrivacyAdmin {
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "START sync_cookies_and_fixed_texts" );
 
+		if( function_exists( 'wp_raise_memory_limit' ) )
+		{
+			wp_raise_memory_limit( 'admin' );
+		}
+
 		$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
 		if( isset( $the_settings['default_locale'] ) )
@@ -3159,16 +3164,19 @@ class MyAgilePrivacyAdmin {
 		$is_on = isset( $the_settings['is_on'] ) ? $the_settings['is_on'] : false;
 
 		// Secure queries using prepared statements
-		$cookie_published_count = $wpdb->get_var($wpdb->prepare(
-			"SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type = %s AND post_status = %s",
-			MAP_POST_TYPE_COOKIES,
-			'publish'
-		));
-		$cookie_total_count = $wpdb->get_var($wpdb->prepare(
-			"SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type = %s",
-			MAP_POST_TYPE_COOKIES
-		));
-
+		$cookie_published_count = $wpdb->get_var(
+		    $wpdb->prepare(
+		        "SELECT COUNT(DISTINCT pm.meta_value)
+		         FROM {$wpdb->posts} p
+		         INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID
+		         WHERE p.post_type = %s
+		           AND p.post_status = %s
+		           AND pm.meta_key = %s",
+		        MAP_POST_TYPE_COOKIES,
+		        'publish',
+		        '_map_api_key'
+		    )
+		);
 		$last_scan_date_human = '-';
 
 		if( isset( $the_settings ) &&

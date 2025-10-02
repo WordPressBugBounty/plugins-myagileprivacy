@@ -636,6 +636,15 @@ class MyAgilePrivacy {
 
 		if( !empty( self::$stored_options ) )
 		{
+			//use default setting in case of missing site_and_policy_settings array
+			if(
+				isset( self::$stored_options['site_and_policy_settings'] ) &&
+				!is_array( self::$stored_options['site_and_policy_settings'] )
+			)
+			{
+				self::$stored_options['site_and_policy_settings'] = $settings['site_and_policy_settings'];
+			}
+
 			foreach( self::$stored_options as $key => $option )
 			{
 				if( is_array( $option ) )
@@ -824,6 +833,7 @@ class MyAgilePrivacy {
 	            case 'cookie_shield_running_timestamp':
 	            case 'fixed_translations_encoded':
 	            case 'layer_1_button_order':
+	            case 'site_and_policy_settings':
 	                $logic = 'raw';
 	                break;
 
@@ -1332,8 +1342,7 @@ class MyAgilePrivacy {
 
 		);
 
-
-		$settings = apply_filters( 'map_plugin_settings', $settings);
+		$settings = apply_filters( 'map_plugin_settings', $settings );
 
 		return $key != "" ? $settings[ $key ] : $settings;
 	}
