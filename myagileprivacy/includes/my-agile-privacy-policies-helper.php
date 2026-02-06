@@ -6,20 +6,14 @@ if( !defined( "MAP_PLUGIN_NAME" ) )
 }
 
 /**
-* Core definitions
+* Policies helper
 * *
 * @link       https://www.myagileprivacy.com/
 * @package    MyAgilePrivacy
 * @subpackage MyAgilePrivacy/includes
-*/
-/**
-* Core plugin class.
-*
-*
-* @package    MyAgilePrivacy
-* @subpackage MyAgilePrivacy/includes
 * @author     https://www.myagileprivacy.com/
 */
+
 /**
 * Helper class to find a shortcode across all Pages (including page builders' meta).
 *

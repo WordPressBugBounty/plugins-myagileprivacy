@@ -57,10 +57,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 					$active_class = ($lang_count === 0) ? ' active' : '';
 
-					$label = $lang_data['label'];
+					$label = $lang_data['en_label'].' - '.$lang_data['label'];
 			?>
 
-					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><?php echo esc_html( $label ); ?></button>
+					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><img src="<?php echo esc_url( plugins_url( 'admin/img/flags/' . $lang_data['2char'] . '.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="<?php echo esc_attr( $label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;"><?php echo esc_html( $label ); ?></button>
 
 			<?php
 					$lang_count++;
@@ -88,7 +88,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<!-- bof hidden original input -->
 
-						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_banner_title" name="translations[<?php echo esc_attr( $lang_code) ; ?>][banner_title]" value="<?php echo ( $the_translations[$lang_code]['banner_title'] ) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy' ; ?>">
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_banner_title" name="translations[<?php echo esc_attr( $lang_code) ; ?>][banner_title]" value="<?php echo ( $the_translations[$lang_code]['banner_title'] ) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy®' ; ?>">
 
 						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_notify_message_v2" name="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
 							value="<?php echo esc_attr( $the_translations[$lang_code]['notify_message_v2'] ); ?>">
@@ -116,6 +116,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_with_anonymous_data_transmission_via_proxy"
 								name="translations[<?php echo esc_attr( $lang_code ); ?>][with_anonymous_data_transmission_via_proxy]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['with_anonymous_data_transmission_via_proxy'] ); ?>">
+
+							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_by_giving_your_consent_the_data_will_be_sent_anonymously"
+								name="translations[<?php echo esc_attr( $lang_code ); ?>][by_giving_your_consent_the_data_will_be_sent_anonymously]"
+								value="<?php echo esc_attr( $the_translations[$lang_code]['by_giving_your_consent_the_data_will_be_sent_anonymously'] ); ?>">
+
 						<?php endif; ?>
 
 						<?php if( $iab_tcf_context ): ?>
@@ -174,7 +179,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 										<div class="preview-title">
 											<span
 												role="button" tabindex="0"
-												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][banner_title]"><?php echo ($the_translations[$lang_code]['banner_title']) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy' ?></span>
+												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][banner_title]"><?php echo ($the_translations[$lang_code]['banner_title']) ? esc_attr( $the_translations[$lang_code]['banner_title'] ) : 'My Agile Privacy®' ?></span>
 										</div>
 									<?php endif; ?>
 									<div class="preview-content">
@@ -210,8 +215,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 													<span
 														role="button" tabindex="0"
 														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][with_anonymous_data_transmission_via_proxy]"><?php echo esc_attr( $the_translations[$lang_code]['with_anonymous_data_transmission_via_proxy'] ); ?></span>
+												</div>
+
+												<div class="my-2">
+
+													<span
+														role="button" tabindex="0"
+														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][by_giving_your_consent_the_data_will_be_sent_anonymously]"><?php echo esc_attr( $the_translations[$lang_code]['by_giving_your_consent_the_data_will_be_sent_anonymously'] ); ?></span>
 
 												</div>
+
 											<?php endif; ?>
 
 											<?php if( $iab_tcf_context ): ?>

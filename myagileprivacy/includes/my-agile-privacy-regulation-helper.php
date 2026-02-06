@@ -6,26 +6,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 }
 
 /**
- * Core definitions
+ * Helper class for regulation handling
  * *
  * @link       https://www.myagileprivacy.com/
  * @package    MyAgilePrivacy
  * @subpackage MyAgilePrivacy/includes
- */
-
-/**
- * Core plugin class.
- *
- *
- * @package    MyAgilePrivacy
- * @subpackage MyAgilePrivacy/includes
  * @author     https://www.myagileprivacy.com/
  */
-
-/**
- * Helper class for regulation handling
-*/
-
 
 class MyAgilePrivacyRegulationHelper {
 
@@ -757,5 +744,30 @@ class MyAgilePrivacyRegulationHelper {
 		);
 
 		return $config;
+	}
+
+	//f. for getting frontend config
+	public function getFrontendConfig()
+	{
+		$return_setting = 'opt-in';
+
+		if( isset( self::$site_and_policy_settings['base_location'] ) &&
+			isset( self::$available_countries ) )
+		{
+			if( in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['gdpr_like_list'] ) )
+			{
+				$return_setting = 'opt-in';
+			}
+			elseif( in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['usa_like'] ) )
+			{
+				$return_setting = 'opt-out';
+			}
+			else
+			{
+				$return_setting = 'opt-in';
+			}
+		}
+
+		return $return_setting;
 	}
 }

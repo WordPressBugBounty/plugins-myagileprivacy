@@ -1,6 +1,10 @@
-/**
-My Agile Privacy Main Css
-**/
+/*!
+* MyAgilePrivacy (https://www.myagileprivacy.com/)
+* My Agile Privacy Main Css
+*/
+
+/*signature class - do not remove*/
+.map-css-signature-my-agile-privacy-frontend { display: none !important; }
 
 #my-agile-privacy-notification-area,
 #map-blocked-content-notification-area {
@@ -557,6 +561,8 @@ My Agile Privacy Main Css
     transform: translate(0,0)
 }
 
+
+
 .map-modal-backdrop {
     position: fixed;
     top: 0;
@@ -666,6 +672,7 @@ My Agile Privacy Main Css
 	display: block!important;
     color: #444!important;
     cursor: pointer!important;
+    z-index:1000!important;
 }
 
 .map-modal .map-modal-close:focus {
@@ -963,7 +970,7 @@ My Agile Privacy Main Css
     color: #000;
     font-size: 12px;
     text-align: right;
-    min-width: 70px;
+    min-width: 75px;
     top:4px;
     text-transform: none;
 }

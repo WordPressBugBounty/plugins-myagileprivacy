@@ -465,45 +465,63 @@ class MyAgilePrivacyFrontend {
 		{
 			$found_items = array();
 
-			if( defined( 'MAP_MY_AGILE_PIXEL_TEXT_FIX' ) && MAP_MY_AGILE_PIXEL_TEXT_FIX )
+			$added_first_layer_text_skip = false;
+
+			$logic_check = 'basic';
+
+			if( defined( 'MAPX_PLUGIN_VERSION' ) && version_compare( MAPX_PLUGIN_VERSION, '3.0.9', '>=' ) )
 			{
-				if( defined( 'MAPX_my_agile_pixel_ga_on' ) &&
-					defined( 'MAPX_my_agile_pixel_ga_on_anonymous' ) &&
-					MAPX_my_agile_pixel_ga_on_anonymous )
-				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['ga_4_version'] );
-				}
+				$logic_check = 'detailed';
 
-				if( defined( 'MAPX_my_agile_pixel_fbq_on' ) &&
-					defined( 'MAPX_my_agile_pixel_fbq_on_anonymous' ) &&
-					MAPX_my_agile_pixel_fbq_on_anonymous )
+				if( defined( 'MAPX_added_first_layer_text_skip' ) && MAPX_added_first_layer_text_skip )
 				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['facebook_remarketing'] );
-				}
-
-				if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) &&
-					defined( 'MAPX_my_agile_pixel_tiktok_on_anonymous' ) &&
-					MAPX_my_agile_pixel_tiktok_on_anonymous )
-				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['tiktok_pixel'] );
+					$added_first_layer_text_skip = true;
 				}
 			}
-			else
+
+			if( !$added_first_layer_text_skip )
 			{
-				if( defined( 'MAPX_my_agile_pixel_ga_on' ) )
+				if( $logic_check == 'basic' )
 				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['ga_4_version'] );
+					if( defined( 'MAPX_my_agile_pixel_ga_on' ) )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['ga_4_version'] );
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_fbq_on' ) )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['facebook_remarketing'] );
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['tiktok_pixel'] );
+					}
+				}
+				elseif( $logic_check == 'detailed' )
+				{
+					if( defined( 'MAPX_my_agile_pixel_ga_on' ) &&
+						defined( 'MAPX_my_agile_pixel_ga_on_anonymous' ) &&
+						MAPX_my_agile_pixel_ga_on_anonymous )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['ga_4_version'] );
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_fbq_on' ) &&
+						defined( 'MAPX_my_agile_pixel_fbq_on_anonymous' ) &&
+						MAPX_my_agile_pixel_fbq_on_anonymous )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['facebook_remarketing'] );
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) &&
+						defined( 'MAPX_my_agile_pixel_tiktok_on_anonymous' ) &&
+						MAPX_my_agile_pixel_tiktok_on_anonymous )
+					{
+						$found_items[] = esc_html( $the_translations[ $current_lang ]['tiktok_pixel'] );
+					}
 				}
 
-				if( defined( 'MAPX_my_agile_pixel_fbq_on' ) )
-				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['facebook_remarketing'] );
-				}
-
-				if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) )
-				{
-					$found_items[] = esc_html( $the_translations[ $current_lang ]['tiktok_pixel'] );
-				}
 			}
 
 			if( count( $found_items ) > 0 )
@@ -623,8 +641,8 @@ class MyAgilePrivacyFrontend {
 					$all_remote_ids[] = $the_remote_id;
 				}
 
-				$cookie_list_html .= "<p><b>".$value['post_data']->post_title."</b><br>";
-				$cookie_list_html .= $value['post_data']->post_content."</p>";
+				$cookie_list_html .= "<p><b>".$value['post_title']."</b><br>";
+				$cookie_list_html .= $value['post_content']."</p>";
 			}
 		}
 
@@ -676,7 +694,7 @@ class MyAgilePrivacyFrontend {
 								$the_settings['language_fallback_locale']
 							)
 							{
-								$language_key = substr( $the_settings['language_fallback_locale'], 0, 2 );
+								$language_key = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
 							}
 							else
 							{
@@ -883,6 +901,33 @@ class MyAgilePrivacyFrontend {
 
 			$is_wpml_enabled = $this->check_if_wpml_enabled();
 
+
+			$clarity_consent_mode_consents = null;
+
+			if( isset( $the_settings['pa'] ) &&
+				$the_settings['pa'] == 1 &&
+				isset( $the_settings['enable_clarity_cmode'] ) && $the_settings['enable_clarity_cmode'] )
+			{
+				$clarity_consent_mode_consents = array();
+
+				$item = array(
+					'key'			=>	'clarity_ad_storage',
+					'human_name'  	=>	esc_html( $the_translations[ $current_lang ]['ad_storage'] ),
+					'human_desc'	=>	esc_html( $the_translations[ $current_lang ]['ad_storage_clarity_desc'] ),
+				);
+
+				$clarity_consent_mode_consents[] = $item;
+
+				$item = array(
+					'key'			=>	'clarity_analytics_storage',
+					'human_name'  	=>	esc_html( $the_translations[ $current_lang ]['analytics_storage'] ),
+					'human_desc'	=>	esc_html( $the_translations[ $current_lang ]['analytics_storage_clarity_desc'] ),
+				);
+
+				$clarity_consent_mode_consents[] = $item;
+
+			}
+
 			$microsoft_consent_mode_consents = null;
 
 			if( isset( $the_settings['pa'] ) &&
@@ -967,7 +1012,7 @@ class MyAgilePrivacyFrontend {
 	*/
 	public function plugin_init()
 	{
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'plugin_init' );
+		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'plugin_init' );
 
 		global $sitepress;
 		if( function_exists( 'icl_object_id' ) && $sitepress )
@@ -978,7 +1023,7 @@ class MyAgilePrivacyFrontend {
 		}
 
 		$labels = array(
-			'name'					=> wp_kses_post( __( 'My Agile Privacy', 'MAP_txt' ) ),
+			'name'					=> wp_kses_post( __( 'My Agile Privacy®', 'MAP_txt' ) ),
 			'all_items'             => wp_kses_post( __( 'Cookie List', 'MAP_txt' ) ),
 			'singular_name'			=> wp_kses_post( __( 'Cookie', 'MAP_txt' ) ),
 			'add_new'				=> wp_kses_post( __( 'Add New Cookie', 'MAP_txt' ) ),
@@ -1048,7 +1093,7 @@ class MyAgilePrivacyFrontend {
 		) );
 
 		$labels = array(
-			'name'					=> wp_kses_post( __( 'Policies', 'MAP_txt' ) ),
+			'name'					=> wp_kses_post( __( 'My Agile Privacy®', 'MAP_txt' ) ),
 			'all_items'             => wp_kses_post( __( 'Policies List', 'MAP_txt' ) ),
 			'singular_name'			=> wp_kses_post( __( 'Policy', 'MAP_txt' ) ),
 			'add_new'				=> wp_kses_post( __( 'Add New Policy', 'MAP_txt' ) ),
@@ -1128,15 +1173,22 @@ class MyAgilePrivacyFrontend {
 		{
 			$rconfig = MyAgilePrivacy::get_rconfig();
 
+			$minified_filename_add = "";
+
+			if( defined( 'MAP_USE_MINIFIED_FILES' ) && MAP_USE_MINIFIED_FILES )
+			{
+				$minified_filename_add = ".min";
+			}
+
 			if( isset( $rconfig ) &&
 				isset( $rconfig['use_css_reset'] ) &&
 				$rconfig['use_css_reset'] == 1 )
 			{
-				wp_enqueue_style( $this->plugin_name.'-reset', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-reset.css', array(), $this->version, 'all' );
+				wp_enqueue_style( $this->plugin_name.'-reset', plugin_dir_url(__FILE__) . "css/my-agile-privacy-reset$minified_filename_add.css", array(), $this->version, 'all' );
 			}
 
-			wp_enqueue_style( $this->plugin_name.'-animate', plugin_dir_url(__FILE__) . 'css/animate.min.css', array(), $this->version, 'all' );
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url(__FILE__) . 'css/my-agile-privacy-frontend.css', array(), $this->version, 'all' );
+			wp_enqueue_style( $this->plugin_name.'-animate', plugin_dir_url(__FILE__) . "css/animate.min.css", array(), $this->version, 'all' );
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url(__FILE__) . "css/my-agile-privacy-frontend$minified_filename_add.css", array(), $this->version, 'all' );
 
 			if( !function_exists( 'is_plugin_active' ) )
 			{
@@ -1145,7 +1197,10 @@ class MyAgilePrivacyFrontend {
 
 			if( !is_plugin_active( 'myagilepixel/myagilepixel.php' ) )
 			{
-				wp_enqueue_style( $this->plugin_name.'-notification-bar', plugin_dir_url(__FILE__) . 'css/my-agile-privacy-notification-bar.css', array(), $this->version, 'all' );
+				if( current_user_can( 'manage_options' ) && isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
+				{
+					wp_enqueue_style( $this->plugin_name.'-notification-bar', plugin_dir_url(__FILE__) . "css/my-agile-privacy-notification-bar$minified_filename_add.css", array(), $this->version, 'all' );
+				}
 			}
 		}
 	}
@@ -1189,7 +1244,14 @@ class MyAgilePrivacyFrontend {
 				}
 			}
 
-			$js_frontend_filepath = 'js/plain/my-agile-privacy-frontend.js';
+			$minified_filename_add = "";
+
+			if( defined( 'MAP_USE_MINIFIED_FILES' ) && MAP_USE_MINIFIED_FILES )
+			{
+				$minified_filename_add = ".min";
+			}
+
+			$js_frontend_filepath = "js/plain/my-agile-privacy-frontend$minified_filename_add.js";
 
 			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array( 'jquery' ), $this->version, false );
@@ -1400,7 +1462,7 @@ class MyAgilePrivacyFrontend {
 										$the_settings['language_fallback_locale']
 									)
 									{
-										$language_key = substr( $the_settings['language_fallback_locale'], 0, 2 );
+										$language_key = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
 									}
 									else
 									{
@@ -1418,6 +1480,11 @@ class MyAgilePrivacyFrontend {
 										$elem['post_content'] = '';
 									}
 								}
+							}
+
+							if( isset( $elem['post_meta']['_map_translations'] ) )
+							{
+								unset( $elem['post_meta']['_map_translations'] );
 							}
 						}
 
@@ -1452,8 +1519,10 @@ class MyAgilePrivacyFrontend {
 								$the_key = 'not-necessary';
 							}
 
+
 							$cookie_categories[ $the_key ][] = $elem;
 						}
+
 					}
 				}
 			}
@@ -1772,6 +1841,16 @@ class MyAgilePrivacyFrontend {
 				$this->head_script = $this->get_head_script_string( false );
 			}
 
+
+			static $already_started = false;
+
+			if ( $already_started )
+			{
+				return;
+			}
+
+			$already_started = true;
+
 			ob_start( array( $this, 'map_callback' ) );
 		}
 	}
@@ -1782,10 +1861,26 @@ class MyAgilePrivacyFrontend {
 	*/
 	public function map_buffer_end()
 	{
-		if( ob_get_level() )
+		static $already_run = false;
+
+		if ( $already_run )
 		{
-			ob_end_flush();
+			return;
 		}
+
+		$already_run = true;
+
+		if ( ob_get_level() < 1 )
+		{
+			return;
+		}
+
+		if ( ob_get_length() === false || ob_get_length() < 1 )
+		{
+			return;
+		}
+
+		ob_end_flush();
 	}
 
 	/**
@@ -1794,10 +1889,11 @@ class MyAgilePrivacyFrontend {
 	*/
 	public function get_head_script_string( $block_mode = false )
 	{
-
 		$the_settings = MyAgilePrivacy::get_settings();
-
 		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$frontend_regulation = $MyAgilePrivacyRegulationHelper->getFrontendConfig();
 
 		$manifest_assoc = null;
 
@@ -1810,6 +1906,31 @@ class MyAgilePrivacyFrontend {
 			$manifest_assoc = MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC, null );
 
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $manifest_assoc );
+		}
+
+		$minified_filename_add = "";
+
+		if( defined( 'MAP_USE_MINIFIED_FILES' ) && MAP_USE_MINIFIED_FILES )
+		{
+			$minified_filename_add = ".min";
+		}
+
+		$main_frontend_js = null;
+		$frontend_css = array();
+
+		if( $the_settings['is_on'] == true )
+		{
+			$main_frontend_js = plugin_dir_url(__FILE__) . "js/plain/my-agile-privacy-frontend$minified_filename_add.js";
+
+			if( isset( $rconfig ) &&
+				isset( $rconfig['use_css_reset'] ) &&
+				$rconfig['use_css_reset'] == 1 )
+			{
+				$frontend_css[] = plugin_dir_url(__FILE__) . "css/my-agile-privacy-reset$minified_filename_add.css";
+			}
+
+			$frontend_css[] = plugin_dir_url(__FILE__) . "css/animate.min.css";
+			$frontend_css[] = plugin_dir_url(__FILE__) . "css/my-agile-privacy-frontend$minified_filename_add.css";
 		}
 
 		$js_shield_url = null;
@@ -2033,8 +2154,8 @@ class MyAgilePrivacyFrontend {
 		}
 
 		$map_lang_code_4char = MyAgilePrivacy::getCurrentLang4Char();
+		$map_lang_code = MAP_SUPPORTED_LANGUAGES[ $map_lang_code_4char ][ '2char' ];
 
-		$map_lang_code = substr( $map_lang_code_4char, 0, 2 );
 		//eof iab tcf part
 
 		$cookie_reset_timestamp = ( isset( $the_settings['cookie_reset_timestamp'] ) ) ? $the_settings['cookie_reset_timestamp'] : null;
@@ -2291,10 +2412,14 @@ class MyAgilePrivacyFrontend {
 			'video_advanced_privacy' 									=> 	$video_advanced_privacy,
 			'manifest_assoc'											=> 	$manifest_assoc_public,
 			'js_shield_url' 											=> 	$js_shield_url,
+			'main_frontend_js'											=>	$main_frontend_js,
+			'frontend_css'												=>	$frontend_css,
 			'load_iab_tcf'												=> 	false,
 			'iab_tcf_script_url'										=>	null,
 			'enable_microsoft_cmode'									=>	null,
 			'cmode_microsoft_default_consent_obj'						=>	null,
+			'enable_clarity_cmode'										=>	null,
+			'cmode_clarity_default_consent_obj'							=>	null,
 			'enable_cmode_v2'											=>	null,
 			'cmode_v2_implementation_type'								=>	null,
 			'enable_cmode_url_passthrough'								=>	null,
@@ -2303,6 +2428,7 @@ class MyAgilePrivacyFrontend {
 			'cmode_v2_js_on_error'										=>	null,
 			'shield_added_pattern'										=>	$shield_added_pattern,
 			'early_gcmode'												=>	$early_gcmode,
+			'frontend_regulation'										=>	$frontend_regulation,
 		);
 
 
@@ -2321,6 +2447,19 @@ class MyAgilePrivacyFrontend {
 				'microsoft_ad_storage'		=>	$the_settings['microsoft_consent_ad_storage'],
 			);
 		}
+
+
+		if( isset( $the_settings ) &&
+			isset( $the_settings['enable_clarity_cmode'] ) && $the_settings['enable_clarity_cmode']
+		)
+		{
+			$map_full_config['enable_clarity_cmode'] = true;
+			$map_full_config['cmode_clarity_default_consent_obj'] = array(
+				'clarity_ad_storage'			=>	$the_settings['clarity_consent_ad_storage'],
+				'clarity_analytics_storage'		=>	$the_settings['clarity_consent_analytics_storage'],
+			);
+		}
+
 
 		if( isset( $the_settings ) &&
 			isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'] &&
@@ -2368,6 +2507,11 @@ class MyAgilePrivacyFrontend {
 		$map_full_config['cookie_api_key_not_to_block'] = $cookie_api_key_not_to_block;
 
 		$base_config_script .= 'var map_full_config='.json_encode( $map_full_config ).';'.PHP_EOL;
+
+		if( $map_full_config['enable_clarity_cmode'] )
+		{
+			$base_config_script .= 'window.clarity = window.clarity || function() {(window.clarity.q = window.clarity.q || []).push(arguments);};'.PHP_EOL;
+		}
 
 		if( $map_full_config['enable_microsoft_cmode'] )
 		{
@@ -2772,9 +2916,9 @@ class MyAgilePrivacyFrontend {
 	{
 		$this->scan_log = "Scanner started.\n";
 
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "map_callback\n\n";
-
 		$something_done = false;
+
+		$starting_output_save = $output;
 
 		//init config
 		$parse_config = $this->scan_config;
@@ -2796,14 +2940,10 @@ class MyAgilePrivacyFrontend {
 			//search for scripts
 			$scripts = $dom->find( 'script' );
 
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $scripts, true );
-
 			if( isset( $parse_config ) && isset( $parse_config['scripts_src_block'] ) )
 			{
 				foreach( $scripts as $k => $v )
 				{
-					//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $scripts, true );
-
 					//parent node check for skipping code inside map textarea
 					$parentNode = $v->parentNode();
 
@@ -2902,33 +3042,46 @@ class MyAgilePrivacyFrontend {
 										{
 											$v->class = $v->class.' map_not_to_block';
 										}
-
 									}
 									else
 									{
 										//add the map_do_not_touch class
-
 										$v->class = $v->class.' map_do_not_touch';
 										$something_done = true;
 									}
 								}
-								//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= .= print_r( array_values($found)[0], true )."\n";
+							}
+							else
+							{
+								//$this->scan_log .= "plain_js script unmatched, innertext=$innertext \n";
 							}
 						}
 						elseif( $src )
 						{
 							$found = array_filter( $parse_config['scripts_src_block'],  function( $e, $the_key ) use ( $src ){
 
-								if( !$e['src'] ) return false;
+							// If 'src' is not set or empty, discard this element
+							if ( empty( $e['src'] ) )
+							{
+								return false;
+							}
 
-								return ( strpos(  $src, $e['src'] ) !== false );
+							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
+							if ( !empty( $e['added_src'] ) )
+							{
+								$match_src       = ( strpos( $src, $e['src'] ) !== false );
+								$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
+
+								return ( $match_src && $match_added_src );
+							}
+
+							// If 'added_src' is not set or is empty, use the normal check on 'src'
+							return ( strpos( $src, $e['src'] ) !== false );
 
 							}, ARRAY_FILTER_USE_BOTH );
 
 							if( $found )
 							{
-								//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r($found,true)."\n";
-
 								$action = array_values( $found )[0];
 								$return_key = array_keys( $found )[0];
 
@@ -2994,11 +3147,14 @@ class MyAgilePrivacyFrontend {
 										else
 										{
 											$v->class = $v->class.' map_not_to_block';
+											$something_done = true;
 										}
-
 									}
 								}
-								//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( array_values($found)[0], true )."\n";
+							}
+							else
+							{
+								//$this->scan_log .= "plain_js script unmatched, src=$src \n";
 							}
 						}
 						else
@@ -3023,13 +3179,26 @@ class MyAgilePrivacyFrontend {
 
 					$the_src = null;
 
-					//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $src, true )."\n";
-
 					$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $src ){
 
-						if( !$e['src'] ) return false;
+						// If 'src' is not set or empty, discard this element
+						if ( empty( $e['src'] ) )
+						{
+							return false;
+						}
 
-						return ( strpos(  $src, $e['src'] ) !== false );
+						// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
+						if ( !empty( $e['added_src'] ) )
+						{
+							$match_src       = ( strpos( $src, $e['src'] ) !== false );
+							$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
+
+							return ( $match_src && $match_added_src );
+						}
+
+						// If 'added_src' is not set or is empty, use the normal check on 'src'
+						return ( strpos( $src, $e['src'] ) !== false );
+
 
 					}, ARRAY_FILTER_USE_BOTH );
 
@@ -3038,18 +3207,30 @@ class MyAgilePrivacyFrontend {
 					{
 						$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $data_src ){
 
-							if( !$e['src'] ) return false;
+							// If 'src' is not set or empty, discard this element
+							if ( empty( $e['src'] ) )
+							{
+								return false;
+							}
 
-							return ( strpos(  $data_src, $e['src'] ) !== false );
+							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
+							if ( !empty( $e['added_src'] ) )
+							{
+								$match_src       = ( strpos( $data_src, $e['src'] ) !== false );
+								$match_added_src = ( strpos( $data_src, $e['added_src'] ) !== false );
+
+								return ( $match_src && $match_added_src );
+							}
+
+							// If 'added_src' is not set or is empty, use the normal check on 'src'
+							return ( strpos( $data_src, $e['src'] ) !== false );
+
 
 						}, ARRAY_FILTER_USE_BOTH );
 					}
 
-
 					if( $found )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r($found,true)."\n";
-
 						$action = array_values( $found )[0];
 						$return_key = array_keys( $found )[0];
 
@@ -3190,8 +3371,6 @@ class MyAgilePrivacyFrontend {
 
 					if( strpos( $class, 'my_agile_privacy_activate' ) === false && strpos( $class, 'map_do_not_touch' ) === false )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $href, true )."\n";
-
 						$found = array_filter( $parse_config['css_href_block'],  function( $e, $the_key ) use ( $href ){
 
 							if( !$e['href'] ) return false;
@@ -3202,8 +3381,6 @@ class MyAgilePrivacyFrontend {
 
 						if( $found )
 						{
-							//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r($found,true)."\n";
-
 							$action = array_values( $found )[0];
 							$return_key = array_keys( $found )[0];
 
@@ -3283,7 +3460,6 @@ class MyAgilePrivacyFrontend {
 				}
 			}
 
-
 			//elementor wigets
 			$elementor_widgets = $dom->find( '.elementor-widget' );
 
@@ -3298,8 +3474,6 @@ class MyAgilePrivacyFrontend {
 
 					if( strpos( $class, 'map_do_not_touch' ) === false )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $src, true )."\n";
-
 						$found = array_filter( $parse_config['elementor_widget_block'],  function( $e, $the_key ) use ( $data_settings ){
 
 							if( !$e['src'] ) return false;
@@ -3310,8 +3484,6 @@ class MyAgilePrivacyFrontend {
 
 						if( $found )
 						{
-							//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r($found,true)."\n";
-
 							$action = array_values( $found )[0];
 							$return_key = array_keys( $found )[0];
 
@@ -3358,13 +3530,9 @@ class MyAgilePrivacyFrontend {
 											$v->class = $v->class.' '.'map_script_fixed';
 											$v->original_data_settings = $data_settings;
 
-											//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= html_entity_decode( $data_settings );
-
 											$decoded_data_settings = json_decode( html_entity_decode( $data_settings ), true );
 
 											$decoded_data_settings = array_merge( (array)$decoded_data_settings,(array)$action['json_add'] );
-
-											//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $decoded_data_settings, true );
 
 											$v->setAttribute( 'data-settings', htmlentities( json_encode( $decoded_data_settings ) ) );
 										}
@@ -3486,8 +3654,6 @@ class MyAgilePrivacyFrontend {
 				}
 			}
 
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $parse_config['img_search_replace'], true )."\n";
-
 			//search for images
 			$images = $dom->find( 'img' );
 
@@ -3503,8 +3669,6 @@ class MyAgilePrivacyFrontend {
 					{
 						$src = $v->getAttribute( 'data-src' );
 					}
-
-					//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $src, true )."\n";
 
 					$found = array_filter( $parse_config['img_search_replace'],  function( $e, $the_key ) use ( $src ){
 
@@ -3526,8 +3690,6 @@ class MyAgilePrivacyFrontend {
 
 					if( $found || $found_alt )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r($found,true)."\n";
-
 						$action = array_values( $found )[0];
 						$return_key = array_keys( $found )[0];
 
@@ -3613,14 +3775,7 @@ class MyAgilePrivacyFrontend {
 			}
 		}
 
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $this->saved_settings, true );
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $parse_config, true );
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= print_r( $scan_output, true );
 		$this->scan_output = $scan_output;
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "map_callback_end\n\n";
-		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) return $this->scan_log;
-
-		//$output = $this->scan_log;
 
 		$output_ori = $dom;
 
@@ -3642,29 +3797,76 @@ class MyAgilePrivacyFrontend {
 
 		if( !$output )
 		{
-			$output = $output_ori;
+			$output = $starting_output_save;
+			$this->scan_log .= "Missing output" . "\n";
 		}
 
 		if( !$something_done )
 		{
-			$output = $output_ori;
+			$output = $starting_output_save;
+			$this->scan_log .= "Something done is false" . "\n";
 		}
+
+		//dom to html conversion
+		$final_output = '';
+
+		if( is_object( $output ) )
+		{
+		    $this->scan_log .= "Converting DOM object to HTML string\n";
+
+		    try {
+		        $final_output = $output->save();
+		        $this->scan_log .= "DOM conversion successful\n";
+		    }
+		    catch( Exception $e )
+		    {
+		        $this->scan_log .= "ERROR in save(): " . $e->getMessage() . "\n";
+		        try {
+		            $final_output = (string)$output;
+		            $this->scan_log .= "Fallback __toString successful, length=" . strlen( $final_output ) . "\n";
+		        }
+		        catch( Exception $e2 )
+		        {
+		            $this->scan_log .= "ERROR in __toString: " . $e2->getMessage() . "\n";
+		            $final_output = $starting_output_save;
+		        }
+		    }
+		}
+		else
+		{
+		    $final_output = $output;
+		    $this->scan_log .= "Output is already string, length=" . strlen( $final_output ) . "\n";
+		}
+
+		if( empty( $final_output ) )
+		{
+		    $this->scan_log .= "WARNING: Empty output, using original input\n";
+		    $final_output = $starting_output_save;
+		}
+
+		$starting_input_length = strlen( $starting_output_save );
+		$final_output_length = strlen( $final_output );
+
+		$different_length = 'NO';
+		if( $starting_input_length != $final_output_length )
+		{
+			$different_length = 'YES';
+		}
+
+		$this->scan_log .= "Final output ready, length=$final_output_length, starting_lenght=$starting_input_length, different_length=$different_length\n";
 
 		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 		$js_cookie_shield_detected_keys = array_unique( array_filter( $js_cookie_shield_detected_keys ) );
 
-		if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $js_cookie_shield_detected_keys );
+		//if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $js_cookie_shield_detected_keys );
 
 		if( $this->scan_done || count( $js_cookie_shield_detected_keys ) > 0 )
 		{
-			//if( $this->scan_output && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $this->scan_output, true );
 			if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $this->scan_log );
 
 			//auto activate
 			if( $this->scan_mode == 'learning_mode' )
 			{
-				//if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $this->cookie_post_id );
-
 				// Get settings
 				$the_settings = MyAgilePrivacy::get_settings();
 
@@ -3676,8 +3878,6 @@ class MyAgilePrivacyFrontend {
 				{
 					foreach( $v as $kk => $vv )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $vv, true );
-
 						$key_to_look_for = $vv['key'];
 
 						if( $vv['key'] && $vv['detected'] )
@@ -3708,8 +3908,6 @@ class MyAgilePrivacyFrontend {
 
 					foreach( $auto_activate_keys as $k => $v )
 					{
-						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $v, true );
-
 						if( $v )
 						{
 							$post_status_to_search = array( 'draft' );
@@ -3721,8 +3919,6 @@ class MyAgilePrivacyFrontend {
 								'meta_value'       	=> 	$v,
 								'post_status' 		=> 	$post_status_to_search,
 							);
-
-							//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $cc_args, true );
 
 							$cc_query = new WP_Query( $cc_args );
 
@@ -3749,8 +3945,6 @@ class MyAgilePrivacyFrontend {
 													'post_status'	=>	'publish',
 												);
 
-												//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $my_post );
-
 												wp_update_post( $my_post );
 
 												if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "published cookie ".$v , true );
@@ -3770,7 +3964,7 @@ class MyAgilePrivacyFrontend {
 							}
 							else
 							{
-								if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $v." not found", true );
+								//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "post with _map_api_key=$v not found in draft", true );
 							}
 						}
 					}
@@ -3783,8 +3977,6 @@ class MyAgilePrivacyFrontend {
 				}
 
 				$this->scan_log .= "Scanner finished.\n";
-
-				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'END' );
 			}
 		}
 
@@ -3794,6 +3986,6 @@ class MyAgilePrivacyFrontend {
 			setup_postdata( $this->saved_post );
 		}
 
-		return $output;
+		return $final_output;
 	}
 }

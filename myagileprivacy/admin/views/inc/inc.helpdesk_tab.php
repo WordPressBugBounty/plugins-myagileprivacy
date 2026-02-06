@@ -62,7 +62,7 @@ if( $locale && $locale == 'it_IT' )
 
 <div class="row">
 	<div class="col-12">
-		<p><?php echo wp_kses_post( __( 'Follow the guides found in this section to install and configure My Agile Privacy, and bring your website into compliance in a few simple steps.', 'MAP_txt' ) ); ?></p>
+		<p><?php echo wp_kses_post( __( 'Follow the guides found in this section to install and configure My Agile Privacy®, and bring your website into compliance in a few simple steps.', 'MAP_txt' ) ); ?></p>
 	</div>
 </div>
 
@@ -74,12 +74,12 @@ if( $locale && $locale == 'it_IT' )
 
 				<div class="card-body">
 					<p>
-						<?php echo wp_kses_post( __( 'My Agile Privacy is currently the easiest-to-configure Cookie Banner on the market, promising genuine compliance and adherence to the regulations as required by the Data Protection Authority.', 'MAP_txt' ) ); ?><br><br>
+						<?php echo wp_kses_post( __( 'My Agile Privacy® is currently the easiest-to-configure Cookie Banner on the market, promising genuine compliance and adherence to the regulations as required by the Data Protection Authority.', 'MAP_txt' ) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'We have created a truly simple configuration process: to bring your website into compliance, you just need to follow the three steps outlined below.', 'MAP_txt' ) ); ?>
 
 					</p>
 
-					<p><a target="_blank" href="<?php echo esc_attr( $installa_map_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Install and configure My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $installa_map_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Install and configure My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
 					<p><a target="_blank" href="<?php echo esc_attr( $cookie_shied_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Detect and automatically block cookies with Cookie Shield', 'MAP_txt' ) ); ?></a></p>
 					<p><a target="_blank" href="<?php echo esc_attr( $moduli_norma_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Adapt the contact forms to GDPR', 'MAP_txt' ) ); ?></a></p>
 
@@ -127,15 +127,15 @@ if( $locale && $locale == 'it_IT' )
 				<div class="card-header bg-transparent"><h5 class="pt-2"><?php echo wp_kses_post( __( 'Do you use a cache plugin?', 'MAP_txt' ) ); ?></h5></div>
 				<div class="card-body">
 					<p>
-						<?php echo wp_kses_post( __( 'My Agile Privacy works correctly with most cache plugins available on the market.', 'MAP_txt' ) ); ?><br><br>
+						<?php echo wp_kses_post( __( 'My Agile Privacy® works correctly with most cache plugins available on the market.', 'MAP_txt' ) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'Below are the configuration guides for the most commonly used ones. Make sure to follow the instructions to ensure compliance and performance.', 'MAP_txt' ) ); ?>
 					</p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_wprocket_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure WP Rocket with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_siteground_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Siteground Optimizer with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_optimizepress_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Optimize Press with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_w3totalcache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure W3 Total Cache with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_speedycache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Speedy Cache with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_litespeed_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure LiteSpeed Cache with My Agile Privacy', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_wprocket_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure WP Rocket with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_siteground_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Siteground Optimizer with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_optimizepress_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Optimize Press with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_w3totalcache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure W3 Total Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_speedycache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Speedy Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_litespeed_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure LiteSpeed Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
 					<p><a target="_blank" href="<?php echo esc_attr( $cache_generic_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Do you use another cache plugin?', 'MAP_txt' ) ); ?></a></p>
 				</div>
 			</div>
@@ -147,12 +147,12 @@ if( $locale && $locale == 'it_IT' )
 				<div class="card-header bg-transparent"><h5 class="pt-2"><?php echo wp_kses_post( __( 'Do you have a multilingual website?', 'MAP_txt' ) ); ?></h5></div>
 				<div class="card-body">
 					<p>
-						<?php echo wp_kses_post( __( 'My Agile Privacy is compatible with the main multilingual plugins for WordPress and provides ready-made translations for elements such as the cookie banner, policies, and individual cookies in multiple languages.', 'MAP_txt' ) ); ?><br><br>
+						<?php echo wp_kses_post( __( 'My Agile Privacy® is compatible with the main multilingual plugins for WordPress and provides ready-made translations for elements such as the cookie banner, policies, and individual cookies in multiple languages.', 'MAP_txt' ) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'Depending on the license you have purchased, you will have access to one or more languages.', 'MAP_txt' ) ); ?><br>
 						<?php echo wp_kses_post( sprintf(__( 'For the updated list and implementation instructions, please refer to the <a href="%s" target="_blank">technical sheet.</a>', 'MAP_txt' ), esc_attr( $scheda_tecnica_url )) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'Follow these implementation guides for a correct display of textual content.', 'MAP_txt' ) ); ?>
 					</p>
-					<p><a target="_blank" href="<?php echo esc_attr( $sito_multilingue_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure My Agile Privacy for multilingual websites', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $sito_multilingue_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure My Agile Privacy® for multilingual websites', 'MAP_txt' ) ); ?></a></p>
 				</div>
 	
 			</div>

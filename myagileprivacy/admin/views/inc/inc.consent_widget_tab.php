@@ -18,6 +18,8 @@ $locale = MyAgilePrivacy::get_locale();
 
 		<?php include 'fields.microsoft_consent_mode_tab.php'; ?>
 
+		<?php include 'fields.clarity_consent_mode_tab.php'; ?>
+
 		<?php
 
 			$display_iab = false;
@@ -248,7 +250,7 @@ $locale = MyAgilePrivacy::get_locale();
 				<!-- widget logo show / hide -->
 				<div class="row mb-4">
 					<label for="disable_logo_field" class="col-sm-5 col-form-label">
-						<?php echo wp_kses_post( __( 'Disable My Agile Privacy logo', 'MAP_txt' ) ); ?>
+						<?php echo wp_kses_post( __( 'Disable My Agile Privacy® logo', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
@@ -273,7 +275,7 @@ $locale = MyAgilePrivacy::get_locale();
 						</div> <!-- ./ styled_radio -->
 
 						<div class="form-text">
-							<?php echo wp_kses_post( __( 'Check this option to remove My Agile Privacy logo on the consent review widget', 'MAP_txt' ) ); ?>.
+							<?php echo wp_kses_post( __( 'Check this option to remove My Agile Privacy® logo on the consent review widget', 'MAP_txt' ) ); ?>.
 						</div>
 
 					</div> <!-- /.col-sm-6 -->

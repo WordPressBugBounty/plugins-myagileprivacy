@@ -38,7 +38,7 @@ endif;
 
 
 <div class="wrap backupRestoreWrapper" id="my_agile_privacy_backend">
-	<h2>My Agile Privacy: <?php echo wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ); ?></h2>
+	<h2>My Agile Privacy®: <?php echo wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ); ?></h2>
 
 	<div class="container-fluid mt-5">
 		<?php include 'inc/inc.backup_restore_tab.php'; ?>

@@ -25,14 +25,14 @@
 				{
 					console.debug( map_backend_prefix + '#my_agile_privacy_backend_inline context');
 
-					if( $my_agile_privacy_backend_inline.hasClass( 'map_policy_edit') )
+					if( $my_agile_privacy_backend_inline.hasClass( 'map_text_edit') )
 					{
-						console.debug( map_backend_prefix + '.map_policy_edit inline subcontext');
+						console.debug( map_backend_prefix + '.map_text_edit inline subcontext');
 
 						//policy unlock edit
-						$('.map-do-edit-this-policy', $my_agile_privacy_backend_inline ).bind( 'click', function(){
+						$('.map-do-edit-this-text', $my_agile_privacy_backend_inline ).bind( 'click', function(){
 
-							$( '.map-policy-quickview', $my_agile_privacy_backend_inline ).addClass( 'displayNone' );
+							$( '.map-text-quickview', $my_agile_privacy_backend_inline ).addClass( 'displayNone' );
 							$( '.map-wrap-editor', $my_agile_privacy_backend_inline ).removeClass( 'displayNone' );
 						});
 					}
@@ -1393,7 +1393,7 @@
 											{
 												var heading_color = jQuery( '[data-preview="title_color"]' ).val();
 
-												jQuery( '#preview-title', $preview_cookiebanner ).html( '<div class="banner-title-logo" style="background:' + heading_color + ';"></div>  My Agile Privacy' );
+												jQuery( '#preview-title', $preview_cookiebanner ).html( '<div class="banner-title-logo" style="background:' + heading_color + ';"></div>  My Agile Privacy®' );
 											}
 											else
 											{

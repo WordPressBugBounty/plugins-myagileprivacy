@@ -1070,7 +1070,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div id="preview-title" style="<?php echo esc_attr( $preview_title_styles ); ?>">
 						<?php
 
-							echo ( $the_translations[ $selected_lang ]['banner_title'] == '' ? '<div class="banner-title-logo" style="background:'.esc_html( $the_translations[ $selected_lang ]['banner_title'] ).';"></div> My Agile Privacy' : esc_attr( $the_translations[ $selected_lang ]['banner_title'] ) );
+							echo ( $the_translations[ $selected_lang ]['banner_title'] == '' ? '<div class="banner-title-logo" style="background:'.esc_html( $the_translations[ $selected_lang ]['banner_title'] ).';"></div> My Agile Privacy®' : esc_attr( $the_translations[ $selected_lang ]['banner_title'] ) );
 
 						?>
 					</div>

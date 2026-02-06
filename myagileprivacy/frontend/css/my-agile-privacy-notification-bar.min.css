@@ -1,0 +1,4 @@
+/*!
+* MyAgilePrivacy (https://www.myagileprivacy.com/)
+* My Agile Privacy Notification bar
+*/#mapx_notification_bar{background-color:#c3e6cb;border-top:2px solid #000;bottom:0;box-sizing:border-box;color:#155724;font-size:14px;left:0;line-height:18px;padding:15px 30px;position:fixed;text-align:left;width:100%;z-index:9999999}.mapx_close_notification_bar{cursor:pointer;float:right;text-decoration:underline}.mapx_proxification_success_true{color:#155724;font-weight:700}.mapx_proxification_success_false{color:#721c24;font-weight:700}

@@ -155,7 +155,7 @@ endif;
 			<ul class="nav nav-pills mb-4" role="tablist">
 
 				<li class="nav-item" role="presentation">
-					<button class="nav-link active position-relative" data-bs-toggle="pill" data-bs-target="#cookie_banner" type="button" role="tab">
+					<button class="nav-link active position-relative" data-bs-toggle="pill" data-bs-target="#main_settings" type="button" role="tab">
 						<i class="fa-regular fa-browser"></i>
 						<?php echo wp_kses_post( __( 'Cookie Banner', 'MAP_txt' ) ); ?>
 					</button>
@@ -217,7 +217,7 @@ endif;
 
 
 			<div class="tab-content">
-				<div class="tab-pane fade show active" id="cookie_banner" role="tabpanel">
+				<div class="tab-pane fade show active" id="main_settings" role="tabpanel">
 					<?php include 'inc/inc.cookie_banner_tab.php'; ?>
 				</div> <!-- tabpane cookie_banner -->
 

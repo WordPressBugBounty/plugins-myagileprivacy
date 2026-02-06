@@ -1094,13 +1094,15 @@ body {
 
 /*bof policy backend style*/
 
-.map-policy-quickview .map-custom-card-body p,
-.map-policy-quickview .map-custom-card-body ul,
-.map-policy-quickview .map-custom-card-body li{
+.map-text-quickview .map-custom-card-body p,
+.map-text-quickview .map-custom-card-body ul,
+.map-text-quickview .map-custom-card-body ol,
+.map-text-quickview .map-custom-card-body dl,
+.map-text-quickview .map-custom-card-body li{
 	font-size: 16px;
 }
 
-.map-policy-quickview .map-custom-card-body ul{
+.map-text-quickview .map-custom-card-body ul{
 	list-style: disc;
 }
 

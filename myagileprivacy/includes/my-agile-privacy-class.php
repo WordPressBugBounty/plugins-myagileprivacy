@@ -30,7 +30,6 @@ define( 'MAP_POST_TYPE_COOKIES', 'my-agile-privacy-c' );
 define( 'MAP_POST_TYPE_POLICY', 'my-agile-privacy-p' );
 define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
 define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
-define( 'MAP_MY_AGILE_PIXEL_TEXT_FIX', false );
 define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-minify="1" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
 define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
@@ -40,44 +39,6 @@ define( 'MAP_NOTICE_LAST_SHOW_TIME', MAP_PLUGIN_DB_KEY_PREFIX.'-notice_last_show
 define( 'MAP_BYPASS_LICENSE_TRESHOLD', 86400 ); // 1 day: 24 * 60 * 60
 define( 'MAP_NOTICE_FIRST_TRESHOLD', 604800 ); // 7 days: 7 * 24 * 60 * 60
 define( 'MAP_NOTICE_SECOND_TRESHOLD', 12960000 ); // 5 months: 5 * 30 * 24 * 60 * 60
-define( 'MAP_SUPPORTED_LANGUAGES', array(
-		'en_US'	=>	array(
-							'label' => 	'English',
-							'2char' => 	'en',
-						),
-		'it_IT'	=>	array(
-							'label' => 	'Italiano',
-							'2char' => 	'it',
-						),
-		'fr_FR'	=>	array(
-							'label' => 	'Français',
-							'2char' => 	'fr',
-						),
-		'de_DE'	=>	array(
-							'label' => 	'Deutsch',
-							'2char' => 	'de',
-						),
-		'es_ES'	=>	array(
-							'label' => 	'Español',
-							'2char' => 	'es',
-						),
-		'pt_PT'	=>	array(
-							'label' => 	'Português',
-							'2char' => 	'pt',
-						),
-		'nl_NL'	=>	array(
-							'label' => 	'Nederlands',
-							'2char' => 	'nl',
-						),
-		'pl_PL'	=>	array(
-							'label' => 	'Polski',
-							'2char' => 	'pl',
-						),
-		'el'	=>	array(
-							'label' => 	'Elliniká',
-							'2char' => 	'el',
-						),
-) );
 define( 'MAP_ASSETS_EXCLUSION_PATTERNS', array(
 	'plugins/myagileprivacy/',
 	'wp-content/local-cache/'
@@ -86,6 +47,7 @@ define( 'MAP_DB_PATCH_2_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_2_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
 define( 'MAP_SUMMARY_VERSION', '2.0.0' );
 define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
+
 
 /**
  * Core definitions
@@ -206,19 +168,19 @@ class MyAgilePrivacy {
 			isset( $rconfig['block_review_message'] ) &&
 			$rconfig['block_review_message'] )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice blocked via block_review_message' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice blocked via block_review_message' );
 			return false;
 		}
 
 		if( !current_user_can( 'manage_options' ) )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( ' should_show_notice -> missing user permission' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( ' should_show_notice -> missing user permission' );
 			return false;
 		}
 
 		if( !defined( 'MAP_REVIEW_STATUS') )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'missing should_show_notice review_status' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'missing should_show_notice review_status' );
 			return false;
 		}
 
@@ -230,7 +192,7 @@ class MyAgilePrivacy {
 		{
 			self::map_plugin_activate();
 
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'missing should_show_notice activation_date' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'missing should_show_notice activation_date' );
 
 			return false;
 		}
@@ -256,7 +218,7 @@ class MyAgilePrivacy {
 		// first show after first treshold
 		if( $current_time - $activation_date < MAP_NOTICE_FIRST_TRESHOLD )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check A)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check A)' );
 
 			return false;
 		}
@@ -264,7 +226,7 @@ class MyAgilePrivacy {
 		// if feedback marked as later, show again after first treshold
 		if( $review_status === 'later' && ( $current_time - $last_show_time ) < MAP_NOTICE_FIRST_TRESHOLD )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check B)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check B)' );
 
 			return false;
 		}
@@ -272,7 +234,7 @@ class MyAgilePrivacy {
 		// if feedback marked as done, show again after second treshold
 		if( $review_status === 'done' && ( $current_time - $last_show_time ) < MAP_NOTICE_SECOND_TRESHOLD )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check C)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check C)' );
 
 			return false;
 		}
@@ -290,6 +252,11 @@ class MyAgilePrivacy {
 	 */
 	private function load_classes_and_dependencies()
 	{
+		/**
+		 * The class for handling localization
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/my-agile-privacy-lang-helper.php';
+
 		/**
 		 * The class for handling regulation
 		 */
@@ -385,7 +352,16 @@ class MyAgilePrivacy {
 				{
 					//customized settings
 					add_action( 'template_redirect', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
-					add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
+
+					global $wp_version;
+					if ( version_compare( $wp_version, '6.9', '>=' ) )
+					{
+						add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), 0 );
+					}
+					else
+					{
+						add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
+					}
 				}
 				elseif( $the_settings['scanner_hook_type'] == 'init-shutdown' )
 				{
@@ -744,6 +720,7 @@ class MyAgilePrivacy {
 	            case 'enable_iab_tcf':
 	            case 'enable_metadata_sync':
 	            case 'enable_microsoft_cmode':
+	            case 'enable_clarity_cmode':
 	            case 'enable_cmode_v2':
 	            case 'enable_cmode_url_passthrough':
 	            case 'cmode_v2_forced_off_ga4_advanced':
@@ -1313,6 +1290,10 @@ class MyAgilePrivacy {
 			'enable_microsoft_cmode'					=>	false,
 			'microsoft_consent_ad_storage'				=> 	'denied',
 
+			'enable_clarity_cmode'						=>	false,
+			'clarity_consent_ad_storage'				=> 	'denied',
+			'clarity_consent_analytics_storage'			=> 	'denied',
+
 			'bypass_cmode_enable'						=> 	false,
 			'enable_cmode_v2'							=>	false,
 			'enable_cmode_url_passthrough'				=> 	false,
@@ -1576,6 +1557,8 @@ class MyAgilePrivacy {
 			'show_ntf_bar_on_not_yet_consent_choice'	=>	$the_settings['show_ntf_bar_on_not_yet_consent_choice'],
 
 			'enable_microsoft_cmode'					=> 	$the_settings['enable_microsoft_cmode'],
+
+			'enable_clarity_cmode'						=> 	$the_settings['enable_clarity_cmode'],
 
 			'enable_cmode_v2'							=> 	$the_settings['enable_cmode_v2'],
 			'enable_cmode_url_passthrough'				=>	$the_settings['enable_cmode_url_passthrough'],
@@ -2529,443 +2512,7 @@ class MyAgilePrivacy {
 	{
 		$the_settings = self::get_settings();
 
-		$default_txt = array();
-
-		$default_txt['it_IT'] = array();
-		$default_txt['it_IT']['always_enable'] = 'Sempre Abilitato';
-		$default_txt['it_IT']['is_enabled'] = 'Abilitato';
-		$default_txt['it_IT']['is_disabled'] = 'Disabilitato';
-		$default_txt['it_IT']['blocked_content'] = 'Attenzione: alcune funzionalità di questa pagina potrebbero essere bloccate a seguito delle tue scelte privacy';
-		$default_txt['it_IT']['notify_message_v2'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
-		$default_txt['it_IT']['notify_message_v2_short'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
-		$default_txt['it_IT']['view_the_cookie_policy'] = 'Visualizza la Cookie Policy';
-		$default_txt['it_IT']['view_the_personal_data_policy'] = "Visualizza l'Informativa Privacy";
-		$default_txt['it_IT']['manage_consent'] = 'Gestisci il consenso';
-		$default_txt['it_IT']['close'] = 'Chiudi';
-		$default_txt['it_IT']['privacy_settings'] = 'Impostazioni privacy';
-		$default_txt['it_IT']['this_website_uses_cookies'] = 'Questo sito utilizza i cookie per migliorare la tua esperienza di navigazione su questo sito.';
-		$default_txt['it_IT']['cookies_and_thirdy_part_software'] = 'Cookie e software di terze parti';
-		$default_txt['it_IT']['advertising_preferences'] = 'Preferenze pubblicitarie';
-		$default_txt['it_IT']['additional_consents'] = 'Consensi aggiuntivi';
-		$default_txt['it_IT']['ad_storage'] = 'Ad Storage';
-		$default_txt['it_IT']['ad_user_data'] = 'Ad User Data';
-		$default_txt['it_IT']['ad_personalization'] = 'Ad Personalization';
-		$default_txt['it_IT']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['it_IT']['ad_storage_microsoft_desc'] = 'Definisce se i cookie relativi alla pubblicità possono essere letti o scritti da Microsoft.';
-		$default_txt['it_IT']['ad_storage_desc'] = 'Definisce se i cookie relativi alla pubblicità possono essere letti o scritti da Google.';
-		$default_txt['it_IT']['ad_user_data_desc'] = "Determina se i dati dell'utente possono essere inviati a Google per scopi pubblicitari.";
-		$default_txt['it_IT']['ad_personalization_desc'] = 'Controlla se la pubblicità personalizzata (ad esempio, il remarketing) può essere abilitata.';
-		$default_txt['it_IT']['analytics_storage_desc'] = 'Definisce se i cookie associati a Google Analytics possono essere letti o scritti.';
-		$default_txt['it_IT']['banner_title'] = '';
-		$default_txt['it_IT']['accept'] = 'Accetta';
-		$default_txt['it_IT']['refuse'] = 'Rifiuta';
-		$default_txt['it_IT']['customize'] = 'Personalizza';
-		$default_txt['it_IT']['ga_4_version'] = 'Google Analytics nella versione 4 (GA4)';
-		$default_txt['it_IT']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['it_IT']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['it_IT']['in_addition_this_site_installs'] = 'Inoltre, questo sito installa';
-		$default_txt['it_IT']['with_anonymous_data_transmission_via_proxy'] = 'con trasmissione di dati anonimi tramite proxy.';
-		$default_txt['it_IT']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = "Prestando il consenso, l'invio dei dati sarà effettuato in maniera anonima, tutelando così la tua privacy.";
-		$default_txt['it_IT']['iab_bannertext_1'] = 'Noi e i nostri partner pubblicitari selezionati possiamo archiviare e/o accedere alle informazioni sul tuo dispositivo, come i cookie, identificatori unici, dati di navigazione.';
-		$default_txt['it_IT']['iab_bannertext_2_a'] = 'Puoi sempre scegliere gli scopi specifici legati al profilo accedendo al';
-		$default_txt['it_IT']['iab_bannertext_2_link'] = 'pannello delle preferenze pubblicitarie';
-		$default_txt['it_IT']['iab_bannertext_2_b'] = ', e puoi sempre revocare il tuo consenso in qualsiasi momento facendo clic su "Gestisci consenso" in fondo alla pagina.';
-		$default_txt['it_IT']['iab_bannertext_3'] = 'Elenco di alcune possibili autorizzazioni pubblicitarie';
-		$default_txt['it_IT']['iab_bannertext_4_a'] = 'Puoi consultare: la nostra lista di';
-		$default_txt['it_IT']['iab_bannertext_4_b'] = 'partner pubblicitari';
-		$default_txt['it_IT']['iab_bannertext_5'] = 'la Cookie Policy';
-		$default_txt['it_IT']['iab_bannertext_6'] = 'e la Privacy Policy';
-		$default_txt['it_IT']['vat_id'] = 'Partita IVA';
-		$default_txt['it_IT']['google_recaptcha_content_notification_a'] = 'Le tue scelte cookie potrebbero non consentire l\'invio del modulo. Puoi rivedere le tue scelte';
-		$default_txt['it_IT']['google_recaptcha_content_notification_b'] = 'facendo clic qui';
-
-
-		$default_txt['en_US'] = array();
-		$default_txt['en_US']['always_enable'] = 'Always Enabled';
-		$default_txt['en_US']['is_enabled'] = 'Enabled';
-		$default_txt['en_US']['is_disabled'] = 'Disabled';
-		$default_txt['en_US']['blocked_content'] = 'Warning: some page functionalities could not work due to your privacy choices';
-		$default_txt['en_US']['notify_message_v2'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
-		$default_txt['en_US']['notify_message_v2_short'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
-		$default_txt['en_US']['view_the_cookie_policy'] = 'View the Cookie Policy';
-		$default_txt['en_US']['view_the_personal_data_policy'] = 'View the Personal Data Policy';
-		$default_txt['en_US']['manage_consent'] = 'Manage consent';
-		$default_txt['en_US']['close'] = 'Close';
-		$default_txt['en_US']['privacy_settings'] = 'Privacy Settings';
-		$default_txt['en_US']['this_website_uses_cookies'] = 'This website uses cookies to improve your experience while you navigate through the website.';
-		$default_txt['en_US']['cookies_and_thirdy_part_software'] = 'Cookies and third-party software';
-		$default_txt['en_US']['advertising_preferences'] = 'Advertising preferences';
-		$default_txt['en_US']['additional_consents'] = 'Additional consents';
-		$default_txt['en_US']['ad_storage'] = 'Ad Storage';
-		$default_txt['en_US']['ad_user_data'] = 'Ad User Data';
-		$default_txt['en_US']['ad_personalization'] = 'Ad Personalization';
-		$default_txt['en_US']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['en_US']['ad_storage_microsoft_desc'] = 'Defines whether cookies related to advertising can be read or written by Microsoft.';
-		$default_txt['en_US']['ad_storage_desc'] = 'Defines whether cookies related to advertising can be read or written by Google.';
-		$default_txt['en_US']['ad_user_data_desc'] = 'Determines whether user data can be sent to Google for advertising purposes.';
-		$default_txt['en_US']['ad_personalization_desc'] = 'Controls whether personalized advertising (for example, remarketing) can be enabled.';
-		$default_txt['en_US']['analytics_storage_desc'] = 'Defines whether cookies associated with Google Analytics can be read or written.';
-		$default_txt['en_US']['banner_title'] = '';
-		$default_txt['en_US']['accept'] = 'Accept';
-		$default_txt['en_US']['refuse'] = 'Refuse';
-		$default_txt['en_US']['customize'] = 'Customize';
-		$default_txt['en_US']['ga_4_version'] = 'Google Analytics version 4 (GA4)';
-		$default_txt['en_US']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['en_US']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['en_US']['in_addition_this_site_installs'] = 'In addition, this site installs';
-		$default_txt['en_US']['with_anonymous_data_transmission_via_proxy'] = 'with anonymous data transmission via proxy.';
-		$default_txt['en_US']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'By giving your consent, the data will be sent anonymously, thus protecting your privacy.';
-		$default_txt['en_US']['iab_bannertext_1'] = 'We and our selected ad partners can store and/or access information on your device, such as cookies, unique identifiers and browsing data.';
-		$default_txt['en_US']['iab_bannertext_2_a'] = 'You can always choose the specific purposes related to profiling by accessing the';
-		$default_txt['en_US']['iab_bannertext_2_link'] = 'advertising preferences panel';
-		$default_txt['en_US']['iab_bannertext_2_b'] = ', and you can withdraw your consent at any time by clicking on "Manage consent" at the bottom of the page.';
-		$default_txt['en_US']['iab_bannertext_3'] = 'List of some possible advertising permissions';
-		$default_txt['en_US']['iab_bannertext_4_a'] = 'You can consult: our list of';
-		$default_txt['en_US']['iab_bannertext_4_b'] = 'advertising partners';
-		$default_txt['en_US']['iab_bannertext_5'] = 'the Cookie Policy';
-		$default_txt['en_US']['iab_bannertext_6'] = 'and the Privacy Policy';
-		$default_txt['en_US']['vat_id'] = 'VAT ID';
-		$default_txt['en_US']['google_recaptcha_content_notification_a'] = 'Your cookie choices may not allow the form to be submitted. You can review your choices by';
-		$default_txt['en_US']['google_recaptcha_content_notification_b'] = 'clicking here';
-
-		$default_txt['fr_FR'] = array();
-		$default_txt['fr_FR']['always_enable'] = 'Toujours activé';
-		$default_txt['fr_FR']['is_enabled'] = 'Activé';
-		$default_txt['fr_FR']['is_disabled'] = 'Désactivé';
-		$default_txt['fr_FR']['blocked_content'] = 'Avertissement: certaines fonctionnalités de la page pourraient ne pas fonctionner en raison de vos choix de confidentialité';
-		$default_txt['fr_FR']['notify_message_v2'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
-		$default_txt['fr_FR']['notify_message_v2_short'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
-		$default_txt['fr_FR']['view_the_cookie_policy'] = 'Politique relative aux cookies';
-		$default_txt['fr_FR']['view_the_personal_data_policy'] = 'Consultez la politique de données personnelles';
-		$default_txt['fr_FR']['manage_consent'] = 'Consentement à la politique de confidentialité';
-		$default_txt['fr_FR']['close'] = 'Close';
-		$default_txt['fr_FR']['privacy_settings'] = 'Paramètres de confidentialité';
-		$default_txt['fr_FR']['this_website_uses_cookies'] = 'Ce site utilise des cookies pour améliorer votre expérience de navigation.';
-		$default_txt['fr_FR']['cookies_and_thirdy_part_software'] = 'Cookies et logiciels tiers';
-		$default_txt['fr_FR']['advertising_preferences'] = 'Préférences publicitaires';
-		$default_txt['fr_FR']['additional_consents'] = 'Consents supplémentaires';
-		$default_txt['fr_FR']['ad_storage'] = 'Ad Storage';
-		$default_txt['fr_FR']['ad_user_data'] = 'Ad User Data';
-		$default_txt['fr_FR']['ad_personalization'] = 'Ad Personalization';
-		$default_txt['fr_FR']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['fr_FR']['ad_storage_microsoft_desc'] = 'Définit si les cookies liés à la publicité peuvent être lus ou écrits par Microsoft.';
-		$default_txt['fr_FR']['ad_storage_desc'] = 'Définit si les cookies liés à la publicité peuvent être lus ou écrits par Google.';
-		$default_txt['fr_FR']['ad_user_data_desc'] = 'Détermine si les données utilisateur peuvent être envoyées à Google à des fins publicitaires.';
-		$default_txt['fr_FR']['ad_personalization_desc'] = 'Contrôle si la publicité personnalisée (par exemple, le remarketing) peut être activée.';
-		$default_txt['fr_FR']['analytics_storage_desc'] = 'Définit si les cookies associés à Google Analytics peuvent être lus ou écrits.';
-		$default_txt['fr_FR']['banner_title'] = '';
-		$default_txt['fr_FR']['accept'] = 'Accepter';
-		$default_txt['fr_FR']['refuse'] = 'Refuse';
-		$default_txt['fr_FR']['customize'] = 'Personnaliser';
-		$default_txt['fr_FR']['ga_4_version'] = 'Google Analytics version 4 (GA4)';
-		$default_txt['fr_FR']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['fr_FR']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['fr_FR']['in_addition_this_site_installs'] = 'En outre, ce site installe';
-		$default_txt['fr_FR']['with_anonymous_data_transmission_via_proxy'] = 'avec transmission de données anonymes via un proxy.';
-		$default_txt['fr_FR']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'En donnant votre consentement, l’envoi des données sera effectué de manière anonyme, protégeant ainsi votre vie privée.';
-		$default_txt['fr_FR']['iab_bannertext_1'] = 'Nous et nos partenaires publicitaires sélectionnés pouvons stocker et/ou accéder aux informations sur votre appareil, telles que les cookies, les identifiants uniques, les données de navigation.';
-		$default_txt['fr_FR']['iab_bannertext_2_a'] = 'Vous pouvez toujours choisir les objectifs spécifiques liés au profilage en accédant au';
-		$default_txt['fr_FR']['iab_bannertext_2_link'] = 'panneau des préférences publicitaires';
-		$default_txt['fr_FR']['iab_bannertext_2_b'] = ', et vous pouvez toujours retirer votre consentement à tout moment en cliquant sur "Gérer le consentement" en bas de la page.';
-		$default_txt['fr_FR']['iab_bannertext_3'] = 'Liste de quelques autorisations publicitaires possibles';
-		$default_txt['fr_FR']['iab_bannertext_4_a'] = 'Vous pouvez consulter: notre liste de';
-		$default_txt['fr_FR']['iab_bannertext_4_b'] = 'partenaires publicitaires';
-		$default_txt['fr_FR']['iab_bannertext_5'] = 'la Politique relative aux cookies';
-		$default_txt['fr_FR']['iab_bannertext_6'] = 'et la Politique de confidentialité';
-		$default_txt['fr_FR']['vat_id'] = 'VAT ID';
-		$default_txt['fr_FR']['google_recaptcha_content_notification_a'] = 'Veuillez noter: vos choix de cookies peuvent ne pas permettre de soumettre le formulaire. Vous pouvez revoir vos choix en';
-		$default_txt['fr_FR']['google_recaptcha_content_notification_b'] = 'cliquant ici';
-
-		$default_txt['es_ES'] = array();
-		$default_txt['es_ES']['always_enable'] = 'Siempre activado';
-		$default_txt['es_ES']['is_enabled'] = 'Activado';
-		$default_txt['es_ES']['is_disabled'] = 'Deshabilitado';
-		$default_txt['es_ES']['blocked_content'] = 'Advertencia: algunas funciones de esta página pueden estar bloqueadas como resultado de sus opciones de privacidad';
-		$default_txt['es_ES']['notify_message_v2'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
-		$default_txt['es_ES']['notify_message_v2_short'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
-		$default_txt['es_ES']['view_the_cookie_policy'] = 'Política de cookies';
-		$default_txt['es_ES']['view_the_personal_data_policy'] = 'Consulte la política de datos personales';
-		$default_txt['es_ES']['manage_consent'] = 'Consentimiento de privacidad';
-		$default_txt['es_ES']['close'] = 'Close';
-		$default_txt['es_ES']['privacy_settings'] = 'Ajustes de privacidad';
-		$default_txt['es_ES']['this_website_uses_cookies'] = 'Este sitio utiliza cookies para mejorar su experiencia de navegación.';
-		$default_txt['es_ES']['cookies_and_thirdy_part_software'] = 'Cookies y software de terceros';
-		$default_txt['es_ES']['advertising_preferences'] = 'Preferencias publicitarias';
-		$default_txt['es_ES']['additional_consents'] = 'Consentimientos adicionales';
-		$default_txt['es_ES']['ad_storage'] = 'Ad Storage';
-		$default_txt['es_ES']['ad_user_data'] = 'Ad User Data';
-		$default_txt['es_ES']['ad_personalization'] = 'Ad Personalization';
-		$default_txt['es_ES']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['es_ES']['ad_storage_microsoft_desc'] = 'Define si las cookies relacionadas con la publicidad pueden ser leídas o escritas por Microsoft.';
-		$default_txt['es_ES']['ad_storage_desc'] = 'Define si las cookies relacionadas con la publicidad pueden ser leídas o escritas por Google.';
-		$default_txt['es_ES']['ad_user_data_desc'] = 'Determina si los datos del usuario pueden ser enviados a Google con fines publicitarios.';
-		$default_txt['es_ES']['ad_personalization_desc'] = 'Controla si se puede habilitar la publicidad personalizada (por ejemplo, remarketing).';
-		$default_txt['es_ES']['analytics_storage_desc'] = 'Define si se pueden leer o escribir cookies asociadas a Google Analytics.';
-		$default_txt['es_ES']['banner_title'] = '';
-		$default_txt['es_ES']['accept'] = 'Aceptar';
-		$default_txt['es_ES']['refuse'] = 'Rechazar';
-		$default_txt['es_ES']['customize'] = 'Personalizar';
-		$default_txt['es_ES']['ga_4_version'] = 'la versión 4 de Google Analytics (GA4)';
-		$default_txt['es_ES']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['es_ES']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['es_ES']['in_addition_this_site_installs'] = 'Además, este sitio instala';
-		$default_txt['es_ES']['with_anonymous_data_transmission_via_proxy'] = 'con transmisión de datos anónimos mediante «proxy».';
-		$default_txt['es_ES']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Al dar tu consentimiento, el envío de los datos se realizará de forma anónima y así tu privacidad quedará protegida.';
-		$default_txt['es_ES']['iab_bannertext_1'] = 'Nosotros y nuestros socios publicitarios seleccionados podemos almacenar y/o acceder a información en su dispositivo, como cookies, identificadores únicos, datos de navegación.';
-		$default_txt['es_ES']['iab_bannertext_2_a'] = 'Siempre puedes elegir los propósitos específicos relacionados con el perfilado accediendo al';
-		$default_txt['es_ES']['iab_bannertext_2_link'] = 'panel de preferencias de publicidad';
-		$default_txt['es_ES']['iab_bannertext_2_b'] = ', y siempre puedes retirar su consentimiento en cualquier momento haciendo clic en "Gestionar consentimiento" en la parte inferior de la página.';
-		$default_txt['es_ES']['iab_bannertext_3'] = 'Lista de algunos permisos publicitarios posibles';
-		$default_txt['es_ES']['iab_bannertext_4_a'] = 'Puedes consultar: nuestra lista de';
-		$default_txt['es_ES']['iab_bannertext_4_b'] = 'socios publicitarios';
-		$default_txt['es_ES']['iab_bannertext_5'] = 'la Política de cookies';
-		$default_txt['es_ES']['iab_bannertext_6'] = 'y la Política de privacidad';
-		$default_txt['es_ES']['vat_id'] = 'VAT ID';
-		$default_txt['es_ES']['google_recaptcha_content_notification_a'] = 'Tenga en cuenta: sus elecciones de cookies pueden no permitir el envío del formulario. Puede revisar sus opciones';
-		$default_txt['es_ES']['google_recaptcha_content_notification_b'] = 'haciendo clic aquí';
-
-		$default_txt['de_DE'] = array();
-		$default_txt['de_DE']['always_enable'] = 'Immer aktiviert';
-		$default_txt['de_DE']['is_enabled'] = 'Aktiviert';
-		$default_txt['de_DE']['is_disabled'] = 'Deaktiviert';
-		$default_txt['de_DE']['blocked_content'] = 'Warnung: Einige Funktionen dieser Seite können aufgrund Ihrer Datenschutzeinstellungen blockiert werden';
-		$default_txt['de_DE']['notify_message_v2'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
-		$default_txt['de_DE']['notify_message_v2_short'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
-		$default_txt['de_DE']['view_the_cookie_policy'] = 'Cookie-Richtlinie';
-		$default_txt['de_DE']['view_the_personal_data_policy'] = 'Sehen Sie sich die Datenschutzrichtlinie an';
-		$default_txt['de_DE']['manage_consent'] = 'Zustimmung zum Datenschutz';
-		$default_txt['de_DE']['close'] = 'Close';
-		$default_txt['de_DE']['privacy_settings'] = 'Datenschutzeinstellungen';
-		$default_txt['de_DE']['this_website_uses_cookies'] = 'Diese Website verwendet Cookies, um Ihr Surferlebnis zu verbessern.';
-		$default_txt['de_DE']['cookies_and_thirdy_part_software'] = 'Cookies und Software von Drittanbietern';
-		$default_txt['de_DE']['advertising_preferences'] = 'Werbepreferenzen';
-		$default_txt['de_DE']['additional_consents'] = 'Additional consents';
-		$default_txt['de_DE']['ad_storage'] = 'Ad Storage';
-		$default_txt['de_DE']['ad_user_data'] = 'Ad User Data';
-		$default_txt['de_DE']['ad_personalization'] = 'Ad Personalization';
-		$default_txt['de_DE']['analytics_storage'] = 'Analytics Storage';
-		$default_txt['de_DE']['ad_storage_microsoft_desc'] = 'Legt fest, ob Cookies im Zusammenhang mit Werbung von Microsoft gelesen oder geschrieben werden können.';
-		$default_txt['de_DE']['ad_storage_desc'] = 'Legt fest, ob Cookies im Zusammenhang mit Werbung von Google gelesen oder geschrieben werden können.';
-		$default_txt['de_DE']['ad_user_data_desc'] = 'Legt fest, ob Benutzerdaten zu Werbezwecken an Google gesendet werden können.';
-		$default_txt['de_DE']['ad_personalization_desc'] = 'Steuert, ob personalisierte Werbung (zum Beispiel Remarketing) aktiviert werden kann.';
-		$default_txt['de_DE']['analytics_storage_desc'] = 'Legt fest, ob Cookies, die mit Google Analytics verbunden sind, gelesen oder geschrieben werden können.';
-		$default_txt['de_DE']['banner_title'] = '';
-		$default_txt['de_DE']['accept'] = 'Akzeptieren';
-		$default_txt['de_DE']['refuse'] = 'Ablehnen';
-		$default_txt['de_DE']['customize'] = 'Benutzerdefiniert';
-		$default_txt['de_DE']['ga_4_version'] = 'Google Analytics Version 4 (GA4)';
-		$default_txt['de_DE']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['de_DE']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['de_DE']['in_addition_this_site_installs'] = 'Darüber hinaus installiert diese Website';
-		$default_txt['de_DE']['with_anonymous_data_transmission_via_proxy'] = 'mit anonymer Datenübertragung über Proxy.';
-		$default_txt['de_DE']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Wenn Sie Ihre Zustimmung geben, werden die Daten anonym übermittelt, so dass Ihre Privatsphäre geschützt ist.';
-		$default_txt['de_DE']['iab_bannertext_1'] = 'Wir und unsere ausgewählten Werbepartner können Informationen auf Ihrem Gerät speichern und/oder darauf zugreifen, wie z.B. Cookies, eindeutige Kennungen und Browserdaten.';
-		$default_txt['de_DE']['iab_bannertext_2_a'] = 'Sie können jederzeit die spezifischen Zwecke in Bezug auf das Profiling auswählen, indem Sie auf das';
-		$default_txt['de_DE']['iab_bannertext_2_link'] = 'Werbepräferenz-Panel';
-		$default_txt['de_DE']['iab_bannertext_2_b'] = 'zugreifen, und Sie können Ihre Einwilligung jederzeit widerrufen, indem Sie unten auf der Seite auf "Einwilligung verwalten" klicken.';
-		$default_txt['de_DE']['iab_bannertext_3'] = 'Liste einiger möglicher Werbeeinwilligungen';
-		$default_txt['de_DE']['iab_bannertext_4_a'] = 'Sie können unsere Liste: mit';
-		$default_txt['de_DE']['iab_bannertext_4_b'] = 'Werbepartnern';
-		$default_txt['de_DE']['iab_bannertext_5'] = 'die Cookie-Richtlinie';
-		$default_txt['de_DE']['iab_bannertext_6'] = 'und die Datenschutzrichtlinie einsehen';
-		$default_txt['de_DE']['vat_id'] = 'VAT ID';
-		$default_txt['de_DE']['google_recaptcha_content_notification_a'] = 'Bitte beachten: kann es sein, dass Ihre Cookie-Auswahl das Absenden des Formulars nicht zulässt. Sie können Ihre Auswahl überprüfen, indem Sie';
-		$default_txt['de_DE']['google_recaptcha_content_notification_b'] = 'hier klicken';
-
-		$default_txt['pt_PT'] = array();
-		$default_txt['pt_PT']['always_enable'] = 'Sempre Ativado';
-		$default_txt['pt_PT']['is_enabled'] = 'Ativado';
-		$default_txt['pt_PT']['is_disabled'] = 'Desativado';
-		$default_txt['pt_PT']['blocked_content'] = 'Aviso: algumas funcionalidades da página podem não funcionar devido às suas escolhas de privacidade';
-		$default_txt['pt_PT']['notify_message_v2'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
-		$default_txt['pt_PT']['notify_message_v2_short'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
-		$default_txt['pt_PT']['view_the_cookie_policy'] = 'Ver a Política de Cookies';
-		$default_txt['pt_PT']['view_the_personal_data_policy'] = 'Ver a Política de Dados Pessoais';
-		$default_txt['pt_PT']['manage_consent'] = 'Gerenciar consentimento';
-		$default_txt['pt_PT']['close'] = 'Fechar';
-		$default_txt['pt_PT']['privacy_settings'] = 'Configurações de Privacidade';
-		$default_txt['pt_PT']['this_website_uses_cookies'] = 'Este site utiliza cookies para melhorar sua experiência enquanto você navega pelo site.';
-		$default_txt['pt_PT']['cookies_and_thirdy_part_software'] = 'Cookies e software de terceiros';
-		$default_txt['pt_PT']['advertising_preferences'] = 'Preferências de publicidade';
-		$default_txt['pt_PT']['additional_consents'] = 'Consentimentos adicionais';
-		$default_txt['pt_PT']['ad_storage'] = 'Armazenamento de anúncios';
-		$default_txt['pt_PT']['ad_user_data'] = 'Dados de usuário de anúncios';
-		$default_txt['pt_PT']['ad_personalization'] = 'Personalização de anúncios';
-		$default_txt['pt_PT']['analytics_storage'] = 'Armazenamento de análises';
-		$default_txt['pt_PT']['ad_storage_microsoft_desc'] = 'Define se cookies relacionados à publicidade podem ser lidos ou escritos pelo Microsoft.';
-		$default_txt['pt_PT']['ad_storage_desc'] = 'Define se cookies relacionados à publicidade podem ser lidos ou escritos pelo Google.';
-		$default_txt['pt_PT']['ad_user_data_desc'] = 'Determina se dados de usuário podem ser enviados ao Google para fins publicitários.';
-		$default_txt['pt_PT']['ad_personalization_desc'] = 'Controla se a publicidade personalizada (por exemplo, remarketing) pode ser ativada.';
-		$default_txt['pt_PT']['analytics_storage_desc'] = 'Define se cookies associados ao Google Analytics podem ser lidos ou escritos.';
-		$default_txt['pt_PT']['banner_title'] = '';
-		$default_txt['pt_PT']['accept'] = 'Aceitar';
-		$default_txt['pt_PT']['refuse'] = 'Recusar';
-		$default_txt['pt_PT']['customize'] = 'Personalizar';
-		$default_txt['pt_PT']['ga_4_version'] = 'Google Analytics versão 4 (GA4)';
-		$default_txt['pt_PT']['facebook_remarketing'] = 'Remarketing do Facebook';
-		$default_txt['pt_PT']['tiktok_pixel'] = 'Pixel do TikTok';
-		$default_txt['pt_PT']['in_addition_this_site_installs'] = 'Além disso, este site instala';
-		$default_txt['pt_PT']['with_anonymous_data_transmission_via_proxy'] = 'com transmissão de dados anônima via proxy.';
-		$default_txt['pt_PT']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Ao dar seu consentimento, os dados serão enviados anonimamente, protegendo assim sua privacidade.';
-		$default_txt['pt_PT']['iab_bannertext_1'] = 'Nós e nossos parceiros publicitários selecionados podemos armazenar e/ou acessar informações em seu dispositivo, como cookies, identificadores únicos e dados de navegação.';
-		$default_txt['pt_PT']['iab_bannertext_2_a'] = 'Você sempre pode escolher os propósitos específicos relacionados ao perfil acessando o';
-		$default_txt['pt_PT']['iab_bannertext_2_link'] = 'painel de preferências de publicidade';
-		$default_txt['pt_PT']['iab_bannertext_2_b'] = ', e pode sempre retirar seu consentimento a qualquer momento clicando em "Gerenciar consentimento" no final da página.';
-		$default_txt['pt_PT']['iab_bannertext_3'] = 'Lista de algumas permissões publicitárias possíveis';
-		$default_txt['pt_PT']['iab_bannertext_4_a'] = 'Você pode consultar: nossa lista de';
-		$default_txt['pt_PT']['iab_bannertext_4_b'] = 'parceiros de publicidade';
-		$default_txt['pt_PT']['iab_bannertext_5'] = 'a Política de Cookies';
-		$default_txt['pt_PT']['iab_bannertext_6'] = 'e a Política de Privacidade';
-		$default_txt['pt_PT']['vat_id'] = 'ID de IVA';
-		$default_txt['pt_PT']['google_recaptcha_content_notification_a'] = 'Suas escolhas de cookies podem não permitir o envio do formulário. Você pode revisar suas escolhas';
-		$default_txt['pt_PT']['google_recaptcha_content_notification_b'] = 'clicando aqui';
-
-		$default_txt['nl_NL'] = array();
-		$default_txt['nl_NL']['always_enable'] = 'Altijd Ingeschakeld';
-		$default_txt['nl_NL']['is_enabled'] = 'Ingeschakeld';
-		$default_txt['nl_NL']['is_disabled'] = 'Uitgeschakeld';
-		$default_txt['nl_NL']['blocked_content'] = 'Waarschuwing: sommige functionaliteiten van de pagina kunnen niet werken vanwege uw privacykeuzes';
-		$default_txt['nl_NL']['notify_message_v2'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
-		$default_txt['nl_NL']['notify_message_v2_text'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
-		$default_txt['nl_NL']['view_the_cookie_policy'] = 'Bekijk het Cookiebeleid';
-		$default_txt['nl_NL']['view_the_personal_data_policy'] = 'Bekijk het Beleid voor Persoonsgegevens';
-		$default_txt['nl_NL']['manage_consent'] = 'Beheer toestemmingen';
-		$default_txt['nl_NL']['close'] = 'Sluiten';
-		$default_txt['nl_NL']['privacy_settings'] = 'Privacy-instellingen';
-		$default_txt['nl_NL']['this_website_uses_cookies'] = 'Deze website maakt gebruik van cookies om uw ervaring te verbeteren terwijl u door de website navigeert.';
-		$default_txt['nl_NL']['cookies_and_thirdy_part_software'] = 'Cookies en software van derden';
-		$default_txt['nl_NL']['advertising_preferences'] = 'Advertentievoorkeuren';
-		$default_txt['nl_NL']['additional_consents'] = 'Aanvullende toestemmingen';
-		$default_txt['nl_NL']['ad_storage'] = 'Advertentieopslag';
-		$default_txt['nl_NL']['ad_user_data'] = 'Advertentiegebruikersgegevens';
-		$default_txt['nl_NL']['ad_personalization'] = 'Advertentiepersonalisatie';
-		$default_txt['nl_NL']['analytics_storage'] = 'AnalysegOpslag';
-		$default_txt['nl_NL']['ad_storage_microsoft_desc'] = 'Bepaalt of cookies gerelateerd aan advertenties kunnen worden gelezen of geschreven door Microsoft.';
-		$default_txt['nl_NL']['ad_storage_desc'] = 'Bepaalt of cookies gerelateerd aan advertenties kunnen worden gelezen of geschreven door Google.';
-		$default_txt['nl_NL']['ad_user_data_desc'] = 'Bepaalt of gebruikersgegevens naar Google kunnen worden verzonden voor advertentiedoeleinden.';
-		$default_txt['nl_NL']['ad_personalization_desc'] = 'Bepaalt of gepersonaliseerde advertenties (bijvoorbeeld remarketing) kunnen worden ingeschakeld.';
-		$default_txt['nl_NL']['analytics_storage_desc'] = 'Bepaalt of cookies die gekoppeld zijn aan Google Analytics kunnen worden gelezen of geschreven.';
-		$default_txt['nl_NL']['banner_title'] = '';
-		$default_txt['nl_NL']['accept'] = 'Accepteren';
-		$default_txt['nl_NL']['refuse'] = 'Weigeren';
-		$default_txt['nl_NL']['customize'] = 'Aanpassen';
-		$default_txt['nl_NL']['ga_4_version'] = 'Google Analytics versie 4 (GA4)';
-		$default_txt['nl_NL']['facebook_remarketing'] = 'Facebook Remarketing';
-		$default_txt['nl_NL']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['nl_NL']['in_addition_this_site_installs'] = 'Daarnaast installeert deze site';
-		$default_txt['nl_NL']['with_anonymous_data_transmission_via_proxy'] = 'met anonieme gegevensoverdracht via proxy.';
-		$default_txt['nl_NL']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Door uw toestemming te geven, worden de gegevens anoniem verzonden, waardoor uw privacy wordt beschermd.';
-		$default_txt['nl_NL']['iab_bannertext_1'] = 'Wij en onze geselecteerde advertentiepartners kunnen informatie opslaan en/of openen op uw apparaat, zoals cookies, unieke identificatoren en browsegegevens.';
-		$default_txt['nl_NL']['iab_bannertext_2_a'] = 'U kunt altijd de specifieke doeleinden met betrekking tot profilering kiezen door toegang te krijgen tot het';
-		$default_txt['nl_NL']['iab_bannertext_2_link'] = 'advertentievoorkeurenpaneel';
-		$default_txt['nl_NL']['iab_bannertext_2_b'] = ', en u kunt uw toestemming altijd intrekken door op "Beheer toestemmingen" onderaan de pagina te klikken.';
-		$default_txt['nl_NL']['iab_bannertext_3'] = 'Lijst van enkele mogelijke reclame-machtigingen';
-		$default_txt['nl_NL']['iab_bannertext_4_a'] = 'U kunt raadplegen: onze lijst van';
-		$default_txt['nl_NL']['iab_bannertext_4_b'] = 'advertentiepartners';
-		$default_txt['nl_NL']['iab_bannertext_5'] = 'het Cookiebeleid';
-		$default_txt['nl_NL']['iab_bannertext_6'] = 'en het Privacybeleid';
-		$default_txt['nl_NL']['vat_id'] = 'Btw-nummer';
-		$default_txt['nl_NL']['google_recaptcha_content_notification_a'] = 'Uw cookie-keuzes kunnen misschien niet toestaan dat het formulier wordt ingediend. U kunt uw keuzes herzien door';
-		$default_txt['nl_NL']['google_recaptcha_content_notification_b'] = 'hier te klikken';
-
-
-		$default_txt['pl_PL'] = array();
-		$default_txt['pl_PL']['always_enable'] = 'Zawsze Włączone';
-		$default_txt['pl_PL']['is_enabled'] = 'Włączone';
-		$default_txt['pl_PL']['is_disabled'] = 'Wyłączone';
-		$default_txt['pl_PL']['blocked_content'] = 'Uwaga: niektóre funkcje strony mogą nie działać z powodu wybranych przez Ciebie opcji prywatności';
-		$default_txt['pl_PL']['notify_message_v2'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
-		$default_txt['pl_PL']['notify_message_v2_text'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
-		$default_txt['pl_PL']['view_the_cookie_policy'] = 'Zobacz Politykę Cookie';
-		$default_txt['pl_PL']['view_the_personal_data_policy'] = 'Zobacz Politykę Danych Osobowych';
-		$default_txt['pl_PL']['manage_consent'] = 'Zarządzaj zgodami';
-		$default_txt['pl_PL']['close'] = 'Zamknij';
-		$default_txt['pl_PL']['privacy_settings'] = 'Ustawienia Prywatności';
-		$default_txt['pl_PL']['this_website_uses_cookies'] = 'Ta strona używa plików cookie, aby poprawić Twoje doświadczenie podczas przeglądania strony.';
-		$default_txt['pl_PL']['cookies_and_thirdy_part_software'] = 'Pliki cookie i oprogramowanie stron trzecich';
-		$default_txt['pl_PL']['advertising_preferences'] = 'Preferencje reklamowe';
-		$default_txt['pl_PL']['additional_consents'] = 'Dodatkowe zgody';
-		$default_txt['pl_PL']['ad_storage'] = 'Przechowywanie reklam';
-		$default_txt['pl_PL']['ad_user_data'] = 'Dane użytkowników reklam';
-		$default_txt['pl_PL']['ad_personalization'] = 'Personalizacja reklam';
-		$default_txt['pl_PL']['analytics_storage'] = 'Przechowywanie analityki';
-		$default_txt['pl_PL']['ad_storage_microsoft_desc'] = 'Określa, czy pliki cookie związane z reklamami mogą być odczytywane lub zapisywane przez Microsoft.';
-		$default_txt['pl_PL']['ad_storage_desc'] = 'Określa, czy pliki cookie związane z reklamami mogą być odczytywane lub zapisywane przez Google.';
-		$default_txt['pl_PL']['ad_user_data_desc'] = 'Określa, czy dane użytkowników mogą być wysyłane do Google w celach reklamowych.';
-		$default_txt['pl_PL']['ad_personalization_desc'] = 'Kontroluje, czy personalizowane reklamy (np. remarketing) mogą być włączone.';
-		$default_txt['pl_PL']['analytics_storage_desc'] = 'Określa, czy pliki cookie związane z Google Analytics mogą być odczytywane lub zapisywane.';
-		$default_txt['pl_PL']['banner_title'] = '';
-		$default_txt['pl_PL']['accept'] = 'Akceptuj';
-		$default_txt['pl_PL']['refuse'] = 'Odrzuć';
-		$default_txt['pl_PL']['customize'] = 'Dostosuj';
-		$default_txt['pl_PL']['ga_4_version'] = 'Google Analytics wersji 4 (GA4)';
-		$default_txt['pl_PL']['facebook_remarketing'] = 'Remarketing na Facebooku';
-		$default_txt['pl_PL']['tiktok_pixel'] = 'Piksel TikTok';
-		$default_txt['pl_PL']['in_addition_this_site_installs'] = 'Dodatkowo, ta strona instaluje';
-		$default_txt['pl_PL']['with_anonymous_data_transmission_via_proxy'] = 'z anonimową transmisją danych za pośrednictwem proxy.';
-		$default_txt['pl_PL']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Dając swoją zgodę, dane będą przesyłane anonimowo, chroniąc w ten sposób Twoją prywatność.';
-		$default_txt['pl_PL']['iab_bannertext_1'] = 'My i wybrani partnerzy reklamowi możemy przechowywać i/lub uzyskiwać dostęp do informacji na Twoim urządzeniu, takich jak pliki cookie, unikalne identyfikatory, dane przeglądania.';
-		$default_txt['pl_PL']['iab_bannertext_2_a'] = 'Zawsze możesz wybrać konkretne cele związane z profilowaniem, uzyskując dostęp do';
-		$default_txt['pl_PL']['iab_bannertext_2_link'] = 'panelu preferencji reklamowych';
-		$default_txt['pl_PL']['iab_bannertext_2_b'] = ', a także zawsze możesz wycofać swoją zgodę w dowolnym momencie, klikając na "Zarządzaj zgodami" na dole strony.';
-		$default_txt['pl_PL']['iab_bannertext_3'] = 'Lista niektórych możliwych pozwoleń reklamowych';
-		$default_txt['pl_PL']['iab_bannertext_4_a'] = 'Możesz zapoznać się z: naszą listą';
-		$default_txt['pl_PL']['iab_bannertext_4_b'] = 'partnerów reklamowych';
-		$default_txt['pl_PL']['iab_bannertext_5'] = 'Polityką plików cookie';
-		$default_txt['pl_PL']['iab_bannertext_6'] = 'oraz Polityką Prywatności';
-		$default_txt['pl_PL']['vat_id'] = 'NIP';
-		$default_txt['pl_PL']['google_recaptcha_content_notification_a'] = 'Twoje wybory dotyczące cookie mogą uniemożliwić wypełnienie formularza. Możesz przeglądać swoje wybory';
-		$default_txt['pl_PL']['google_recaptcha_content_notification_b'] = 'klikając tutaj';
-
-
-		$default_txt['el'] = array();
-		$default_txt['el']['always_enable'] = 'Πάντα Ενεργοποιημένο';
-		$default_txt['el']['is_enabled'] = 'Ενεργοποιήθηκε';
-		$default_txt['el']['is_disabled'] = 'Απενεργοποιήθηκε';
-		$default_txt['el']['blocked_content'] = 'Προειδοποίηση: ορισμένες λειτουργίες της σελίδας ενδέχεται να μην λειτουργούν λόγω των επιλογών απορρήτου σας';
-		$default_txt['el']['notify_message_v2'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
-		$default_txt['el']['notify_message_v2_text'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
-		$default_txt['el']['view_the_cookie_policy'] = 'Δείτε την Πολιτική Cookies';
-		$default_txt['el']['view_the_personal_data_policy'] = 'Δείτε την Πολιτική Προσωπικών Δεδομένων';
-		$default_txt['el']['manage_consent'] = 'Διαχείριση συναίνεσης';
-		$default_txt['el']['close'] = 'Κλείσιμο';
-		$default_txt['el']['privacy_settings'] = 'Ρυθμίσεις απορρήτου';
-		$default_txt['el']['this_website_uses_cookies'] = 'Αυτός ο ιστότοπος χρησιμοποιεί cookies για να βελτιώσει την εμπειρία σας καθώς πλοηγείστε στον ιστότοπο.';
-		$default_txt['el']['cookies_and_thirdy_part_software'] = 'Cookies και λογισμικό τρίτων';
-		$default_txt['el']['advertising_preferences'] = 'Προτιμήσεις διαφημίσεων';
-		$default_txt['el']['additional_consents'] = 'Πρόσθετες συναινέσεις';
-		$default_txt['el']['ad_storage'] = 'Αποθήκευση διαφημίσεων';
-		$default_txt['el']['ad_user_data'] = 'Δεδομένα χρήστη διαφημίσεων';
-		$default_txt['el']['ad_personalization'] = 'Εξατομίκευση διαφημίσεων';
-		$default_txt['el']['analytics_storage'] = 'Αποθήκευση αναλύσεων';
-		$default_txt['el']['ad_storage_microsoft_desc'] = 'Καθορίζει εάν τα cookies που σχετίζονται με τη διαφήμιση μπορούν να διαβαστούν ή να γραφτούν από την Microsoft.';
-		$default_txt['el']['ad_storage_desc'] = 'Καθορίζει εάν τα cookies που σχετίζονται με τη διαφήμιση μπορούν να διαβαστούν ή να γραφτούν από την Google.';
-		$default_txt['el']['ad_user_data_desc'] = 'Καθορίζει εάν τα δεδομένα χρήστη μπορούν να σταλούν στην Google για διαφημιστικούς σκοπούς.';
-		$default_txt['el']['ad_personalization_desc'] = 'Ελέγχει εάν μπορεί να ενεργοποιηθεί η εξατομικευμένη διαφήμιση (π.χ. επαναληπτικό μάρκετινγκ).';
-		$default_txt['el']['analytics_storage_desc'] = 'Καθορίζει εάν τα cookies που σχετίζονται με το Google Analytics μπορούν να διαβαστούν ή να γραφτούν.';
-		$default_txt['el']['banner_title'] = '';
-		$default_txt['el']['accept'] = 'Αποδοχή';
-		$default_txt['el']['refuse'] = 'Άρνηση';
-		$default_txt['el']['customize'] = 'Προσαρμογή';
-		$default_txt['el']['ga_4_version'] = 'Google Analytics έκδοση 4 (GA4)';
-		$default_txt['el']['facebook_remarketing'] = 'Επαναληπτικό Μάρκετινγκ στο Facebook';
-		$default_txt['el']['tiktok_pixel'] = 'TikTok Pixel';
-		$default_txt['el']['in_addition_this_site_installs'] = 'Επιπλέον, αυτός ο ιστότοπος εγκαθιστά';
-		$default_txt['el']['with_anonymous_data_transmission_via_proxy'] = 'με ανώνυμη μετάδοση δεδομένων μέσω διακομιστή μεσολάβησης.';
-		$default_txt['el']['by_giving_your_consent_the_data_will_be_sent_anonymously'] = 'Δίνοντας τη συγκατάθεσή σας, τα δεδομένα θα αποστέλλονται ανώνυμα, προστατεύοντας έτσι το απόρρητό σας.';
-		$default_txt['el']['iab_bannertext_1'] = 'Εμείς και οι επιλεγμένοι διαφημιστικοί συνεργάτες μας μπορούμε να αποθηκεύσουμε και/ή να έχουμε πρόσβαση σε πληροφορίες στη συσκευή σας, όπως cookies, μοναδικά αναγνωριστικά και δεδομένα περιήγησης.';
-		$default_txt['el']['iab_bannertext_2_a'] = 'Μπορείτε πάντα να επιλέγετε συγκεκριμένους σκοπούς σχετικά με το προφίλ αποκτώντας πρόσβαση στον';
-		$default_txt['el']['iab_bannertext_2_link'] = 'πίνακα προτιμήσεων διαφημίσεων';
-		$default_txt['el']['iab_bannertext_2_b'] = ', και μπορείτε πάντα να αποσύρετε τη συγκατάθεσή σας ανά πάσα στιγμή κάνοντας κλικ στο "Διαχείριση συναίνεσης" στο κάτω μέρος της σελίδας.';
-		$default_txt['el']['iab_bannertext_3'] = 'Λίστα ορισμένων πιθανών διαφημιστικών αδειών';
-		$default_txt['el']['iab_bannertext_4_a'] = 'Μπορείτε να συμβουλευτείτε: τη λίστα μας με τους';
-		$default_txt['el']['iab_bannertext_4_b'] = 'διαφημιστικούς συνεργάτες';
-		$default_txt['el']['iab_bannertext_5'] = 'την Πολιτική Cookies';
-		$default_txt['el']['iab_bannertext_6'] = 'και την Πολιτική Απορρήτου';
-		$default_txt['el']['vat_id'] = 'Α.Φ.Μ';
-		$default_txt['el']['google_recaptcha_content_notification_a'] = 'Οι επιλογές των cookies σας μπορεί να μην επιτρέψουν την υποβολή της φόρμας. Μπορείτε να επανεξετάσετε τις επιλογές σας';
-		$default_txt['el']['google_recaptcha_content_notification_b'] = 'κάνοντας κλικ εδώ';
-
+		$default_txt = MyAgilePrivacyLangHelper::getDefaultText();
 
 		$final_txt = $default_txt;
 
@@ -3040,7 +2587,10 @@ class MyAgilePrivacy {
 	{
 		foreach( MAP_SUPPORTED_LANGUAGES as $lang_key => $lang_value )
 		{
-			if( $lang_value['2char'] == $lang ) return $lang_key;
+			if( $lang_value['2char'] == $lang )
+			{
+				return $lang_key;
+			}
 		}
 
 		return null;;
@@ -3164,18 +2714,43 @@ class MyAgilePrivacy {
 			$multilang_default_lang = isset( $trp_settings['default-language']) ? $trp_settings['default-language'] : null;
 			$current_language = function_exists( 'trp_get_current_language' ) ? trp_get_current_language() : get_locale();
 
+			//Norsk fix
+			if( $current_language == 'nn_NO' )
+			{
+				$current_language = 'nb_NO';
+			}
+
+			//Latvian fix
+			if( $current_language == 'lv' )
+			{
+				$current_language = 'lv_LV';
+			}
+
+			//Albanian fix
+			if( $current_language == 'sq' )
+			{
+				$current_language = 'sq_AL';
+			}
+
 			$language_list = isset( $trp_settings['translation-languages'] ) ? $trp_settings['translation-languages'] : array();
 			$language_list_codes = array();
 
 			foreach( $language_list as $k => $v )
 			{
 				$the_language_code = substr( $v, 0, 2 );
+
+				//Norsk fix
+				if( $the_language_code == 'nn' )
+				{
+					$the_language_code = 'no';
+				}
+
 				$language_list_codes[] = $the_language_code;
 			}
 
 			$return_data['language_list_codes'] = $language_list_codes;
-			$return_data['current_language'] = substr( $current_language, 0, 2 );
-			$return_data['multilang_default_lang'] = substr( $multilang_default_lang, 0 , 2 );
+			$return_data['current_language'] = MAP_SUPPORTED_LANGUAGES[ $current_language ][ '2char' ];
+			$return_data['multilang_default_lang'] = MAP_SUPPORTED_LANGUAGES[ $multilang_default_lang ][ '2char' ];
 		}
 
 		//Weglot
@@ -3221,12 +2796,21 @@ class MyAgilePrivacy {
 		}
 		else
 		{
-			$website_l_allowed = array( substr( $the_settings['default_locale'], 0, 2 ) );
+			$website_l_allowed = array(
+				MAP_SUPPORTED_LANGUAGES[ $the_settings['default_locale'] ][ '2char' ]
+			);
 		}
 
 		$l_allowed = MyAgilePrivacy::get_option( MAP_PLUGIN_L_ALLOWED, array() );
 
-		foreach( MAP_SUPPORTED_LANGUAGES as $lang_code => $lang_data )
+		$MAP_SUPPORTED_LANGUAGES = MAP_SUPPORTED_LANGUAGES;
+
+		uasort( $MAP_SUPPORTED_LANGUAGES, function( $a, $b )
+		{
+		    return strcasecmp( $a['en_label'], $b['en_label'] );
+		});
+
+		foreach( $MAP_SUPPORTED_LANGUAGES as $lang_code => $lang_data )
 		{
 			$lang_code_2char = $lang_data['2char'];
 
@@ -3468,7 +3052,7 @@ class MyAgilePrivacy {
 
 			if( $the_settings['wrap_shortcodes'] )
 			{
-				$text = '<div id="myagileprivacy_text_wrapper" class="myagileprivacy_text_wrapper">'.$content.'</div>';
+				$text = '<div id="myagileprivacy_text_wrapper" class="myagileprivacy_text_wrapper">'.$text.'</div>';
 			}
 
 			$text = '<!--googleoff: all-->'.$text.'<!--googleon: all-->';

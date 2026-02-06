@@ -1,3 +1,11 @@
+/*!
+* MyAgilePrivacy (https://www.myagileprivacy.com/)
+* My Agile Privacy Css reset
+*/
+
+/*signature class - do not remove*/
+.map-css-signature-my-agile-privacy-reset { display: none !important; }
+
 #my-agile-privacy-notification-area,
 #map-blocked-content-notification-area {
     all: initial;

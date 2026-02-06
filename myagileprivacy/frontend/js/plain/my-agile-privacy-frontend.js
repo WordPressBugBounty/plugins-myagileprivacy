@@ -6,10 +6,10 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'internal_version' 					: "2.0022",
+	'internal_version' 					: "2.0026",
 	'cookie_shield_version' 			: null,
 	'technology' 						: "plain",
-	'maplog' 							: "\x1b[40m\x1b[37m[MyAgilePrivacy]\x1b[0m ",
+	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
 	'map_initted' 						: false,
 	'map_document_load' 				: false,
 	'map_debug' 						: false,
@@ -24,6 +24,8 @@ var MAP_SYS = {
 	'in_iab_context' 					: false,
 	'dependencies' 						: [],
 	'microsoft_cmode' 					: null,
+	'clarity_cmode' 					: null,
+	'clarity_cmp_id' 					: "150",
 	'cmode_v2' 							: null,
 	'cmode_v2_implementation_type' 		: null,
 	'cmode_v2_forced_off_ga4_advanced' 	: null,
@@ -32,13 +34,68 @@ var MAP_SYS = {
 	'current_gconsent'					: [],
 	'starting_mconsent' 				: [],
 	'current_mconsent'					: [],
+	'starting_cconsent' 				: [],
+	'current_cconsent'					: [],
 	'map_accept_all_button'				: null,
 	'map_reject_all_button'				: null,
 	'user_uuid'							: null,
 	'last_consent_modify_date'			: null,
 	'some_positive_consent_given'		: false,
 	'early_gcmode'						: false,
+	'frontend_regulation'				: null,
 };
+
+// bof MapLogger
+(function (global) {
+    // Define only if not already defined
+    if (typeof global.MapLogger !== 'undefined' && global.MapLogger) {
+        return;
+    }
+
+    function noop() {}
+
+    function makeNoopLogger() {
+        return {
+            log: noop,
+            info: noop,
+            warn: noop,
+            error: noop,
+            debug: noop,
+            group: noop,
+            trace: noop,
+            clear: noop,
+            dir: noop,
+            dirxml: noop,
+            table: noop,
+            assert: noop,
+            count: noop,
+            countReset: noop,
+            time: noop,
+            timeLog: noop,
+            profile: noop,
+            profileEnd: noop,
+            timeStamp: noop,
+            groupCollapsed: noop,
+            groupEnd: noop
+        };
+    }
+
+    // Check verbose flag (defined and true)
+    function isVerboseEnabled() {
+        return (typeof global.MAP_VERBOSE_LOG !== 'undefined' && global.MAP_VERBOSE_LOG === true);
+    }
+
+    // If verbose is enabled, expose the native console (keeps correct caller line)
+    if (isVerboseEnabled()) {
+        global.MapLogger = global.console || makeNoopLogger();
+        return;
+    }
+
+    // If verbose is disabled, expose a no-op logger (no output, no errors)
+    global.MapLogger = makeNoopLogger();
+
+})(window);
+// eof MapLogger
 
 if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 {
@@ -47,10 +104,11 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 	MAP_ACCEPTED_SOMETHING_COOKIE_NAME = 'map_accepted_something_cookie_policy';
 	MAP_CONSENT_STATUS = 'map_consent_status';
 	MAP_MICROSOFT_CONSENT_STATUS = 'map_microsoft_consent_status';
+	MAP_CLARITY_CONSENT_STATUS = 'map_clarity_consent_status';
 	MAP_USER_UUID = 'map_user_uuid';
 	MAP_LAST_CONSENT_MODIFY_DATE = 'map_last_c_m_date';
 
-	console.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
+	MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
 
 if( typeof MAP_Cookie === 'undefined' )
@@ -143,7 +201,7 @@ var MAP =
 
 			if( this.initted )
 			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'MAP already initted: exiting' );
+				MapLogger.debug( MAP_SYS.maplog + 'MAP already initted: exiting' );
 				return;
 			}
 
@@ -153,7 +211,7 @@ var MAP =
 				return rx.test( current_url );
 			});
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'calling MAP set function' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'calling MAP set function' );
 
 			if( typeof JSON.parse !== "function" )
 			{
@@ -190,6 +248,13 @@ var MAP =
 			}
 
 			if( typeof map_full_config !== 'undefined' &&
+				typeof map_full_config.frontend_regulation !== 'undefined'
+			)
+			{
+				MAP_SYS.frontend_regulation = map_full_config.frontend_regulation;
+			}
+
+			if( typeof map_full_config !== 'undefined' &&
 				typeof map_full_config.enforce_youtube_privacy_v2 !== 'undefined'
 			)
 			{
@@ -218,7 +283,7 @@ var MAP =
 				if(!( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 				{
 					MAP_POSTFIX = '_' + this.settings.cookie_reset_timestamp;
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 				}
 			}
 
@@ -234,10 +299,10 @@ var MAP =
 			if( MAP_SYS?.map_debug && !!this?.settings.cookie_reset_timestamp &&
 				this.settings.cookie_reset_timestamp )
 			{
-				console.debug( MAP_SYS.maplog + 'using alt_accepted_all_cookie_name=' + MAP_ACCEPTED_ALL_COOKIE_NAME );
-				console.debug( MAP_SYS.maplog + 'using alt_accepted_something_cookie_name=' + MAP_ACCEPTED_SOMETHING_COOKIE_NAME );
-				console.debug( MAP_SYS.maplog + 'using alt_user_uuid_cookie_name=' + MAP_USER_UUID );
-				console.debug( MAP_SYS.maplog + 'using alt_last_consent_modify_date_cookie_name=' + MAP_LAST_CONSENT_MODIFY_DATE );
+				MapLogger.debug( MAP_SYS.maplog + 'using alt_accepted_all_cookie_name=' + MAP_ACCEPTED_ALL_COOKIE_NAME );
+				MapLogger.debug( MAP_SYS.maplog + 'using alt_accepted_something_cookie_name=' + MAP_ACCEPTED_SOMETHING_COOKIE_NAME );
+				MapLogger.debug( MAP_SYS.maplog + 'using alt_user_uuid_cookie_name=' + MAP_USER_UUID );
+				MapLogger.debug( MAP_SYS.maplog + 'using alt_last_consent_modify_date_cookie_name=' + MAP_LAST_CONSENT_MODIFY_DATE );
 			}
 
 			this.blocked_friendly_name_string = null;
@@ -271,9 +336,9 @@ var MAP =
 
 			if( MAP_SYS?.map_debug )
 			{
-				console.groupCollapsed( MAP_SYS.maplog + 'settings:' );
-				console.debug( this.settings );
-				console.groupEnd();
+				MapLogger.groupCollapsed( MAP_SYS.maplog + 'settings:' );
+				MapLogger.debug( this.settings );
+				MapLogger.groupEnd();
 			}
 
 			this.retrieveLastConsentDate();
@@ -308,6 +373,175 @@ var MAP =
 		}
 	},
 
+
+    //normalize spaces for safe comparisons
+    normalizeCssValue: function( value )
+    {
+        value = (value === undefined || value === null) ? '' : (value + '');
+        return value.replace(/\s+/g, ' ').trim();
+    },
+
+    //create a hidden test node for computed style checks
+    createCssTestNode: function( testClassName )
+    {
+        var el = document.createElement('div');
+        el.className = testClassName;
+
+        //keep it out of view and out of layout impact
+        el.style.position = 'absolute';
+        el.style.left = '-99999px';
+        el.style.top = '-99999px';
+        el.style.width = '1px';
+        el.style.height = '1px';
+        el.style.overflow = 'hidden';
+        el.style.visibility = 'hidden';
+
+        return el;
+    },
+
+    //check if a css rule is active by reading computed style
+    //testClassName: class that your css "signature" targets, without dot (e.g. "map-css-signature")
+    //testProperty: css property in kebab-case (e.g. "display", "font-family", "--my-var")
+    //expectedValue: expected computed value (e.g. "none", "700", "rgb(0, 0, 0)")
+    isCssSignatureActive: function( testClassName, testProperty, expectedValue )
+    {
+        try
+        {
+            if (!document.body) return false;
+            if (!testClassName || !testProperty) return false;
+
+            var el = this.createCssTestNode(testClassName);
+            document.body.appendChild(el);
+
+            var computed = window.getComputedStyle ? window.getComputedStyle( el, null ) : null;
+            var value = '';
+
+            if( computed )
+            {
+                //supports normal properties and CSS variables
+                value = computed.getPropertyValue( testProperty );
+            } else if( el.currentStyle )
+            {
+                //old IE fallback (not really needed in modern env, but harmless)
+                value = el.currentStyle[testProperty];
+            }
+
+            document.body.removeChild(el);
+
+            value = this.normalizeCssValue(value);
+            expectedValue = this.normalizeCssValue(expectedValue);
+
+            return (value === expectedValue);
+        }
+        catch( error )
+        {
+            console.error( error );
+            return false;
+        }
+    },
+
+    //inject css async (via <link>) only if signature is not active yet
+    //options = {
+    //  src: "https://...",
+    //  signatureClass: "map-css-signature",
+    //  signatureProperty: "display",
+    //  signatureValue: "none"
+    //}
+    //callback(isActiveBeforeLoad, isLoadedNow)
+    injectCssBySignature: function( options, callback )
+    {
+		//for preserving scope
+		var that = this;
+
+        try {
+            options = options || {};
+            var src = options.src || '';
+            var signatureClass = options.signatureClass || '';
+            var signatureProperty = options.signatureProperty || '';
+            var signatureValue = options.signatureValue || '';
+
+            if( !src ) return;
+
+            //if signature is already active, skip loading
+            var active = this.isCssSignatureActive( signatureClass, signatureProperty, signatureValue );
+            if( active )
+            {
+                if (MAP_SYS && MAP_SYS.map_debug)
+                {
+                    MapLogger.debug( MAP_SYS.maplog + 'css signature already active, skip load src=' + src);
+                }
+
+                if( callback ) callback( true, false );
+                return;
+            }
+
+            if( MAP_SYS && MAP_SYS.map_debug )
+            {
+                MapLogger.debug( MAP_SYS.maplog + 'injectCssBySignature src=' + src) ;
+            }
+
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = src;
+
+            link.onload = function() {
+                //double-check after load
+                var activeAfter = that.isCssSignatureActive( signatureClass, signatureProperty, signatureValue );
+
+                if( MAP_SYS && MAP_SYS.map_debug )
+                {
+                    MapLogger.debug( MAP_SYS.maplog + 'loaded css src=' + src + ' signatureActive=' + activeAfter );
+                }
+
+                MAP_SYS.dependencies.push( src );
+
+                if( callback ) callback( false, true );
+            };
+
+            link.onerror = function() {
+                if (MAP_SYS && MAP_SYS.map_debug)
+                {
+                    MapLogger.debug( MAP_SYS.maplog + 'error loading css src=' + src );
+                }
+
+                if( callback ) callback( false, false );
+            };
+
+            (document.head || document.getElementsByTagName('head')[0]).appendChild(link);
+        }
+        catch( error )
+        {
+            console.error( error );
+        }
+    },
+
+	//extract filename and map it to a signature class
+	getCssSignatureClassFromUrl: function(url)
+	{
+	    try {
+	        if (!url) return '';
+
+	        //remove query string/hash
+	        var cleanUrl = (url + '').split('#')[0].split('?')[0];
+
+	        //extract file name
+	        var parts = cleanUrl.split('/');
+	        var fileName = parts.length ? parts[parts.length - 1] : '';
+
+	        //derive a class from filename
+	        //example: "my-agile-privacy-frontend.css" => "map-css-signature-my-agile-privacy-frontend"
+	        fileName = fileName.replace(/\.min\.css$/i, '').replace(/\.css$/i, '');
+	        fileName = fileName.toLowerCase().replace(/[^a-z0-9\-]+/g, '-');
+	        return 'map-css-signature-' + fileName;
+	    }
+	    catch( error )
+	    {
+	        console.error( error );
+	        return '';
+	    }
+	},
+
 	//inject code async
 	injectCode: function( src=null, callback=null )
 	{
@@ -316,7 +550,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function injectCode src=' + src );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function injectCode src=' + src );
 
 			if( src )
 			{
@@ -325,7 +559,7 @@ var MAP =
 				script.src = src;
 				script.onload = function() {
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'loaded script src=' + src );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'loaded script src=' + src );
 
 					if( callback )
 					{
@@ -343,17 +577,70 @@ var MAP =
 		}
 	},
 
+	//load frontend css (by signature check)
+	loadFrontendCss: function()
+	{
+	    //for preserving scope
+	    var that = this;
+
+	    try
+	    {
+	        if( MAP_SYS && MAP_SYS.map_debug )
+	        {
+	            MapLogger.debug( MAP_SYS.maplog + 'internal function loadFrontendCss' );
+	        }
+
+	        if( typeof map_full_config === 'undefined' || !map_full_config) return;
+	        if( !map_full_config.frontend_css || !map_full_config.frontend_css.length ) return;
+
+	        for( var i = 0; i < map_full_config.frontend_css.length; i++ )
+	        {
+	            var src = map_full_config.frontend_css[i];
+	            var signatureClass = that.getCssSignatureClassFromUrl( src );
+
+	            if( !signatureClass ) continue;
+
+	            that.injectCssBySignature({
+	                src: src,
+	                signatureClass: signatureClass,
+	                signatureProperty: 'display',
+	                signatureValue: 'none'
+	            }, function( isActiveBeforeLoad, isLoadedNow )
+	            {
+	                if( MAP_SYS && MAP_SYS.map_debug )
+	                {
+	                    MapLogger.debug(
+	                        MAP_SYS.maplog +
+	                        'css result alreadyActive=' + isActiveBeforeLoad +
+	                        ' loadedNow=' + isLoadedNow
+	                    );
+	                }
+	            });
+	        }
+	    }
+	    catch( error )
+	    {
+	        console.error(error);
+	    }
+	},
+
 	//load dependencies
 	loadDependencies: function()
 	{
 		//for preserving scope
 		var that = this;
 
+		setTimeout(function(){
+
+			that.loadFrontendCss();
+
+		}, 500 );
+
 		try {
 
 			var something_to_do = false;
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function loadDependencies' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function loadDependencies' );
 
 			//js shield
 			if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) &&
@@ -382,17 +669,29 @@ var MAP =
 			{
 				if( MAP_SYS?.map_debug )
 				{
-					console.groupCollapsed( MAP_SYS.maplog + ' tried to load the following dependencies:' );
-					console.log( MAP_SYS.dependencies );
+					MapLogger.groupCollapsed( MAP_SYS.maplog + ' tried to load the following dependencies:' );
+					MapLogger.log( MAP_SYS.dependencies );
 				}
 			}
 			else
 			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + ' no dependencies to load.' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + ' no dependencies to load.' );
 			}
 
-			console.groupEnd();
+			MapLogger.groupEnd();
 
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//get consent status for consent mode (Clarity)
+	getClarityConsentStatus: function( key )
+	{
+		try {
+			return MAP_SYS?.current_cconsent[ key ];
 		}
 		catch( error )
 		{
@@ -424,6 +723,60 @@ var MAP =
 		}
 	},
 
+	//f for updating given consent (Clarity)
+	updateClarityConsent: function( key, value, updateStatusCookie = false)
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.clarity_cmode )
+			{
+				var currentCConsent = {...MAP_SYS?.current_cconsent};
+				currentCConsent[key] = value;
+				MAP_SYS.current_cconsent = currentCConsent;
+
+				// Map keys: remove "clarity_" prefix and replace "_storage" with "_Storage"
+				var to_send_consent = Object.fromEntries(
+				  Object.entries(currentCConsent).map(([key, value]) => {
+				    // Remove "clarity_" prefix if present
+				    var newKey = key.startsWith('clarity_') ? key.slice('clarity_'.length) : key;
+				    // Replace all occurrences of "_storage" with "_Storage"
+				    newKey = newKey.replace(/_storage/g, '_Storage');
+				    return [newKey, value];
+				  })
+				);
+
+				//MapLogger.log( to_send_consent );
+
+				if( typeof window.clarity !== 'undefined' )
+				{
+					window.clarity( 'consentv2', {
+					  source: MAP_SYS.clarity_cmp_id,
+					  ...to_send_consent
+					});
+				}
+
+				if( updateStatusCookie )
+				{
+					that.saveClarityConsentStatusToCookie( MAP_SYS?.current_cconsent );
+				}
+
+				that.updateLastConsentRecords();
+
+				return true;
+			}
+
+			return false;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
 	//f for updating given consent (Microsoft)
 	updateMicrosoftConsent: function( key, value, updateStatusCookie = false)
 	{
@@ -438,7 +791,10 @@ var MAP =
 				let key_fixed = key.startsWith( 'microsoft_' ) ? key.slice( 'microsoft_'.length ) : key;
 				newConsent[ key_fixed ] = value;
 
-				window.uetq.push( 'consent', 'update', newConsent );
+				if( typeof window.uetq !== 'undefined' )
+				{
+					window.uetq.push( 'consent', 'update', newConsent );
+				}
 
 				var currentMConsent = {...MAP_SYS?.current_mconsent};
 				currentMConsent[key] = value;
@@ -561,6 +917,12 @@ var MAP =
 		}
 	},
 
+	//from cookie value to object (Clarity)
+	parseClarityConsentStatus: function( consentStatusValue )
+	{
+		return this.parseGoogleConsentStatus( consentStatusValue );
+	},
+
 
 	//from cookie value to object (Microsoft)
 	parseMicrosoftConsentStatus: function( consentStatusValue )
@@ -599,6 +961,32 @@ var MAP =
 			console.error( error );
 		}
 	},
+
+
+	//from consent object to cookie (Clarity)
+	saveClarityConsentStatusToCookie : function( consentObject )
+	{
+		try {
+
+			// Convert object values to a string
+			var encodedString = Object.keys( consentObject )
+				.map(function( key ) {
+				return key + ':' + ( consentObject[key] === 'granted' );
+				})
+				.join('|');
+
+
+			MAP_Cookie.set( MAP_CLARITY_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire );
+
+			return true;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
 
 	//from consent object to cookie (Microsoft)
 	saveMicrosoftConsentStatusToCookie : function( consentObject )
@@ -682,7 +1070,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setFromGoogleTagManagerInitialConsent' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setFromGoogleTagManagerInitialConsent' );
 
 			if( gconsent )
 			{
@@ -708,7 +1096,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function googleTagManagerConsentListener' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function googleTagManagerConsentListener' );
 
 			if( typeof gTagManagerConsentListeners !== 'undefined' )
 			{
@@ -730,7 +1118,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupConsentModeV2' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupConsentModeV2' );
 
 			if( typeof map_full_config === 'undefined' )
 			{
@@ -744,7 +1132,7 @@ var MAP =
 
 			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'gtm' )
 			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (gtm)' );
 
 				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
 
@@ -763,12 +1151,12 @@ var MAP =
 				{
 					if( typeof early_starting_gconsent !== 'undefined' && early_starting_gconsent )
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native) via early consent' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (native) via early consent' );
 
 						//save starting consent
 						MAP_SYS.starting_gconsent = early_starting_gconsent;
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (native)' );
 
 						//setting initial current_gconsent value (deep copy using spread operator)
 						MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
@@ -778,14 +1166,14 @@ var MAP =
 				}
 				else
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
 
 					//save starting consent
 					MAP_SYS.starting_gconsent = map_full_config?.cmode_v2_default_consent_obj;
 
 					//setting default consent value
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (native)' );
 
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
@@ -808,7 +1196,7 @@ var MAP =
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_gconsent = { ...this_gconsent };
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting consent with value=' + cookieValue );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting consent with value=' + cookieValue );
 
 					that.updateGoogleConsentbyObj( this_gconsent, false );
 
@@ -816,6 +1204,114 @@ var MAP =
 				else
 				{
 					that.saveGoogleConsentStatusToCookie( MAP_SYS.current_gconsent );
+				}
+			}
+
+			return true;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+
+	//init data for Clarity consent mode
+	setupClarityConsentMode: function()
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupClarityConsentMode' );
+
+			if( typeof map_full_config === 'undefined' )
+			{
+				return false;
+			}
+
+			MAP_SYS.clarity_cmode = map_full_config?.enable_clarity_cmode;
+
+			if( MAP_SYS.clarity_cmode )
+			{
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (Clarity)' );
+
+				//save starting consent
+				MAP_SYS.starting_cconsent = map_full_config?.cmode_clarity_default_consent_obj;
+
+				var cookieValue = MAP_Cookie.read( MAP_CLARITY_CONSENT_STATUS );
+
+				if( cookieValue )
+				{
+					var this_cconsent = that.parseClarityConsentStatus( cookieValue );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_cconsent = { ...this_cconsent };
+
+					try {
+
+						// Map keys: remove "clarity_" prefix and replace "_storage" with "_Storage"
+						var current_cconsent_fixed = Object.fromEntries(
+						  Object.entries(this_cconsent).map(([key, value]) => {
+						    // Remove "clarity_" prefix if present
+						    var newKey = key.startsWith('clarity_') ? key.slice('clarity_'.length) : key;
+						    // Replace all occurrences of "_storage" with "_Storage"
+						    newKey = newKey.replace(/_storage/g, '_Storage');
+						    return [newKey, value];
+						  })
+						);
+
+						if( typeof window.clarity !== 'undefined' )
+						{
+							window.clarity( 'consentv2', {
+							  source: MAP_SYS.clarity_cmp_id,
+							  ...current_cconsent_fixed
+							});
+						}
+					}
+					catch( error )
+					{
+						console.error( error );
+					}
+				}
+				else
+				{
+					//no cookie value case
+
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (Clarity)' );
+
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_cconsent = { ...MAP_SYS.starting_cconsent };
+
+					try {
+
+						// Map keys: remove "clarity_" prefix and replace "_storage" with "_Storage"
+						var current_cconsent_fixed = Object.fromEntries(
+						  Object.entries( MAP_SYS.starting_cconsent ).map(([key, value]) => {
+						    // Remove "clarity_" prefix if present
+						    var newKey = key.startsWith('clarity_') ? key.slice('clarity_'.length) : key;
+						    // Replace all occurrences of "_storage" with "_Storage"
+						    newKey = newKey.replace(/_storage/g, '_Storage');
+						    return [newKey, value];
+						  })
+						);
+
+						if( typeof window.clarity !== 'undefined' )
+						{
+							window.clarity( 'consentv2', {
+							  source: MAP_SYS.clarity_cmp_id,
+							  ...current_cconsent_fixed
+							});
+						}
+					}
+					catch( error )
+					{
+						console.error( error );
+					}
+
+					that.saveClarityConsentStatusToCookie( MAP_SYS.current_cconsent );
 				}
 			}
 
@@ -837,7 +1333,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupMicrosoftConsentMode' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupMicrosoftConsentMode' );
 
 			if( typeof map_full_config === 'undefined' )
 			{
@@ -848,7 +1344,7 @@ var MAP =
 
 			if( MAP_SYS.microsoft_cmode )
 			{
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default value for consent mode (Microsoft)' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (Microsoft)' );
 
 				//save starting consent
 				MAP_SYS.starting_mconsent = map_full_config?.cmode_microsoft_default_consent_obj;
@@ -871,7 +1367,10 @@ var MAP =
 						  ])
 						);
 
-						window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+						if( typeof window.uetq !== 'undefined' )
+						{
+							window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+						}
 					}
 					catch( error )
 					{
@@ -882,7 +1381,7 @@ var MAP =
 				{
 					//no cookie value case
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting default consent (Microsoft)' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (Microsoft)' );
 
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_mconsent = { ...MAP_SYS.starting_mconsent };
@@ -896,7 +1395,10 @@ var MAP =
 						  ])
 						);
 
-						window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+						if( typeof window.uetq !== 'undefined' )
+						{
+							window.uetq.push( 'consent', 'default', { ...current_mconsent_fixed } );
+						}
 
 					}
 					catch( error )
@@ -925,7 +1427,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'updateLastConsentRecords' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'updateLastConsentRecords' );
 
 			let date = new Date();
 			let dateString = date.toISOString();
@@ -1032,7 +1534,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function toggleBar' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function toggleBar' );
 
 			if( !MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
 				!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME )
@@ -1044,19 +1546,19 @@ var MAP =
 
 						while( !MAP_SYS.map_document_load )
 						{
-							//console.log( 'not defined yet' );
+							//MapLogger.log( 'not defined yet' );
 							await new Promise( resolve => setTimeout( resolve, 10 ) );
 						}
 
 						(async() => {
-							//console.log("waiting for variable");
+							//MapLogger.log("waiting for variable");
 							while( typeof window.MAPIABTCF_brief_html_initted == 'function' &&
 								!window.MAPIABTCF_brief_html_initted() )
 							{
-								//console.log( 'not defined yet' );
+								//MapLogger.log( 'not defined yet' );
 								await new Promise( resolve => setTimeout( resolve, 10 ) );
 							}
-							//console.log("variable is defined");
+							//MapLogger.log("variable is defined");
 							that.displayBar();
 
 							setTimeout( function() {
@@ -1082,7 +1584,7 @@ var MAP =
 
 			this.showagain_elm.querySelectorAll( 'a.showConsent' ).forEach( function( $this ) {
 				$this.addEventListener( 'click', function( e ) {
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered showConsent' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered showConsent' );
 
 					e.preventDefault();
 					e.stopImmediatePropagation();
@@ -1201,7 +1703,7 @@ var MAP =
 			//bof user consent review trigger
 
 			that.bar_elm.addEventListener( 'triggerShowAgainDisplay', function( e ) {
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered triggerShowAgainDisplay' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered triggerShowAgainDisplay' );
 
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -1329,7 +1831,7 @@ var MAP =
 
 				if( matchFound )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered showConsentAgain' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered showConsentAgain' );
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
@@ -1350,7 +1852,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function createInlineNotify' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function createInlineNotify' );
 
 			//for preserving scope
 			var that = this;
@@ -1463,13 +1965,13 @@ var MAP =
 			{
 				MAP_SYS.in_iab_context = true;
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupIabTCF' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupIabTCF' );
 
 				//first layer
 				that.bar_elm.querySelectorAll( '.map-triggerGotoIABTCF' ).forEach( function( $this ) {
 					$this.addEventListener( 'click', function( e ) {
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-triggerGotoIABTCF click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-triggerGotoIABTCF click' );
 
 						e.preventDefault();
 						e.stopImmediatePropagation();
@@ -1504,7 +2006,7 @@ var MAP =
 				that.bar_elm.querySelectorAll( '.map-triggerGotoIABTCFVendors' ).forEach( function( $this ) {
 					$this.addEventListener( 'click', function( e ) {
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-triggerGotoIABTCFVendors click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-triggerGotoIABTCFVendors click' );
 
 						e.preventDefault();
 						e.stopImmediatePropagation();
@@ -1589,7 +2091,7 @@ var MAP =
 
 								while( !MAP_SYS.map_document_load )
 								{
-									//console.log( 'not defined yet' );
+									//MapLogger.log( 'not defined yet' );
 									await new Promise( resolve => setTimeout( resolve, 10 ) );
 								}
 
@@ -1606,7 +2108,7 @@ var MAP =
 
 								while( !MAP_SYS.map_document_load )
 								{
-									//console.log( 'not defined yet' );
+									//MapLogger.log( 'not defined yet' );
 									await new Promise( resolve => setTimeout( resolve, 10 ) );
 								}
 
@@ -1645,7 +2147,7 @@ var MAP =
 
 					while( !MAP_SYS.map_document_load )
 					{
-						//console.log( 'not defined yet' );
+						//MapLogger.log( 'not defined yet' );
 						await new Promise( resolve => setTimeout( resolve, 10 ) );
 					}
 
@@ -1774,7 +2276,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function attachEvents' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function attachEvents' );
 
 			//for preserving scope
 			var that = this;
@@ -1805,7 +2307,7 @@ var MAP =
 			});
 
 			that.accept_button.addEventListener( 'click', function( e ) {
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-accept-button click' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-accept-button click' );
 
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -1819,6 +2321,11 @@ var MAP =
 					elem.checked = true;
 
 					var consent_key = elem.getAttribute( 'data-consent-key' );
+
+					if( elem.classList.contains( 'map-consent-clarity' ) )
+					{
+						that.updateClarityConsent( consent_key, 'granted', true );
+					}
 
 					if( elem.classList.contains( 'map-consent-microsoft' ) )
 					{
@@ -1837,7 +2344,7 @@ var MAP =
 
 					var cookieName = 'map_cookie_' + elem.getAttribute( 'data-cookie-baseindex' ) + MAP_POSTFIX;
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
 					MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
 
@@ -1854,7 +2361,7 @@ var MAP =
 
 					while( !MAP_SYS.map_document_load )
 					{
-						//console.log( 'not defined yet' );
+						//MapLogger.log( 'not defined yet' );
 						await new Promise( resolve => setTimeout( resolve, 10 ) );
 					}
 
@@ -1875,7 +2382,7 @@ var MAP =
 			that.reject_button.forEach( function( button ) {
 				button.addEventListener( 'click', function( e ) {
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-reject-button click' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-reject-button click' );
 
 					e.preventDefault();
 					e.stopImmediatePropagation();
@@ -1890,6 +2397,11 @@ var MAP =
 						elem.checked = false;
 
 						var consent_key = elem.getAttribute( 'data-consent-key' );
+
+						if( elem.classList.contains( 'map-consent-clarity' ) )
+						{
+							that.updateClarityConsent( consent_key, 'denied', true );
+						}
 
 						if( elem.classList.contains( 'map-consent-microsoft' ) )
 						{
@@ -1923,7 +2435,7 @@ var MAP =
 
 						while( !MAP_SYS.map_document_load )
 						{
-							//console.log( 'not defined yet' );
+							//MapLogger.log( 'not defined yet' );
 							await new Promise( resolve => setTimeout( resolve, 10 ) );
 						}
 
@@ -1944,7 +2456,7 @@ var MAP =
 
 			that.customize_button.addEventListener( 'click', function( e ) {
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-customize-button click' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-customize-button click' );
 
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -1988,7 +2500,7 @@ var MAP =
 
 			document.querySelector( '#mapModalClose' ).addEventListener( 'click', function( e ) {
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered mapModalClose click' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered mapModalClose click' );
 
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -2011,7 +2523,7 @@ var MAP =
 
 					while( !MAP_SYS.map_document_load )
 					{
-						//console.log( 'not defined yet' );
+						//MapLogger.log( 'not defined yet' );
 						await new Promise( resolve => setTimeout( resolve, 10 ) );
 					}
 
@@ -2036,7 +2548,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function usabilityEvents' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function usabilityEvents' );
 
 			//for preserving scope
 			var that = this;
@@ -2153,7 +2665,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function attachAnimations' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function attachAnimations' );
 
 			//for preserving scope
 			var that = this;
@@ -2204,7 +2716,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function checkBlockedContent' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function checkBlockedContent' );
 
 			//for preserving scope
 			var that = this;
@@ -2370,7 +2882,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function displayBar' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function displayBar' );
 
 			//for preserving scope
 			var that = this;
@@ -2490,7 +3002,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function hideBar' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function hideBar' );
 
 			//for preserving scope
 			var that = this;
@@ -2604,7 +3116,7 @@ var MAP =
 
 				while( !MAP_SYS.map_document_load )
 				{
-					//console.log( 'not defined yet' );
+					//MapLogger.log( 'not defined yet' );
 					await new Promise( resolve => setTimeout( resolve, 10 ) );
 				}
 
@@ -2633,7 +3145,7 @@ var MAP =
 
 				if( that.bar_open )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
 
 					var viewport_width = window.innerWidth;
 
@@ -2654,7 +3166,7 @@ var MAP =
 						var viewport_height = window.innerHeight;
 						var internal_height = viewport_height - coeff;
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ' , internal_height=' + internal_height );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ' , internal_height=' + internal_height );
 
 						that.map_notification_message.classList.add( 'extraNarrow' );
 						that.map_notification_message.style.maxHeight = internal_height + 'px';
@@ -2690,7 +3202,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function accept_close' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function accept_close' );
 
 			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
 
@@ -2775,7 +3287,7 @@ var MAP =
 
 				while( !MAP_SYS.map_document_load )
 				{
-					//console.log( 'not defined yet' );
+					//MapLogger.log( 'not defined yet' );
 					await new Promise( resolve => setTimeout( resolve, 10 ) );
 				}
 
@@ -2802,7 +3314,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function reject_close' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function reject_close' );
 
 			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
 			MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
@@ -2897,7 +3409,7 @@ var MAP =
 
 				while( !MAP_SYS.map_document_load )
 				{
-					//console.log( 'not defined yet' );
+					//MapLogger.log( 'not defined yet' );
 					await new Promise( resolve => setTimeout( resolve, 10 ) );
 				}
 
@@ -2929,7 +3441,7 @@ var MAP =
 				do_calc_need_reload = true;
 			}
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `tryToUnblockScripts from_user_interaction=${from_user_interaction}` );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `tryToUnblockScripts from_user_interaction=${from_user_interaction}` );
 
 			//for preserving scope
 			var that = this;
@@ -2955,7 +3467,7 @@ var MAP =
 					need_reload = true;
 				}
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'debug ' + api_key + ' ' + cookieName + ' ' + cookieValue );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'debug ' + api_key + ' ' + cookieName + ' ' + cookieValue );
 
 				var always_on = false;
 				var activate_anyway = false;
@@ -2987,7 +3499,7 @@ var MAP =
 					activate_anyway ||
 					accepted_all )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + '-->activating api_key=' + api_key + ' cookieName=' + cookieName + ' cookieValue=' + cookieValue + ' always_on=' + always_on + ' accepted_all=' + accepted_all );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + '-->activating api_key=' + api_key + ' cookieName=' + cookieName + ' cookieValue=' + cookieValue + ' always_on=' + always_on + ' accepted_all=' + accepted_all );
 
 					if( activate_anyway )
 					{
@@ -3014,7 +3526,7 @@ var MAP =
 								script.className = '_is_activated';
 								script.innerHTML = $the_script.innerHTML;
 
-								if( MAP_SYS?.map_debug ) console.debug( script.innerHTML );
+								if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
 
 								document.head.appendChild( script );
 							}
@@ -3028,7 +3540,7 @@ var MAP =
 
 								var the_raw_script = $the_raw_script.value;
 
-								if( MAP_SYS?.map_debug ) console.debug( the_raw_script );
+								if( MAP_SYS?.map_debug ) MapLogger.debug( the_raw_script );
 
 								var range = document.createRange();
 								range.selectNode( document.getElementsByTagName("body")[0] );
@@ -3214,7 +3726,7 @@ var MAP =
 											script.className = '_is_activated';
 											script.innerHTML = $_this.innerHTML;
 
-											if( MAP_SYS?.map_debug ) console.debug( script.innerHTML );
+											if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
 
 											document.head.appendChild( script );
 
@@ -3228,7 +3740,7 @@ var MAP =
 										script.className = '_is_activated';
 										script.innerHTML = $_this.innerHTML;
 
-										if( MAP_SYS?.map_debug ) console.debug( script.innerHTML );
+										if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
 
 										document.head.appendChild( script );
 									}
@@ -3330,7 +3842,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'userPreferenceInit only_init_status='+only_init_status );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'userPreferenceInit only_init_status='+only_init_status );
 
 			//for preserving scope
 			var that = this;
@@ -3345,13 +3857,13 @@ var MAP =
 				{
 					if( $this.checked )
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
 						MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
 					}
 					else
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
 
 						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire );
 					}
@@ -3360,13 +3872,13 @@ var MAP =
 				{
 					if( cookieValue == "1" )
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting checked for cookieName' + cookieName );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting checked for cookieName' + cookieName );
 
 						$this.checked = true;
 					}
 					else
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting unchecked for cookieName' + cookieName );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting unchecked for cookieName' + cookieName );
 
 						$this.checked = false;
 					}
@@ -3379,7 +3891,7 @@ var MAP =
 				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach(function( $this ) {
 					$this.addEventListener( 'click', function( e ) {
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-user-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-preference-checkbox click' );
 
 						e.stopImmediatePropagation();
 
@@ -3391,14 +3903,14 @@ var MAP =
 
 						if( $this.checked )
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
 							MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
 							currentToggleElm.forEach( elm => elm.checked = true );
 						}
 						else
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
 
 							MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire );
 							currentToggleElm.forEach( elm => elm.checked = false );
@@ -3423,6 +3935,13 @@ var MAP =
 				var consentStatus = null;
 				let consentVendor = '';
 
+
+				if( elem.classList.contains( 'map-consent-clarity' ) )
+				{
+					consentStatus = that.getClarityConsentStatus( consent_key );
+					consentVendor = '(Clarity)';
+				}
+
 				if( elem.classList.contains( 'map-consent-microsoft' ) )
 				{
 					consentStatus = that.getMicrosoftConsentStatus( consent_key );
@@ -3437,13 +3956,13 @@ var MAP =
 
 				if( consentStatus === 'granted' )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting checked for consent_key=${consent_key} ${consentVendor}` );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting checked for consent_key=${consent_key} ${consentVendor}` );
 
 					elem.checked = true;
 				}
 				else if( consentStatus === 'denied' )
 				{
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting unchecked for consent_key=${consent_key} ${consentVendor}` );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting unchecked for consent_key=${consent_key} ${consentVendor}` );
 
 					elem.checked = false;
 				}
@@ -3457,7 +3976,7 @@ var MAP =
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach(function( elem ) {
 					elem.addEventListener( 'click', function( e ) {
 
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox click' );
 
 						e.stopImmediatePropagation();
 
@@ -3468,6 +3987,12 @@ var MAP =
 						if( elem.checked )
 						{
 							let consentVendor = '';
+
+							if( elem.classList.contains( 'map-consent-clarity' ) )
+							{
+								consentVendor = '(Clarity)';
+								that.updateClarityConsent( consent_key, 'granted', true );
+							}
 
 							if( elem.classList.contains( 'map-consent-microsoft' ) )
 							{
@@ -3481,7 +4006,7 @@ var MAP =
 								that.updateGoogleConsentbyKeyValue( consent_key, 'granted', true );
 							}
 
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
 
 							currentToggleElm.forEach( elm => elm.checked = true );
 
@@ -3489,6 +4014,12 @@ var MAP =
 						else
 						{
 							let consentVendor = '';
+
+							if( elem.classList.contains( 'map-consent-clarity' ) )
+							{
+								consentVendor = '(Clarity)';
+								that.updateClarityConsent( consent_key, 'denied', true );
+							}
 
 							if( elem.classList.contains( 'map-consent-microsoft' ) )
 							{
@@ -3502,7 +4033,7 @@ var MAP =
 								that.updateGoogleConsentbyKeyValue( consent_key, 'denied', true );
 							}
 
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key} ${consentVendor}` );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key} ${consentVendor}` );
 
 							currentToggleElm.forEach( elm => elm.checked = false );
 						}
@@ -3526,7 +4057,7 @@ var MAP =
 
 					if( $this.matches( '.map-user-iab-preference-checkbox' ) )
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-user-iab-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-iab-preference-checkbox click' );
 
 						e.stopImmediatePropagation();
 
@@ -3537,11 +4068,11 @@ var MAP =
 
 						if( $this.checked )
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting 1 to iab_category=${iab_category} , iab_key=${iab_key}` );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 1 to iab_category=${iab_category} , iab_key=${iab_key}` );
 
 							(async() => {
 								while (!MAP_SYS.map_document_load) {
-									// console.log( 'not defined yet' );
+									// MapLogger.log( 'not defined yet' );
 									await new Promise(resolve => setTimeout(resolve, 10));
 								}
 
@@ -3560,11 +4091,11 @@ var MAP =
 						}
 						else
 						{
-							if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + `setting 0 to iab_category=${iab_category} , iab_key=${iab_key}` );
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 0 to iab_category=${iab_category} , iab_key=${iab_key}` );
 
 							(async() => {
 								while (!MAP_SYS.map_document_load) {
-									// console.log( 'not defined yet' );
+									// MapLogger.log( 'not defined yet' );
 									await new Promise(resolve => setTimeout(resolve, 10));
 								}
 
@@ -3593,7 +4124,7 @@ var MAP =
 					var target = e.target;
 					if( target.matches( '.map-privacy-iab-tcf-accept-all-button' ) )
 					{
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-privacy-iab-tcf-accept-all-button click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-privacy-iab-tcf-accept-all-button click' );
 
 						e.preventDefault();
 						e.stopImmediatePropagation();
@@ -3606,7 +4137,7 @@ var MAP =
 
 						(async() => {
 							while (!MAP_SYS.map_document_load) {
-								// console.log( 'not defined yet' );
+								// MapLogger.log( 'not defined yet' );
 								await new Promise(resolve => setTimeout( resolve, 10 ));
 							}
 
@@ -3625,7 +4156,7 @@ var MAP =
 				that.settingsModal.addEventListener( 'click', function( e ) {
 					var target = e.target;
 					if( target.matches( '.map-privacy-iab-tcf-deny-all-button' ) ) {
-						if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map-privacy-iab-tcf-deny-all-button' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-privacy-iab-tcf-deny-all-button' );
 
 						e.preventDefault();
 						e.stopImmediatePropagation();
@@ -3638,7 +4169,7 @@ var MAP =
 
 						(async() => {
 							while (!MAP_SYS.map_document_load) {
-								// console.log( 'not defined yet' );
+								// MapLogger.log( 'not defined yet' );
 								await new Promise(resolve => setTimeout(resolve, 10));
 							}
 
@@ -3958,7 +4489,7 @@ var MAP =
 
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function setupAccordion' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupAccordion' );
 
 			that.setOverflowMaxHeight();
 
@@ -3968,12 +4499,12 @@ var MAP =
 				{
 					var $parent = $this.parentElement;
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'triggered map_expandItem click' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map_expandItem click' );
 
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + '.map-tab-header click' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + '.map-tab-header click' );
 
 					var $content = $parent.nextElementSibling;
 
@@ -4016,7 +4547,7 @@ var MAP =
 	{
 		try {
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'internal function closeSettingsPopup' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function closeSettingsPopup' );
 
 			this.settingsModal.classList.remove( 'map-show' );
 			this.settingsModal.classList.add( 'map-out' );
@@ -4029,7 +4560,7 @@ var MAP =
 
 				while( !MAP_SYS.map_document_load )
 				{
-					//console.log( 'not defined yet' );
+					//MapLogger.log( 'not defined yet' );
 					await new Promise( resolve => setTimeout( resolve, 10 ) );
 				}
 
@@ -4053,7 +4584,7 @@ var MAP =
 
 			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
 			{
-				console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkJsShield function' );
+				MapLogger.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkJsShield function' );
 				return;
 			}
 
@@ -4089,7 +4620,7 @@ var MAP =
 			})
 			.then( response => response.text() )
 			.then( responseText => {
-				console.debug( MAP_SYS.maplog, responseText );
+				MapLogger.debug( MAP_SYS.maplog, responseText );
 			})
 			.catch( error => console.error( 'Error sending data running checkJsShield function:', error ) );
 
@@ -4190,7 +4721,7 @@ var MAP =
 			{
 				let the_message = 'The Consent Mode V2 is set up correctly.';
 
-				console.log( MAP_SYS.maplog + the_message );
+				MapLogger.log( MAP_SYS.maplog + the_message );
 
 				//this.showNotificationBar( the_message, 1 );
 			}
@@ -4198,7 +4729,7 @@ var MAP =
 			{
 				let the_message = 'The sending of consent is not set up correctly - ' + result.reason + '.';
 
-				console.log( MAP_SYS.maplog + the_message );
+				MapLogger.log( MAP_SYS.maplog + the_message );
 
 				//this.showNotificationBar( the_message, 2 );
 			}
@@ -4225,7 +4756,7 @@ var MAP =
 					})
 					.then(response => response.text())
 					.then(responseText => {
-						console.debug( MAP_SYS.maplog, responseText );
+						MapLogger.debug( MAP_SYS.maplog, responseText );
 					})
 					.catch( error => console.error( 'Error sending data running checkConsentModeStatus function:', error ) );
 			}
@@ -4299,9 +4830,9 @@ var MAP =
 					})
 					.then( response => response.text() )
 					.then( responseText => {
-						console.groupCollapsed( MAP_SYS.maplog + 'sendDetectedKeys detectableKeys=' + detectableKeys_to_send + ' , detectedKeys=' + detectedKeys_to_send + ' with response :' );
-						console.debug( MAP_SYS.maplog, responseText );
-						console.groupEnd();
+						MapLogger.groupCollapsed( MAP_SYS.maplog + 'sendDetectedKeys detectableKeys=' + detectableKeys_to_send + ' , detectedKeys=' + detectedKeys_to_send + ' with response :' );
+						MapLogger.debug( MAP_SYS.maplog, responseText );
+						MapLogger.groupEnd();
 					});
 				}
 			}
@@ -4471,7 +5002,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		{
 			MAP_SYS.map_initted = true;
 
-			if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
 
 			MAP.set({
 				settings : map_cookiebar_settings
@@ -4485,7 +5016,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 			{
 				try {
 
-					if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
 
 					MAP.set({
 						settings : map_cookiebar_settings
@@ -4516,8 +5047,9 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
 });
 
-window.addEventListener( 'load', function() {
-
+//triggered on document load
+function map_on_document_load_event()
+{
 	try {
 
 		MAP_SYS.map_document_load = true;
@@ -4525,10 +5057,9 @@ window.addEventListener( 'load', function() {
 		if( !MAP_SYS.map_initted &&
 				typeof map_cookiebar_settings !== 'undefined' )
 		{
-
 			try {
 
-				if( MAP_SYS?.map_debug ) console.debug( MAP_SYS.maplog + 'initting' );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
 
 				MAP.set({
 					settings : map_cookiebar_settings
@@ -4600,13 +5131,21 @@ window.addEventListener( 'load', function() {
 	{
 		console.error( error );
 	}
+
+}
+
+window.addEventListener( 'load', function() {
+	if( typeof window.map_on_document_load_event === 'function' )
+	{
+	    window.map_on_document_load_event();
+	}
 });
 
 //f. for cloning node attribute to another (only valid attributes)
 function cloneNodeAttributeToAnother( $source, dest )
 {
-	//console.log( $source );
-	//console.log( dest );
+	//MapLogger.log( $source );
+	//MapLogger.log( dest );
 
 	var exclusion_list = [
 		'type',
@@ -4652,7 +5191,7 @@ function internalRecreateNode( el, withChildren ){
 //wpcf7
 function map_trigger_custom_patch_1()
 {
-	console.debug( MAP_SYS.maplog + 'map_trigger_custom_patch_1' );
+	MapLogger.debug( MAP_SYS.maplog + 'map_trigger_custom_patch_1' );
 
 	try {
 		internalRecreateNode( document.querySelector( 'form.wpcf7-form' ), true );
@@ -4675,7 +5214,7 @@ function map_trigger_custom_patch_1()
 //avia maps
 function map_trigger_custom_patch_2()
 {
-	console.debug( MAP_SYS.maplog + 'map_trigger_custom_patch_2' );
+	MapLogger.debug( MAP_SYS.maplog + 'map_trigger_custom_patch_2' );
 
 	document.querySelectorAll( '.av_gmaps_confirm_link.av_text_confirm_link.av_text_confirm_link_visible' ).forEach( function( element ) {
 		element.click();
@@ -4722,3 +5261,8 @@ if( typeof MAP !== 'undefined' && typeof MAP.setupMicrosoftConsentMode !== 'unde
 	MAP.setupMicrosoftConsentMode();
 }
 
+//Clarity consent mode early as possible initialization
+if( typeof MAP !== 'undefined' && typeof MAP.setupClarityConsentMode !== 'undefined' )
+{
+	MAP.setupClarityConsentMode();
+}

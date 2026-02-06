@@ -1885,6 +1885,9 @@ class MyAgilePrivacyAdmin {
 			$php_version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.0';
 		}
 
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$frontend_regulation = $MyAgilePrivacyRegulationHelper->getFrontendConfig();
+
 		$other_data = array(
 			'map_version'					=>	MAP_PLUGIN_VERSION,
 			'summary_version'				=>	MAP_SUMMARY_VERSION,
@@ -1897,6 +1900,7 @@ class MyAgilePrivacyAdmin {
 			'theme_name'					=> 	null,
 			'currentAndSupportedLanguages' 	=> 	MyAgilePrivacy::getCurrentAndSupportedLanguages(),
 			'integrityChecks'				=>	MyAgilePrivacy::getGlobalIntegrityChecks( 'backend' ),
+			'frontend_regulation'			=>	$frontend_regulation,
 		);
 
 		//bof theme calc
@@ -3291,29 +3295,64 @@ class MyAgilePrivacyAdmin {
 		}
 
 		$mapx_items = array();
+
 		if( is_plugin_active( 'myagilepixel/myagilepixel.php' ) )
 		{
-			if( defined( 'MAPX_my_agile_pixel_ga_on' ) )
+			$added_first_layer_text_skip = false;
+
+			$logic_check = 'basic';
+
+			if( defined( 'MAPX_PLUGIN_VERSION' ) && version_compare( MAPX_PLUGIN_VERSION, '3.0.9', '>=' ) )
 			{
-				if( defined( 'MAPX_my_agile_pixel_ga_on_anonymous' ) && MAPX_my_agile_pixel_ga_on_anonymous )
+				$logic_check = 'detailed';
+
+				if( defined( 'MAPX_added_first_layer_text_skip' ) && MAPX_added_first_layer_text_skip )
 				{
-					$mapx_items[] = 'ga_4_version';
+					$added_first_layer_text_skip = true;
 				}
 			}
 
-			if( defined( 'MAPX_my_agile_pixel_fbq_on' ) )
+			if( !$added_first_layer_text_skip )
 			{
-				if( defined( 'MAPX_my_agile_pixel_fbq_on_anonymous' ) && MAPX_my_agile_pixel_fbq_on_anonymous )
+				if( $logic_check == 'basic' )
 				{
-					$mapx_items[] = 'facebook_remarketing';
-				}
-			}
+					if( defined( 'MAPX_my_agile_pixel_ga_on' ) )
+					{
+						$mapx_items[] = 'ga_4_version';
+					}
 
-			if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) )
-			{
-				if( defined( 'MAPX_my_agile_pixel_tiktok_on_anonymous' ) && MAPX_my_agile_pixel_tiktok_on_anonymous )
+					if( defined( 'MAPX_my_agile_pixel_fbq_on' ) )
+					{
+						$mapx_items[] = 'facebook_remarketing';
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) )
+					{
+						$mapx_items[] = 'tiktok_pixel';
+					}
+				}
+				elseif( $logic_check == 'detailed' )
 				{
-					$mapx_items[] = 'tiktok_pixel';
+					if( defined( 'MAPX_my_agile_pixel_ga_on' ) &&
+						defined( 'MAPX_my_agile_pixel_ga_on_anonymous' ) &&
+						MAPX_my_agile_pixel_ga_on_anonymous )
+					{
+						$mapx_items[] = 'ga_4_version';
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_fbq_on' ) &&
+						defined( 'MAPX_my_agile_pixel_fbq_on_anonymous' ) &&
+						MAPX_my_agile_pixel_fbq_on_anonymous )
+					{
+						$mapx_items[] = 'facebook_remarketing';
+					}
+
+					if( defined( 'MAPX_my_agile_pixel_tiktok_on' ) &&
+						defined( 'MAPX_my_agile_pixel_tiktok_on_anonymous' ) &&
+						MAPX_my_agile_pixel_tiktok_on_anonymous )
+					{
+						$mapx_items[] = 'tiktok_pixel';
+					}
 				}
 			}
 		}
@@ -3474,7 +3513,7 @@ class MyAgilePrivacyAdmin {
 	{
 		global $post;
 
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'remove_wpml_metaboxes' );
+		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'remove_wpml_metaboxes' );
 
 		if( isset( $post->post_type ) && $post->post_type === MAP_POST_TYPE_COOKIES )
 		{
@@ -3709,34 +3748,51 @@ class MyAgilePrivacyAdmin {
 
 		$selected = ( isset( $custom["_map_is_necessary"][0] ) ) ? $custom["_map_is_necessary"][0] : '';
 
+		$is_google_analytics_like = ( isset( $custom["_map_api_key"] ) &&
+			isset( $custom["_map_api_key"][0] ) &&
+			( 	$custom["_map_api_key"][0] == 'google_analytics' ||
+				$custom["_map_api_key"][0] == 'my_agile_pixel_ga' )
+			) ? true : false;
+
 		?>
-		<label class="mt-2" for="_map_is_necessary"><?php echo wp_kses_post( __( "Is necessary?", 'MAP_txt' ) ); ?></label>
-		<br>
-		<select
-			class="mt-2 mb-2"
-			name='_map_is_necessary'
-			id='_map_is_necessary'>
-			<?php $post_types = array( 'necessary', 'not-necessary' );
-			foreach( $post_types as $post_type ): ?>
-			<option value="<?php echo esc_attr( $post_type ); ?>" <?php if( $selected == esc_attr( $post_type ) ):?>selected<?php endif; ?>><?php echo esc_html( $post_type ); ?></option>
-			<?php endforeach; ?>
-		</select>
+		<div <?php if( $is_google_analytics_like ) echo 'style="display:none;"';?>>
 
-		<p>
-			<?php echo wp_kses_post( __( 'Setting the cookie as "necessary" will disable the preventive blocking, making the tool always active regardless of user consent.', 'MAP_txt' ) ); ?><br>
-			<?php echo wp_kses_post( __( 'Setting the cookie as "not necessary" will activate the cookie only upon user consent.', 'MAP_txt' ) ); ?><br>
-			<?php
+			<label class="mt-2" for="_map_is_necessary"><?php echo wp_kses_post( __( "Is necessary?", 'MAP_txt' ) ); ?></label>
 
-				if( isset( $custom["_map_suggested_is_necessary"] ) &&
-					isset( $custom["_map_suggested_is_necessary"][0] )
-				)
-				{
-					echo wp_kses_post( __( 'Suggested value for this Cookie', 'MAP_txt' ) ).':<b> '.esc_html( $custom["_map_suggested_is_necessary"][0] ).'</b>.';
-				}
-			?>
-		</p>
+			<br>
+
+			<select
+				class="mt-2 mb-2"
+				name='_map_is_necessary'
+				id='_map_is_necessary'>
+				<?php $post_types = array( 'necessary', 'not-necessary' );
+				foreach( $post_types as $post_type ): ?>
+				<option value="<?php echo esc_attr( $post_type ); ?>" <?php if( $selected == esc_attr( $post_type ) ):?>selected<?php endif; ?>><?php echo esc_html( $post_type ); ?></option>
+				<?php endforeach; ?>
+			</select>
+
+			<p>
+				<?php echo wp_kses_post( __( 'Setting the cookie as "necessary" will disable the preventive blocking, making the tool always active regardless of user consent.', 'MAP_txt' ) ); ?><br>
+				<?php echo wp_kses_post( __( 'Setting the cookie as "not necessary" will activate the cookie only upon user consent.', 'MAP_txt' ) ); ?><br>
+				<?php
+
+					if( isset( $custom["_map_suggested_is_necessary"] ) &&
+						isset( $custom["_map_suggested_is_necessary"][0] )
+					)
+					{
+						echo wp_kses_post( __( 'Suggested value for this Cookie', 'MAP_txt' ) ).':<b> '.esc_html( $custom["_map_suggested_is_necessary"][0] ).'</b>.';
+					}
+				?>
+			</p>
+
+		</div>
 
 		<?php
+
+		if( $is_google_analytics_like )
+		{
+			echo '<p>'.wp_kses_post( __( 'Managed setting via Privacy Settings ▸ Consent ▸ Google Consent Mode v2', 'MAP_txt' ) ).'</p>';
+		}
 	}
 
 	/**
@@ -4388,36 +4444,61 @@ class MyAgilePrivacyAdmin {
 
 			case "necessary":
 
-				if( isset( $custom["_map_is_necessary"][0] ) )
+				if( isset( $custom["_map_api_key"] ) &&
+					isset( $custom["_map_api_key"][0] ) &&
+					(
+						$custom["_map_api_key"][0] == 'google_analytics' ||
+						$custom["_map_api_key"][0] == 'my_agile_pixel_ga' )
+				)
 				{
-					switch( $custom["_map_is_necessary"][0] )
+					echo wp_kses_post( __( 'Managed setting via Privacy Settings ▸ Consent ▸ Google Consent Mode v2', 'MAP_txt' ) );
+				}
+				else
+				{
+					if( isset( $custom["_map_is_necessary"][0] ) )
 					{
-						case 'necessary':
-							echo 'necessary:<br>'.wp_kses_post( __( 'Preventive blocking is not active', 'MAP_txt' ) );
-							break;
+						switch( $custom["_map_is_necessary"][0] )
+						{
+							case 'necessary':
+								echo wp_kses_post( __( 'Preventive blocking is not active<br>(cookie setting: “necessary”)', 'MAP_txt' ) );
+								break;
 
-						case 'not-necessary':
-							echo 'not-necessary:<br>'.wp_kses_post( __( 'Preventive blocking <strong>is active</strong>.', 'MAP_txt' ) );
-							break;
+							case 'not-necessary':
+								echo wp_kses_post( __( 'Preventive blocking <strong>is active</strong><br>(cookie setting: “not-necessary”)', 'MAP_txt' ) );
+								break;
+						}
 					}
 				}
 				break;
 
 			case "suggested":
 
-				if( isset( $custom["_map_suggested_is_necessary"][0] ) )
+				if( isset( $custom["_map_api_key"] ) &&
+					isset( $custom["_map_api_key"][0] ) &&
+					(
+						$custom["_map_api_key"][0] == 'google_analytics' ||
+						$custom["_map_api_key"][0] == 'my_agile_pixel_ga' )
+				)
 				{
-					switch( $custom["_map_suggested_is_necessary"][0] )
+					echo '-';
+				}
+				else
+				{
+					if( isset( $custom["_map_suggested_is_necessary"][0] ) )
 					{
-						case 'necessary':
-							echo '<b>necessary</b>';
-							break;
+						switch( $custom["_map_suggested_is_necessary"][0] )
+						{
+							case 'necessary':
+								echo '<b>necessary</b>';
+								break;
 
-						case 'not-necessary':
-							echo '<b>not-necessary</b>';
-							break;
+							case 'not-necessary':
+								echo '<b>not-necessary</b>';
+								break;
+						}
 					}
 				}
+
 				break;
 
 			case "allow_sync":
@@ -4634,11 +4715,11 @@ class MyAgilePrivacyAdmin {
 						</div>
 					</div>
 
-					<div class="my_agile_privacy_backend_inline map_policy_edit">
-						<div class="map-policy-quickview">
+					<div class="my_agile_privacy_backend_inline map_text_edit">
+						<div class="map-text-quickview">
 							<div class="map-custom-card">
 								<div class="map-custom-card-header">
-									<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-policy"><?php echo wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ); ?></button></h1>
+									<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><?php echo wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ); ?></button></h1>
 								</div>
 								<div class="map-custom-card-body">
 
@@ -4659,11 +4740,12 @@ class MyAgilePrivacyAdmin {
 														$lang_code_2char = $lang_data['2char'];
 														$active = $first ? 'active' : '';
 														$aria_selected = $first ? 'true' : 'false';
-														$this_label = ucfirst( $lang_data['2char'] );
+														$this_label = ucfirst( $lang_data['en_label'] );
 
 													?>
 														<li class="nav-item" role="presentation">
 															<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+																<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
 																<?php echo esc_html( $this_label ); ?>
 															</button>
 														</li>
@@ -4684,7 +4766,7 @@ class MyAgilePrivacyAdmin {
 														$active = $first ? 'show active' : '';
 														$this_name = null;
 														$this_text = null;
-														$this_label = ucfirst( $lang_data['2char'] );
+														$this_label = ucfirst( $lang_data['en_label'] );
 
 														if( isset( $translations ) &&
 															$translations &&
@@ -4751,11 +4833,12 @@ class MyAgilePrivacyAdmin {
 												$lang_code_2char = $lang_data['2char'];
 												$active = $first ? 'active' : '';
 												$aria_selected = $first ? 'true' : 'false';
-												$this_label = ucfirst( $lang_data['2char'] );
+												$this_label = ucfirst( $lang_data['en_label'] );
 
 											?>
 												<li class="nav-item" role="presentation">
 													<button class="nav-link <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+														<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
 														<?php echo esc_html( $this_label ); ?>
 													</button>
 												</li>
@@ -4775,7 +4858,7 @@ class MyAgilePrivacyAdmin {
 												$active = $first ? 'show active' : '';
 												$this_name = null;
 												$this_text = null;
-												$this_label = ucfirst( $lang_data['2char'] );
+												$this_label = ucfirst( $lang_data['en_label'] );
 
 												if( isset( $translations ) &&
 													$translations &&
@@ -4850,164 +4933,235 @@ class MyAgilePrivacyAdmin {
 
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
-			if( $currentAndSupportedLanguages['with_multilang'] )
+			function add_content_after_editor()
 			{
-				function add_content_after_editor()
+				global $post;
+
+				if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
 				{
-					global $post;
+					return;
+				}
 
-					if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
-					{
-						return;
-					}
+				$the_id = $post->ID;
 
-					$the_id = $post->ID;
+				$_map_translations = get_post_meta( $the_id, '_map_translations', true );
+				$translations = wp_unslash( json_decode( $_map_translations, true ) );
 
-					$_map_translations = get_post_meta( $the_id, '_map_translations', true );
-					$translations = wp_unslash( json_decode( $_map_translations, true ) );
+				$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
-					$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
+				?>
+					<div class="map-hero">
+							<div class="map-avatar">
+								<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
+							</div>
 
-					?>
-						<div class="map-hero">
-								<div class="map-avatar">
-									<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
-								</div>
+						<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
 
-							<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
-							
-								<?php echo wp_kses_post( __( 'On this page, you can choose which cookies to keep always active (necessary) and which to enable only with your consent. You can decide whether to refresh the page after acceptance and, if you’re an advanced user, manage any JavaScript dependencies. Warning: change these settings only if you know what you’re doing; incorrect configurations can compromise site functionality and regulatory compliance. If in doubt, keep the recommended settings. ', 'MAP_txt' ) ); ?>
-								
+							<?php echo wp_kses_post( __( 'On this page, you can choose which cookies to keep always active (necessary) and which to enable only with your consent. You can decide whether to refresh the page after acceptance and, if you’re an advanced user, manage any JavaScript dependencies. Warning: change these settings only if you know what you’re doing; incorrect configurations can compromise site functionality and regulatory compliance. If in doubt, keep the recommended settings. ', 'MAP_txt' ) ); ?>
+
+						</div>
+				</div>
+
+				<div class="my_agile_privacy_backend_inline map_text_edit">
+					<div class="map-text-quickview">
+						<div class="map-custom-card">
+							<div class="map-custom-card-header">
+								<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><?php echo wp_kses_post( __( 'Edit Cookie Text', 'MAP_txt' ) ); ?></button></h1>
+							</div>
+							<div class="map-custom-card-body">
+
+								<?php
+
+									if( $currentAndSupportedLanguages['with_multilang'] )
+									{
+								?>
+
+										<div class="map-translations-list">
+
+											<ul class="nav nav-tabs" id="translationTabs" role="tablist">
+												<?php
+												$first = true;
+
+												foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
+
+													$lang_code_2char = $lang_data['2char'];
+													$active = $first ? 'active' : '';
+													$aria_selected = $first ? 'true' : 'false';
+													$this_label = ucfirst( $lang_data['en_label'] );
+
+												?>
+													<li class="nav-item" role="presentation">
+														<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+															<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+															<?php echo esc_html( $this_label ); ?>
+														</button>
+													</li>
+												<?php
+													$first = false;
+												endforeach;
+												?>
+											</ul>
+
+
+											<div class="tab-content" id="translationTabsContent">
+												<?php
+												$first = true;
+
+												foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
+
+													$lang_code_2char = $lang_data['2char'];
+													$active = $first ? 'show active' : '';
+													$this_name = null;
+													$this_text = null;
+													$this_label = ucfirst( $lang_data['en_label'] );
+
+													if( isset( $translations ) &&
+														$translations &&
+														isset( $translations[ $lang_data['2char'] ]) )
+													{
+														$translation = $translations[ $lang_data['2char'] ];
+
+														$this_text = $translation['text'];
+													}
+
+												?>
+													<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab">
+														<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo wp_kses_post( __( 'Cookie Text Preview', 'MAP_txt' ) ); ?></label>
+
+														<?php
+
+															$the_quickview_content = MyAgilePrivacyAdmin::genPolicyQuickViewContent( $the_id, $lang_code_2char );
+
+															echo $the_quickview_content;
+														?>
+													</div>
+												<?php
+													$first = false;
+												endforeach;
+												?>
+											</div>
+										</div>
+
+								<?php
+
+									}
+									else
+									{
+										$the_quickview_content = MyAgilePrivacyAdmin::genPolicyQuickViewContent( $the_id, null );
+										echo $the_quickview_content;
+									}
+
+								?>
+
+
 							</div>
 						</div>
-					<?php
+					</div>
+					<div class="map-wrap-editor displayNone">
+						<div class="alert alert-warning" role="alert">
+							<?php echo wp_kses_post( __( 'Attention: Modifying the cookie without specific expertise may result in loss of compliance.', 'MAP_txt' ) ); ?><br>
+							<?php echo wp_kses_post( __( 'By modifying the text, you assume all risks.', 'MAP_txt' ) ); ?><br>
+							<?php echo wp_kses_post( __( 'Remember to disable automatic updates for this cookie to avoid losing the changes made.', 'MAP_txt' ) ); ?><br>
+						</div>
 
-					if( $currentAndSupportedLanguages['with_multilang'] )
-					{
+						<?php
+
+							if( $currentAndSupportedLanguages['with_multilang'] ):
 						?>
 
-						<div class="my_agile_privacy_backend_inline map_cookie_edit">
-							<div class="map-translations-list">
+								<div class="map-translations-list">
 
-								<ul class="nav nav-tabs" id="translationTabs" role="tablist">
-									<?php
-									$first = true;
+									<ul class="nav nav-tabs" id="translationTabs" role="tablist">
+										<?php
+										$first = true;
 
-									foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
+										foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
 
-										$lang_code_2char = $lang_data['2char'];
-										$active = $first ? 'active' : '';
-										$aria_selected = $first ? 'true' : 'false';
-										$this_label = ucfirst( $lang_data['2char'] );
+											$lang_code_2char = $lang_data['2char'];
+											$active = $first ? 'active' : '';
+											$aria_selected = $first ? 'true' : 'false';
+											$this_label = ucfirst( $lang_data['en_label'] );
 
-									?>
-										<li class="nav-item" role="presentation">
-											<button class="nav-link <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
-												<?php echo esc_html( $this_label ); ?>
-											</button>
-										</li>
-									<?php
-										$first = false;
-									endforeach;
-									?>
-								</ul>
+										?>
+											<li class="nav-item" role="presentation">
+												<button class="nav-link <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+													<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+													<?php echo esc_html( $this_label ); ?>
+												</button>
+											</li>
+										<?php
+											$first = false;
+										endforeach;
+										?>
+									</ul>
 
-								<div class="tab-content" id="translationTabsContent">
-									<?php
-									$first = true;
+									<div class="tab-content" id="translationTabsContent">
+										<?php
+										$first = true;
 
-									foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
+										foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
 
-										$lang_code_2char = $lang_data['2char'];
-										$active = $first ? 'show active' : '';
-										$this_name = null;
-										$this_text = null;
-										$this_label = ucfirst( $lang_data['2char'] );
+											$lang_code_2char = $lang_data['2char'];
+											$active = $first ? 'show active' : '';
+											$this_name = null;
+											$this_text = null;
+											$this_label = ucfirst( $lang_data['en_label'] );
 
-										if( isset( $translations ) &&
-											$translations &&
-											isset( $translations[ $lang_data['2char'] ]) )
-										{
-											$translation = $translations[ $lang_data['2char'] ];
+											if( isset( $translations ) &&
+												$translations &&
+												isset( $translations[ $lang_data['2char'] ]) )
+											{
+												$translation = $translations[ $lang_data['2char'] ];
 
-											$this_name = $translation['name'];
-											$this_text = $translation['text'];
-										}
+												$this_text = $translation['text'];
+											}
 
-									?>
-										<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="<?php echo esc_attr( $lang_code_2char ); ?>-tab">
-											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo wp_kses_post( __( 'Cookie Name', 'MAP_txt' ) ); ?></label>
-											<input
-												type="text"
-												name="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"
-												value="<?php echo esc_attr( $this_name ); ?>"
-												class="widefat">
+										?>
+											<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="<?php echo esc_attr( $lang_code_2char ); ?>-tab">
 
-											<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][text]"><?php echo wp_kses_post( __( 'Cookie Description', 'MAP_txt' ) ); ?></label>
-											<?php
-												$editor_id = 'map_translation_' . $lang_code_2char;
-												$editor_settings = array(
-													'textarea_name' => 'map_translations[' . $lang_code_2char . '][text]',
-													'textarea_rows' => 10,
-													'media_buttons' => false,
-												);
-												wp_editor( $this_text, $editor_id, $editor_settings );
-											?>
-										</div>
-									<?php
-										$first = false;
-									endforeach;
-									?>
+												<?php
+													$editor_id = 'map_translation_' . $lang_code_2char;
+													$editor_settings = array(
+														'textarea_name' => 'map_translations[' . $lang_code_2char . '][text]',
+														'textarea_rows' => 10,
+														'media_buttons' => false,
+													);
+													wp_editor( $this_text, $editor_id, $editor_settings );
+												?>
+											</div>
+										<?php
+											$first = false;
+										endforeach;
+										?>
+									</div>
 								</div>
-							</div>
-							<div class="map-wrap-editor displayNone">
+
 						<?php
-					}
-				}
+							endif;
+						?>
 
-				function add_text_after_editor()
-				{
-					// Text to display after the editor
-					$text_after = '</div></div>';
-					echo $text_after;
-				}
-
-				add_action( 'edit_form_after_title', 'add_content_after_editor' );
-				add_action( 'edit_form_after_editor', 'add_text_after_editor' );
-			}
-			else
-			{
-				//mono lang version
-
-				function add_content_after_editor()
-				{
-					global $post;
-
-					if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
-					{
-						return;
-					}
-
-					$the_id = $post->ID;
-
-					?>
-						<div class="map-hero">
-								<div class="map-avatar">
-									<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
-								</div>
-
-							<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
-
-								<?php echo wp_kses_post( __( 'On this page, you can choose which cookies to keep always active (necessary) and which to enable only with your consent. You can decide whether to refresh the page after acceptance and, if you’re an advanced user, manage any JavaScript dependencies. Warning: change these settings only if you know what you’re doing; incorrect configurations can compromise site functionality and regulatory compliance. If in doubt, keep the recommended settings. ', 'MAP_txt' ) ); ?>
-
-							</div>
-						</div>
 					<?php
 
-				}
+						if( $currentAndSupportedLanguages['with_multilang'] ):
+					?>
 
-				add_action( 'edit_form_after_title', 'add_content_after_editor' );
+						</div>
+						<div class="displayNone">
+
+					<?php
+						endif;
+
 			}
+
+			function add_text_after_editor()
+			{
+				// Text to display after the editor
+				$text_after = '</div></div>';
+				echo $text_after;
+			}
+
+			add_action( 'edit_form_after_title', 'add_content_after_editor' );
+			add_action( 'edit_form_after_editor', 'add_text_after_editor' );
 		}
 	}
 

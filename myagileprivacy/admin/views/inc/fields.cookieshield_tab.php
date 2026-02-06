@@ -342,7 +342,7 @@ if( isset( $the_settings['pa'] ) &&
 								</select>
 
 								<div class="form-text">
-									<?php echo wp_kses_post( __( 'The type of hook is the technology used to "hook" and insert the functions of My Agile Privacy for the preventive blocking. Change this setting only if requested by support', 'MAP_txt' ) ); ?>.
+									<?php echo wp_kses_post( __( 'The type of hook is the technology used to "hook" and insert the functions of My Agile Privacy® for the preventive blocking. Change this setting only if requested by support', 'MAP_txt' ) ); ?>.
 								</div>
 
 

@@ -1,10 +1,10 @@
-=== The only WP Privacy Solution you can truly trust — compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, and 14 other regulations. ===
+=== My Agile Privacy® - CMP, Cookie Consent & Privacy Tools ===
 Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/en/
-Tags: GDPR, DSGVO, CCPA/CPRA, privacy cookie banner, Consent Mode v2
+Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
-Tested up to: 6.8
-Stable tag: 3.2.1
+Tested up to: 6.9
+Stable tag: 3.2.5
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -14,8 +14,8 @@ Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 1
 
 == Description ==
 
-**My Agile Privacy** is the solution for managing **compliance with privacy regulations**—compliant with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, and VCDPA.
-It supports **English, Spanish, French, German, Italian, Portuguese, Dutch, Polish, and Greek**. This plugin is one of the **best WordPress plugins for cookie and personal data compliance**, offering a wide range of **easy-to-use features** listed below. My Agile Privacy natively supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
+**My Agile Privacy®** provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, and VCDPA.
+My Agile Privacy® is available in **Albanian, Azerbaijani, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Macedonian, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swedish, Turkish and Ukrainian**.  It supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
 [youtube https://youtu.be/l7960ISPTBw]
 
@@ -32,9 +32,9 @@ It supports **English, Spanish, French, German, Italian, Portuguese, Dutch, Poli
 
 - ⚡️ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, VCDPA
 
-- ⭐ IAB TCF 2.2 support
+- ⭐ IAB TCF 2.3 support
 
-- 🚀 Google Consent Mode v2 and Microsoft UET Consent Mode support
+- 🚀 Google Consent Mode v2, Clarity and Microsoft UET Consent Mode support
 
 - ⚡️ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
 
@@ -48,14 +48,14 @@ This plugin will:
 3. Help you stay compliant by blocking unwanted cookies and third-party scripts in line with privacy regulations.
 
 == Certified with Industry Standards ==
-My Agile Privacy is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
+My Agile Privacy® is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
 
 == Designed for Web Agencies ==
 
 [youtube https://youtu.be/5mw3xq0zEpI]
 
 == Features ==
-**This tool allows you to make your website privacy-compliant** through a guided process that is easy to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy scans your website, informing you about cookies and third-party services that need to be disclosed.
+**This tool allows you to make your website privacy-compliant** through a guided process that is easy to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy® scans your website, informing you about cookies and third-party services that need to be disclosed.
 **Our solution is responsive** and tested on desktop computers, tablets, and mobile devices.
 
 == Privacy and Cookie Policy Generator ==
@@ -64,18 +64,41 @@ Through a **simple and guided interface**, you can use pre-written policy templa
 
 == Languages ==
 Our services are currently available in the following languages:
+- Albanian
+- Azerbaijani
+- Bosnian
+- Bulgarian
+- Catalan
+- Croatian
+- Czech
+- Danish
+- Dutch
 - English
-- Spanish
+- Estonian
+- Finnish
 - French
 - German
-- Italian
-- Portuguese
-- Dutch
-- Polish
 - Greek
+- Hungarian
+- Italian
+- Latvian
+- Lithuanian
+- Macedonian
+- Norwegian
+- Polish
+- Portuguese
+- Romanian
+- Russian
+- Serbian
+- Slovak
+- Slovenian
+- Spanish
+- Swedish
+- Turkish
+- Ukrainian
 
 == Support and Updates ==
-**My Agile Privacy is regularly updated** and maintained to ensure regulatory compliance.
+**My Agile Privacy® is regularly updated** and maintained to ensure regulatory compliance.
 Our support **—provided exclusively by humans, not chatbots or AI—** can be reached [here](https://www.myagileprivacy.com/en/contact-us/).
 
 **Other links:**
@@ -99,6 +122,22 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.2.5
+* 32 languages support
+* UX fix
+* Better resilience to ineffective caching mechanisms
+* Better compatibility for php 8
+
+= 3.2.4
+* Plugin name fix
+
+= 3.2.3
+* Clarity consent mode support
+* Minor bugfix
+
+= 3.2.2
+* Minor bugfix
 
 = 3.2.1
 * Minor bugfix
@@ -353,7 +392,7 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 * Improved JS frontend handling
 
 = 1.3.10 =
-* AMP added as skip condition for not inject My Agile Privacy code
+* AMP added as skip condition for not inject My Agile Privacy® code
 * Added option to show the blocked content notification bar even if the user has not yet expressed a consent choice
 * CDN fix for premium customer
 

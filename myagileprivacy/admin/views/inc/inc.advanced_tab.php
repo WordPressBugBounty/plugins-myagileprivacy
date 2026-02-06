@@ -129,13 +129,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								if( $data['selected'] )
 								{
 									?>
-									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
+									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['en_label'] ).' - '.esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 								else
 								{
 									?>
-									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['en_label'] ).' - '.esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 							}
@@ -223,13 +223,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								if( $data['selected'] )
 								{
 									?>
-									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
+									<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['en_label'] ).' - '.esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 								else
 								{
 									?>
-									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['en_label'] ).' - '.esc_attr( $data['label'] ); ?></option>
 									<?php
 								}
 							}

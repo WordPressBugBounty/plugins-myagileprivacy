@@ -154,7 +154,7 @@ if( isset( $the_settings['pa'] ) &&
 									<?php
 
 										$valid_options = array(
-											'native'	  =>	array(  'label' => esc_attr( __( 'via My Agile Privacy', 'MAP_txt' ) ),
+											'native'	  =>	array(  'label' => esc_attr( __( 'via My Agile Privacy®', 'MAP_txt' ) ),
 																					'selected' => false ),
 											'gtm'	      =>	array(  'label' => esc_attr( __( 'via Google Tag Manager', 'MAP_txt' ) ),
 																					'selected' => false ),
@@ -192,7 +192,7 @@ if( isset( $the_settings['pa'] ) &&
 						<div class="cmode_v2_implementation_type_options displayNone mt-4" data-value="native">
 							<div class="row mb-3">
 								<div class="col-12">
-								<strong><?php echo wp_kses_post( __( 'Native implementation via My Agile Privacy', 'MAP_txt' ) ); ?></strong>
+								<strong><?php echo wp_kses_post( __( 'Native implementation via My Agile Privacy®', 'MAP_txt' ) ); ?></strong>
 								<p><?php echo wp_kses_post( __( "Select the initial configuration of the parameters necessary for the operation of Consent Mode v2. The standard configuration, as required by regulations, precedes all parameters set to 'denied'.", 'MAP_txt' ) ); ?></p>
 								</div>
 							</div>

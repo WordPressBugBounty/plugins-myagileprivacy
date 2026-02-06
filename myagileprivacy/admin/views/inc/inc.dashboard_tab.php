@@ -14,7 +14,7 @@ $caller = 'dashboardOptionsWrapper';
 </script>
 
 <div class="container-fluid mt-5">
-	<h2 class="mb-4"><?php echo wp_kses_post( __( 'My Agile Privacy Dashboard', 'MAP_txt' ) ); ?></h2>
+	<h2 class="mb-4"><?php echo wp_kses_post( __( 'My Agile Privacy® Dashboard', 'MAP_txt' ) ); ?></h2>
 	<div class="row mb-5">
 		<div class="row g-4 consistent-alert-container mt-3">
 			<div class="col-md-3">
@@ -28,7 +28,7 @@ $caller = 'dashboardOptionsWrapper';
 							<a href="<?php echo esc_url( $settings_menu_link ); ?>"><?php echo wp_kses_post( __( 'Go to the Banner Settings', 'MAP_txt' ) ); ?></a>
 						</p>
 
-						<p class="mt-3 fw-bold data-text-right text-<?php echo ( $is_on ) ? 'success' : 'danger'; ?>">
+						<p class="mt-3 fw-bold data-text-right">
 							<?php echo ( $is_on ) ? wp_kses_post( __( 'On', 'MAP_txt' ) ) : wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?>
 						</p>
 					</div>
@@ -182,7 +182,7 @@ $caller = 'dashboardOptionsWrapper';
 														<?php
 															if( $global_integrity_checks['dashboard_checks']['license_code']['is_skipped'] )
 															{
-																echo wp_kses_post( __( 'You have stated that you do not have a license key. Purchase your license key to unlock all the features of My Agile Privacy!', 'MAP_txt' ) );
+																echo wp_kses_post( __( 'You have stated that you do not have a license key. Purchase your license key to unlock all the features of My Agile Privacy®!', 'MAP_txt' ) );
 															} else
 															{
 																if( $global_integrity_checks['dashboard_checks']['license_code']['is_enabled'] ):
@@ -355,7 +355,7 @@ $caller = 'dashboardOptionsWrapper';
 			?>
 
 			<div class="text-center mt-4">
-				<strong><?php echo wp_kses_post( __( 'Welcome to the My Agile Privacy Dashboard.<br>Need help?', 'MAP_txt' ) ); ?></strong><br>
+				<strong><?php echo wp_kses_post( __( 'Welcome to the My Agile Privacy® Dashboard.<br>Need help?', 'MAP_txt' ) ); ?></strong><br>
 				<a href="<?php echo esc_attr( $helpdesk_href ); ?>" class="link-secondary"><?php echo wp_kses_post( __( 'Go to the Helpdesk', 'MAP_txt' ) ); ?></a> <?php echo wp_kses_post( __( 'or', 'MAP_txt') ); ?> <a href="<?php echo esc_attr( $contact_href ); ?>" class="link-secondary"><?php echo wp_kses_post( __( 'Contact us', 'MAP_txt' ) ); ?></a>
 			</div>
 		</div>
