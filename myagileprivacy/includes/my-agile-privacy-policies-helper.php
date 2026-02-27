@@ -38,7 +38,8 @@ if( !defined( "MAP_PLUGIN_NAME" ) )
 *       )
 *   );
 */
-class MyAgilePrivacyPoliciesHelper
+
+final class MyAgilePrivacyPoliciesHelper
 {
 	/**
 	* Find a shortcode in all Pages (or provided post types), including page builder meta.

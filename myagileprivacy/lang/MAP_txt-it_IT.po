@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: MyAgilePrivacy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-29 22:26+0000\n"
-"PO-Revision-Date: 2026-01-05 09:17+0000\n"
+"PO-Revision-Date: 2026-02-19 10:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: Italiano\n"
 "Language: it_IT\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.8.0; wp-6.8.2; php-8.0.29"
+"X-Loco-Version: 2.7.2; wp-6.9.1"
 
 #: admin/views/policy_assistant_html.php:756
 #: admin/views/policy_assistant_html.php:2228
@@ -82,7 +82,7 @@ msgstr "-Se operi globalmente, includi i paesi dei tuoi utenti"
 msgid "-Select all relevant jurisdictions"
 msgstr "-Seleziona tutte le giurisdizioni pertinenti"
 
-#: admin/my-agile-privacy-admin.php:2786
+#: admin/my-agile-privacy-admin.php:2793
 msgid ""
 "<b>Allowed without notification</b>: represents a Cookie that you do not "
 "wish to block, and you want to prevent it from appearing in the list of "
@@ -94,7 +94,7 @@ msgstr ""
 "impostazione è destinata agli utenti avanzati e dovrebbe essere utilizzata "
 "con cautela."
 
-#: admin/my-agile-privacy-admin.php:2785
+#: admin/my-agile-privacy-admin.php:2792
 msgid ""
 "<b>Blocked without notification</b>: represents a Cookie that you want to "
 "block without it appearing in the list of Cookies for which you are "
@@ -104,7 +104,7 @@ msgstr ""
 "senza farlo comparire nell'elenco dei Cookie per cui stai richiedendo il "
 "consenso."
 
-#: admin/my-agile-privacy-admin.php:2784
+#: admin/my-agile-privacy-admin.php:2791
 msgid ""
 "<b>Draft</b>: represents a Cookie or a software that you are not currently "
 "using, and is available as a \"library\"."
@@ -112,7 +112,7 @@ msgstr ""
 "<b>Bozza</b>: rappresenta un Cookie o software che al momento non stai "
 "utilizzando, ed è disponibile come \"libreria\"."
 
-#: admin/my-agile-privacy-admin.php:2783
+#: admin/my-agile-privacy-admin.php:2790
 msgid ""
 "<b>Published</b>: the Cookie configuration is active according to the "
 "specified settings."
@@ -233,7 +233,7 @@ msgstr "Abilita IAB TCF"
 msgid "Activate IAB Transparency and Consent Framework"
 msgstr "Abilita lo IAB Transparency and Consent Framework"
 
-#: admin/my-agile-privacy-admin.php:4686
+#: admin/my-agile-privacy-admin.php:4694
 #: admin/views/inc/inc.dashboard_tab.php:59
 #: admin/views/inc/inc.policies_tab.php:375
 msgid "Active regulations"
@@ -257,21 +257,21 @@ msgstr ""
 msgid "Adapt the contact forms to GDPR"
 msgstr "Adegua i moduli di contatto al GDPR"
 
-#: admin/my-agile-privacy-admin.php:3884
+#: admin/my-agile-privacy-admin.php:3892
 msgid "Add custom code anyway."
 msgstr "Aggiungi comunque codice custom"
 
-#: frontend/my-agile-privacy-frontend.php:1029
-#: frontend/my-agile-privacy-frontend.php:1030
+#: frontend/my-agile-privacy-frontend.php:1031
+#: frontend/my-agile-privacy-frontend.php:1032
 msgid "Add New Cookie"
 msgstr "Aggiungi nuovo cookie"
 
-#: frontend/my-agile-privacy-frontend.php:1099
-#: frontend/my-agile-privacy-frontend.php:1100
+#: frontend/my-agile-privacy-frontend.php:1101
+#: frontend/my-agile-privacy-frontend.php:1102
 msgid "Add New Policy"
 msgstr "Aggiungi nuova policy"
 
-#: admin/my-agile-privacy-admin.php:4318
+#: admin/my-agile-privacy-admin.php:4326
 msgid "Additional code installation type"
 msgstr "Metodo di installazione codice aggiuntivo"
 
@@ -294,17 +294,17 @@ msgstr "Avanzate"
 msgid "Advanced Settings"
 msgstr "Impostazioni avanzate"
 
-#: admin/my-agile-privacy-admin.php:3702 admin/my-agile-privacy-admin.php:4317
-#: admin/my-agile-privacy-admin.php:4531
+#: admin/my-agile-privacy-admin.php:3710 admin/my-agile-privacy-admin.php:4325
+#: admin/my-agile-privacy-admin.php:4539
 msgid "Allow automatic updates ?"
 msgstr "Consenti aggiornamenti automatici ?"
 
-#: admin/my-agile-privacy-admin.php:3543 admin/my-agile-privacy-admin.php:3547
+#: admin/my-agile-privacy-admin.php:3551 admin/my-agile-privacy-admin.php:3555
 msgid "Allow updates?"
 msgstr "Consenti aggiornamenti?"
 
-#: frontend/my-agile-privacy-frontend.php:1087
-#: admin/my-agile-privacy-admin.php:2816 admin/my-agile-privacy-admin.php:2851
+#: frontend/my-agile-privacy-frontend.php:1089
+#: admin/my-agile-privacy-admin.php:2823 admin/my-agile-privacy-admin.php:2858
 msgid "Allowed without notification"
 msgstr "Consentito senza notifica"
 
@@ -516,7 +516,7 @@ msgstr ""
 msgid "Applies to your processing of personal data when:"
 msgstr "Si applica al tuo trattamento di dati personali quando:"
 
-#: admin/my-agile-privacy-admin.php:5058
+#: admin/my-agile-privacy-admin.php:5066
 #| msgid ""
 #| "Attention: Modifying the cookie text without specific expertise may "
 #| "result in loss of compliance."
@@ -527,7 +527,7 @@ msgstr ""
 "Attenzione: modificare il cookie senza competenze specifiche può causare la "
 "perdita della conformità."
 
-#: admin/my-agile-privacy-admin.php:4811
+#: admin/my-agile-privacy-admin.php:4819
 msgid ""
 "Attention: Modifying the policy without specific expertise may result in "
 "loss of compliance."
@@ -552,7 +552,7 @@ msgstr "Chiusura automatica barra di notifica contenuto bloccato"
 msgid "Auto Close Timeout"
 msgstr "Timeout di chiusura"
 
-#: admin/my-agile-privacy-admin.php:4314
+#: admin/my-agile-privacy-admin.php:4322
 msgid "Auto Detected"
 msgstr ""
 
@@ -562,7 +562,7 @@ msgstr ""
 msgid "Background colour"
 msgstr "Colore di sfondo"
 
-#: admin/my-agile-privacy-admin.php:2941 admin/my-agile-privacy-admin.php:2942
+#: admin/my-agile-privacy-admin.php:2948 admin/my-agile-privacy-admin.php:2949
 #: admin/views/backup_restore_html.php:41
 #: admin/views/inc/inc.backup_restore_tab.php:16
 msgid "Backup & Restore"
@@ -634,8 +634,8 @@ msgstr "Colore background widget contenuto bloccato"
 msgid "Blocked Content Widget text colour"
 msgstr "Colore testo del widget contenuto bloccato"
 
-#: frontend/my-agile-privacy-frontend.php:1078
-#: admin/my-agile-privacy-admin.php:2815 admin/my-agile-privacy-admin.php:2850
+#: frontend/my-agile-privacy-frontend.php:1080
+#: admin/my-agile-privacy-admin.php:2822 admin/my-agile-privacy-admin.php:2857
 msgid "Blocked without notification"
 msgstr "Bloccato senza notifica"
 
@@ -737,7 +737,7 @@ msgstr ""
 "automatico delle impostazione relative al blocco preventivo dei Cookie, e "
 "otterrai una maggiore conformità in caso di adeguamenti normativi."
 
-#: admin/my-agile-privacy-admin.php:4812 admin/my-agile-privacy-admin.php:5059
+#: admin/my-agile-privacy-admin.php:4820 admin/my-agile-privacy-admin.php:5067
 msgid "By modifying the text, you assume all risks."
 msgstr "Modificando il testo se ne assumono tutti i rischi."
 
@@ -758,7 +758,7 @@ msgstr ""
 msgid "Canada"
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:426
+#: admin/views/inc/inc.translations_tab.php:454
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -768,6 +768,7 @@ msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:142
 #: admin/views/inc/inc.cookie_banner_tab.php:163
+#: admin/views/inc/inc.consent_widget_tab.php:163
 msgid "Center"
 msgstr "Centro"
 
@@ -784,7 +785,7 @@ msgstr ""
 "Cambia questa impostazione solo se richiesto dall'assistenza. (Valore di "
 "default: -10000)"
 
-#: admin/my-agile-privacy-admin.php:3497 admin/my-agile-privacy-admin.php:3501
+#: admin/my-agile-privacy-admin.php:3505 admin/my-agile-privacy-admin.php:3509
 msgid "Changelog"
 msgstr ""
 
@@ -798,7 +799,7 @@ msgstr "Seleziona le funzionalità presenti sul tuo sito"
 msgid "Check the protection systems in place"
 msgstr "Seleziona i sistemi di protezione in atto"
 
-#: admin/views/inc/inc.consent_widget_tab.php:278
+#: admin/views/inc/inc.consent_widget_tab.php:348
 #| msgid ""
 #| "Check this option to remove My Agile Privacy logo on the consent review "
 #| "widget"
@@ -841,7 +842,7 @@ msgstr ""
 msgid "Click here to access your user area."
 msgstr "Clicca qui per accedere alla tua area utente."
 
-#: admin/views/inc/inc.translations_tab.php:167
+#: admin/views/inc/inc.translations_tab.php:175
 msgid "Click here to reset the current language"
 msgstr "Clicca qui per resetta la lingua corrente"
 
@@ -894,7 +895,7 @@ msgstr "Nome azienda / Proprietario del sito"
 msgid "Complete Configuration"
 msgstr "Termina la configurazione"
 
-#: admin/my-agile-privacy-admin.php:2972 admin/my-agile-privacy-admin.php:2973
+#: admin/my-agile-privacy-admin.php:2979 admin/my-agile-privacy-admin.php:2980
 #: admin/views/compliance_report_html.php:29
 #: admin/views/inc/inc.compliance_report_tab.php:16
 msgid "Compliance Report"
@@ -909,9 +910,9 @@ msgstr ""
 msgid "Compliant"
 msgstr ""
 
-#: includes/my-agile-privacy-class.php:2171
-#: includes/my-agile-privacy-class.php:2211
-#: includes/my-agile-privacy-class.php:2258
+#: includes/my-agile-privacy-class.php:2236
+#: includes/my-agile-privacy-class.php:2276
+#: includes/my-agile-privacy-class.php:2323
 #: admin/views/inc/inc.dashboard_tab.php:295
 msgid "Configuration complete"
 msgstr "Configurazione completata"
@@ -1103,7 +1104,7 @@ msgstr ""
 "Controlla se la pubblicità personalizzata (ad esempio, il remarketing) può "
 "essere abilitata."
 
-#: frontend/my-agile-privacy-frontend.php:1028
+#: frontend/my-agile-privacy-frontend.php:1030
 msgid "Cookie"
 msgstr "Cookie"
 
@@ -1130,11 +1131,11 @@ msgstr "Dimensione interlinea del Cookie Banner "
 msgid "Cookie Banner Shadow"
 msgstr "Ombra del Banner dei Cookie"
 
-#: admin/my-agile-privacy-admin.php:3538
+#: admin/my-agile-privacy-admin.php:3546
 msgid "Cookie ID"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1027
+#: frontend/my-agile-privacy-frontend.php:1029
 msgid "Cookie List"
 msgstr "Elenco dei Cookie"
 
@@ -1142,7 +1143,7 @@ msgstr "Elenco dei Cookie"
 msgid "Cookie metadata Sync"
 msgstr "Sincronizzazione dei metadati dei Cookie"
 
-#: admin/my-agile-privacy-admin.php:3539 admin/my-agile-privacy-admin.php:4313
+#: admin/my-agile-privacy-admin.php:3547 admin/my-agile-privacy-admin.php:4321
 msgid "Cookie Name"
 msgstr "Nome del Cookie"
 
@@ -1178,7 +1179,7 @@ msgstr ""
 "Cookie Shield non è attivo o necessita di un tuo controllo. Controlla le "
 "impostazioni qui sotto."
 
-#: admin/my-agile-privacy-admin.php:5025
+#: admin/my-agile-privacy-admin.php:5033
 msgid "Cookie Text Preview"
 msgstr "Anteprima testo del Cookie"
 
@@ -1202,12 +1203,12 @@ msgstr ""
 msgid "Custom Css"
 msgstr "Css personalizzato"
 
-#: admin/my-agile-privacy-admin.php:3981
+#: admin/my-agile-privacy-admin.php:3989
 #| msgid "Custom Javascript Code"
 msgid "Custom JavaScript Code"
 msgstr "Codice JavaScript personalizzato"
 
-#: admin/my-agile-privacy-admin.php:4014
+#: admin/my-agile-privacy-admin.php:4022
 msgid "Custom JavaScript dependencies"
 msgstr "Dipendenze JavaScript personalizzate"
 
@@ -1244,7 +1245,8 @@ msgstr ""
 msgid "Dark"
 msgstr "Scuro"
 
-#: admin/my-agile-privacy-admin.php:2906 admin/my-agile-privacy-admin.php:2907
+#: admin/my-agile-privacy-admin.php:2913 admin/my-agile-privacy-admin.php:2914
+#: admin/my-agile-privacy-admin.php:3499
 msgid "Dashboard"
 msgstr ""
 
@@ -1351,11 +1353,11 @@ msgstr "Modalità sviluppatore"
 msgid "Disable Advanced Consent Mode"
 msgstr "Disabilita la modalità Advanced Consent Mode"
 
-#: admin/views/inc/inc.consent_widget_tab.php:272
+#: admin/views/inc/inc.consent_widget_tab.php:342
 msgid "Disable logo on Cookie Bar"
 msgstr "Disabilita il logo sulla barra dei cookie"
 
-#: admin/views/inc/inc.consent_widget_tab.php:253
+#: admin/views/inc/inc.consent_widget_tab.php:323
 #, fuzzy
 #| msgid "Disable My Agile Privacy logo"
 msgid "Disable My Agile Privacy® logo"
@@ -1369,7 +1371,7 @@ msgstr ""
 "Scopri come gestire il tuo abbonamento e le tue installazioni multiple "
 "tramite l'area privata dedicata."
 
-#: admin/views/inc/inc.consent_widget_tab.php:316
+#: admin/views/inc/inc.consent_widget_tab.php:386
 msgid "Do reset given consent"
 msgstr "Resetta il consenso dato dagli utenti"
 
@@ -1385,7 +1387,7 @@ msgstr "Usi un plugin di cache?"
 msgid "Do you use another cache plugin?"
 msgstr "Utilizzi un altro plugin di cache?"
 
-#: admin/views/inc/inc.translations_tab.php:167
+#: admin/views/inc/inc.translations_tab.php:175
 msgid "Do you want to revert to the default content?"
 msgstr "Vuoi ritornare ai contenuti di default?"
 
@@ -1457,16 +1459,16 @@ msgstr ""
 "almeno 25.000 consumatori e ricava almeno il 50% dei ricavi lordi dalla "
 "vendita di dati personali."
 
-#: frontend/my-agile-privacy-frontend.php:1031
+#: frontend/my-agile-privacy-frontend.php:1033
 msgid "Edit Cookie"
 msgstr "Modifica Cookie"
 
-#: admin/my-agile-privacy-admin.php:4965
+#: admin/my-agile-privacy-admin.php:4973
 msgid "Edit Cookie Text"
 msgstr "Modifica testo del Cookie"
 
-#: frontend/my-agile-privacy-frontend.php:1101
-#: admin/my-agile-privacy-admin.php:4718
+#: frontend/my-agile-privacy-frontend.php:1103
+#: admin/my-agile-privacy-admin.php:4726
 msgid "Edit Policy"
 msgstr "Modifica Policy"
 
@@ -1624,8 +1626,8 @@ msgstr ""
 msgid "Example code:"
 msgstr "Codice di esempio:"
 
-#: frontend/my-agile-privacy-frontend.php:1069
-#: frontend/my-agile-privacy-frontend.php:1139
+#: frontend/my-agile-privacy-frontend.php:1071
+#: frontend/my-agile-privacy-frontend.php:1141
 msgid "Expired"
 msgstr ""
 
@@ -1716,11 +1718,11 @@ msgstr ""
 "Moduli che raccolgono informazioni degli utenti, come nomi, indirizzi email "
 "e numeri di telefono, nonché le richieste degli utenti."
 
-#: admin/my-agile-privacy-admin.php:2775
+#: admin/my-agile-privacy-admin.php:2782
 msgid "Fox profile"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3540
+#: admin/my-agile-privacy-admin.php:3548
 msgid "Free Available"
 msgstr ""
 
@@ -1824,7 +1826,7 @@ msgstr "Colore del testo dell'intestazione"
 msgid "Health data"
 msgstr "Dati relativi alla salute"
 
-#: admin/my-agile-privacy-admin.php:2961 admin/my-agile-privacy-admin.php:2962
+#: admin/my-agile-privacy-admin.php:2968 admin/my-agile-privacy-admin.php:2969
 msgid "Help Desk"
 msgstr ""
 
@@ -1832,7 +1834,7 @@ msgstr ""
 msgid "Helpdesk"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2782
+#: admin/my-agile-privacy-admin.php:2789
 msgid "Here is the mapping of the possible states of the Cookies:"
 msgstr "Di seguito la mappatura dei possibili stati dei Cookie:"
 
@@ -1855,7 +1857,7 @@ msgstr ""
 msgid "Here you can find the compliance report for your website."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2755
+#: admin/my-agile-privacy-admin.php:2762
 msgid ""
 "Here you will find a list of all the available policies. You can modify "
 "specific options by clicking on the policy."
@@ -1955,7 +1957,7 @@ msgstr "Identità"
 msgid "Identity Settings"
 msgstr "Impostazioni Identità"
 
-#: admin/my-agile-privacy-admin.php:3719
+#: admin/my-agile-privacy-admin.php:3727
 msgid ""
 "If enabled, this will auto update this element text. Disable it if you would "
 "to change the text and keep it unchanged."
@@ -1971,7 +1973,7 @@ msgstr ""
 "Se queste pagine non esistono ancora, creale e pubblicale, quindi aggiungi "
 "gli shortcode pertinenti nel contenuto della pagina."
 
-#: admin/my-agile-privacy-admin.php:3671
+#: admin/my-agile-privacy-admin.php:3679
 msgid ""
 "If this setting is enabled, the first-time activation by the user will "
 "trigger a page reload."
@@ -1979,7 +1981,7 @@ msgstr ""
 "Abilitando questo settaggio, la prima attivazione del cookie da parte "
 "dell'utente provocherà un aggiornamento di pagina."
 
-#: admin/my-agile-privacy-admin.php:4024
+#: admin/my-agile-privacy-admin.php:4032
 msgid ""
 "If you are experiencing JavaScript errors with scripts dependent on this "
 "cookie, you can list them here by writing part of the source file path or "
@@ -2023,7 +2025,7 @@ msgstr ""
 "diversi da quelli considerati “adeguati”, devi adottare in ogni caso "
 "adeguate misure di sicurezza e garanzie previste dalla normativa, tra cui:"
 
-#: admin/my-agile-privacy-admin.php:2780
+#: admin/my-agile-privacy-admin.php:2787
 msgid ""
 "In this section, you will find a detailed list of the cookies and third-"
 "party services used on your website."
@@ -2126,7 +2128,7 @@ msgstr ""
 msgid "Install and configure My Agile Privacy®"
 msgstr "Installa e configura My Agile Privacy®"
 
-#: admin/my-agile-privacy-admin.php:3541 admin/my-agile-privacy-admin.php:3756
+#: admin/my-agile-privacy-admin.php:3549 admin/my-agile-privacy-admin.php:3764
 msgid "Is necessary?"
 msgstr "E' obbligatorio ?"
 
@@ -2173,11 +2175,11 @@ msgstr ""
 "pubblicità digitale di ottenere ed gestire efficacemente il consenso "
 "dell'utente per l'elaborazione dei dati personali."
 
-#: admin/my-agile-privacy-admin.php:3914
+#: admin/my-agile-privacy-admin.php:3922
 msgid "JavaScript-Noscript code"
 msgstr "Codice JavaScript-Noscript"
 
-#: admin/my-agile-privacy-admin.php:4370
+#: admin/my-agile-privacy-admin.php:4378
 msgid "Javascript-Noscript code"
 msgstr "Codice JavaScript-Noscript"
 
@@ -2193,7 +2195,7 @@ msgstr "Ultima scansione Cookie"
 msgid "Last cookies sync"
 msgstr "Ultima data di sincronizzazione cookie"
 
-#: admin/my-agile-privacy-admin.php:4320 admin/my-agile-privacy-admin.php:4532
+#: admin/my-agile-privacy-admin.php:4328 admin/my-agile-privacy-admin.php:4540
 msgid "Last update"
 msgstr "Ultimo aggiornamento"
 
@@ -2216,7 +2218,7 @@ msgid "Leave it blank, if not applicabile"
 msgstr "Lascia vuoto, se non applicabile"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:164
-#: admin/views/inc/inc.consent_widget_tab.php:163
+#: admin/views/inc/inc.consent_widget_tab.php:165
 msgid "Left"
 msgstr "Sinistra"
 
@@ -2265,7 +2267,7 @@ msgstr "Localizzazione"
 msgid "Log monitoring"
 msgstr "Monitoraggio dei log"
 
-#: admin/my-agile-privacy-admin.php:3790 admin/my-agile-privacy-admin.php:4450
+#: admin/my-agile-privacy-admin.php:3798 admin/my-agile-privacy-admin.php:4458
 msgid "Managed setting via Privacy Settings ▸ Consent ▸ Google Consent Mode v2"
 msgstr ""
 "Impostazione gestita tramite Impostazioni ▸ Consenso ▸ Google Consent Mode v2"
@@ -2290,8 +2292,8 @@ msgstr ""
 msgid "Misty Forest"
 msgstr "Foresta incantata"
 
-#: admin/views/inc/inc.translations_tab.php:420
-#: admin/views/inc/inc.translations_tab.php:427
+#: admin/views/inc/inc.translations_tab.php:448
+#: admin/views/inc/inc.translations_tab.php:455
 msgid "Modify text"
 msgstr "Modifica testo"
 
@@ -2303,13 +2305,15 @@ msgstr ""
 msgid "MTCDPA (Montana Consumer Data Privacy Act)"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1026
+#. Name of the plugin
+#: frontend/my-agile-privacy-frontend.php:1028
+#: frontend/my-agile-privacy-frontend.php:1098
 #| msgid "My Agile Privacy"
 msgid "My Agile Privacy®"
 msgstr "My Agile Privacy®"
 
 #. Description of the plugin
-msgid "My Agile Privacy® - Cookie Consent & Privacy Tools"
+msgid "My Agile Privacy® - CMP, Cookie Consent & Privacy Tools"
 msgstr ""
 
 #: admin/views/inc/inc.dashboard_tab.php:17
@@ -2355,7 +2359,6 @@ msgstr ""
 "My Agile Privacy® funziona correttamente con la maggior parte dei plugin di "
 "cache disponibili sul mercato."
 
-#. Name of the plugin
 #. Author of the plugin
 msgid "MyAgilePrivacy"
 msgstr "MyAgilePrivacy"
@@ -2373,7 +2376,7 @@ msgstr ""
 msgid "Nebraska"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3969
+#: admin/my-agile-privacy-admin.php:3977
 msgid "Need help ? See this cookie installation guide"
 msgstr ""
 "Hai bisogno di assistenza ? Consulta la guida di installazione per questo "
@@ -2383,11 +2386,11 @@ msgstr ""
 msgid "Need more help?"
 msgstr "Ti serve ulteriore assistenza?"
 
-#: includes/my-agile-privacy-class.php:2184
-#: includes/my-agile-privacy-class.php:2201
-#: includes/my-agile-privacy-class.php:2224
-#: includes/my-agile-privacy-class.php:2240
-#: includes/my-agile-privacy-class.php:2250
+#: includes/my-agile-privacy-class.php:2249
+#: includes/my-agile-privacy-class.php:2266
+#: includes/my-agile-privacy-class.php:2289
+#: includes/my-agile-privacy-class.php:2305
+#: includes/my-agile-privacy-class.php:2315
 #: admin/views/inc/inc.dashboard_tab.php:295
 msgid "Needs attention"
 msgstr "Richiede attenzione"
@@ -2396,7 +2399,7 @@ msgstr "Richiede attenzione"
 msgid "Nevada"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1032
+#: frontend/my-agile-privacy-frontend.php:1034
 msgid "New Cookie"
 msgstr "Nuovo cookie"
 
@@ -2408,7 +2411,7 @@ msgstr ""
 msgid "New Jersey"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1102
+#: frontend/my-agile-privacy-frontend.php:1104
 msgid "New Policy"
 msgstr "Nuova policy"
 
@@ -2433,9 +2436,9 @@ msgid "nLPD / nFADP (Switzerland - new Federal Act on Data Protection)"
 msgstr ""
 "nLPD / nFADP (Svizzera - nuova Legge federale sulla protezione dei dati)"
 
-#: admin/my-agile-privacy-admin.php:3664 admin/my-agile-privacy-admin.php:3711
-#: admin/my-agile-privacy-admin.php:4406 admin/my-agile-privacy-admin.php:4425
-#: admin/my-agile-privacy-admin.php:4510 admin/my-agile-privacy-admin.php:4572
+#: admin/my-agile-privacy-admin.php:3672 admin/my-agile-privacy-admin.php:3719
+#: admin/my-agile-privacy-admin.php:4414 admin/my-agile-privacy-admin.php:4433
+#: admin/my-agile-privacy-admin.php:4518 admin/my-agile-privacy-admin.php:4580
 #: admin/views/inc/inc.cookie_banner_tab.php:187
 #: admin/views/inc/inc.cookie_banner_tab.php:709
 #: admin/views/inc/inc.cookie_banner_tab.php:724
@@ -2463,7 +2466,7 @@ msgstr ""
 msgid "None"
 msgstr "Nessuno"
 
-#: admin/my-agile-privacy-admin.php:3989
+#: admin/my-agile-privacy-admin.php:3997
 msgid "Noscript Code"
 msgstr "Codice Noscript"
 
@@ -2479,13 +2482,13 @@ msgstr ""
 "Attenzione: alcune normative prevedono regole specifiche riguardo alle "
 "categorie speciali di dati personali."
 
-#: frontend/my-agile-privacy-frontend.php:1035
-#: frontend/my-agile-privacy-frontend.php:1105
+#: frontend/my-agile-privacy-frontend.php:1037
+#: frontend/my-agile-privacy-frontend.php:1107
 msgid "Nothing found"
 msgstr "Nessun risultato"
 
-#: frontend/my-agile-privacy-frontend.php:1036
-#: frontend/my-agile-privacy-frontend.php:1106
+#: frontend/my-agile-privacy-frontend.php:1038
+#: frontend/my-agile-privacy-frontend.php:1108
 msgid "Nothing found in Trash"
 msgstr "Nessun elemento nel cestino"
 
@@ -2517,7 +2520,7 @@ msgstr "Spento"
 msgid "On"
 msgstr "Acceso"
 
-#: admin/my-agile-privacy-admin.php:4956
+#: admin/my-agile-privacy-admin.php:4964
 msgid ""
 "On this page, you can choose which cookies to keep always active (necessary) "
 "and which to enable only with your consent. You can decide whether to "
@@ -2649,10 +2652,6 @@ msgstr ""
 msgid "Please wait: page loading."
 msgstr "Attendi: pagina in caricamento."
 
-#: frontend/my-agile-privacy-frontend.php:1096
-msgid "Policies"
-msgstr "Policy"
-
 #: admin/views/admin_page_html.php:181
 msgid "Policies and Regulations"
 msgstr "Policy e Normative"
@@ -2669,17 +2668,17 @@ msgstr ""
 msgid "Policies configuration Status"
 msgstr "Stato configurazione delle Policy"
 
-#: frontend/my-agile-privacy-frontend.php:1097
-#: admin/my-agile-privacy-admin.php:2933 admin/my-agile-privacy-admin.php:2934
+#: frontend/my-agile-privacy-frontend.php:1099
+#: admin/my-agile-privacy-admin.php:2940 admin/my-agile-privacy-admin.php:2941
 msgid "Policies List"
 msgstr "Elenco delle Policy"
 
-#: frontend/my-agile-privacy-frontend.php:1098
+#: frontend/my-agile-privacy-frontend.php:1100
 #: admin/views/inc/inc.compliance_report_tab.php:39
 msgid "Policy"
 msgstr "Policy"
 
-#: admin/my-agile-privacy-admin.php:2924 admin/my-agile-privacy-admin.php:2925
+#: admin/my-agile-privacy-admin.php:2931 admin/my-agile-privacy-admin.php:2932
 #: admin/views/policy_assistant_html.php:38
 #: admin/views/policy_assistant_html.php:57
 msgid "Policy Assistant"
@@ -2694,7 +2693,7 @@ msgstr "Assistente Policy."
 msgid "Policy Configuration Complete!"
 msgstr "Configurazione delle Policy completata!"
 
-#: admin/my-agile-privacy-admin.php:4778
+#: admin/my-agile-privacy-admin.php:4786
 msgid "Policy Preview"
 msgstr ""
 
@@ -2703,7 +2702,7 @@ msgstr ""
 msgid "Political opinions"
 msgstr "Opinioni politiche"
 
-#: admin/my-agile-privacy-admin.php:4017
+#: admin/my-agile-privacy-admin.php:4025
 #: admin/views/policy_assistant_html.php:314
 #: admin/views/policy_assistant_html.php:883
 #: admin/views/policy_assistant_html.php:935
@@ -2762,7 +2761,7 @@ msgstr ""
 "Premendo il pulsante qui sotto farai il download della tua configurazione "
 "dei Cookie."
 
-#: admin/my-agile-privacy-admin.php:4463
+#: admin/my-agile-privacy-admin.php:4471
 msgid ""
 "Preventive blocking <strong>is active</strong><br>(cookie setting: “not-"
 "necessary”)"
@@ -2770,11 +2769,11 @@ msgstr ""
 "Blocco preventivo <strong>attivo</strong><br>(impostazione cookie: “not-"
 "necessary”)"
 
-#: admin/my-agile-privacy-admin.php:4459
+#: admin/my-agile-privacy-admin.php:4467
 msgid "Preventive blocking is not active<br>(cookie setting: “necessary”)"
 msgstr "Nessun blocco preventivo<br>(impostazione cookie: “necessary”)"
 
-#: admin/my-agile-privacy-admin.php:4315
+#: admin/my-agile-privacy-admin.php:4323
 msgid "Preventive blocking status"
 msgstr "Stato del blocco preventivo"
 
@@ -2782,7 +2781,7 @@ msgstr "Stato del blocco preventivo"
 msgid "Previous"
 msgstr "Precedente"
 
-#: admin/my-agile-privacy-admin.php:2915 admin/my-agile-privacy-admin.php:2916
+#: admin/my-agile-privacy-admin.php:2922 admin/my-agile-privacy-admin.php:2923
 msgid "Privacy Settings"
 msgstr "Impostazioni Privacy"
 
@@ -2803,7 +2802,7 @@ msgstr "Sistemi di protezione"
 msgid "Questions?"
 msgstr "Domande?"
 
-#: admin/my-agile-privacy-admin.php:4718 admin/my-agile-privacy-admin.php:4965
+#: admin/my-agile-privacy-admin.php:4726 admin/my-agile-privacy-admin.php:4973
 msgid "Quickview for"
 msgstr "Anteprima per"
 
@@ -2812,11 +2811,11 @@ msgstr "Anteprima per"
 msgid "Racial or ethnic origin"
 msgstr "Origine razziale o etnica"
 
-#: admin/my-agile-privacy-admin.php:3916 admin/my-agile-privacy-admin.php:4373
+#: admin/my-agile-privacy-admin.php:3924 admin/my-agile-privacy-admin.php:4381
 msgid "Raw code"
 msgstr "Codice Raw"
 
-#: admin/my-agile-privacy-admin.php:4001
+#: admin/my-agile-privacy-admin.php:4009
 msgid "Raw Html Code"
 msgstr "Codice Html Raw"
 
@@ -2846,17 +2845,17 @@ msgstr ""
 msgid "Religious or philosophical beliefs"
 msgstr "Convinzioni religiose o filosofiche"
 
-#: admin/my-agile-privacy-admin.php:4680
+#: admin/my-agile-privacy-admin.php:4688
 msgid "Remember also associate in the Privacy Settings -> Policies tab."
 msgstr ""
 "Ricordati anche di effettuare l'associazione dentro Privacy Settings -> Tab "
 "Policies."
 
-#: admin/my-agile-privacy-admin.php:4678
+#: admin/my-agile-privacy-admin.php:4686
 msgid "Remember to add the following shortcode to the correct page:"
 msgstr "Ricordati di aggiungere il seguente shortcode nella pagina corretta:"
 
-#: admin/my-agile-privacy-admin.php:5060
+#: admin/my-agile-privacy-admin.php:5068
 msgid ""
 "Remember to disable automatic updates for this cookie to avoid losing the "
 "changes made."
@@ -2864,7 +2863,7 @@ msgstr ""
 "Ricordati di disattivare gli aggiornamenti automatici di questo cookie per "
 "non perdere le modifiche effettuate."
 
-#: admin/my-agile-privacy-admin.php:4813
+#: admin/my-agile-privacy-admin.php:4821
 msgid ""
 "Remember to disable automatic updates for this policy to avoid losing the "
 "changes made."
@@ -2876,12 +2875,16 @@ msgstr ""
 msgid "Remember to save to apply the changes made."
 msgstr "Ricordati di salvare per applicare le modifiche effettuate."
 
-#: admin/my-agile-privacy-admin.php:4319
+#: admin/views/inc/inc.advanced_tab.php:362
+msgid "Requires Google Analytics 4 installation"
+msgstr "Richiede l'installazione di Google Analytics 4"
+
+#: admin/my-agile-privacy-admin.php:4327
 msgid "Requires page reload on user acceptance"
 msgstr ""
 "Richiede il ricaricamento della pagina a seguito dell'accettazione utente"
 
-#: admin/my-agile-privacy-admin.php:3542 admin/my-agile-privacy-admin.php:3655
+#: admin/my-agile-privacy-admin.php:3550 admin/my-agile-privacy-admin.php:3663
 msgid "Requires page reload on user acceptance?"
 msgstr ""
 "Richiede il ricaricamento della pagina a seguito dell'accettazione utente?"
@@ -2898,13 +2901,13 @@ msgstr "Mail Rivenditore:"
 msgid "Reseller Website:"
 msgstr "Sito Rivenditore:"
 
-#: admin/views/inc/inc.advanced_tab.php:337
-#: admin/views/inc/inc.advanced_tab.php:354
+#: admin/views/inc/inc.advanced_tab.php:375
+#: admin/views/inc/inc.advanced_tab.php:392
 msgid "Reset all settings"
 msgstr "Reimpostazione delle impostazioni"
 
-#: admin/views/inc/inc.consent_widget_tab.php:292
-#: admin/views/inc/inc.consent_widget_tab.php:299
+#: admin/views/inc/inc.consent_widget_tab.php:362
+#: admin/views/inc/inc.consent_widget_tab.php:369
 msgid "Reset given consent"
 msgstr "Reimpostazione dei consensi"
 
@@ -2962,19 +2965,19 @@ msgstr "Tipologia di Hook"
 msgid "Scanner Start Priority"
 msgstr "Scanner priorità \"start\""
 
-#: admin/my-agile-privacy-admin.php:3544
+#: admin/my-agile-privacy-admin.php:3552
 msgid "Script Installation"
 msgstr "Tipologia di installazione"
 
-#: admin/my-agile-privacy-admin.php:3901
+#: admin/my-agile-privacy-admin.php:3909
 msgid "Script Installation type"
 msgstr "Tipologia di installazione"
 
-#: frontend/my-agile-privacy-frontend.php:1034
+#: frontend/my-agile-privacy-frontend.php:1036
 msgid "Search Cookies"
 msgstr "Cerca cookie"
 
-#: frontend/my-agile-privacy-frontend.php:1104
+#: frontend/my-agile-privacy-frontend.php:1106
 msgid "Search Policy"
 msgstr "Cerca policy"
 
@@ -3015,7 +3018,7 @@ msgstr "Scegli il colore di sfondo del widget contenuto bloccaato"
 msgid "Select the background color of the cookie banner"
 msgstr "Scegli il colore di sfondo del Banner dei Cookie"
 
-#: admin/views/inc/inc.consent_widget_tab.php:195
+#: admin/views/inc/inc.consent_widget_tab.php:197
 msgid "Select the horizontal position where to show the consent again widget "
 msgstr ""
 "Scegli la posizione dove mostrare il widget della rivisitazione del consenso"
@@ -3056,7 +3059,11 @@ msgstr "Seleziona la posizione dei tuoi clienti"
 msgid "Select your location"
 msgstr "Seleziona la tua posizione"
 
-#: admin/my-agile-privacy-admin.php:3771
+#: admin/views/inc/inc.advanced_tab.php:338
+msgid "Send Google Analytics 4 events on consent changes"
+msgstr "Invia eventi Google Analytics 4 sulla variazione del consenso"
+
+#: admin/my-agile-privacy-admin.php:3779
 msgid ""
 "Setting the cookie as \"necessary\" will disable the preventive blocking, "
 "making the tool always active regardless of user consent."
@@ -3065,7 +3072,7 @@ msgstr ""
 "dello stesso, rendendo tale strumento sempre attivo a prescindere dal "
 "consenso dell'utente."
 
-#: admin/my-agile-privacy-admin.php:3772
+#: admin/my-agile-privacy-admin.php:3780
 msgid ""
 "Setting the cookie as \"not necessary\" will activate the cookie only upon "
 "user consent."
@@ -3073,7 +3080,7 @@ msgstr ""
 "Impostando il Cookie come \"not-necessary\", tale cookie verrà attivato solo "
 "previo consenso dell'utente."
 
-#: admin/my-agile-privacy-admin.php:3492
+#: admin/my-agile-privacy-admin.php:3500
 msgid "Settings"
 msgstr "Impostazioni"
 
@@ -3102,10 +3109,22 @@ msgstr "Vita sessuale o orientamento sessuale"
 msgid "Show Buttons icon"
 msgstr "Mostra le icone nei pulsanti"
 
-#: admin/views/inc/inc.consent_widget_tab.php:223
-#: admin/views/inc/inc.consent_widget_tab.php:242
+#: admin/views/inc/inc.consent_widget_tab.php:291
+#: admin/views/inc/inc.consent_widget_tab.php:310
 msgid "Show Cookie Policy link"
 msgstr "Mostra il link alla cookie policy"
+
+#: admin/views/inc/inc.consent_widget_tab.php:259
+msgid "Show logo only"
+msgstr "Solo logo"
+
+#: admin/views/inc/inc.consent_widget_tab.php:227
+msgid "Show text and logo"
+msgstr "Testo e logo"
+
+#: admin/views/inc/inc.consent_widget_tab.php:243
+msgid "Show text only"
+msgstr "Solo testo"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:919
 msgid "Show the bar even if there is no consent choice"
@@ -3169,7 +3188,7 @@ msgstr ""
 msgid "Subscription management and bulk operations"
 msgstr "Gestione abbonamento e operazioni massive"
 
-#: admin/my-agile-privacy-admin.php:4316
+#: admin/my-agile-privacy-admin.php:4324
 msgid "Suggested setting"
 msgstr "Settaggio consigliato"
 
@@ -3183,11 +3202,11 @@ msgstr "Settaggio consigliato"
 msgid "Suggested value for compliance:"
 msgstr "Valore consigliato per la conformità:"
 
-#: admin/my-agile-privacy-admin.php:3779
+#: admin/my-agile-privacy-admin.php:3787
 msgid "Suggested value for this Cookie"
 msgstr "Valore consigliato per questo Cookie"
 
-#: admin/my-agile-privacy-admin.php:3493
+#: admin/my-agile-privacy-admin.php:3501
 msgid "Support"
 msgstr ""
 
@@ -3239,12 +3258,12 @@ msgstr "Colore del testo"
 msgid "Text colour"
 msgstr "Colore del testo"
 
-#: admin/my-agile-privacy-admin.php:2951 admin/my-agile-privacy-admin.php:2952
+#: admin/my-agile-privacy-admin.php:2958 admin/my-agile-privacy-admin.php:2959
 #: admin/views/translations_html.php:20
 msgid "Texts and Translations"
 msgstr "Testi e Traduzioni"
 
-#: admin/my-agile-privacy-admin.php:4025
+#: admin/my-agile-privacy-admin.php:4033
 msgid ""
 "Thanks to this functionality, these scripts will be unblocked only after the "
 "user has accepted this cookie."
@@ -3252,7 +3271,7 @@ msgstr ""
 "Grazie a questa funzionalità, questi script verranno sbloccati solo a "
 "seguito all'accettazione di questo cookie da parte dell'utente."
 
-#: admin/my-agile-privacy-admin.php:3954
+#: admin/my-agile-privacy-admin.php:3962
 msgid "The API KEY for this cookie is"
 msgstr "La chiave API per questo cookie è"
 
@@ -3414,7 +3433,7 @@ msgstr ""
 "Questo consente la personalizzazione delle policy, spiegando ai tuoi utenti "
 "quali dati raccogli e perché."
 
-#: admin/my-agile-privacy-admin.php:3841
+#: admin/my-agile-privacy-admin.php:3849
 msgid ""
 "This Cookie is reserved by the system and it is not possible to associate "
 "other scripts with its execution."
@@ -3448,10 +3467,10 @@ msgstr ""
 "Questa funzionalità ti consente di implementare la UET Consent Mode di "
 "Microsoft."
 
-#: admin/views/inc/inc.translations_tab.php:380
-#: admin/views/inc/inc.translations_tab.php:381
-#: admin/views/inc/inc.translations_tab.php:382
-#: admin/views/inc/inc.translations_tab.php:383
+#: admin/views/inc/inc.translations_tab.php:408
+#: admin/views/inc/inc.translations_tab.php:409
+#: admin/views/inc/inc.translations_tab.php:410
+#: admin/views/inc/inc.translations_tab.php:411
 msgid "This is an example cookie"
 msgstr "Cookie di esempio"
 
@@ -3477,12 +3496,12 @@ msgstr ""
 "nel caso in cui non si accettino immediatamente i cookie ma si decida di "
 "farlo in seguito."
 
-#: admin/my-agile-privacy-admin.php:3672
+#: admin/my-agile-privacy-admin.php:3680
 msgid "This setting does not apply if the cookie is set as 'necessary'."
 msgstr ""
 "Questa impostazione non si applica se il cookie è impostato come 'necessary'."
 
-#: admin/my-agile-privacy-admin.php:3723
+#: admin/my-agile-privacy-admin.php:3731
 msgid "This setting is unavailable on custom added cookie"
 msgstr "Questo settaggio non è disponibile sui cookie custom"
 
@@ -3520,7 +3539,7 @@ msgstr ""
 msgid "TIPA (Tennessee Information Protection Act)"
 msgstr ""
 
-#: admin/views/inc/inc.consent_widget_tab.php:204
+#: admin/views/inc/inc.consent_widget_tab.php:272
 msgid "Title for show again policy"
 msgstr "Testo per il link \"mostra nuovamente la policy\""
 
@@ -3630,11 +3649,11 @@ msgstr ""
 msgid "Video advanced privacy"
 msgstr "Privacy avanzata dei video"
 
-#: frontend/my-agile-privacy-frontend.php:1033
+#: frontend/my-agile-privacy-frontend.php:1035
 msgid "View Cookie"
 msgstr "Visualizza cookie"
 
-#: frontend/my-agile-privacy-frontend.php:1103
+#: frontend/my-agile-privacy-frontend.php:1105
 msgid "View Policy"
 msgstr "Visualizza policy"
 
@@ -3681,7 +3700,7 @@ msgstr ""
 "Attenzione: modifica i testi del banner solo sotto la supervisione del tuo "
 "consulente privacy."
 
-#: admin/my-agile-privacy-admin.php:3860
+#: admin/my-agile-privacy-admin.php:3868
 msgid ""
 "Warning: this cookie has been detected automatically and usually you "
 "shouldn't need to install other code."
@@ -3689,16 +3708,16 @@ msgstr ""
 "Attenzione: questo cookie è stato individuato automaticamente e solitamente "
 "non dovresti aver bisogno di aggiungere altro codice custom."
 
-#: admin/my-agile-privacy-admin.php:4023
+#: admin/my-agile-privacy-admin.php:4031
 msgid "Warning: this feature is intended for advanced users and developers."
 msgstr ""
 "Attenzione: questa funzionalità è destinata a utenti esperti e sviluppatori."
 
-#: admin/views/inc/inc.advanced_tab.php:360
+#: admin/views/inc/inc.advanced_tab.php:398
 msgid "Warning: this will reset all the plugin settings."
 msgstr "Attenzione: questo reimposterà le impostazioni di personalizzazione."
 
-#: admin/views/inc/inc.consent_widget_tab.php:322
+#: admin/views/inc/inc.consent_widget_tab.php:392
 msgid ""
 "Warning: this will reset all the user consent given. Use this only if you "
 "change your cookie list and you would like to ask consent again."
@@ -3715,7 +3734,7 @@ msgstr ""
 "Attenzione: ci sono modifiche non salvate. Se lasci questa pagina perderai "
 "le modifiche. Vuoi davvero uscire?"
 
-#: admin/my-agile-privacy-admin.php:2781
+#: admin/my-agile-privacy-admin.php:2788
 msgid ""
 "We encourage you to use the \"Cookie Shield\" function in Learning mode to "
 "automatically detect the cookies and third-party services active on your "
@@ -3743,16 +3762,16 @@ msgid "Welcome to the My Agile Privacy® Dashboard.<br>Need help?"
 msgstr ""
 "Benvenuto nella Dashboard di My Agile Privacy®<br>Hai bisogno di supporto?"
 
-#: admin/my-agile-privacy-admin.php:2754
+#: admin/my-agile-privacy-admin.php:2761
 #| msgid "Welcome to the policy list! "
 msgid "Welcome to the Policy list! "
 msgstr "Benvenuto nella lista delle Policy!"
 
-#: admin/my-agile-privacy-admin.php:4677
+#: admin/my-agile-privacy-admin.php:4685
 msgid "Welcome to the preview of your Policy!"
 msgstr "Benvenuto nell’anteprima della tua Policy !"
 
-#: admin/my-agile-privacy-admin.php:2779
+#: admin/my-agile-privacy-admin.php:2786
 #| msgid "Welcome to Your Cookie List!"
 msgid "Welcome to your Cookie list!"
 msgstr "Benvenuto nella tua lista dei Cookie!"
@@ -3818,6 +3837,10 @@ msgstr "Chi è il Titolare e quali informazioni servono?"
 msgid "Wide"
 msgstr "Largo"
 
+#: admin/views/inc/inc.consent_widget_tab.php:209
+msgid "Widget Style"
+msgstr ""
+
 #: admin/views/inc/inc.cookie_banner_tab.php:531
 msgid "Winter Sky"
 msgstr "Cielo d'inverno"
@@ -3872,9 +3895,9 @@ msgstr ""
 "Vuoi verificare lo stato del tuo abbonamento, scaricare le fatture o "
 "effettuare altre operazioni di natura amministrativa ?"
 
-#: admin/my-agile-privacy-admin.php:3663 admin/my-agile-privacy-admin.php:3710
-#: admin/my-agile-privacy-admin.php:4402 admin/my-agile-privacy-admin.php:4421
-#: admin/my-agile-privacy-admin.php:4506 admin/my-agile-privacy-admin.php:4568
+#: admin/my-agile-privacy-admin.php:3671 admin/my-agile-privacy-admin.php:3718
+#: admin/my-agile-privacy-admin.php:4410 admin/my-agile-privacy-admin.php:4429
+#: admin/my-agile-privacy-admin.php:4514 admin/my-agile-privacy-admin.php:4576
 #: admin/views/inc/inc.cookie_banner_tab.php:188
 #: admin/views/inc/inc.cookie_banner_tab.php:673
 #: admin/views/inc/inc.cookie_banner_tab.php:688
@@ -3935,6 +3958,10 @@ msgstr "Si, voglio condividere la mia esperienza"
 #: admin/views/inc/inc.advanced_tab.php:42
 msgid "Yes, I would like to turn on automatic plugin updates."
 msgstr "Si, voglio abilitare l'aggiornamento automatico del plugin."
+
+#: admin/views/inc/inc.advanced_tab.php:357
+msgid "Yes, send GA4 events when the user interacts with the Cookie Banner"
+msgstr "Si, invia eventi GA4 quando l'utente interagisce con il Cookie Banner"
 
 #: admin/views/inc/inc.policies_tab.php:174
 #: admin/views/inc/inc.policies_tab.php:353
@@ -4000,7 +4027,7 @@ msgstr ""
 
 #: admin/views/inc/inc.advanced_tab.php:146
 #: admin/views/inc/inc.advanced_tab.php:240
-#: admin/views/inc/inc.translations_tab.php:168
+#: admin/views/inc/inc.translations_tab.php:176
 msgid ""
 "You can change the active languages on your plan from the <strong><a "
 "href=\"https://privatearea.myagileprivacy.com/\" target=\"_blank\">Private "
@@ -4017,7 +4044,7 @@ msgstr ""
 #: admin/views/inc/inc.cookie_banner_tab.php:745
 #: admin/views/inc/inc.cookie_banner_tab.php:788
 #: admin/views/inc/inc.cookie_banner_tab.php:827
-#: admin/views/inc/inc.consent_widget_tab.php:205
+#: admin/views/inc/inc.consent_widget_tab.php:273
 msgid "You can edit this text from the Texts and Translations section."
 msgstr "Puoi modificare questo testo dalla sezione Testi e Traduzioni."
 
@@ -4081,7 +4108,7 @@ msgstr ""
 msgid "You still need to configure the regulations using the Policy Assistant."
 msgstr "Devi ancora configurare i regolamenti tramite l’Assistente Policy."
 
-#: admin/my-agile-privacy-admin.php:3956
+#: admin/my-agile-privacy-admin.php:3964
 msgid "You will need this only for advanced installation"
 msgstr "Ne avrai bisogno solo su installazioni avanzate"
 

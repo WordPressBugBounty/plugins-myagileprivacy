@@ -6,9 +6,9 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'internal_version' 					: "2.0026",
+	'js_internal_version' 				: "3.0001",
 	'cookie_shield_version' 			: null,
-	'technology' 						: "plain",
+	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
 	'map_initted' 						: false,
 	'map_document_load' 				: false,
@@ -43,6 +43,9 @@ var MAP_SYS = {
 	'some_positive_consent_given'		: false,
 	'early_gcmode'						: false,
 	'frontend_regulation'				: null,
+	'send_ga4_event_on_consent_change'	: null,
+	'allow_js_fast_callback'			: null,
+	'cookie_domain_path'				: null,
 };
 
 // bof MapLogger
@@ -126,7 +129,7 @@ if( typeof MAP_Cookie === 'undefined' )
 				return userAgent.includes( forbidden );
 			});
 		},
-		set: function (name, value, days) {
+		set: function( name, value, days, domain ) {
 
 			if( this._isUserAgentNoCookieSet() )
 			{
@@ -140,7 +143,13 @@ if( typeof MAP_Cookie === 'undefined' )
 					var expires = "; expires=" + date.toGMTString();
 				} else
 					var expires = "";
-				document.cookie = name + "=" + value + expires + "; path=/";
+		        var domainStr = "";
+		        if( domain )
+		        {
+		            var d = domain.charAt(0) === '.' ? domain : '.' + domain;
+		            domainStr = "; domain=" + d;
+		        }
+        		document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
 			}
 			catch( e )
 			{
@@ -148,7 +157,7 @@ if( typeof MAP_Cookie === 'undefined' )
 				return null;
 			}
 		},
-		setGMTString: function (name, value, GMTString) {
+		setGMTString: function( name, value, GMTString, domain ) {
 
 			if( this._isUserAgentNoCookieSet() )
 			{
@@ -156,9 +165,16 @@ if( typeof MAP_Cookie === 'undefined' )
 			}
 
 			try {
-
 				var expires = "; expires=" + GMTString;
-				document.cookie = name + "=" + value + expires + "; path=/";
+
+		        var domainStr = "";
+		        if( domain )
+		        {
+		            var d = domain.charAt(0) === '.' ? domain : '.' + domain;
+		            domainStr = "; domain=" + d;
+		        }
+
+            	document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
 			}
 			catch( e )
 			{
@@ -197,8 +213,8 @@ var MAP =
 {
 	set: function( args )
 	{
-		try {
-
+		try
+		{
 			if( this.initted )
 			{
 				MapLogger.debug( MAP_SYS.maplog + 'MAP already initted: exiting' );
@@ -252,6 +268,27 @@ var MAP =
 			)
 			{
 				MAP_SYS.frontend_regulation = map_full_config.frontend_regulation;
+			}
+
+			if( typeof map_full_config !== 'undefined' &&
+				typeof map_full_config.send_ga4_event_on_consent_change !== 'undefined'
+			)
+			{
+				MAP_SYS.send_ga4_event_on_consent_change = map_full_config.send_ga4_event_on_consent_change;
+			}
+
+			if( typeof map_full_config !== 'undefined' &&
+				typeof map_full_config.allow_js_fast_callback !== 'undefined'
+			)
+			{
+				MAP_SYS.allow_js_fast_callback = map_full_config.allow_js_fast_callback;
+			}
+
+			if( typeof map_full_config !== 'undefined' &&
+				typeof map_full_config.cookie_domain_path !== 'undefined'
+			)
+			{
+				MAP_SYS.cookie_domain_path = map_full_config.cookie_domain_path;
 			}
 
 			if( typeof map_full_config !== 'undefined' &&
@@ -372,7 +409,6 @@ var MAP =
 			console.error( error );
 		}
 	},
-
 
     //normalize spaces for safe comparisons
     normalizeCssValue: function( value )
@@ -569,7 +605,6 @@ var MAP =
 
 				document.body.append( script );
 			}
-
 		}
 		catch( error )
 		{
@@ -819,6 +854,58 @@ var MAP =
 		}
 	},
 
+	//f. for consent events dispatch (GA4 and custom global event)
+	dispatchConsentEvents: function( eventLabel, dataKey, value )
+	{
+		try {
+			// Validate eventLabel (required)
+			if( !eventLabel )
+			{
+				if( MAP_SYS?.map_debug )
+				{
+					MapLogger.debug( MAP_SYS.maplog + 'dispatchConsentEvents - Missing eventLabel' );
+				}
+				return;
+			}
+
+			if( MAP_SYS?.map_debug )
+			{
+				MapLogger.debug( MAP_SYS.maplog + 'dispatchConsentEvents - Event name: ' + eventLabel + (value || '') );
+				MapLogger.debug( MAP_SYS.maplog + 'dispatchConsentEvents - Data key: ' + dataKey );
+				MapLogger.debug( MAP_SYS.maplog + 'dispatchConsentEvents - Value: ' + value );
+				if( dataKey && value )
+				{
+					MapLogger.debug( MAP_SYS.maplog + 'dispatchConsentEvents - Payload: ' + JSON.stringify({[dataKey]: value}) );
+				}
+			}
+
+			// Prepare event detail/payload only if both dataKey and value are present
+			var eventDetail = {};
+
+			if( dataKey && value )
+			{
+				eventDetail = { [dataKey]: value };
+			}
+
+			// Send custom global event
+			window.dispatchEvent( new CustomEvent( eventLabel + (value || ''), {
+				detail: eventDetail
+			} ) );
+
+			if( MAP_SYS?.send_ga4_event_on_consent_change )
+			{
+				if( typeof window.gtag === 'function' && window.gtag )
+				{
+					// Send GA4 event
+					gtag( 'event', eventLabel + (value || ''), eventDetail );
+				}
+			}
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
 
 	//f for updating given consent by key / value (Google)
 	updateGoogleConsentbyKeyValue: function( key, value, updateStatusCookie = false)
@@ -835,7 +922,10 @@ var MAP =
 					var newConsent = {};
 					newConsent[key] = value;
 
-					gtag('consent', 'update', newConsent );
+					gtag( 'consent', 'update', newConsent );
+
+					//Dispatch events
+    				that.dispatchConsentEvents( 'myagileprivacy_gcmode_consent_', key + '_status', value );
 				}
 
 				if( MAP_SYS?.cmode_v2_implementation_type === 'gtm' )
@@ -846,6 +936,9 @@ var MAP =
 					gTagManagerConsentListeners.forEach( ( callback ) => {
 						callback( newConsent );
 					});
+
+					//Dispatch events
+    				that.dispatchConsentEvents( 'myagileprivacy_gcmode_consent_', key + '_status', value );
 				}
 
 				var currentGConsent = {...MAP_SYS?.current_gconsent};
@@ -884,13 +977,11 @@ var MAP =
 			{
 				if( MAP_SYS?.cmode_v2_implementation_type === 'native' )
 				{
-
-					gtag('consent', 'update', newConsent );
+					gtag( 'consent', 'update', newConsent );
 				}
 
 				if( MAP_SYS?.cmode_v2_implementation_type === 'gtm' )
 				{
-
 					gTagManagerConsentListeners.forEach( ( callback ) => {
 						callback( newConsent );
 					});
@@ -962,7 +1053,6 @@ var MAP =
 		}
 	},
 
-
 	//from consent object to cookie (Clarity)
 	saveClarityConsentStatusToCookie : function( consentObject )
 	{
@@ -976,7 +1066,7 @@ var MAP =
 				.join('|');
 
 
-			MAP_Cookie.set( MAP_CLARITY_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_CLARITY_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			return true;
 
@@ -986,7 +1076,6 @@ var MAP =
 			console.error( error );
 		}
 	},
-
 
 	//from consent object to cookie (Microsoft)
 	saveMicrosoftConsentStatusToCookie : function( consentObject )
@@ -1001,7 +1090,7 @@ var MAP =
 				.join('|');
 
 
-			MAP_Cookie.set( MAP_MICROSOFT_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_MICROSOFT_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			return true;
 
@@ -1025,7 +1114,7 @@ var MAP =
 				.join('|');
 
 
-			MAP_Cookie.set( MAP_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_CONSENT_STATUS, encodedString, MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			return true;
 
@@ -1199,7 +1288,6 @@ var MAP =
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting consent with value=' + cookieValue );
 
 					that.updateGoogleConsentbyObj( this_gconsent, false );
-
 				}
 				else
 				{
@@ -1215,7 +1303,6 @@ var MAP =
 			console.error( error );
 		}
 	},
-
 
 	//init data for Clarity consent mode
 	setupClarityConsentMode: function()
@@ -1324,7 +1411,6 @@ var MAP =
 		}
 	},
 
-
 	//init data for Microsoft consent mode
 	setupMicrosoftConsentMode: function()
 	{
@@ -1411,7 +1497,6 @@ var MAP =
 			}
 
 			return true;
-
 		}
 		catch( error )
 		{
@@ -1434,7 +1519,7 @@ var MAP =
 
 			MAP_SYS.last_consent_modify_date = date;
 
-			MAP_Cookie.set( MAP_LAST_CONSENT_MODIFY_DATE, dateString, MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_LAST_CONSENT_MODIFY_DATE, dateString, MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			if( !MAP_Cookie.exists( MAP_USER_UUID ) )
 			{
@@ -1444,7 +1529,7 @@ var MAP =
 				{
 					MAP_SYS.user_uuid = uuid;
 
-					MAP_Cookie.set( MAP_USER_UUID, uuid, MAP_SYS.map_cookie_expire );
+					MAP_Cookie.set( MAP_USER_UUID, uuid, MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 				}
 			}
 
@@ -1532,7 +1617,8 @@ var MAP =
 		//for preserving scope
 		var that = this;
 
-		try {
+		try
+		{
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function toggleBar' );
 
@@ -1582,12 +1668,14 @@ var MAP =
 				that.hideBar();
 			}
 
-			this.showagain_elm.querySelectorAll( 'a.showConsent' ).forEach( function( $this ) {
+			this.showagain_elm.querySelectorAll( '.showConsent' ).forEach( function( $this ) {
 				$this.addEventListener( 'click', function( e ) {
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered showConsent' );
 
 					e.preventDefault();
 					e.stopImmediatePropagation();
+
+					that.dispatchConsentEvents( 'myagileprivacy_resurface' );
 
 					//animation
 					var that_animation = MAP.bar_elm.getAttribute( 'data-animation' );
@@ -1617,7 +1705,8 @@ var MAP =
 
 					setTimeout( function() {
 
-						try {
+						try
+						{
 
 							switch( that_animation )
 							{
@@ -1695,8 +1784,6 @@ var MAP =
 						}
 
 					},100 );
-
-
 				});
 			});
 
@@ -1835,12 +1922,15 @@ var MAP =
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
+					that.dispatchConsentEvents( 'myagileprivacy_resurface' );
+
 					var event = new CustomEvent( 'triggerShowAgainDisplay' );
 					that.bar_elm.dispatchEvent( event );
 				}
 			});
 
 			//eof user consent review trigger
+
 		}
 		catch( error )
 		{
@@ -2316,6 +2406,8 @@ var MAP =
 
 				that.updateLastConsentRecords();
 
+				that.dispatchConsentEvents( 'myagileprivacy_cookie_accept' );
+
 				//check consent-mode checkbox
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
 					elem.checked = true;
@@ -2346,7 +2438,7 @@ var MAP =
 
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
-					MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
+					MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 					elem.checked = true;
 				});
@@ -2376,6 +2468,8 @@ var MAP =
 				})();
 
 				MAP.accept_close();
+
+
 			});
 
 
@@ -2390,6 +2484,8 @@ var MAP =
 					var $this = this;
 
 					that.updateLastConsentRecords();
+
+					that.dispatchConsentEvents( 'myagileprivacy_cookie_reject' );
 
 					//uncheck consent-mode checkbox
 					that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
@@ -2420,7 +2516,7 @@ var MAP =
 
 						var cookieName = 'map_cookie_' + elem.getAttribute( 'data-cookie-baseindex' ) + MAP_POSTFIX;
 
-						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 						elem.checked = false;
 					});
@@ -2495,6 +2591,8 @@ var MAP =
 						triggerElement.click();
 					}
 				}
+
+				that.dispatchConsentEvents( 'myagileprivacy_cookie_customize' );
 
 			});
 
@@ -3007,7 +3105,15 @@ var MAP =
 			//for preserving scope
 			var that = this;
 
-			if( Boolean( this.settings.showagain_tab ) )
+			var this_showagain_tab = Boolean( this.settings.showagain_tab );
+
+			if( !this_showagain_tab &&
+				!document.querySelector( '.showConsentAgain:not(.map_custom_notify):not(.map_inline_notify)' ) )
+			{
+				this_showagain_tab = true;
+			}
+
+			if( this_showagain_tab )
 			{
 				//show
 				that.showagain_elm.style.opacity = 0;
@@ -3148,10 +3254,16 @@ var MAP =
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
 
 					var viewport_width = window.innerWidth;
+					var viewport_height = window.innerHeight;
 
 					if( viewport_width <= 450 )
 					{
 						var coeff = 250;
+
+						if( viewport_height <= 700 )
+						{
+							coeff += 200;
+						}
 
 						if( MAP_SYS?.map_notify_title == 1 )
 						{
@@ -3163,17 +3275,36 @@ var MAP =
 							coeff += 60;
 						}
 
-						var viewport_height = window.innerHeight;
 						var internal_height = viewport_height - coeff;
 
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ' , internal_height=' + internal_height );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ', viewport_height = '+ viewport_height + ', internal_height=' + internal_height );
 
 						that.map_notification_message.classList.add( 'extraNarrow' );
 						that.map_notification_message.style.maxHeight = internal_height + 'px';
+						that.map_notification_message.scrollTop = 0;
+
+						//map_flex and extraNarrow are tied attributes
+						if( !that.map_notification_message.classList.contains( 'map-iab-context' ) )
+						{
+							if( viewport_height <= 700 )
+							{
+								that.map_notification_message.classList.remove( 'map_flex' );
+							}
+							else
+							{
+								that.map_notification_message.classList.add( 'map_flex' );
+							}
+						}
 					}
 					else
 					{
 						that.map_notification_message.classList.remove( 'extraNarrow' );
+
+						if( !that.map_notification_message.classList.contains( 'map-iab-context' ) )
+						{
+							that.map_notification_message.classList.add( 'map_flex' );
+						}
+
 						that.map_notification_message.style.maxHeight = '';
 					}
 				}
@@ -3204,7 +3335,7 @@ var MAP =
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function accept_close' );
 
-			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			that.updateSomeConsentGivenStatus();
 
@@ -3266,7 +3397,15 @@ var MAP =
 				break;
 			}
 
-			if( Boolean( that.settings.showagain_tab ) )
+			var this_showagain_tab = Boolean( that.settings.showagain_tab );
+
+			if( !this_showagain_tab &&
+				!document.querySelector( '.showConsentAgain:not(.map_custom_notify):not(.map_inline_notify)' ) )
+			{
+				this_showagain_tab = true;
+			}
+
+			if( this_showagain_tab )
 			{
 				that.showagain_elm.style.opacity = 0;
 				that.showagain_elm.style.display = 'block';
@@ -3316,8 +3455,8 @@ var MAP =
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function reject_close' );
 
-			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
-			MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+			MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 			that.updateSomeConsentGivenStatus();
 
@@ -3384,7 +3523,15 @@ var MAP =
 
 			that.bar_open = false;
 
-			if( Boolean( that.settings.showagain_tab ) )
+			var this_showagain_tab = Boolean( that.settings.showagain_tab );
+
+			if( !this_showagain_tab &&
+				!document.querySelector( '.showConsentAgain:not(.map_custom_notify):not(.map_inline_notify)' ) )
+			{
+				this_showagain_tab = true;
+			}
+
+			if( this_showagain_tab )
 			{
 				that.showagain_elm.style.opacity = 0;
 				that.showagain_elm.style.display = 'block';
@@ -3585,6 +3732,8 @@ var MAP =
 
 						var $img_src_blocked = document.querySelectorAll( 'img.my_agile_privacy_activate.autoscan_mode.img_src_blocked[data-cookie-api-key="'+api_key+'"]' );
 
+						var do_trigger_dom_content_loaded_event = false;
+
 						if( !!$map_src_script_blocked && $map_src_script_blocked?.length )
 						{
 							$map_src_script_blocked.forEach( function( $_this ) {
@@ -3634,6 +3783,8 @@ var MAP =
 
 									if( $_this.classList.contains( 'mapWait' ) )
 									{
+										do_trigger_dom_content_loaded_event = true;
+
 										setTimeout( function() {
 
 											//prevent block using createElementBackup
@@ -3654,7 +3805,7 @@ var MAP =
 
 											$_this.classList.add( '_is_activated' );
 
-										}, 2000);
+										}, 1000);
 									}
 									else
 									{
@@ -3721,6 +3872,8 @@ var MAP =
 
 									if( $_this.classList.contains( 'mapWait' ) )
 									{
+										do_trigger_dom_content_loaded_event = true;
+
 										setTimeout( function() {
 											var script = document.createElement( 'script' );
 											script.className = '_is_activated';
@@ -3732,7 +3885,7 @@ var MAP =
 
 											$_this.classList.add( '_is_activated' );
 
-										}, 2200);
+										}, 1000);
 									}
 									else
 									{
@@ -3799,6 +3952,23 @@ var MAP =
 								}
 							});
 						}
+
+						if( do_trigger_dom_content_loaded_event )
+						{
+							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggering do_trigger_dom_content_loaded_event' );
+
+							var count = 0;
+
+							var timerId = setInterval(function () {
+							  document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+
+							  count++;
+							  if( count >= 3 )
+							  {
+							    clearInterval( timerId );
+							  }
+							}, 1100);
+						}
 					}
 				}
 				else
@@ -3859,13 +4029,13 @@ var MAP =
 					{
 						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
-						MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 					}
 					else
 					{
 						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
 
-						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 					}
 				}
 				else
@@ -3905,19 +4075,23 @@ var MAP =
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
-							MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire );
+							MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 							currentToggleElm.forEach( elm => elm.checked = true );
+
+							that.dispatchConsentEvents( 'myagileprivacy_single_cookie_accept' );
 						}
 						else
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
 
-							MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire );
+							MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 							currentToggleElm.forEach( elm => elm.checked = false );
+
+							that.dispatchConsentEvents( 'myagileprivacy_single_cookie_reject' );
 						}
 
-						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
-						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 						that.updateSomeConsentGivenStatus();
 
@@ -4038,8 +4212,8 @@ var MAP =
 							currentToggleElm.forEach( elm => elm.checked = false );
 						}
 
-						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
-						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
 						that.updateSomeConsentGivenStatus();
 
@@ -4070,6 +4244,8 @@ var MAP =
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 1 to iab_category=${iab_category} , iab_key=${iab_key}` );
 
+							that.dispatchConsentEvents( 'myagileprivacy_iab_item_accept' );
+
 							(async() => {
 								while (!MAP_SYS.map_document_load) {
 									// MapLogger.log( 'not defined yet' );
@@ -4092,6 +4268,8 @@ var MAP =
 						else
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 0 to iab_category=${iab_category} , iab_key=${iab_key}` );
+
+							that.dispatchConsentEvents( 'myagileprivacy_iab_item_reject' );
 
 							(async() => {
 								while (!MAP_SYS.map_document_load) {
@@ -4461,7 +4639,6 @@ var MAP =
 				{
 					// parent height is too high --> recalculate
 					$map_tab_container.style.height = siblingsHeight + cookie_list_height + 'px';
-
 				}
 				else
 				{
@@ -4472,7 +4649,6 @@ var MAP =
 
 					$overflow_container.style.maxHeight = maxHeight + 'px';
 				}
-
 			}
 
 		}
@@ -4582,7 +4758,7 @@ var MAP =
 	{
 		try {
 
-			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url && MAP?.settings ) )
 			{
 				MapLogger.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkJsShield function' );
 				return;
@@ -4636,7 +4812,7 @@ var MAP =
 	{
 		try {
 
-			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url && MAP?.settings ) )
 			{
 				console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running checkConsentModeStatus function' );
 				return;
@@ -4772,7 +4948,7 @@ var MAP =
 	{
 		try {
 
-			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url ) )
+			if( !( typeof map_ajax !== 'undefined' && map_ajax?.ajax_url && MAP?.settings ) )
 			{
 				console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running sendDetectedKeys function' );
 				return;
@@ -4842,6 +5018,170 @@ var MAP =
 		{
 			console.error( error );
 		}
+	},
+
+	sendDiagnosticData: function()
+	{
+	    try
+	    {
+	        if( !( typeof map_ajax !== 'undefined' && map_ajax?.api_url && MAP?.settings ) )
+	        {
+	            console.error( MAP_SYS.maplog + 'Error: missing map_ajax variable running sendDiagnosticData function' );
+	            return Promise.reject( 'missing map_ajax' );
+	        }
+
+	        // --- 1. DETECTED KEYS (only learning mode) ---
+	        var detectableKeys_to_send = null;
+	        var detectedKeys_to_send   = null;
+	        var send_detected_keys     = 0;
+
+	        if(
+	            MAP.settings &&
+	            (
+	                ( MAP.settings.scan_mode && MAP.settings.scan_mode == 'learning_mode' ) ||
+	                ( map_ajax.force_js_learning_mode == 1 )
+	            )
+	        )
+	        {
+	            send_detected_keys = 1;
+
+	            if( typeof CookieShield !== 'undefined' && CookieShield )
+	            {
+	                var detectableKeys = CookieShield.getDetectableKeys();
+	                var detectedKeys   = CookieShield.getDetectedKeys();
+
+	                MAP_SYS.map_detectableKeys = detectableKeys;
+	                MAP_SYS.map_detectedKeys   = detectedKeys;
+
+	                if( detectableKeys && detectableKeys.length > 0 )
+	                    detectableKeys_to_send = detectableKeys.join(',');
+
+	                if( detectedKeys && detectedKeys.length > 0 )
+	                    detectedKeys_to_send = detectedKeys.join(',');
+	            }
+	        }
+
+	        // --- 2. JS SHIELD ---
+	        var cookie_shield_detected = 0;
+
+	        if(
+	            typeof CookieShield !== 'undefined' &&
+	            CookieShield &&
+	            typeof map_full_config?.cookie_api_key_remote_id_map_active !== 'undefined'
+	        )
+	        {
+	            cookie_shield_detected            = 1;
+	            MAP_SYS.map_missing_cookie_shield = 0;
+	        }
+	        else
+	        {
+	            MAP_SYS.map_missing_cookie_shield = 1;
+	        }
+
+	        // --- 3. CONSENT MODE ---
+	        const googleTagRegex = /^(G-|UA-|AW-)/;
+	        var is_consent_valid     = false;
+	        var has_valid_google_tag = false;
+	        var error_motivation     = '';
+	        var error_code           = null;
+
+	        if( !MAP_SYS?.cmode_v2 )
+	        {
+	            error_motivation = 'Consent Mode V2 not enabled';
+	            error_code = 10;
+	        }
+	        else if( typeof dataLayer === 'undefined' || dataLayer === null )
+	        {
+	            error_motivation = 'missing dataLayer';
+	            error_code = 20;
+	        }
+	        else
+	        {
+	            for( var i = 0; i < dataLayer.length; i++ )
+	            {
+	                var item = dataLayer[i];
+
+	                if( item && ( Array.isArray( item ) || typeof item === 'object' ) )
+	                {
+	                    var firstArg  = item[0];
+	                    var secondArg = item[1];
+
+	                    if( firstArg === 'consent' && secondArg === 'default' )
+	                        is_consent_valid = true;
+
+	                    if( firstArg === 'config' && googleTagRegex.test( secondArg ) )
+	                        has_valid_google_tag = true;
+
+	                    if( !is_consent_valid )
+	                    {
+	                        if( ( firstArg === 'config' && googleTagRegex.test( secondArg ) ) || firstArg === 'event' )
+	                        {
+	                            error_motivation = 'Consent is set after Google tag ' + secondArg;
+	                            error_code = 30;
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
+
+	            if( !is_consent_valid && error_code === null && MAP_SYS?.cmode_v2_implementation_type != 'gtm' )
+	            {
+	                error_motivation = 'No consent set before Google tags';
+	                error_code = 40;
+	            }
+
+	            if( !has_valid_google_tag && MAP_SYS?.cmode_v2_implementation_type != 'gtm' )
+	            {
+	                error_motivation = 'A valid Google Tag seems missing';
+	                error_code = 50;
+	            }
+	        }
+
+	        var consent_is_valid_int = ( error_code === null ) ? 1 : 0;
+
+	        if( consent_is_valid_int )
+	            MapLogger.log( MAP_SYS.maplog + 'The Consent Mode V2 is set up correctly.' );
+	        else
+	            MapLogger.log( MAP_SYS.maplog + 'The sending of consent is not set up correctly - ' + error_motivation + '.' );
+
+	        // --- 4. PAYLOAD ---
+	        var data = {
+	            action             : 'map_diagnostic_data',
+	            send_detected_keys : send_detected_keys,
+	            detectableKeys     : detectableKeys_to_send,
+	            detectedKeys       : detectedKeys_to_send,
+	            cookie_shield_detected : cookie_shield_detected,
+	            is_consent_valid   : consent_is_valid_int,
+	            error_motivation   : error_motivation,
+	            error_code         : error_code !== null ? error_code : ''
+	        };
+
+	        return fetch( map_ajax.api_url, {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/x-www-form-urlencoded'
+	            },
+	            body: new URLSearchParams( data )
+	        })
+	        .then( response => {
+	            if( !response.ok )
+	            {
+	                throw new Error( 'HTTP error ' + response.status );
+	            }
+	            return response.text();
+	        })
+	        .then( responseText => {
+	            MapLogger.groupCollapsed( MAP_SYS.maplog + 'sendDiagnosticData response:' );
+	            MapLogger.debug( MAP_SYS.maplog, responseText );
+	            MapLogger.groupEnd();
+	        });
+
+	    }
+	    catch( error )
+	    {
+	        console.error( error );
+	        return Promise.reject( error );
+	    }
 	},
 
 	//inspect cookie script configuration
@@ -5079,59 +5419,79 @@ function map_on_document_load_event()
 			MAP.settings
 		)
 		{
-			MAP.checkJsShield();
+			if( MAP_SYS?.allow_js_fast_callback )
+			{
+			    setTimeout( function() {
 
-			setTimeout( function() {
-				MAP.checkConsentModeStatus();
-			}, 800 );
+			        MAP.sendDiagnosticData()
+			            .catch( function() {
+
+			                // Fallback: send data the old way
+			                if(
+			                    (
+			                        MAP?.settings?.scan_mode &&
+			                        MAP?.settings?.scan_mode == 'learning_mode'
+			                    ) ||
+			                    (
+			                        map_ajax?.force_js_learning_mode == 1
+			                    )
+			                )
+			                {
+			                    MAP.sendDetectedKeys();
+			                }
+
+			                MAP.checkJsShield();
+			                MAP.checkConsentModeStatus();
+			            });
+
+			    }, 500 );
+			}
+			else
+			{
+				if(
+					(
+					 MAP?.settings?.scan_mode &&
+					 MAP?.settings?.scan_mode == 'learning_mode'
+					) ||
+					(
+						map_ajax?.force_js_learning_mode == 1
+					)
+				)
+				{
+					MAP.sendDetectedKeys();
+				}
+
+				setTimeout( function() {
+					MAP.checkJsShield();
+					MAP.checkConsentModeStatus();
+				}, 800 );
+			}
 		}
 
 		if( typeof CookieShield !== 'undefined' &&
 			CookieShield &&
-			MAP
-		)
+			MAP &&
+			typeof URLSearchParams !== 'undefined' &&
+			URLSearchParams )
 		{
-			if(
-				map_ajax &&
-				MAP.settings &&
-				(
-					(
-					 MAP.settings.scan_mode &&
-					 MAP.settings.scan_mode == 'learning_mode'
-					) ||
-					(
-						map_ajax.force_js_learning_mode == 1
-					)
-				)
-			)
-			{
-				MAP.sendDetectedKeys( null );
-			}
+			var queryString = window.location.search;
 
-			if( typeof URLSearchParams !== 'undefined' &&
-				URLSearchParams )
+			if( queryString )
 			{
-				var queryString = window.location.search;
+				var urlParams = new URLSearchParams( queryString );
 
-				if( queryString )
+				var auto_activate_cookies_with_key = urlParams.get( 'auto_activate_cookies_with_key' )
+				if( auto_activate_cookies_with_key )
 				{
-					var urlParams = new URLSearchParams( queryString );
-
-					var auto_activate_cookies_with_key = urlParams.get( 'auto_activate_cookies_with_key' )
-					if( auto_activate_cookies_with_key )
-					{
-						MAP.sendDetectedKeys( auto_activate_cookies_with_key );
-					}
+					MAP.sendDetectedKeys( auto_activate_cookies_with_key );
 				}
 			}
 		}
-
 	}
 	catch( error )
 	{
 		console.error( error );
 	}
-
 }
 
 window.addEventListener( 'load', function() {

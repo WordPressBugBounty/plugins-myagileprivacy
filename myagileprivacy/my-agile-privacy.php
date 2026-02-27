@@ -2,10 +2,10 @@
 
 /**
  * @wordpress-plugin
- * Plugin Name:       MyAgilePrivacy
+ * Plugin Name:       My Agile Privacy®
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       My Agile Privacy® - CMP, Cookie Consent & Privacy Tools
- * Version:           3.2.5
+ * Version:           3.3.0
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
@@ -16,13 +16,7 @@
  * Domain Path:       /lang
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.2.5' );
-define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
-define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
-define( 'MAP_PLUGIN_FILENAME', __FILE__ );
-define( 'MAP_USE_MINIFIED_FILES', true );
-define( 'MAP_DEV_MODE', false );
-
+require plugin_dir_path( __FILE__ ) . 'includes/my-agile-privacy-defines.php';
 require plugin_dir_path( __FILE__ ) . 'includes/my-agile-privacy-class.php';
 
 /**

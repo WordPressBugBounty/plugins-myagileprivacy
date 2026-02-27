@@ -1950,15 +1950,24 @@
 	function checkButtonsEqualColors()
 	{
 		try{
+			// Check background colors
+			const bgColors = $( '#cookie_banner_options_container input[type="color"][id$="_button_color_field"]' )
+				.map(function() {
+					return $( this ).val();
+				}).get();
 
-			const colors = $( '#cookie_banner_options_container input[type="color"][id$="_button_color_field"]' )
-			.map(function() {
-				return $( this ).val();
-			}).get();
+			const bgAllEqual = bgColors.every( color => color === bgColors[0] );
 
-			const allEqual = colors.every( color => color === colors[0] );
+			// Check link colors
+			const linkColors = $( '#cookie_banner_options_container input[type="color"][id$="_link_color_field"]' )
+				.map(function() {
+					return $( this ).val();
+				}).get();
 
-			if( allEqual )
+			const linkAllEqual = linkColors.every( color => color === linkColors[0] );
+
+			// Show/hide alert based on results
+			if( bgAllEqual && linkAllEqual )
 			{
 				$( '#map_buttons_background_alert' ).addClass( 'd-none' );
 			}
@@ -1966,7 +1975,6 @@
 			{
 				$( '#map_buttons_background_alert' ).removeClass( 'd-none' );
 			}
-
 		}
 		catch( error )
 		{
@@ -1978,15 +1986,21 @@
 	function standardizeColors()
 	{
 		try{
-
-			var sourceColor = $( '#button_accept_button_color_field' ).val();
-
+			// Standardize background colors
+			var sourceBgColor = $( '#button_accept_button_color_field' ).val();
 			$( '#button_reject_button_color_field, #button_customize_button_color_field' )
-			.val( sourceColor )
-			.trigger( 'change' );
+				.val( sourceBgColor )
+				.trigger( 'change' );
 
-			console.debug( map_backend_prefix + 'Colors standardized to: ' + sourceColor);
+			console.debug( map_backend_prefix + 'Background colors standardized to: ' + sourceBgColor);
 
+			// Standardize link colors
+			var sourceLinkColor = $( '#button_accept_link_color_field' ).val();
+			$( '#button_reject_link_color_field, #button_customize_link_color_field' )
+				.val( sourceLinkColor )
+				.trigger( 'change' );
+
+			console.debug( map_backend_prefix + 'Link colors standardized to: ' + sourceLinkColor);
 		}
 		catch( error )
 		{

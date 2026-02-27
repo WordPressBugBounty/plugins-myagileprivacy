@@ -177,7 +177,7 @@ define( 'MAP_SUPPORTED_LANGUAGES', array(
 					),
 ) );
 
-class MyAgilePrivacyLangHelper
+final class MyAgilePrivacyLangHelper
 {
 	public static function getDefaultText()
 	{
@@ -193,7 +193,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['notify_message_v2_short'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
 		$default_txt['it_IT']['view_the_cookie_policy'] = 'Visualizza la Cookie Policy';
 		$default_txt['it_IT']['view_the_personal_data_policy'] = "Visualizza l'Informativa Privacy";
-		$default_txt['it_IT']['manage_consent'] = 'Gestisci il consenso';
+		$default_txt['it_IT']['manage_consent'] = 'Consenso';
 		$default_txt['it_IT']['close'] = 'Chiudi';
 		$default_txt['it_IT']['privacy_settings'] = 'Impostazioni privacy';
 		$default_txt['it_IT']['this_website_uses_cookies'] = 'Questo sito utilizza i cookie per migliorare la tua esperienza di navigazione su questo sito.';
@@ -211,7 +211,6 @@ class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['ad_user_data_desc'] = "Determina se i dati dell'utente possono essere inviati a Google per scopi pubblicitari.";
 		$default_txt['it_IT']['ad_personalization_desc'] = 'Controlla se la pubblicità personalizzata (ad esempio, il remarketing) può essere abilitata.';
 		$default_txt['it_IT']['analytics_storage_desc'] = 'Definisce se i cookie associati a Google Analytics possono essere letti o scritti.';
-
 		$default_txt['it_IT']['banner_title'] = '';
 		$default_txt['it_IT']['accept'] = 'Accetta';
 		$default_txt['it_IT']['refuse'] = 'Rifiuta';
@@ -234,6 +233,12 @@ class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['vat_id'] = 'Partita IVA';
 		$default_txt['it_IT']['google_recaptcha_content_notification_a'] = 'Le tue scelte cookie potrebbero non consentire l\'invio del modulo. Puoi rivedere le tue scelte';
 		$default_txt['it_IT']['google_recaptcha_content_notification_b'] = 'facendo clic qui';
+		$default_txt['it_IT']['anchor_text_1'] = 'Privacy by My Agile Privacy®';
+		$default_txt['it_IT']['anchor_text_2'] = 'Consent Management Platform e Privacy Management by My Agile Privacy®';
+		$default_txt['it_IT']['anchor_text_3'] = 'Cookie Banner e Consent Management by My Agile Privacy®';
+		$default_txt['it_IT']['anchor_text_4'] = 'GDPR Cookie Banner by My Agile Privacy®';
+		$default_txt['it_IT']['anchor_text_5'] = 'Cookie Consent e Privacy Policy by My Agile Privacy®';
+		$default_txt['it_IT']['anchor_text_6'] = 'CMP e Cookie Banner by My Agile Privacy®';
 
 
 		//english - en_US - en - eng
@@ -246,7 +251,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['notify_message_v2_short'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
 		$default_txt['en_US']['view_the_cookie_policy'] = 'View the Cookie Policy';
 		$default_txt['en_US']['view_the_personal_data_policy'] = 'View the Personal Data Policy';
-		$default_txt['en_US']['manage_consent'] = 'Manage consent';
+		$default_txt['en_US']['manage_consent'] = 'Consent';
 		$default_txt['en_US']['close'] = 'Close';
 		$default_txt['en_US']['privacy_settings'] = 'Privacy Settings';
 		$default_txt['en_US']['this_website_uses_cookies'] = 'This website uses cookies to improve your experience while you navigate through the website.';
@@ -286,6 +291,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['vat_id'] = 'VAT ID';
 		$default_txt['en_US']['google_recaptcha_content_notification_a'] = 'Your cookie choices may not allow the form to be submitted. You can review your choices by';
 		$default_txt['en_US']['google_recaptcha_content_notification_b'] = 'clicking here';
+		$default_txt['en_US']['anchor_text_1'] = 'Privacy by My Agile Privacy®';
+		$default_txt['en_US']['anchor_text_2'] = 'Consent Management Platform and Privacy Management by My Agile Privacy®';
+		$default_txt['en_US']['anchor_text_3'] = 'Cookie Banner and Consent Management by My Agile Privacy®';
+		$default_txt['en_US']['anchor_text_4'] = 'GDPR Cookie Banner by My Agile Privacy®';
+		$default_txt['en_US']['anchor_text_5'] = 'Cookie Consent and Privacy Policy by My Agile Privacy®';
+		$default_txt['en_US']['anchor_text_6'] = 'CMP and Cookie Banner by My Agile Privacy®';
+
 
 		//french - fr_FR - fr - fra
 		$default_txt['fr_FR'] = array();
@@ -297,7 +309,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['notify_message_v2_short'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
 		$default_txt['fr_FR']['view_the_cookie_policy'] = 'Politique relative aux cookies';
 		$default_txt['fr_FR']['view_the_personal_data_policy'] = 'Consultez la politique de données personnelles';
-		$default_txt['fr_FR']['manage_consent'] = 'Consentement à la politique de confidentialité';
+		$default_txt['fr_FR']['manage_consent'] = 'Consentement';
 		$default_txt['fr_FR']['close'] = 'Close';
 		$default_txt['fr_FR']['privacy_settings'] = 'Paramètres de confidentialité';
 		$default_txt['fr_FR']['this_website_uses_cookies'] = 'Ce site utilise des cookies pour améliorer votre expérience de navigation.';
@@ -337,6 +349,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['vat_id'] = 'VAT ID';
 		$default_txt['fr_FR']['google_recaptcha_content_notification_a'] = 'Veuillez noter: vos choix de cookies peuvent ne pas permettre de soumettre le formulaire. Vous pouvez revoir vos choix en';
 		$default_txt['fr_FR']['google_recaptcha_content_notification_b'] = 'cliquant ici';
+		$default_txt['fr_FR']['anchor_text_1'] = 'Privacy par My Agile Privacy®';
+		$default_txt['fr_FR']['anchor_text_2'] = 'Consent Management Platform et Privacy Management par My Agile Privacy®';
+		$default_txt['fr_FR']['anchor_text_3'] = 'Cookie Banner et Consent Management par My Agile Privacy®';
+		$default_txt['fr_FR']['anchor_text_4'] = 'RGPD Cookie Banner par My Agile Privacy®';
+		$default_txt['fr_FR']['anchor_text_5'] = 'Cookie Consent et Privacy Policy par My Agile Privacy®';
+		$default_txt['fr_FR']['anchor_text_6'] = 'CMP et Cookie Banner par My Agile Privacy®';
+
 
 		//spanish - es_ES - es - esp
 		$default_txt['es_ES'] = array();
@@ -348,7 +367,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['notify_message_v2_short'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
 		$default_txt['es_ES']['view_the_cookie_policy'] = 'Política de cookies';
 		$default_txt['es_ES']['view_the_personal_data_policy'] = 'Consulte la política de datos personales';
-		$default_txt['es_ES']['manage_consent'] = 'Consentimiento de privacidad';
+		$default_txt['es_ES']['manage_consent'] = 'Consentimiento';
 		$default_txt['es_ES']['close'] = 'Close';
 		$default_txt['es_ES']['privacy_settings'] = 'Ajustes de privacidad';
 		$default_txt['es_ES']['this_website_uses_cookies'] = 'Este sitio utiliza cookies para mejorar su experiencia de navegación.';
@@ -388,6 +407,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['vat_id'] = 'VAT ID';
 		$default_txt['es_ES']['google_recaptcha_content_notification_a'] = 'Tenga en cuenta: sus elecciones de cookies pueden no permitir el envío del formulario. Puede revisar sus opciones';
 		$default_txt['es_ES']['google_recaptcha_content_notification_b'] = 'haciendo clic aquí';
+		$default_txt['es_ES']['anchor_text_1'] = 'Privacy por My Agile Privacy®';
+		$default_txt['es_ES']['anchor_text_2'] = 'Consent Management Platform y Privacy Management por My Agile Privacy®';
+		$default_txt['es_ES']['anchor_text_3'] = 'Cookie Banner y Consent Management por My Agile Privacy®';
+		$default_txt['es_ES']['anchor_text_4'] = 'RGPD Cookie Banner por My Agile Privacy®';
+		$default_txt['es_ES']['anchor_text_5'] = 'Cookie Consent y Privacy Policy por My Agile Privacy®';
+		$default_txt['es_ES']['anchor_text_6'] = 'CMP y Cookie Banner por My Agile Privacy®';
+
 
 		//german - de_DE - de - deu
 		$default_txt['de_DE'] = array();
@@ -399,7 +425,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['notify_message_v2_short'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
 		$default_txt['de_DE']['view_the_cookie_policy'] = 'Cookie-Richtlinie';
 		$default_txt['de_DE']['view_the_personal_data_policy'] = 'Sehen Sie sich die Datenschutzrichtlinie an';
-		$default_txt['de_DE']['manage_consent'] = 'Zustimmung zum Datenschutz';
+		$default_txt['de_DE']['manage_consent'] = 'Zustimmung';
 		$default_txt['de_DE']['close'] = 'Close';
 		$default_txt['de_DE']['privacy_settings'] = 'Datenschutzeinstellungen';
 		$default_txt['de_DE']['this_website_uses_cookies'] = 'Diese Website verwendet Cookies, um Ihr Surferlebnis zu verbessern.';
@@ -439,6 +465,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['vat_id'] = 'VAT ID';
 		$default_txt['de_DE']['google_recaptcha_content_notification_a'] = 'Bitte beachten: kann es sein, dass Ihre Cookie-Auswahl das Absenden des Formulars nicht zulässt. Sie können Ihre Auswahl überprüfen, indem Sie';
 		$default_txt['de_DE']['google_recaptcha_content_notification_b'] = 'hier klicken';
+		$default_txt['de_DE']['anchor_text_1'] = 'Privacy von My Agile Privacy®';
+		$default_txt['de_DE']['anchor_text_2'] = 'Consent Management Platform und Privacy Management von My Agile Privacy®';
+		$default_txt['de_DE']['anchor_text_3'] = 'Cookie Banner und Consent Management von My Agile Privacy®';
+		$default_txt['de_DE']['anchor_text_4'] = 'DSGVO Cookie Banner von My Agile Privacy®';
+		$default_txt['de_DE']['anchor_text_5'] = 'Cookie Consent und Privacy Policy von My Agile Privacy®';
+		$default_txt['de_DE']['anchor_text_6'] = 'CMP und Cookie Banner von My Agile Privacy®';
+
 
 		//portuguese - pt_PT - pt - por
 		$default_txt['pt_PT'] = array();
@@ -450,7 +483,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['notify_message_v2_short'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
 		$default_txt['pt_PT']['view_the_cookie_policy'] = 'Ver a Política de Cookies';
 		$default_txt['pt_PT']['view_the_personal_data_policy'] = 'Ver a Política de Dados Pessoais';
-		$default_txt['pt_PT']['manage_consent'] = 'Gerenciar consentimento';
+		$default_txt['pt_PT']['manage_consent'] = 'Consentimento';
 		$default_txt['pt_PT']['close'] = 'Fechar';
 		$default_txt['pt_PT']['privacy_settings'] = 'Configurações de Privacidade';
 		$default_txt['pt_PT']['this_website_uses_cookies'] = 'Este site utiliza cookies para melhorar sua experiência enquanto você navega pelo site.';
@@ -490,6 +523,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['vat_id'] = 'ID de IVA';
 		$default_txt['pt_PT']['google_recaptcha_content_notification_a'] = 'Suas escolhas de cookies podem não permitir o envio do formulário. Você pode revisar suas escolhas';
 		$default_txt['pt_PT']['google_recaptcha_content_notification_b'] = 'clicando aqui';
+		$default_txt['pt_PT']['anchor_text_1'] = 'Privacy por My Agile Privacy®';
+		$default_txt['pt_PT']['anchor_text_2'] = 'Consent Management Platform e Privacy Management por My Agile Privacy®';
+		$default_txt['pt_PT']['anchor_text_3'] = 'Cookie Banner e Consent Management por My Agile Privacy®';
+		$default_txt['pt_PT']['anchor_text_4'] = 'RGPD Cookie Banner por My Agile Privacy®';
+		$default_txt['pt_PT']['anchor_text_5'] = 'Cookie Consent e Privacy Policy por My Agile Privacy®';
+		$default_txt['pt_PT']['anchor_text_6'] = 'CMP e Cookie Banner por My Agile Privacy®';
+
 
 		//dutch - nl_NL - nl - dut
 		$default_txt['nl_NL'] = array();
@@ -501,7 +541,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['notify_message_v2_text'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
 		$default_txt['nl_NL']['view_the_cookie_policy'] = 'Bekijk het Cookiebeleid';
 		$default_txt['nl_NL']['view_the_personal_data_policy'] = 'Bekijk het Beleid voor Persoonsgegevens';
-		$default_txt['nl_NL']['manage_consent'] = 'Beheer toestemmingen';
+		$default_txt['nl_NL']['manage_consent'] = 'Toestemming';
 		$default_txt['nl_NL']['close'] = 'Sluiten';
 		$default_txt['nl_NL']['privacy_settings'] = 'Privacy-instellingen';
 		$default_txt['nl_NL']['this_website_uses_cookies'] = 'Deze website maakt gebruik van cookies om uw ervaring te verbeteren terwijl u door de website navigeert.';
@@ -541,6 +581,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['vat_id'] = 'Btw-nummer';
 		$default_txt['nl_NL']['google_recaptcha_content_notification_a'] = 'Uw cookie-keuzes kunnen misschien niet toestaan dat het formulier wordt ingediend. U kunt uw keuzes herzien door';
 		$default_txt['nl_NL']['google_recaptcha_content_notification_b'] = 'hier te klikken';
+		$default_txt['nl_NL']['anchor_text_1'] = 'Privacy door My Agile Privacy®';
+		$default_txt['nl_NL']['anchor_text_2'] = 'Consent Management Platform en Privacy Management door My Agile Privacy®';
+		$default_txt['nl_NL']['anchor_text_3'] = 'Cookie Banner en Consent Management door My Agile Privacy®';
+		$default_txt['nl_NL']['anchor_text_4'] = 'AVG Cookie Banner door My Agile Privacy®';
+		$default_txt['nl_NL']['anchor_text_5'] = 'Cookie Consent en Privacy Policy door My Agile Privacy®';
+		$default_txt['nl_NL']['anchor_text_6'] = 'CMP en Cookie Banner door My Agile Privacy®';
+
 
 		//polish - pl_PL - pl - pol
 		$default_txt['pl_PL'] = array();
@@ -552,7 +599,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['notify_message_v2_text'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
 		$default_txt['pl_PL']['view_the_cookie_policy'] = 'Zobacz Politykę Cookie';
 		$default_txt['pl_PL']['view_the_personal_data_policy'] = 'Zobacz Politykę Danych Osobowych';
-		$default_txt['pl_PL']['manage_consent'] = 'Zarządzaj zgodami';
+		$default_txt['pl_PL']['manage_consent'] = 'Zgoda';
 		$default_txt['pl_PL']['close'] = 'Zamknij';
 		$default_txt['pl_PL']['privacy_settings'] = 'Ustawienia Prywatności';
 		$default_txt['pl_PL']['this_website_uses_cookies'] = 'Ta strona używa plików cookie, aby poprawić Twoje doświadczenie podczas przeglądania strony.';
@@ -592,6 +639,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['vat_id'] = 'NIP';
 		$default_txt['pl_PL']['google_recaptcha_content_notification_a'] = 'Twoje wybory dotyczące cookie mogą uniemożliwić wypełnienie formularza. Możesz przeglądać swoje wybory';
 		$default_txt['pl_PL']['google_recaptcha_content_notification_b'] = 'klikając tutaj';
+		$default_txt['pl_PL']['anchor_text_1'] = 'Privacy by My Agile Privacy®';
+		$default_txt['pl_PL']['anchor_text_2'] = 'Consent Management Platform i Privacy Management by My Agile Privacy®';
+		$default_txt['pl_PL']['anchor_text_3'] = 'Cookie Banner i Consent Management by My Agile Privacy®';
+		$default_txt['pl_PL']['anchor_text_4'] = 'RODO Cookie Banner by My Agile Privacy®';
+		$default_txt['pl_PL']['anchor_text_5'] = 'Cookie Consent i Privacy Policy by My Agile Privacy®';
+		$default_txt['pl_PL']['anchor_text_6'] = 'CMP i Cookie Banner by My Agile Privacy®';
+
 
 		//greek - el - el - gre
 		$default_txt['el'] = array();
@@ -603,7 +657,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['el']['notify_message_v2_text'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
 		$default_txt['el']['view_the_cookie_policy'] = 'Δείτε την Πολιτική Cookies';
 		$default_txt['el']['view_the_personal_data_policy'] = 'Δείτε την Πολιτική Προσωπικών Δεδομένων';
-		$default_txt['el']['manage_consent'] = 'Διαχείριση συναίνεσης';
+		$default_txt['el']['manage_consent'] = 'Συναίνεση';
 		$default_txt['el']['close'] = 'Κλείσιμο';
 		$default_txt['el']['privacy_settings'] = 'Ρυθμίσεις απορρήτου';
 		$default_txt['el']['this_website_uses_cookies'] = 'Αυτός ο ιστότοπος χρησιμοποιεί cookies για να βελτιώσει την εμπειρία σας καθώς πλοηγείστε στον ιστότοπο.';
@@ -643,8 +697,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['el']['vat_id'] = 'Α.Φ.Μ';
 		$default_txt['el']['google_recaptcha_content_notification_a'] = 'Οι επιλογές των cookies σας μπορεί να μην επιτρέψουν την υποβολή της φόρμας. Μπορείτε να επανεξετάσετε τις επιλογές σας';
 		$default_txt['el']['google_recaptcha_content_notification_b'] = 'κάνοντας κλικ εδώ';
+		$default_txt['el']['anchor_text_1'] = 'Privacy από My Agile Privacy®';
+		$default_txt['el']['anchor_text_2'] = 'Consent Management Platform και Privacy Management από My Agile Privacy®';
+		$default_txt['el']['anchor_text_3'] = 'Cookie Banner και Consent Management από My Agile Privacy®';
+		$default_txt['el']['anchor_text_4'] = 'GDPR Cookie Banner από My Agile Privacy®';
+		$default_txt['el']['anchor_text_5'] = 'Cookie Consent και Privacy Policy από My Agile Privacy®';
+		$default_txt['el']['anchor_text_6'] = 'CMP και Cookie Banner από My Agile Privacy®';
 
-		//new
 
 		//hungarian - hu_HU - hu - hun
 		$default_txt['hu_HU'] = array();
@@ -656,7 +715,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['notify_message_v2_short'] = 'Ez a webhely technikai és profilalkotási cookie-kat használ. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
 		$default_txt['hu_HU']['view_the_cookie_policy'] = 'Cookie-szabályzat megtekintése';
 		$default_txt['hu_HU']['view_the_personal_data_policy'] = 'Személyes adatok kezelésére vonatkozó tájékoztató megtekintése';
-		$default_txt['hu_HU']['manage_consent'] = 'Hozzájárulás kezelése';
+		$default_txt['hu_HU']['manage_consent'] = 'Hozzájárulás';
 		$default_txt['hu_HU']['close'] = 'Bezárás';
 		$default_txt['hu_HU']['privacy_settings'] = 'Adatvédelmi beállítások';
 		$default_txt['hu_HU']['this_website_uses_cookies'] = 'Ez a webhely cookie-kat használ a felhasználói élmény javítása érdekében, miközben a webhelyen navigál.';
@@ -696,6 +755,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['vat_id'] = 'Adószám';
 		$default_txt['hu_HU']['google_recaptcha_content_notification_a'] = 'A cookie-beállításai miatt előfordulhat, hogy az űrlap nem küldhető el. Felülvizsgálhatja a beállításait az alábbi módon:';
 		$default_txt['hu_HU']['google_recaptcha_content_notification_b'] = 'kattintson ide';
+		$default_txt['hu_HU']['anchor_text_1'] = 'Privacy a My Agile Privacy®-tól';
+		$default_txt['hu_HU']['anchor_text_2'] = 'Consent Management Platform és Privacy Management a My Agile Privacy®-tól';
+		$default_txt['hu_HU']['anchor_text_3'] = 'Cookie Banner és Consent Management a My Agile Privacy®-tól';
+		$default_txt['hu_HU']['anchor_text_4'] = 'GDPR Cookie Banner a My Agile Privacy®-tól';
+		$default_txt['hu_HU']['anchor_text_5'] = 'Cookie Consent és Privacy Policy a My Agile Privacy®-tól';
+		$default_txt['hu_HU']['anchor_text_6'] = 'CMP és Cookie Banner a My Agile Privacy®-tól';
+
 
 		//norwegian - nb_NO - no - nor
 		$default_txt['nb_NO'] = array();
@@ -707,7 +773,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['notify_message_v2_short'] = 'Dette nettstedet bruker tekniske og profileringsinformasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
 		$default_txt['nb_NO']['view_the_cookie_policy'] = 'Se retningslinjer for informasjonskapsler';
 		$default_txt['nb_NO']['view_the_personal_data_policy'] = 'Se personvernerklæringen';
-		$default_txt['nb_NO']['manage_consent'] = 'Administrer samtykke';
+		$default_txt['nb_NO']['manage_consent'] = 'Samtykke';
 		$default_txt['nb_NO']['close'] = 'Lukk';
 		$default_txt['nb_NO']['privacy_settings'] = 'Personverninnstillinger';
 		$default_txt['nb_NO']['this_website_uses_cookies'] = 'Dette nettstedet bruker informasjonskapsler for å forbedre opplevelsen din mens du navigerer på nettstedet.';
@@ -747,6 +813,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['vat_id'] = 'MVA-nummer';
 		$default_txt['nb_NO']['google_recaptcha_content_notification_a'] = 'Dine valg for informasjonskapsler kan gjøre at skjemaet ikke kan sendes inn. Du kan se gjennom valgene dine ved å';
 		$default_txt['nb_NO']['google_recaptcha_content_notification_b'] = 'klikke her';
+		$default_txt['nb_NO']['anchor_text_1'] = 'Privacy av My Agile Privacy®';
+		$default_txt['nb_NO']['anchor_text_2'] = 'Consent Management Platform og Privacy Management av My Agile Privacy®';
+		$default_txt['nb_NO']['anchor_text_3'] = 'Cookie Banner og Consent Management av My Agile Privacy®';
+		$default_txt['nb_NO']['anchor_text_4'] = 'GDPR Cookie Banner av My Agile Privacy®';
+		$default_txt['nb_NO']['anchor_text_5'] = 'Cookie Consent og Privacy Policy av My Agile Privacy®';
+		$default_txt['nb_NO']['anchor_text_6'] = 'CMP og Cookie Banner av My Agile Privacy®';
+
 
 		//swedish - sv_SE - sv - swe
 		$default_txt['sv_SE'] = array();
@@ -758,7 +831,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['notify_message_v2_short'] = 'Denna webbplats använder tekniska cookies och profileringscookies. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
 		$default_txt['sv_SE']['view_the_cookie_policy'] = 'Visa cookiepolicyn';
 		$default_txt['sv_SE']['view_the_personal_data_policy'] = 'Visa policyn för personuppgifter';
-		$default_txt['sv_SE']['manage_consent'] = 'Hantera samtycke';
+		$default_txt['sv_SE']['manage_consent'] = 'Samtycke';
 		$default_txt['sv_SE']['close'] = 'Stäng';
 		$default_txt['sv_SE']['privacy_settings'] = 'Integritetsinställningar';
 		$default_txt['sv_SE']['this_website_uses_cookies'] = 'Denna webbplats använder cookies för att förbättra din upplevelse medan du navigerar på webbplatsen.';
@@ -798,6 +871,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['vat_id'] = 'Momsregistreringsnummer';
 		$default_txt['sv_SE']['google_recaptcha_content_notification_a'] = 'Dina val av cookies kan innebära att formuläret inte kan skickas. Du kan granska dina val genom att';
 		$default_txt['sv_SE']['google_recaptcha_content_notification_b'] = 'klicka här';
+		$default_txt['sv_SE']['anchor_text_1'] = 'Privacy av My Agile Privacy®';
+		$default_txt['sv_SE']['anchor_text_2'] = 'Consent Management Platform och Privacy Management av My Agile Privacy®';
+		$default_txt['sv_SE']['anchor_text_3'] = 'Cookie Banner och Consent Management av My Agile Privacy®';
+		$default_txt['sv_SE']['anchor_text_4'] = 'GDPR Cookie Banner av My Agile Privacy®';
+		$default_txt['sv_SE']['anchor_text_5'] = 'Cookie Consent och Privacy Policy av My Agile Privacy®';
+		$default_txt['sv_SE']['anchor_text_6'] = 'CMP och Cookie Banner av My Agile Privacy®';
+
 
 		//russian - ru_RU - ru - rus
 		$default_txt['ru_RU'] = array();
@@ -809,7 +889,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['notify_message_v2_short'] = 'Этот сайт использует технические файлы cookie и файлы cookie для профилирования. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
 		$default_txt['ru_RU']['view_the_cookie_policy'] = 'Просмотреть Политику использования файлов cookie';
 		$default_txt['ru_RU']['view_the_personal_data_policy'] = 'Просмотреть Политику обработки персональных данных';
-		$default_txt['ru_RU']['manage_consent'] = 'Управлять согласием';
+		$default_txt['ru_RU']['manage_consent'] = 'Согласие';
 		$default_txt['ru_RU']['close'] = 'Закрыть';
 		$default_txt['ru_RU']['privacy_settings'] = 'Настройки конфиденциальности';
 		$default_txt['ru_RU']['this_website_uses_cookies'] = 'Этот сайт использует файлы cookie, чтобы улучшить ваш опыт при навигации по сайту.';
@@ -849,6 +929,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['vat_id'] = 'ИНН / НДС';
 		$default_txt['ru_RU']['google_recaptcha_content_notification_a'] = 'Ваш выбор файлов cookie может не позволить отправить форму. Вы можете пересмотреть свой выбор,';
 		$default_txt['ru_RU']['google_recaptcha_content_notification_b'] = 'нажав здесь';
+		$default_txt['ru_RU']['anchor_text_1'] = 'Privacy от My Agile Privacy®';
+		$default_txt['ru_RU']['anchor_text_2'] = 'Consent Management Platform и Privacy Management от My Agile Privacy®';
+		$default_txt['ru_RU']['anchor_text_3'] = 'Cookie Banner и Consent Management от My Agile Privacy®';
+		$default_txt['ru_RU']['anchor_text_4'] = 'GDPR Cookie Banner от My Agile Privacy®';
+		$default_txt['ru_RU']['anchor_text_5'] = 'Cookie Consent и Privacy Policy от My Agile Privacy®';
+		$default_txt['ru_RU']['anchor_text_6'] = 'CMP и Cookie Banner от My Agile Privacy®';
+
 
 		//finnish - fi - fi - fin
 			$default_txt['fi'] = array();
@@ -860,7 +947,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['fi']['notify_message_v2_short'] = 'Tämä sivusto käyttää teknisiä ja profilointievästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
 		$default_txt['fi']['view_the_cookie_policy'] = 'Näytä evästekäytäntö';
 		$default_txt['fi']['view_the_personal_data_policy'] = 'Näytä henkilötietokäytäntö';
-		$default_txt['fi']['manage_consent'] = 'Hallitse suostumusta';
+		$default_txt['fi']['manage_consent'] = 'Suostumus';
 		$default_txt['fi']['close'] = 'Sulje';
 		$default_txt['fi']['privacy_settings'] = 'Tietosuoja-asetukset';
 		$default_txt['fi']['this_website_uses_cookies'] = 'Tämä sivusto käyttää evästeitä parantaakseen käyttökokemustasi, kun selaat sivustoa.';
@@ -900,6 +987,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['fi']['vat_id'] = 'ALV-tunnus';
 		$default_txt['fi']['google_recaptcha_content_notification_a'] = 'Evästevalintasi eivät välttämättä salli lomakkeen lähettämistä. Voit tarkistaa valintasi';
 		$default_txt['fi']['google_recaptcha_content_notification_b'] = 'napsauttamalla tästä';
+		$default_txt['fi']['anchor_text_1'] = 'Privacy – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_3'] = 'Cookie Banner ja Consent Management – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
+
 
 		//danish - da_DK - da - dan
 		$default_txt['da_DK'] = array();
@@ -911,7 +1005,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['notify_message_v2_short'] = 'Dette websted bruger tekniske cookies og profileringscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
 		$default_txt['da_DK']['view_the_cookie_policy'] = 'Se cookiepolitikken';
 		$default_txt['da_DK']['view_the_personal_data_policy'] = 'Se politikken for personoplysninger';
-		$default_txt['da_DK']['manage_consent'] = 'Administrer samtykke';
+		$default_txt['da_DK']['manage_consent'] = 'Samtykke';
 		$default_txt['da_DK']['close'] = 'Luk';
 		$default_txt['da_DK']['privacy_settings'] = 'Privatlivsindstillinger';
 		$default_txt['da_DK']['this_website_uses_cookies'] = 'Dette websted bruger cookies til at forbedre din oplevelse, mens du navigerer på webstedet.';
@@ -951,6 +1045,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['vat_id'] = 'Momsnummer';
 		$default_txt['da_DK']['google_recaptcha_content_notification_a'] = 'Dine cookievalg kan betyde, at formularen ikke kan indsendes. Du kan gennemgå dine valg ved at';
 		$default_txt['da_DK']['google_recaptcha_content_notification_b'] = 'klikke her';
+		$default_txt['da_DK']['anchor_text_1'] = 'Privacy af My Agile Privacy®';
+		$default_txt['da_DK']['anchor_text_2'] = 'Consent Management Platform og Privacy Management af My Agile Privacy®';
+		$default_txt['da_DK']['anchor_text_3'] = 'Cookie Banner og Consent Management af My Agile Privacy®';
+		$default_txt['da_DK']['anchor_text_4'] = 'GDPR Cookie Banner af My Agile Privacy®';
+		$default_txt['da_DK']['anchor_text_5'] = 'Cookie Consent og Privacy Policy af My Agile Privacy®';
+		$default_txt['da_DK']['anchor_text_6'] = 'CMP og Cookie Banner af My Agile Privacy®';
+
 
 		//turkish - tr_TR - tr - tur
 		$default_txt['tr_TR'] = array();
@@ -962,7 +1063,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['notify_message_v2_short'] = 'Bu site teknik ve profilleme çerezleri kullanır. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
 		$default_txt['tr_TR']['view_the_cookie_policy'] = 'Çerez Politikasını görüntüle';
 		$default_txt['tr_TR']['view_the_personal_data_policy'] = 'Kişisel Veriler Politikasını görüntüle';
-		$default_txt['tr_TR']['manage_consent'] = 'Onayı yönet';
+		$default_txt['tr_TR']['manage_consent'] = 'Onay';
 		$default_txt['tr_TR']['close'] = 'Kapat';
 		$default_txt['tr_TR']['privacy_settings'] = 'Gizlilik Ayarları';
 		$default_txt['tr_TR']['this_website_uses_cookies'] = 'Bu web sitesi, web sitesinde gezinirken deneyiminizi iyileştirmek için çerezler kullanır.';
@@ -1002,6 +1103,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['vat_id'] = 'Vergi No (KDV)';
 		$default_txt['tr_TR']['google_recaptcha_content_notification_a'] = 'Çerez tercihleriniz formun gönderilmesine izin vermeyebilir. Tercihlerinizi';
 		$default_txt['tr_TR']['google_recaptcha_content_notification_b'] = 'buraya tıklayarak';
+		$default_txt['tr_TR']['anchor_text_1'] = 'Privacy - My Agile Privacy®';
+		$default_txt['tr_TR']['anchor_text_2'] = 'Consent Management Platform ve Privacy Management - My Agile Privacy®';
+		$default_txt['tr_TR']['anchor_text_3'] = 'Cookie Banner ve Consent Management - My Agile Privacy®';
+		$default_txt['tr_TR']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
+		$default_txt['tr_TR']['anchor_text_5'] = 'Cookie Consent ve Privacy Policy - My Agile Privacy®';
+		$default_txt['tr_TR']['anchor_text_6'] = 'CMP ve Cookie Banner - My Agile Privacy®';
+
 
 		//czech - cs_CZ - cs - cze
 		$default_txt['cs_CZ'] = array();
@@ -1013,7 +1121,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['notify_message_v2_short'] = 'Tento web používá technické soubory cookie a soubory cookie pro profilování. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
 		$default_txt['cs_CZ']['view_the_cookie_policy'] = 'Zobrazit zásady používání souborů cookie';
 		$default_txt['cs_CZ']['view_the_personal_data_policy'] = 'Zobrazit zásady ochrany osobních údajů';
-		$default_txt['cs_CZ']['manage_consent'] = 'Spravovat souhlas';
+		$default_txt['cs_CZ']['manage_consent'] = 'Souhlas';
 		$default_txt['cs_CZ']['close'] = 'Zavřít';
 		$default_txt['cs_CZ']['privacy_settings'] = 'Nastavení soukromí';
 		$default_txt['cs_CZ']['this_website_uses_cookies'] = 'Tento web používá soubory cookie ke zlepšení vašeho zážitku při procházení webu.';
@@ -1053,6 +1161,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['vat_id'] = 'DIČ';
 		$default_txt['cs_CZ']['google_recaptcha_content_notification_a'] = 'Vaše volby souborů cookie nemusí umožnit odeslání formuláře. Své volby můžete zkontrolovat';
 		$default_txt['cs_CZ']['google_recaptcha_content_notification_b'] = 'kliknutím sem';
+		$default_txt['cs_CZ']['anchor_text_1'] = 'Privacy od My Agile Privacy®';
+		$default_txt['cs_CZ']['anchor_text_2'] = 'Consent Management Platform a Privacy Management od My Agile Privacy®';
+		$default_txt['cs_CZ']['anchor_text_3'] = 'Cookie Banner a Consent Management od My Agile Privacy®';
+		$default_txt['cs_CZ']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
+		$default_txt['cs_CZ']['anchor_text_5'] = 'Cookie Consent a Privacy Policy od My Agile Privacy®';
+		$default_txt['cs_CZ']['anchor_text_6'] = 'CMP a Cookie Banner od My Agile Privacy®';
+
 
 		//romanian - ro_RO - ro - rum
 		$default_txt['ro_RO'] = array();
@@ -1064,7 +1179,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['notify_message_v2_short'] = 'Acest site folosește cookie-uri tehnice și cookie-uri de profilare. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
 		$default_txt['ro_RO']['view_the_cookie_policy'] = 'Vezi Politica de cookie-uri';
 		$default_txt['ro_RO']['view_the_personal_data_policy'] = 'Vezi Politica privind datele cu caracter personal';
-		$default_txt['ro_RO']['manage_consent'] = 'Gestionează consimțământul';
+		$default_txt['ro_RO']['manage_consent'] = 'Consimțământ';
 		$default_txt['ro_RO']['close'] = 'Închide';
 		$default_txt['ro_RO']['privacy_settings'] = 'Setări de confidențialitate';
 		$default_txt['ro_RO']['this_website_uses_cookies'] = 'Acest site utilizează cookie-uri pentru a vă îmbunătăți experiența în timp ce navigați pe site.';
@@ -1104,6 +1219,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['vat_id'] = 'Cod TVA';
 		$default_txt['ro_RO']['google_recaptcha_content_notification_a'] = 'Alegerile dvs. privind cookie-urile pot să nu permită trimiterea formularului. Vă puteți revizui alegerile';
 		$default_txt['ro_RO']['google_recaptcha_content_notification_b'] = 'făcând clic aici';
+		$default_txt['ro_RO']['anchor_text_1'] = 'Privacy de la My Agile Privacy®';
+		$default_txt['ro_RO']['anchor_text_2'] = 'Consent Management Platform și Privacy Management de la My Agile Privacy®';
+		$default_txt['ro_RO']['anchor_text_3'] = 'Cookie Banner și Consent Management de la My Agile Privacy®';
+		$default_txt['ro_RO']['anchor_text_4'] = 'GDPR Cookie Banner de la My Agile Privacy®';
+		$default_txt['ro_RO']['anchor_text_5'] = 'Cookie Consent și Privacy Policy de la My Agile Privacy®';
+		$default_txt['ro_RO']['anchor_text_6'] = 'CMP și Cookie Banner de la My Agile Privacy®';
+
 
 		//slovak - sk_SK - sk - slo
 		$default_txt['sk_SK'] = array();
@@ -1115,7 +1237,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['notify_message_v2_short'] = 'Táto stránka používa technické súbory cookie a profilovacie súbory cookie. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
 		$default_txt['sk_SK']['view_the_cookie_policy'] = 'Zobraziť zásady používania súborov cookie';
 		$default_txt['sk_SK']['view_the_personal_data_policy'] = 'Zobraziť zásady spracúvania osobných údajov';
-		$default_txt['sk_SK']['manage_consent'] = 'Spravovať súhlas';
+		$default_txt['sk_SK']['manage_consent'] = 'Súhlas';
 		$default_txt['sk_SK']['close'] = 'Zavrieť';
 		$default_txt['sk_SK']['privacy_settings'] = 'Nastavenia súkromia';
 		$default_txt['sk_SK']['this_website_uses_cookies'] = 'Táto webová stránka používa súbory cookie na zlepšenie vášho zážitku pri prehliadaní webu.';
@@ -1155,6 +1277,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['vat_id'] = 'IČ DPH';
 		$default_txt['sk_SK']['google_recaptcha_content_notification_a'] = 'Vaše voľby súborov cookie nemusia umožniť odoslanie formulára. Svoje voľby si môžete skontrolovať';
 		$default_txt['sk_SK']['google_recaptcha_content_notification_b'] = 'kliknutím sem';
+		$default_txt['sk_SK']['anchor_text_1'] = 'Privacy od My Agile Privacy®';
+		$default_txt['sk_SK']['anchor_text_2'] = 'Consent Management Platform a Privacy Management od My Agile Privacy®';
+		$default_txt['sk_SK']['anchor_text_3'] = 'Cookie Banner a Consent Management od My Agile Privacy®';
+		$default_txt['sk_SK']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
+		$default_txt['sk_SK']['anchor_text_5'] = 'Cookie Consent a Privacy Policy od My Agile Privacy®';
+		$default_txt['sk_SK']['anchor_text_6'] = 'CMP a Cookie Banner od My Agile Privacy®';
+
 
 		//slovenian - sl_SI - sl - slv
 		$default_txt['sl_SI'] = array();
@@ -1166,7 +1295,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['notify_message_v2_short'] = 'Ta spletna stran uporablja tehnične piškotke in piškotke za profiliranje. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
 		$default_txt['sl_SI']['view_the_cookie_policy'] = 'Ogled pravilnika o piškotkih';
 		$default_txt['sl_SI']['view_the_personal_data_policy'] = 'Ogled pravilnika o osebnih podatkih';
-		$default_txt['sl_SI']['manage_consent'] = 'Upravljaj soglasje';
+		$default_txt['sl_SI']['manage_consent'] = 'Soglasje';
 		$default_txt['sl_SI']['close'] = 'Zapri';
 		$default_txt['sl_SI']['privacy_settings'] = 'Nastavitve zasebnosti';
 		$default_txt['sl_SI']['this_website_uses_cookies'] = 'Ta spletna stran uporablja piškotke za izboljšanje vaše izkušnje med brskanjem po spletni strani.';
@@ -1206,6 +1335,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['vat_id'] = 'ID za DDV';
 		$default_txt['sl_SI']['google_recaptcha_content_notification_a'] = 'Vaše izbire piškotkov morda ne bodo omogočile oddaje obrazca. Svoje izbire lahko pregledate tako, da';
 		$default_txt['sl_SI']['google_recaptcha_content_notification_b'] = 'kliknete tukaj';
+		$default_txt['sl_SI']['anchor_text_1'] = 'Privacy z My Agile Privacy®';
+		$default_txt['sl_SI']['anchor_text_2'] = 'Consent Management Platform in Privacy Management z My Agile Privacy®';
+		$default_txt['sl_SI']['anchor_text_3'] = 'Cookie Banner in Consent Management z My Agile Privacy®';
+		$default_txt['sl_SI']['anchor_text_4'] = 'GDPR Cookie Banner z My Agile Privacy®';
+		$default_txt['sl_SI']['anchor_text_5'] = 'Cookie Consent in Privacy Policy z My Agile Privacy®';
+		$default_txt['sl_SI']['anchor_text_6'] = 'CMP in Cookie Banner z My Agile Privacy®';
+
 
 		//croatian - hr - hr - hrv
 		$default_txt['hr'] = array();
@@ -1217,7 +1353,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['hr']['notify_message_v2_short'] = 'Ova stranica koristi tehničke kolačiće i kolačiće za profiliranje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
 		$default_txt['hr']['view_the_cookie_policy'] = 'Pogledajte Politiku kolačića';
 		$default_txt['hr']['view_the_personal_data_policy'] = 'Pogledajte Politiku osobnih podataka';
-		$default_txt['hr']['manage_consent'] = 'Upravljanje privolom';
+		$default_txt['hr']['manage_consent'] = 'Privola';
 		$default_txt['hr']['close'] = 'Zatvori';
 		$default_txt['hr']['privacy_settings'] = 'Postavke privatnosti';
 		$default_txt['hr']['this_website_uses_cookies'] = 'Ova web stranica koristi kolačiće kako bi poboljšala vaše iskustvo tijekom pregledavanja web stranice.';
@@ -1257,6 +1393,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['hr']['vat_id'] = 'PDV ID';
 		$default_txt['hr']['google_recaptcha_content_notification_a'] = 'Vaši odabiri kolačića možda neće omogućiti slanje obrasca. Svoje odabire možete pregledati';
 		$default_txt['hr']['google_recaptcha_content_notification_b'] = 'klikom ovdje';
+		$default_txt['hr']['anchor_text_1'] = 'Privacy od My Agile Privacy®';
+		$default_txt['hr']['anchor_text_2'] = 'Consent Management Platform i Privacy Management od My Agile Privacy®';
+		$default_txt['hr']['anchor_text_3'] = 'Cookie Banner i Consent Management od My Agile Privacy®';
+		$default_txt['hr']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
+		$default_txt['hr']['anchor_text_5'] = 'Cookie Consent i Privacy Policy od My Agile Privacy®';
+		$default_txt['hr']['anchor_text_6'] = 'CMP i Cookie Banner od My Agile Privacy®';
+
 
 		//lithuanian - lt_LT - lt - lit
 		$default_txt['lt_LT'] = array();
@@ -1268,7 +1411,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['notify_message_v2_short'] = 'Ši svetainė naudoja techninius ir profiliavimo slapukus. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
 		$default_txt['lt_LT']['view_the_cookie_policy'] = 'Peržiūrėti slapukų politiką';
 		$default_txt['lt_LT']['view_the_personal_data_policy'] = 'Peržiūrėti asmens duomenų politiką';
-		$default_txt['lt_LT']['manage_consent'] = 'Tvarkyti sutikimą';
+		$default_txt['lt_LT']['manage_consent'] = 'Sutikimas';
 		$default_txt['lt_LT']['close'] = 'Uždaryti';
 		$default_txt['lt_LT']['privacy_settings'] = 'Privatumo nustatymai';
 		$default_txt['lt_LT']['this_website_uses_cookies'] = 'Ši svetainė naudoja slapukus, kad pagerintų jūsų patirtį naršant svetainėje.';
@@ -1308,6 +1451,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['vat_id'] = 'PVM kodas';
 		$default_txt['lt_LT']['google_recaptcha_content_notification_a'] = 'Jūsų slapukų pasirinkimai gali neleisti pateikti formos. Galite peržiūrėti savo pasirinkimus';
 		$default_txt['lt_LT']['google_recaptcha_content_notification_b'] = 'spustelėdami čia';
+		$default_txt['lt_LT']['anchor_text_1'] = 'Privacy su My Agile Privacy®';
+		$default_txt['lt_LT']['anchor_text_2'] = 'Consent Management Platform ir Privacy Management su My Agile Privacy®';
+		$default_txt['lt_LT']['anchor_text_3'] = 'Cookie Banner ir Consent Management su My Agile Privacy®';
+		$default_txt['lt_LT']['anchor_text_4'] = 'BDAR Cookie Banner su My Agile Privacy®';
+		$default_txt['lt_LT']['anchor_text_5'] = 'Cookie Consent ir Privacy Policy su My Agile Privacy®';
+		$default_txt['lt_LT']['anchor_text_6'] = 'CMP ir Cookie Banner su My Agile Privacy®';
+
 
 		//latvian - lv_LV - lv - lav
 		$default_txt['lv_LV'] = array();
@@ -1319,7 +1469,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['notify_message_v2_short'] = 'Šī vietne izmanto tehniskās un profilēšanas sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
 		$default_txt['lv_LV']['view_the_cookie_policy'] = 'Skatīt sīkdatņu politiku';
 		$default_txt['lv_LV']['view_the_personal_data_policy'] = 'Skatīt personas datu politiku';
-		$default_txt['lv_LV']['manage_consent'] = 'Pārvaldīt piekrišanu';
+		$default_txt['lv_LV']['manage_consent'] = 'Piekrišana';
 		$default_txt['lv_LV']['close'] = 'Aizvērt';
 		$default_txt['lv_LV']['privacy_settings'] = 'Privātuma iestatījumi';
 		$default_txt['lv_LV']['this_website_uses_cookies'] = 'Šī vietne izmanto sīkdatnes, lai uzlabotu jūsu pieredzi, pārlūkojot vietni.';
@@ -1359,6 +1509,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['vat_id'] = 'PVN maksātāja numurs';
 		$default_txt['lv_LV']['google_recaptcha_content_notification_a'] = 'Jūsu sīkdatņu izvēles var neļaut iesniegt veidlapu. Jūs varat pārskatīt savas izvēles,';
 		$default_txt['lv_LV']['google_recaptcha_content_notification_b'] = 'noklikšķinot šeit';
+		$default_txt['lv_LV']['anchor_text_1'] = 'Privacy no My Agile Privacy®';
+		$default_txt['lv_LV']['anchor_text_2'] = 'Consent Management Platform un Privacy Management no My Agile Privacy®';
+		$default_txt['lv_LV']['anchor_text_3'] = 'Cookie Banner un Consent Management no My Agile Privacy®';
+		$default_txt['lv_LV']['anchor_text_4'] = 'VDAR Cookie Banner no My Agile Privacy®';
+		$default_txt['lv_LV']['anchor_text_5'] = 'Cookie Consent un Privacy Policy no My Agile Privacy®';
+		$default_txt['lv_LV']['anchor_text_6'] = 'CMP un Cookie Banner no My Agile Privacy®';
+
 
 		//albanian - sq_AL - sq - alb
 		$default_txt['sq_AL'] = array();
@@ -1370,7 +1527,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['notify_message_v2_short'] = 'Kjo faqe përdor cookie teknike dhe cookie për profilizim. Mund t’i pranoni, t’i refuzoni ose t’i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
 		$default_txt['sq_AL']['view_the_cookie_policy'] = 'Shiko Politikën e Cookie-ve';
 		$default_txt['sq_AL']['view_the_personal_data_policy'] = 'Shiko Politikën e të Dhënave Personale';
-		$default_txt['sq_AL']['manage_consent'] = 'Menaxho pëlqimin';
+		$default_txt['sq_AL']['manage_consent'] = 'Pëlqimi';
 		$default_txt['sq_AL']['close'] = 'Mbyll';
 		$default_txt['sq_AL']['privacy_settings'] = 'Cilësimet e privatësisë';
 		$default_txt['sq_AL']['this_website_uses_cookies'] = 'Kjo faqe përdor cookie për të përmirësuar përvojën tuaj ndërsa lundroni në faqe.';
@@ -1411,6 +1568,14 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['google_recaptcha_content_notification_a'] = 'Zgjedhjet tuaja për cookie mund të mos lejojnë dërgimin e formularit. Mund t’i rishikoni zgjedhjet tuaja duke';
 		$default_txt['sq_AL']['google_recaptcha_content_notification_b'] = 'klikuar këtu';
 
+		$default_txt['sq_AL']['anchor_text_1'] = 'Privacy nga My Agile Privacy®';
+		$default_txt['sq_AL']['anchor_text_2'] = 'Consent Management Platform dhe Privacy Management nga My Agile Privacy®';
+		$default_txt['sq_AL']['anchor_text_3'] = 'Cookie Banner dhe Consent Management nga My Agile Privacy®';
+		$default_txt['sq_AL']['anchor_text_4'] = 'GDPR Cookie Banner nga My Agile Privacy®';
+		$default_txt['sq_AL']['anchor_text_5'] = 'Cookie Consent dhe Privacy Policy nga My Agile Privacy®';
+		$default_txt['sq_AL']['anchor_text_6'] = 'CMP dhe Cookie Banner nga My Agile Privacy®';
+
+
 		//azerbaijani - az - az - aze
 		$default_txt['az'] = array();
 		$default_txt['az']['always_enable'] = 'Həmişə aktivdir';
@@ -1421,7 +1586,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['az']['notify_message_v2_short'] = 'Bu sayt texniki və profilləşdirmə kukilərindən istifadə edir. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
 		$default_txt['az']['view_the_cookie_policy'] = 'Kuki Siyasətinə baxın';
 		$default_txt['az']['view_the_personal_data_policy'] = 'Şəxsi Məlumatlar Siyasətinə baxın';
-		$default_txt['az']['manage_consent'] = 'Razılığı idarə et';
+		$default_txt['az']['manage_consent'] = 'Razılıq';
 		$default_txt['az']['close'] = 'Bağla';
 		$default_txt['az']['privacy_settings'] = 'Məxfilik ayarları';
 		$default_txt['az']['this_website_uses_cookies'] = 'Bu veb-sayt, saytda naviqasiya etdiyiniz zaman təcrübənizi yaxşılaşdırmaq üçün kukilərdən istifadə edir.';
@@ -1461,6 +1626,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['az']['vat_id'] = 'VÖEN (ƏDV)';
 		$default_txt['az']['google_recaptcha_content_notification_a'] = 'Kuki seçimləriniz formanın göndərilməsinə imkan verməyə bilər. Seçimlərinizi';
 		$default_txt['az']['google_recaptcha_content_notification_b'] = 'buraya klikləyərək';
+		$default_txt['az']['anchor_text_1'] = 'Privacy - My Agile Privacy®';
+		$default_txt['az']['anchor_text_2'] = 'Consent Management Platform və Privacy Management - My Agile Privacy®';
+		$default_txt['az']['anchor_text_3'] = 'Cookie Banner və Consent Management - My Agile Privacy®';
+		$default_txt['az']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
+		$default_txt['az']['anchor_text_5'] = 'Cookie Consent və Privacy Policy - My Agile Privacy®';
+		$default_txt['az']['anchor_text_6'] = 'CMP və Cookie Banner - My Agile Privacy®';
+
 
 		//bosnian - bs_BA - bs - bos
 		$default_txt['bs_BA'] = array();
@@ -1472,7 +1644,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['notify_message_v2_short'] = 'Ova web stranica koristi tehničke kolačiće i kolačiće za profilisanje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
 		$default_txt['bs_BA']['view_the_cookie_policy'] = 'Pogledajte Politiku kolačića';
 		$default_txt['bs_BA']['view_the_personal_data_policy'] = 'Pogledajte Politiku o ličnim podacima';
-		$default_txt['bs_BA']['manage_consent'] = 'Upravljaj saglasnošću';
+		$default_txt['bs_BA']['manage_consent'] = 'Saglasnost';
 		$default_txt['bs_BA']['close'] = 'Zatvori';
 		$default_txt['bs_BA']['privacy_settings'] = 'Postavke privatnosti';
 		$default_txt['bs_BA']['this_website_uses_cookies'] = 'Ova web stranica koristi kolačiće kako bi poboljšala vaše iskustvo dok pregledate web stranicu.';
@@ -1512,6 +1684,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['vat_id'] = 'PDV ID';
 		$default_txt['bs_BA']['google_recaptcha_content_notification_a'] = 'Vaši izbori kolačića možda neće omogućiti slanje obrasca. Svoje izbore možete pregledati';
 		$default_txt['bs_BA']['google_recaptcha_content_notification_b'] = 'klikom ovdje';
+		$default_txt['bs_BA']['anchor_text_1'] = 'Privacy od My Agile Privacy®';
+		$default_txt['bs_BA']['anchor_text_2'] = 'Consent Management Platform i Privacy Management od My Agile Privacy®';
+		$default_txt['bs_BA']['anchor_text_3'] = 'Cookie Banner i Consent Management od My Agile Privacy®';
+		$default_txt['bs_BA']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
+		$default_txt['bs_BA']['anchor_text_5'] = 'Cookie Consent i Privacy Policy od My Agile Privacy®';
+		$default_txt['bs_BA']['anchor_text_6'] = 'CMP i Cookie Banner od My Agile Privacy®';
+
 
 		//bulgarian - bg_BG - bg - bul
 		$default_txt['bg_BG'] = array();
@@ -1523,7 +1702,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['notify_message_v2_short'] = 'Този сайт използва технически бисквитки и бисквитки за профилиране. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
 		$default_txt['bg_BG']['view_the_cookie_policy'] = 'Виж Политиката за бисквитки';
 		$default_txt['bg_BG']['view_the_personal_data_policy'] = 'Виж Политиката за лични данни';
-		$default_txt['bg_BG']['manage_consent'] = 'Управление на съгласието';
+		$default_txt['bg_BG']['manage_consent'] = 'Съгласие';
 		$default_txt['bg_BG']['close'] = 'Затвори';
 		$default_txt['bg_BG']['privacy_settings'] = 'Настройки за поверителност';
 		$default_txt['bg_BG']['this_website_uses_cookies'] = 'Този уебсайт използва бисквитки, за да подобри вашето изживяване, докато навигирате в сайта.';
@@ -1563,6 +1742,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['vat_id'] = 'ДДС номер';
 		$default_txt['bg_BG']['google_recaptcha_content_notification_a'] = 'Вашият избор на бисквитки може да не позволи изпращането на формуляра. Можете да прегледате избора си, като';
 		$default_txt['bg_BG']['google_recaptcha_content_notification_b'] = 'кликнете тук';
+		$default_txt['bg_BG']['anchor_text_1'] = 'Privacy от My Agile Privacy®';
+		$default_txt['bg_BG']['anchor_text_2'] = 'Consent Management Platform и Privacy Management от My Agile Privacy®';
+		$default_txt['bg_BG']['anchor_text_3'] = 'Cookie Banner и Consent Management от My Agile Privacy®';
+		$default_txt['bg_BG']['anchor_text_4'] = 'GDPR Cookie Banner от My Agile Privacy®';
+		$default_txt['bg_BG']['anchor_text_5'] = 'Cookie Consent и Privacy Policy от My Agile Privacy®';
+		$default_txt['bg_BG']['anchor_text_6'] = 'CMP и Cookie Banner от My Agile Privacy®';
+
 
 		//catalan - ca - ca - cat
 		$default_txt['ca'] = array();
@@ -1574,7 +1760,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ca']['notify_message_v2_short'] = 'Aquest lloc web utilitza galetes tècniques i galetes de perfilatge. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
 		$default_txt['ca']['view_the_cookie_policy'] = 'Veure la Política de galetes';
 		$default_txt['ca']['view_the_personal_data_policy'] = 'Veure la Política de dades personals';
-		$default_txt['ca']['manage_consent'] = 'Gestionar el consentiment';
+		$default_txt['ca']['manage_consent'] = 'Consentiment';
 		$default_txt['ca']['close'] = 'Tancar';
 		$default_txt['ca']['privacy_settings'] = 'Configuració de privacitat';
 		$default_txt['ca']['this_website_uses_cookies'] = 'Aquest lloc web utilitza galetes per millorar la vostra experiència mentre navegueu pel lloc web.';
@@ -1614,6 +1800,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['ca']['vat_id'] = 'NIF-IVA';
 		$default_txt['ca']['google_recaptcha_content_notification_a'] = 'Les vostres opcions de galetes poden no permetre enviar el formulari. Podeu revisar les vostres opcions';
 		$default_txt['ca']['google_recaptcha_content_notification_b'] = 'fent clic aquí';
+		$default_txt['ca']['anchor_text_1'] = 'Privacy per My Agile Privacy®';
+		$default_txt['ca']['anchor_text_2'] = 'Consent Management Platform i Privacy Management per My Agile Privacy®';
+		$default_txt['ca']['anchor_text_3'] = 'Cookie Banner i Consent Management per My Agile Privacy®';
+		$default_txt['ca']['anchor_text_4'] = 'RGPD Cookie Banner per My Agile Privacy®';
+		$default_txt['ca']['anchor_text_5'] = 'Cookie Consent i Privacy Policy per My Agile Privacy®';
+		$default_txt['ca']['anchor_text_6'] = 'CMP i Cookie Banner per My Agile Privacy®';
+
 
 		//estonian - et - et - est
 		$default_txt['et'] = array();
@@ -1625,7 +1818,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['et']['notify_message_v2_short'] = 'See veebisait kasutab tehnilisi ja profiilimise küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
 		$default_txt['et']['view_the_cookie_policy'] = 'Vaata küpsiste poliitikat';
 		$default_txt['et']['view_the_personal_data_policy'] = 'Vaata isikuandmete poliitikat';
-		$default_txt['et']['manage_consent'] = 'Halda nõusolekut';
+		$default_txt['et']['manage_consent'] = 'Nõusolek';
 		$default_txt['et']['close'] = 'Sulge';
 		$default_txt['et']['privacy_settings'] = 'Privaatsusseaded';
 		$default_txt['et']['this_website_uses_cookies'] = 'See veebisait kasutab küpsiseid, et parandada teie kasutuskogemust veebisaidil navigeerimisel.';
@@ -1665,6 +1858,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['et']['vat_id'] = 'KMKR nr';
 		$default_txt['et']['google_recaptcha_content_notification_a'] = 'Teie küpsisevalikud ei pruugi lubada vormi esitamist. Saate oma valikuid üle vaadata,';
 		$default_txt['et']['google_recaptcha_content_notification_b'] = 'klõpsates siin';
+		$default_txt['et']['anchor_text_1'] = 'Privacy – My Agile Privacy®';
+		$default_txt['et']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management – My Agile Privacy®';
+		$default_txt['et']['anchor_text_3'] = 'Cookie Banner ja Consent Management – My Agile Privacy®';
+		$default_txt['et']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
+		$default_txt['et']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
+		$default_txt['et']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
+
 
 		//macedonian - mk_MK - mk - mac
 		$default_txt['mk_MK'] = array();
@@ -1676,7 +1876,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['notify_message_v2_short'] = 'Оваа страница користи технички колачиња и колачиња за профилирање. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
 		$default_txt['mk_MK']['view_the_cookie_policy'] = 'Погледнете ја Политиката за колачиња';
 		$default_txt['mk_MK']['view_the_personal_data_policy'] = 'Погледнете ја Политиката за лични податоци';
-		$default_txt['mk_MK']['manage_consent'] = 'Управување со согласноста';
+		$default_txt['mk_MK']['manage_consent'] = 'Согласност';
 		$default_txt['mk_MK']['close'] = 'Затвори';
 		$default_txt['mk_MK']['privacy_settings'] = 'Поставки за приватност';
 		$default_txt['mk_MK']['this_website_uses_cookies'] = 'Оваа веб-страница користи колачиња за да го подобри вашето искуство додека се движите низ страницата.';
@@ -1716,6 +1916,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['vat_id'] = 'ДДВ број';
 		$default_txt['mk_MK']['google_recaptcha_content_notification_a'] = 'Вашите избори за колачиња можеби нема да дозволат поднесување на формуларот. Можете да ги прегледате вашите избори со';
 		$default_txt['mk_MK']['google_recaptcha_content_notification_b'] = 'кликнување овде';
+		$default_txt['mk_MK']['anchor_text_1'] = 'Privacy од My Agile Privacy®';
+		$default_txt['mk_MK']['anchor_text_2'] = 'Consent Management Platform и Privacy Management од My Agile Privacy®';
+		$default_txt['mk_MK']['anchor_text_3'] = 'Cookie Banner и Consent Management од My Agile Privacy®';
+		$default_txt['mk_MK']['anchor_text_4'] = 'GDPR Cookie Banner од My Agile Privacy®';
+		$default_txt['mk_MK']['anchor_text_5'] = 'Cookie Consent и Privacy Policy од My Agile Privacy®';
+		$default_txt['mk_MK']['anchor_text_6'] = 'CMP и Cookie Banner од My Agile Privacy®';
+
 
 		//serbian - sr_RS - sr - srp
 		$default_txt['sr_RS'] = array();
@@ -1727,7 +1934,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['notify_message_v2_short'] = 'Овај сајт користи техничке колачиће и колачиће за профилисање. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
 		$default_txt['sr_RS']['view_the_cookie_policy'] = 'Погледајте Политику колачића';
 		$default_txt['sr_RS']['view_the_personal_data_policy'] = 'Погледајте Политику о личним подацима';
-		$default_txt['sr_RS']['manage_consent'] = 'Управљајте сагласношћу';
+		$default_txt['sr_RS']['manage_consent'] = 'Сагласност';
 		$default_txt['sr_RS']['close'] = 'Затвори';
 		$default_txt['sr_RS']['privacy_settings'] = 'Подешавања приватности';
 		$default_txt['sr_RS']['this_website_uses_cookies'] = 'Ова веб-страница користи колачиће да побољша ваше искуство док се крећете кроз веб-сајт.';
@@ -1767,6 +1974,13 @@ class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['vat_id'] = 'ПИБ / ПДВ број';
 		$default_txt['sr_RS']['google_recaptcha_content_notification_a'] = 'Ваши избори колачића можда неће дозволити слање обрасца. Можете прегледати своје изборе';
 		$default_txt['sr_RS']['google_recaptcha_content_notification_b'] = 'кликом овде';
+		$default_txt['sr_RS']['anchor_text_1'] = 'Privacy од My Agile Privacy®';
+		$default_txt['sr_RS']['anchor_text_2'] = 'Consent Management Platform и Privacy Management од My Agile Privacy®';
+		$default_txt['sr_RS']['anchor_text_3'] = 'Cookie Banner и Consent Management од My Agile Privacy®';
+		$default_txt['sr_RS']['anchor_text_4'] = 'GDPR Cookie Banner од My Agile Privacy®';
+		$default_txt['sr_RS']['anchor_text_5'] = 'Cookie Consent и Privacy Policy од My Agile Privacy®';
+		$default_txt['sr_RS']['anchor_text_6'] = 'CMP и Cookie Banner од My Agile Privacy®';
+
 
 		//ukrainian - uk - uk - ukr
 		$default_txt['uk'] = array();
@@ -1778,7 +1992,7 @@ class MyAgilePrivacyLangHelper
 		$default_txt['uk']['notify_message_v2_short'] = 'Цей сайт використовує технічні cookie-файли та cookie-файли для профілювання. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
 		$default_txt['uk']['view_the_cookie_policy'] = 'Переглянути Політику використання cookie';
 		$default_txt['uk']['view_the_personal_data_policy'] = 'Переглянути Політику щодо персональних даних';
-		$default_txt['uk']['manage_consent'] = 'Керувати згодою';
+		$default_txt['uk']['manage_consent'] = 'Згода';
 		$default_txt['uk']['close'] = 'Закрити';
 		$default_txt['uk']['privacy_settings'] = 'Налаштування конфіденційності';
 		$default_txt['uk']['this_website_uses_cookies'] = 'Цей вебсайт використовує cookie, щоб покращити ваш досвід під час навігації сайтом.';
@@ -1818,6 +2032,12 @@ class MyAgilePrivacyLangHelper
 		$default_txt['uk']['vat_id'] = 'ПДВ номер';
 		$default_txt['uk']['google_recaptcha_content_notification_a'] = 'Ваші налаштування cookie можуть не дозволяти надіслати форму. Ви можете переглянути свої налаштування,';
 		$default_txt['uk']['google_recaptcha_content_notification_b'] = 'натиснувши тут';
+		$default_txt['uk']['anchor_text_1'] = 'Privacy від My Agile Privacy®';
+		$default_txt['uk']['anchor_text_2'] = 'Consent Management Platform та Privacy Management від My Agile Privacy®';
+		$default_txt['uk']['anchor_text_3'] = 'Cookie Banner та Consent Management від My Agile Privacy®';
+		$default_txt['uk']['anchor_text_4'] = 'GDPR Cookie Banner від My Agile Privacy®';
+		$default_txt['uk']['anchor_text_5'] = 'Cookie Consent та Privacy Policy від My Agile Privacy®';
+		$default_txt['uk']['anchor_text_6'] = 'CMP та Cookie Banner від My Agile Privacy®';
 
 		return $default_txt;
 	}

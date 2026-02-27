@@ -5,7 +5,6 @@
 		exit('Not allowed.');
 	}
 
-
 	//Get the active tab from the $_GET param
 	$default_tab = null;
 	$tab = $default_tab;

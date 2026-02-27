@@ -53,9 +53,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				$lang_count = 0;
 
+				$current_lang = $currentAndSupportedLanguages['current_language'];
+
 				foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
 
-					$active_class = ($lang_count === 0) ? ' active' : '';
+					$active_class = ( $current_lang == $lang_code || $current_lang == $lang_data['2char'] ) ? ' active' : '';
 
 					$label = $lang_data['en_label'].' - '.$lang_data['label'];
 			?>
@@ -65,8 +67,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<?php
 					$lang_count++;
 				endforeach;
-
-
 
 			?>
 
@@ -81,7 +81,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				$lang_count = 0;
 				foreach( $currentAndSupportedLanguages['supported_languages'] as $lang_code => $lang_data ):
 
-					$active_class = ($lang_count === 0) ? ' show active' : '';
+					$active_class = ( $current_lang == $lang_code || $current_lang == $lang_data['2char'] ) ? ' show active' : '';
+
 			?>
 
 					<div class="tab-pane fade<?php echo esc_attr( $active_class ); ?> lang-panel" id="map_translations-<?php echo esc_attr( $lang_code ); ?>" role="tabpanel">
@@ -146,7 +147,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_4_b'] ); ?>">
 
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_5" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_5]"
-								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_6'] ); ?>">
+								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_5'] ); ?>">
 
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_6" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_6]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_6'] ); ?>">
@@ -159,7 +160,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								name="translations[<?php echo esc_attr( $lang_code ); ?>][advertising_preferences]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['advertising_preferences'] ); ?>">
 
+
 						<?php endif; ?>
+
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_view_the_cookie_policy" name="translations[<?php echo esc_attr( $lang_code ); ?>][view_the_cookie_policy]"
+							value="<?php echo esc_attr( $the_translations[$lang_code]['view_the_cookie_policy'] ); ?>">
+
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_view_the_personal_data_policy" name="translations[<?php echo esc_attr( $lang_code ); ?>][view_the_personal_data_policy]"
+							value="<?php echo esc_attr( $the_translations[$lang_code]['view_the_personal_data_policy'] ); ?>">
 
 						<!-- eof hidden original input -->
 
@@ -266,6 +274,26 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_6]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_6'] ); ?></span>
 											<?php endif; ?>
 
+											<div class="my-2">
+
+												<?php if( $the_settings['add_cookie_policy_to_first_layer'] ): ?>
+
+													<span
+														role="button" tabindex="0"
+														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][view_the_cookie_policy]"><?php echo esc_attr( $the_translations[$lang_code]['view_the_cookie_policy'] ); ?></span>
+
+
+												<?php endif; ?>
+
+												<?php if( $the_settings['add_personal_policy_to_first_layer'] ): ?>
+
+													<span
+														role="button" tabindex="0"
+														data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][view_the_personal_data_policy]"><?php echo esc_attr( $the_translations[$lang_code]['view_the_personal_data_policy'] ); ?></span>
+
+												<?php endif; ?>
+
+											</div>
 
 										</div>
 										<div class="preview-button-container">

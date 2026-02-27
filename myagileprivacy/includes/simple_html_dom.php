@@ -129,7 +129,8 @@ function shd_dump_html_tree($node, $show_attr = true, $deep = 0)
 }
 
 //changed class name
-class agile_simple_html_dom_node
+//final class
+final class agile_simple_html_dom_node
 {
 	public $nodetype = HDOM_TYPE_TEXT;
 	public $tag = 'text';

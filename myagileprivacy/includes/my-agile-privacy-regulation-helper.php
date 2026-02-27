@@ -14,7 +14,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
  * @author     https://www.myagileprivacy.com/
  */
 
-class MyAgilePrivacyRegulationHelper {
+final class MyAgilePrivacyRegulationHelper {
 
 	//stored settings
 	private static $the_settings = array();

@@ -51,11 +51,13 @@ else
 
 	<div class="my-5 d-flex flex-row justify-content-center">
 
-		<a href="https://cmppartnerprogram.withgoogle.com/" target="_blank" rel="nofollow" style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-official-CMP-partner.png" style="height:80px; cursor:pointer;"></a>
+		<a href="https://cmppartnerprogram.withgoogle.com/" target="_blank" rel="nofollow" style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-official-CMP-partner.png" style="height:60px; cursor:pointer;"></a>
 
-		<a href="https://support.google.com/admanager/answer/13554116?hl=en&ref_topic=9760861&sjid=17685026765202216942-AP#zippy=,google-certified-cmps" target="_blank" rel="nofollow" style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-cmp-badge.png" style="height:80px; cursor:pointer;"></a>
+		<a href="https://support.google.com/admanager/answer/13554116?hl=en&ref_topic=9760861&sjid=17685026765202216942-AP#zippy=,google-certified-cmps" target="_blank" rel="nofollow" style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-cmp-badge.png" style="height:60px; cursor:pointer;"></a>
 
-		<a href="https://iabeurope.eu/cmp-list/" target="_blank" rel="nofollow"  style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/iab-banner.png" style="height:80px; cursor:pointer;"></a>
+		<a href="https://iabeurope.eu/cmp-list/" target="_blank" rel="nofollow"  style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/iab-banner.png" style="height:60px; cursor:pointer;"></a>
+
+		<a href="https://help.ads.microsoft.com/#apex/ads/en/60119/1-500" target="_blank" rel="nofollow" style="margin-left:15px;margin-right:15px;cursor:pointer;"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/microsoft-uet-banner.png" style="height:60px; cursor:pointer;"></a>
 
 	</div>
 </div>

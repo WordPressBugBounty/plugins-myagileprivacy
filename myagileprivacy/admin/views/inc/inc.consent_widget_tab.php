@@ -158,10 +158,12 @@ $locale = MyAgilePrivacy::get_locale();
 						<?php
 
 						$valid_options = array(
-							'right'	=>	array(  'label' => esc_attr( __( 'Right', 'MAP_txt' ) ),
-																	'selected' => false ),
-							'left'	=>	array(  'label' => esc_attr( __( 'Left', 'MAP_txt' ) ),
-																	'selected' => false ),
+							'right'		=>	array(  'label' => esc_attr( __( 'Right', 'MAP_txt' ) ),
+																		'selected' => false ),
+							'center'	=>	array(  'label' => esc_attr( __( 'Center', 'MAP_txt' ) ),
+																		'selected' => false ),
+							'left'		=>	array(  'label' => esc_attr( __( 'Left', 'MAP_txt' ) ),
+																		'selected' => false ),
 						);
 
 						$selected_value = $the_settings['notify_position_horizontal'];
@@ -198,88 +200,122 @@ $locale = MyAgilePrivacy::get_locale();
 					</div> <!-- /.col-sm-6 -->
 				</div> <!-- row -->
 
-				<!-- widget review consent text -->
+				<!-- widget style -->
+				<?php
+					$consent_widget_style = isset( $the_settings['consent_widget_style'] ) ? $the_settings['consent_widget_style'] : 'text_and_logo';
+				?>
 				<div class="row mb-4">
-					<label for="showagain_text" class="col-sm-5 col-form-label">
-						<?php echo wp_kses_post( __( 'Title for show again policy', 'MAP_txt' ) ); ?>
-						<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
-					</label>
-
-					<div class="col-sm-7">
-
-						<input
-							type="text"
-							class="form-control"
-							id="showagain_text"
-							name=""
-							value="<?php echo esc_attr( $the_translations[$selected_lang]['manage_consent'] ); ?>" readonly />
-
-					</div> <!-- /.col-sm-6 -->
-				</div> <!-- row -->
-
-				<!-- widget show cookie policy link -->
-				<div class="row mb-4">
-					<label for="cookie_policy_link_field" class="col-sm-5 col-form-label">
-						<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
+					<label class="col-sm-5 col-form-label">
+						<?php echo wp_kses_post( __( 'Widget Style', 'MAP_txt' ) ); ?>
 					</label>
 
 					<div class="col-sm-7">
 						<div class="styled_radio d-inline-flex">
-							<div class="round d-flex me-4">
 
-								<input type="hidden" name="cookie_policy_link_field" value="false" id="cookie_policy_link_field_no">
-
+							<div class="round d-flex me-4 mb-2">
 								<input
-									name="cookie_policy_link_field"
-									type="checkbox"
-									value="true"
-									id="cookie_policy_link_field"
-									<?php checked( $the_settings['cookie_policy_link'], true ); ?>>
-
-								<label for="cookie_policy_link_field" class="me-2 label-checkbox"></label>
-
-								<label for="cookie_policy_link_field">
-									<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
-								</label>
-
-							</div>
-						</div> <!-- ./ styled_radio -->
-					</div> <!-- /.col-sm-6 -->
-				</div> <!-- row -->
-
-				<!-- widget logo show / hide -->
-				<div class="row mb-4">
-					<label for="disable_logo_field" class="col-sm-5 col-form-label">
-						<?php echo wp_kses_post( __( 'Disable My Agile Privacy® logo', 'MAP_txt' ) ); ?>
-					</label>
-
-					<div class="col-sm-7">
-						<div class="styled_radio d-inline-flex">
-							<div class="round d-flex me-4">
-
-								<input type="hidden" name="disable_logo_field" value="false" id="disable_logo_field_no">
-
-								<input
-									name="disable_logo_field"
-									type="checkbox"
-									value="true"
-									id="disable_logo_field"
-									<?php checked( $the_settings['disable_logo'], true ); ?>>
-
-								<label for="disable_logo_field" class="me-2 label-checkbox"></label>
-
-								<label for="disable_logo_field">
-									<?php echo wp_kses_post( __( 'Disable logo on Cookie Bar', 'MAP_txt' ) ); ?>
+									type="radio"
+									id="consent_widget_style_field_text_and_logo"
+									class="hideShowInput"
+									name="consent_widget_style_field"
+									value="text_and_logo"
+									data-hide-show-ref="consent_widget_has_text"
+									data-meaning="1"
+									<?php checked( $consent_widget_style, 'text_and_logo' ); ?> />
+								<label for="consent_widget_style_field_text_and_logo" class="me-2 label-radio"></label>
+								<label for="consent_widget_style_field_text_and_logo">
+									<?php echo wp_kses_post( __( 'Show text and logo', 'MAP_txt' ) ); ?>
 								</label>
 							</div>
+
+							<div class="round d-flex me-4 mb-2">
+								<input
+									type="radio"
+									id="consent_widget_style_field_text_only"
+									class="hideShowInput"
+									name="consent_widget_style_field"
+									value="text_only"
+									data-hide-show-ref="consent_widget_has_text"
+									data-meaning="1"
+									<?php checked( $consent_widget_style, 'text_only' ); ?> />
+								<label for="consent_widget_style_field_text_only" class="me-2 label-radio"></label>
+								<label for="consent_widget_style_field_text_only">
+									<?php echo wp_kses_post( __( 'Show text only', 'MAP_txt' ) ); ?>
+								</label>
+							</div>
+
+							<div class="round d-flex me-4 mb-2">
+								<input
+									type="radio"
+									id="consent_widget_style_field_logo_only"
+									class="hideShowInput"
+									name="consent_widget_style_field"
+									value="logo_only"
+									data-hide-show-ref="consent_widget_has_text"
+									data-meaning="0"
+									<?php checked( $consent_widget_style, 'logo_only' ); ?> />
+								<label for="consent_widget_style_field_logo_only" class="me-2 label-radio"></label>
+								<label for="consent_widget_style_field_logo_only">
+									<?php echo wp_kses_post( __( 'Show logo only', 'MAP_txt' ) ); ?>
+								</label>
+							</div>
+
 						</div> <!-- ./ styled_radio -->
-
-						<div class="form-text">
-							<?php echo wp_kses_post( __( 'Check this option to remove My Agile Privacy® logo on the consent review widget', 'MAP_txt' ) ); ?>.
-						</div>
-
-					</div> <!-- /.col-sm-6 -->
+					</div> <!-- /.col-sm-7 -->
 				</div> <!-- row -->
+
+				<div class="consent_widget_has_text displayNone">
+
+					<!-- widget review consent text -->
+					<div class="row mb-4">
+						<label for="showagain_text" class="col-sm-5 col-form-label">
+							<?php echo wp_kses_post( __( 'Title for show again policy', 'MAP_txt' ) ); ?>
+							<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+						</label>
+
+						<div class="col-sm-7">
+
+							<input
+								type="text"
+								class="form-control"
+								id="showagain_text"
+								name=""
+								value="<?php echo esc_attr( $the_translations[$selected_lang]['manage_consent'] ); ?>" readonly />
+
+						</div> <!-- /.col-sm-6 -->
+					</div> <!-- row -->
+
+					<!-- widget show cookie policy link -->
+					<div class="row mb-4">
+						<label for="cookie_policy_link_field" class="col-sm-5 col-form-label">
+							<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
+						</label>
+
+						<div class="col-sm-7">
+							<div class="styled_radio d-inline-flex">
+								<div class="round d-flex me-4">
+
+									<input type="hidden" name="cookie_policy_link_field" value="false" id="cookie_policy_link_field_no">
+
+									<input
+										name="cookie_policy_link_field"
+										type="checkbox"
+										value="true"
+										id="cookie_policy_link_field"
+										<?php checked( $the_settings['cookie_policy_link'], true ); ?>>
+
+									<label for="cookie_policy_link_field" class="me-2 label-checkbox"></label>
+
+									<label for="cookie_policy_link_field">
+										<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
+									</label>
+
+								</div>
+							</div> <!-- ./ styled_radio -->
+						</div> <!-- /.col-sm-6 -->
+					</div> <!-- row -->
+
+				</div> <!-- /.consent_widget_has_text -->
 
 			</div>
 

@@ -5,58 +5,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	exit('Not allowed.');
 }
 
-/**
- * Core definitions
- */
-
-define( 'MAP_SOFTWARE_KEY', 'map_wp' );
-define( 'MAP_PLUGIN_TEXTDOMAIN', 'MAP_txt' );
-define( 'MAP_PLUGIN_DB_KEY_PREFIX', 'MyAgilePrivacy-' );
-define( 'MAP_PLUGIN_SETTINGS_FIELD', MAP_PLUGIN_DB_KEY_PREFIX . '1.0.0' );
-define( 'MAP_PLUGIN_JS_DETECTED_FIELDS', MAP_PLUGIN_DB_KEY_PREFIX . '_detected_fields' );
-define( 'MAP_PLUGIN_RCONFIG', MAP_PLUGIN_DB_KEY_PREFIX . '_rconfig' );
-define( 'MAP_PLUGIN_L_ALLOWED', MAP_PLUGIN_DB_KEY_PREFIX . '_l_allowed' );
-define( 'MAP_PLUGIN_COMPLIANCE_REPORT', MAP_PLUGIN_DB_KEY_PREFIX . '_compliance_report' );
-define( 'MAP_PLUGIN_STATS', MAP_PLUGIN_DB_KEY_PREFIX . 'stats' );
-define( 'MAP_PLUGIN_DO_SYNC_NOW', MAP_PLUGIN_DB_KEY_PREFIX . 'do_sync_now' );
-define( 'MAP_PLUGIN_DO_SYNC_LAST_EXECUTION', MAP_PLUGIN_DB_KEY_PREFIX . 'do_sync_last_execution' );
-define( 'MAP_PLUGIN_VALIDATION_TIMESTAMP', MAP_PLUGIN_DB_KEY_PREFIX . 'validation_timestamp' );
-define( 'MAP_PLUGIN_DB_VERSION', MAP_PLUGIN_DB_KEY_PREFIX . 'db_version_number' );
-define( 'MAP_PLUGIN_DB_VERSION_NUMBER', 1 );
-define( 'MAP_PLUGIN_SYNC_IN_PROGRESS', MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
-define( 'MAP_MANIFEST_ASSOC', MAP_PLUGIN_DB_KEY_PREFIX . 'manifest' );
-define( 'MAP_PLUGIN_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_countries' );
-define( 'MAP_POST_TYPE_COOKIES', 'my-agile-privacy-c' );
-define( 'MAP_POST_TYPE_POLICY', 'my-agile-privacy-p' );
-define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
-define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
-define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-minify="1" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
-define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
-define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
-define( 'MAP_PLUGIN_ACTIVATION_DATE', MAP_PLUGIN_DB_KEY_PREFIX.'-activation_date' );
-define( 'MAP_REVIEW_STATUS', MAP_PLUGIN_DB_KEY_PREFIX.'-review_status' );
-define( 'MAP_NOTICE_LAST_SHOW_TIME', MAP_PLUGIN_DB_KEY_PREFIX.'-notice_last_show_time' );
-define( 'MAP_BYPASS_LICENSE_TRESHOLD', 86400 ); // 1 day: 24 * 60 * 60
-define( 'MAP_NOTICE_FIRST_TRESHOLD', 604800 ); // 7 days: 7 * 24 * 60 * 60
-define( 'MAP_NOTICE_SECOND_TRESHOLD', 12960000 ); // 5 months: 5 * 30 * 24 * 60 * 60
-define( 'MAP_ASSETS_EXCLUSION_PATTERNS', array(
-	'plugins/myagileprivacy/',
-	'wp-content/local-cache/'
-) );
-define( 'MAP_DB_PATCH_2_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_2_done' );
-define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
-define( 'MAP_SUMMARY_VERSION', '2.0.0' );
-define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
-
-
-/**
- * Core definitions
- * *
- * @link       https://www.myagileprivacy.com/
- *
- * @package    MyAgilePrivacy
- * @subpackage MyAgilePrivacy/includes
- */
 
 /**
  * Core plugin class.
@@ -66,7 +14,8 @@ define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
  * @subpackage MyAgilePrivacy/includes
  * @author     https://www.myagileprivacy.com/
  */
-class MyAgilePrivacy {
+
+final class MyAgilePrivacy {
 
 	/**
 	 * Unique identifier of this plugin.
@@ -731,6 +680,7 @@ class MyAgilePrivacy {
 	            case 'add_cookie_policy_to_first_layer':
 	            case 'add_personal_policy_to_first_layer':
 	            case 'dont_ask_license_code':
+	            case 'send_ga4_event_on_consent_change':
 	                $logic = 'bool';
 	                break;
 
@@ -797,6 +747,7 @@ class MyAgilePrivacy {
 	            case 'cookie_banner_vertical_position':
 	            case 'cookie_banner_horizontal_position':
 	            case 'cookie_banner_size':
+	            case 'consent_widget_style':
 	            case 'customer_email':
 	            case 'summary_text':
 	            case 'last_sync':
@@ -914,168 +865,226 @@ class MyAgilePrivacy {
 	*/
 	public static function check_buffer_skip_conditions( $added_regexp_limited_check = false )
 	{
-		$skip = 'false';
+	    global $wp, $pagenow, $wp_query, $wp_rewrite;
 
-		global $wp;
-		global $pagenow;
-		global $wp_query;
-		global $wp_rewrite;
-		$feeds = null;
+	    // Early returns for faster and more common conditions
+	    if( !$added_regexp_limited_check )
+	    {
+	        // Check admin first (very common)
+	        if( is_admin() )
+	        {
+	            return 'true';
+	        }
 
-		if( is_object( $wp_rewrite ) )
-		{
-			$feeds = $wp_rewrite->feeds;
-		}
+	        // Check AJAX and XMLRPC (common)
+	        if( ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) ||
+	            ( defined('DOING_AJAX') && DOING_AJAX) ||
+	            ( function_exists('wp_doing_ajax') && wp_doing_ajax() ) ||
+	            isset( $_SERVER["HTTP_X_REQUESTED_WITH"] ) ||
+	            isset( $_POST['_wpnonce'] ) )
+	        {
+	            return 'true';
+	        }
 
-		//url check
-		$current_href = null;
+	        // Check REST request
+	        if( defined( 'REST_REQUEST' ) && REST_REQUEST )
+	        {
+	            return 'true';
+	        }
 
-		if( is_object( $wp ) )
-		{
-			if( isset( $_SERVER['QUERY_STRING'] ) )
-			{
-				$current_href = add_query_arg( $_SERVER['QUERY_STRING'], '', home_url( $wp->request ) );
-			}
-			else
-			{
-				$current_href = home_url( $wp->request );
-			}
-		}
+	        if( ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
+	            ( isset($_GET['rest_route'] ) && strpos( $_GET['rest_route'], '/', 0 ) === 0) )
+	        {
+	            return 'true';
+	        }
 
-		$alt_current_href = null;
+	        // Check JSON request
+	        if( ( function_exists('wp_is_json_request') && wp_is_json_request()) ||
+	            ( isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false ) )
+	        {
+	            return 'true';
+	        }
 
-		if( isset( $_SERVER['SCRIPT_URI'] ) )
-		{
-			$alt_current_href = $_SERVER['SCRIPT_URI'];
-		}
-		elseif( isset( $_SERVER['REQUEST_URI'] ) )
-		{
-			$alt_current_href = $_SERVER['REQUEST_URI'];
-		}
+	        // Check wp-login
+	        if( MyAgilePrivacy::is_wplogin() )
+	        {
+	            return 'true';
+	        }
 
-		$rconfig = self::get_rconfig();
+	        // Check pagenow
+	        if( $pagenow === 'widgets.php' )
+	        {
+	            return 'true';
+	        }
 
-		//regexp check
-		if( isset( $rconfig['url_skip_regexp'] ) )
-		{
-			$url_skip_regexp = $rconfig['url_skip_regexp'];
+	        // Check customize preview
+	        if( is_customize_preview() )
+	        {
+	            return 'true';
+	        }
 
-			if( is_object( $wp ) )
-			{
-				$found = false;
+	        // Check feed
+	        if( isset($wp_query) && is_feed() )
+	        {
+	            return 'true';
+	        }
 
-				foreach( $url_skip_regexp as $regexp )
-				{
-					if( ( $current_href && preg_match( $regexp, $current_href ) ) ||
-						( $alt_current_href && preg_match( $regexp, $alt_current_href ) )
-					)
-					{
-						$found = true;
-					}
-				}
+	        // Divi (first check)
+	        if( function_exists('et_fb_is_enabled') && et_fb_is_enabled() )
+	        {
+	            return 'true';
+	        }
+	    }
 
-				if( $found ) $skip = 'true';
-			}
-		}
+	    // URL checks (more expensive)
+	    if( !$added_regexp_limited_check && isset( $_SERVER['REQUEST_URI'] ) )
+	    {
+	        $request_uri = $_SERVER['REQUEST_URI'];
 
-		//feed check
-		$feed_url_list = array();
+	        // Use strpos instead of multiple checks
+	        $uri_checks = array(
+	            '/amp/',
+	            'commercekit_ajax_search',
+	            'plugins/matomo/app'
+	        );
 
-		if( $feeds )
-		{
-			$found = false;
+	        foreach( $uri_checks as $check )
+	        {
+	            if( strpos($request_uri, $check) !== false )
+	            {
+	                return 'true';
+	            }
+	        }
+	    }
 
-			foreach ( $feeds as $feed )
-			{
-				$feed_url_list[] = get_feed_link( $feed );
-			}
+	    if( !$added_regexp_limited_check )
+	    {
+	        // AMP check
+	        if( ( function_exists('amp_is_request') && amp_is_request()) || isset($_GET['amp']) )
+	        {
+	            return 'true';
+	        }
 
-			foreach( $feed_url_list as $feed_url )
-			{
-				if( ( $current_href && $current_href == $feed_url ) ||
-					( $alt_current_href && $alt_current_href == $feed_url )
-				)
-				{
-					$found = true;
-				}
-			}
+	        // Page builders breakdance
+	        if( isset( $_GET['ct_builder'] ) )
+	        {
+	            return 'true';
+	        }
 
-			if( $found ) $skip = 'true';
-		}
+	        // Page builders breakdance
+	        if( isset( $_GET['ct_inner'] ) )
+	        {
+	            return 'true';
+	        }
 
+	        // Page builders (elementor, divi, thrive, avada)
+	        if( isset( $_GET['elementor-preview'] ) )
+	        {
+	            return 'true';
+	        }
 
-		if( !$added_regexp_limited_check )
-		{
-			//widgets
-			if( $pagenow && $pagenow === 'widgets.php' ) $skip = 'true';
+	        if( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == 1 )
+	        {
+	            return 'true';
+	        }
 
-			//amp
-			if( ( function_exists( 'amp_is_request' ) && amp_is_request() ) ||
-				isset( $_GET['amp'] ) ||
-				strpos( $_SERVER['REQUEST_URI'], '/amp/' ) !== false ) $skip = 'true';
+	        if( isset( $_GET['action'] ) && $_GET['action'] == 'architect' )
+	        {
+	            return 'true';
+	        }
 
-			//commercekit ajax search
-			if( strpos( $_SERVER['REQUEST_URI'], 'commercekit_ajax_search' ) !== false ) $skip = 'true';
+	        if( isset( $_GET['tve'] ) && $_GET['tve'] == 'true' )
+	        {
+	            return 'true';
+	        }
 
-			//elementor
-			if( isset( $_GET['elementor-preview'] ) ) $skip = 'true';
+	        // Avada
+	        if( isset( $_GET['fb-edit'] ) && $_GET['fb-edit'] == 1 )
+	        {
+	            return 'true';
+	        }
 
-			//divi
-			if ( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == 1 ) $skip = 'true';
+	        // more Avada
+	        if( isset($_GET['builder'] ) && $_GET['builder'] == 'true' )
+	        {
+	            return 'true';
+	        }
+	    }
 
-			//thrive theme builder
-			if ( isset( $_GET['action'] ) && $_GET['action'] == 'architect' ) $skip = 'true';
-			if ( isset( $_GET['tve'] ) && $_GET['tve'] == 'true' ) $skip = 'true';
+	    // Build URL only if necessary
+	    if( !is_object( $wp ) )
+	    {
+	        return 'false';
+	    }
 
-			//no admin
-			if( is_admin() ) $skip = 'true';
+	    // Build URL
+	    $current_href = null;
+	    $alt_current_href = null;
 
-			//no rss
-			if( isset( $wp_query ) && is_feed() ) $skip = 'true';
+	    if( isset( $_SERVER['QUERY_STRING'] ) )
+	    {
+	        $current_href = add_query_arg( $_SERVER['QUERY_STRING'], '', home_url( $wp->request ) );
+	    }
+	    else
+	    {
+	        $current_href = home_url( $wp->request );
+	    }
 
-			//divi
-			if( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) $skip = 'true';
+	    if( isset( $_SERVER['SCRIPT_URI'] ) )
+	    {
+	        $alt_current_href = $_SERVER['SCRIPT_URI'];
+	    }
+	    elseif( isset( $_SERVER['REQUEST_URI'] ) )
+	    {
+	        $alt_current_href = $_SERVER['REQUEST_URI'];
+	    }
 
-			// page builder
-			if( is_customize_preview() ) $skip = 'true';
+	    // Regexp check
+	    $rconfig = self::get_rconfig();
+	    if( isset( $rconfig['url_skip_regexp'] ) )
+	    {
+	        $url_skip_regexp = $rconfig['url_skip_regexp'];
 
-			//xml rpc, ajax, admin
-			if( ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) || isset($_POST['_wpnonce']) || (function_exists( "wp_doing_ajax" ) && wp_doing_ajax()) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_SERVER["HTTP_X_REQUESTED_WITH"] ) )  $skip = 'true';
+	        foreach( $url_skip_regexp as $regexp )
+	        {
+	            if( ( $current_href && preg_match( $regexp, $current_href ) ) ||
+	                ( $alt_current_href && preg_match( $regexp, $alt_current_href ) ) )
+	            {
+	                return 'true';
+	            }
+	        }
+	    }
 
-			//matomo
-			if( strpos( $_SERVER['REQUEST_URI'], 'plugins/matomo/app' ) !== false ) $skip = 'true';
+	    // Feed check
+	    if( is_object( $wp_rewrite ) && $wp_rewrite->feeds )
+	    {
+	        foreach( $wp_rewrite->feeds as $feed )
+	        {
+	            $feed_url = get_feed_link( $feed );
 
-			//is_json
-			if( ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) || strpos( $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false ) $skip = 'true';
+	            if( ($current_href && $current_href == $feed_url) ||
+	                ($alt_current_href && $alt_current_href == $feed_url ) )
+	            {
+	                return 'true';
+	            }
+	        }
+	    }
 
-			if( defined( 'REST_REQUEST' ) ) $skip = 'true';
+	    // Legacy mode check
+	    if( !$added_regexp_limited_check )
+	    {
+	        $the_settings = self::get_settings();
 
-			//wp-login and similar pages
-			if( MyAgilePrivacy::is_wplogin() ) $skip = 'true';
+	        if( !(isset($the_settings) && $the_settings['forced_legacy_mode'] ) )
+	        {
+	            if( !empty( $_POST ) )
+	            {
+	                return 'true_due_to_post';
+	            }
+	        }
+	    }
 
-			//rest request
-			if (defined( 'REST_REQUEST' ) && REST_REQUEST // (#1)
-					|| isset($_GET['rest_route']) // (#2)
-							&& strpos( $_GET['rest_route'], '/', 0 ) === 0)
-					 $skip = 'true';
-
-
-			if( $skip == 'true' )
-			{
-				return $skip;
-			}
-
-			$the_settings = self::get_settings();
-
-			//legacy mode check
-			if( !( isset( $the_settings ) && $the_settings['forced_legacy_mode'] ) )
-			{
-				//post
-				if( !empty( $_POST ) ) $skip = 'true_due_to_post';
-			}
-		}
-
-		return $skip;
+	    return 'false';
 	}
 
 
@@ -1254,6 +1263,7 @@ class MyAgilePrivacy {
 			'last_sync'									=>	null,
 			'default_locale'							=>	$default_locale,
 			'disable_logo'								=>	false,
+			'consent_widget_style'						=>	'text_and_logo',
 			'wl_b'										=>	0,
 			'pa'										=>	0,
 			'last_legit_sync'							=>	null,
@@ -1320,6 +1330,8 @@ class MyAgilePrivacy {
 
 			'add_cookie_policy_to_first_layer'			=>	true,
 			'add_personal_policy_to_first_layer'		=>	true,
+
+			'send_ga4_event_on_consent_change'			=>	false,
 
 		);
 
@@ -1904,6 +1916,204 @@ class MyAgilePrivacy {
 		return true;
 	}
 
+	/**
+	 * Returns the base path of the JSON cache folder.
+	 *
+	 * @return string|null Full directory path, or null if plugin name is not defined.
+	 */
+	public static function get_json_cache_directory()
+	{
+	    $base = MyAgilePrivacy::get_base_directory_for_cache();
+	    if( !$base ) return null;
+	    return $base . 'json/';
+	}
+
+	/**
+	 * Ensures the JSON cache directory exists, creating it if necessary.
+	 *
+	 * @return bool True if the directory exists and is writable, false otherwise.
+	 */
+	public static function ensure_json_cache_directory()
+	{
+	    $dir = MyAgilePrivacy::get_json_cache_directory();
+	    if( !$dir ) return false;
+
+	    if( !is_dir( $dir ) )
+	    {
+	        $created = wp_mkdir_p( $dir );
+	        if( !$created ) return false;
+	    }
+
+	    return is_dir( $dir ) && is_writable( $dir );
+	}
+
+	/**
+	 * Builds the full file path for a given cache key.
+	 * The cache key is sanitized to be safe for use as a filename.
+	 *
+	 * @param string $cache_key Unique identifier for the cached item (e.g. 'head_script_it').
+	 * @return string|null Full file path, or null if the directory cannot be resolved.
+	 */
+	public static function get_json_cache_filepath( $cache_key )
+	{
+	    $dir = MyAgilePrivacy::get_json_cache_directory();
+	    if( !$dir ) return null;
+
+	    // Sanitize the key: allow only alphanumeric characters, dashes and underscores
+	    $safe_key = preg_replace( '/[^a-zA-Z0-9_\-]/', '_', $cache_key );
+	    return $dir . $safe_key . '.json';
+	}
+
+	/**
+	 * Saves a value to the JSON file cache.
+	 *
+	 * The data is wrapped in a payload envelope containing metadata
+	 * (creation time, expiry time, original key) before being written to disk.
+	 * Uses atomic write (temp file + rename) to prevent file corruption.
+	 *
+	 * @param string $cache_key   Unique identifier for the cached item.
+	 * @param mixed  $data        The data to cache. Must be JSON-serializable.
+	 * @param int    $ttl_seconds Time-to-live in seconds. Defaults to 6 hours (21600).
+	 * @return bool True on success, false on failure.
+	 */
+	public static function set_json_cache( $cache_key, $data, $ttl_seconds = 21600 )
+	{
+	    if( !MyAgilePrivacy::ensure_json_cache_directory() ) return false;
+
+	    $filepath = MyAgilePrivacy::get_json_cache_filepath( $cache_key );
+	    if( !$filepath ) return false;
+
+	    // Build the cache envelope with metadata
+	    $payload = array(
+	        'expires_at'    => time() + $ttl_seconds,
+	        'created_at'    => time(),
+	        'cache_key'     => $cache_key,
+	        'data'          => $data,
+	    );
+
+	    $json = json_encode( $payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+
+	    if( $json === false ) return false;
+
+	    // Atomic write: write to a temp file first, then rename to the final path.
+	    // rename() is atomic on the same filesystem, preventing partial reads.
+	    $tmp_filepath = $filepath . '.tmp.' . uniqid();
+	    $written = file_put_contents( $tmp_filepath, $json, LOCK_EX );
+
+	    if( $written === false )
+	    {
+	        @unlink( $tmp_filepath );
+	        return false;
+	    }
+
+	    if( !rename( $tmp_filepath, $filepath ) )
+	    {
+	        @unlink( $tmp_filepath );
+	        return false;
+	    }
+
+	    return true;
+	}
+
+	/**
+	 * Reads a value from the JSON file cache.
+	 *
+	 * Returns false if the cache file does not exist, is expired, or is corrupted.
+	 * Expired and corrupted files are NOT deleted here — they will be overwritten
+	 * by the next set_json_cache() call
+	 *
+	 * @param string $cache_key Unique identifier for the cached item.
+	 * @return mixed|false The cached data on success, false on cache miss or expiry.
+	 */
+	public static function get_json_cache( $cache_key )
+	{
+	    $filepath = MyAgilePrivacy::get_json_cache_filepath( $cache_key );
+	    if( !$filepath ) return false;
+
+	    if( !is_file( $filepath ) ) return false;
+
+	    $raw = file_get_contents( $filepath );
+	    if( $raw === false ) return false;
+
+	    $payload = json_decode( $raw, true );
+
+	    // Validate payload structure
+	    if( !is_array( $payload ) ||
+	        !isset( $payload['expires_at'] ) ||
+	        !isset( $payload['data'] ) )
+	    {
+	        return false;
+	    }
+
+	    // Check expiry
+	    if( time() > $payload['expires_at'] )
+	    {
+	        return false;
+	    }
+
+	    return $payload['data'];
+	}
+
+
+	/**
+	 * Invalidates all JSON cache files by setting their expiry to the past.
+	 *
+	 * Files are NOT deleted — they are marked as expired so that the next
+	 * get_json_cache() call returns false and triggers regeneration via set_json_cache().
+	 * This approach ensures no downtime: the old file remains on disk and can still
+	 * be inspected, while the next request will overwrite it with fresh data.
+	 *
+	 * @return int Number of files successfully invalidated.
+	 */
+	public static function flush_json_cache()
+	{
+	    $dir = MyAgilePrivacy::get_json_cache_directory();
+	    if( !$dir || !is_dir( $dir ) ) return 0;
+
+	    $invalidated = 0;
+	    $files = glob( $dir . '*.json' );
+
+	    if( !is_array( $files ) ) return 0;
+
+	    foreach( $files as $file )
+	    {
+	        if( !is_file( $file ) ) continue;
+
+	        $raw = file_get_contents( $file );
+	        if( $raw === false ) continue;
+
+	        $payload = json_decode( $raw, true );
+
+	        if( !is_array( $payload ) ) continue;
+
+	        // Set expiry to the past to mark the file as expired
+	        $payload['expires_at'] = time() - 1;
+
+	        $json = json_encode( $payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+
+	        if( $json === false ) continue;
+
+	        // Atomic write to avoid corruption during the update
+	        $tmp_filepath = $file . '.tmp.' . uniqid();
+	        $written = file_put_contents( $tmp_filepath, $json, LOCK_EX );
+
+	        if( $written === false )
+	        {
+	            @unlink( $tmp_filepath );
+	            continue;
+	        }
+
+	        if( !rename( $tmp_filepath, $file ) )
+	        {
+	            @unlink( $tmp_filepath );
+	            continue;
+	        }
+
+	        $invalidated++;
+	    }
+
+	    return $invalidated;
+	}
 
 	/**
 	 * equivalent for php7 null coalesce
@@ -1956,6 +2166,7 @@ class MyAgilePrivacy {
 			'HTTP_X_REMOTE_IP',
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CF_IPCOUNTRY',
+			'HTTP_X_FORWARDED_FOR',
 			'SERVER_ADDR',
 			'REMOTE_ADDR',
 			'PROXY_REMOTE_ADDR',
@@ -2290,29 +2501,34 @@ class MyAgilePrivacy {
 		}
 
 		$other_frontend_checks = array(
-
 			//check identity information
 			'identity' 		=> array(
 				'check' 		=> (
-										isset( $the_settings['identity_name'] ) &&
-										$the_settings['identity_name'] &&
-										isset( $the_settings['identity_address'] ) &&
-										$the_settings['identity_address'] &&
-										isset( $the_settings['identity_email'] ) &&
-										$the_settings['identity_email']
-								),
+											isset( $the_settings['identity_name'] ) &&
+											$the_settings['identity_name'] &&
+											isset( $the_settings['identity_address'] ) &&
+											$the_settings['identity_address'] &&
+											isset( $the_settings['identity_email'] ) &&
+											$the_settings['identity_email']
+									),
 			),
-			//bg colors dark patterns
+			//bg colors and link colors dark patterns
 			'not_using_dark_patterns'	=> array(
 				'check' 		=> (
-										isset( $the_settings['button_accept_button_color'] ) &&
-										isset( $the_settings['button_reject_button_color'] ) &&
-										isset( $the_settings['button_customize_button_color'] ) &&
+											// Check background colors
+											isset( $the_settings['button_accept_button_color'] ) &&
+											isset( $the_settings['button_reject_button_color'] ) &&
+											isset( $the_settings['button_customize_button_color'] ) &&
+											$the_settings['button_accept_button_color'] == $the_settings['button_reject_button_color'] &&
+											$the_settings['button_reject_button_color'] == $the_settings['button_customize_button_color'] &&
 
-										$the_settings['button_accept_button_color'] == $the_settings['button_reject_button_color'] &&
-										$the_settings['button_reject_button_color'] == $the_settings['button_customize_button_color']
-
-									),
+											// Check link colors
+											isset( $the_settings['button_accept_link_color'] ) &&
+											isset( $the_settings['button_reject_link_color'] ) &&
+											isset( $the_settings['button_customize_link_color'] ) &&
+											$the_settings['button_accept_link_color'] == $the_settings['button_reject_link_color'] &&
+											$the_settings['button_reject_link_color'] == $the_settings['button_customize_link_color']
+										),
 			),
 		);
 
@@ -2799,6 +3015,16 @@ class MyAgilePrivacy {
 			$website_l_allowed = array(
 				MAP_SUPPORTED_LANGUAGES[ $the_settings['default_locale'] ][ '2char' ]
 			);
+
+			if( isset( $the_settings['enable_language_fallback'] ) &&
+				$the_settings['enable_language_fallback'] &&
+				isset( $the_settings['language_fallback_locale'] ) &&
+				$the_settings['language_fallback_locale'] )
+			{
+				$website_l_allowed[] = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
+			}
+
+			$website_l_allowed = array_unique( $website_l_allowed );
 		}
 
 		$l_allowed = MyAgilePrivacy::get_option( MAP_PLUGIN_L_ALLOWED, array() );
@@ -2814,13 +3040,10 @@ class MyAgilePrivacy {
 		{
 			$lang_code_2char = $lang_data['2char'];
 
-			if( $return_data['with_multilang'] )
+			if( is_array( $website_l_allowed ) &&
+				!in_array( $lang_code_2char, $website_l_allowed ) )
 			{
-				if( is_array( $website_l_allowed ) &&
-					!in_array( $lang_code_2char, $website_l_allowed ) )
-				{
-					continue;
-				}
+				continue;
 			}
 
 			if( is_array( $l_allowed ) &&
@@ -3242,6 +3465,28 @@ class MyAgilePrivacy {
 		}
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) self::write_log( 'stop dropWPMLTranslations' );
+	}
+
+	//db migration patch 3
+	public static function dbMigrateDbasePatch3()
+	{
+		$the_settings = self::get_settings();
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_settings );
+
+		if(
+			isset( $the_settings['disable_logo'] ) && $the_settings['disable_logo']
+		)
+		{
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'executing patch 3' );
+
+			$the_settings['disable_logo'] = false;
+			$the_settings['consent_widget_style'] = 'text_only';
+
+			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+		}
+
+		return true;
 	}
 
 

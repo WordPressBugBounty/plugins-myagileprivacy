@@ -331,6 +331,44 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+
+			<!-- send_ga4_event_on_consent_change checkbox -->
+			<div class="row mb-4 displayNone">
+				<label for="send_ga4_event_on_consent_change_field" class="col-sm-5 col-form-label">
+					<?php  echo wp_kses_post( __( 'Send Google Analytics 4 events on consent changes', 'MAP_txt' ) ); ?>
+				</label>
+
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+
+							<input type="hidden" name="send_ga4_event_on_consent_change_field" value="false" id="send_ga4_event_on_consent_change_field_no">
+
+							<input
+								name="send_ga4_event_on_consent_change_field"
+								type="checkbox"
+								value="true"
+								id="send_ga4_event_on_consent_change_field"
+								<?php checked( $the_settings['send_ga4_event_on_consent_change'], true ); ?>>
+
+							<label for="send_ga4_event_on_consent_change_field" class="me-2 label-checkbox"></label>
+
+							<label for="send_ga4_event_on_consent_change_field">
+								<?php echo wp_kses_post( __( 'Yes, send GA4 events when the user interacts with the Cookie Banner', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div> <!-- ./ styled_radio -->
+					<div class="form-text">
+						<?php  echo wp_kses_post( __( 'Requires Google Analytics 4 installation', 'MAP_txt' ) ); ?>.
+					</div>
+
+				</div> <!-- /.col-sm-6 -->
+
+
+			</div> <!-- row -->
+
+
+
 			<!-- reset settings checkbox -->
 			<div class="row mb-4">
 				<label for="reset_settings" class="col-sm-5 col-form-label">

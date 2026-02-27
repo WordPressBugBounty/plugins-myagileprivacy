@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
 Tested up to: 6.9
-Stable tag: 3.2.5
+Stable tag: 3.3.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -122,6 +122,15 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.3.0
+* Internal speed up
+* Revised reconsent widget functionality
+* Frontend fix and mobile optimization
+* Cache fix
+* Avada bugfix
+* Breakdance bugfix
+* Better handling JavaScript dependency
 
 = 3.2.5
 * 32 languages support

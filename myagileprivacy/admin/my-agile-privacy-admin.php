@@ -23,7 +23,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
  * @subpackage MyAgilePrivacy/admin
  * @author     https://www.myagileprivacy.com/
  */
-class MyAgilePrivacyAdmin {
+
+final class MyAgilePrivacyAdmin {
 
 	/**
 	 * Plugin Name
@@ -510,6 +511,22 @@ class MyAgilePrivacyAdmin {
 			}
 		}
 
+		$MAP_DB_PATCH_3_DONE = MyAgilePrivacy::get_option( MAP_DB_PATCH_3_DONE, false );
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $MAP_DB_PATCH_3_DONE );
+
+		if( !$MAP_DB_PATCH_3_DONE )
+		{
+			$patch3_status = MyAgilePrivacy::dbMigrateDbasePatch3();
+
+			MyAgilePrivacy::update_option( MAP_DB_PATCH_3_DONE, true );
+
+			if( $patch3_status )
+			{
+				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+			}
+		}
+
 		$sync_last_execution = MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null );
 
 		//bypass blocked cron websites
@@ -568,18 +585,18 @@ class MyAgilePrivacyAdmin {
 					foreach( $manifest['files'] as $remote_file => $remote_details )
 					{
 						$version = $remote_details['version'];
+						$iab = $remote_details['iab'];
 						$remote_url = $cdn_basepath . $remote_file;
 						$path_info = pathinfo( $remote_file );
 						$local_file = basename( $remote_file );
 						$local_file_with_version = $path_info['filename'] . '-' . $version . '.' . $path_info['extension'];
 
 						$this_item = array(
-							'filename'			=>	$local_file_with_version,
+							'filename'			=>	$local_file,
 							'version'			=> 	$version,
+							'iab'				=> 	$iab,
 							'remote_details'	=>	$remote_details,
 						);
-
-						$manifest_assoc['files'][ $local_file ] = $this_item;
 
 						$do_get_file = true;
 
@@ -594,7 +611,8 @@ class MyAgilePrivacyAdmin {
 
 						if( $do_get_file )
 						{
-							MyAgilePrivacy::download_remote_file( $remote_url, $local_file, $version, $local_file_with_version );
+							$manifest_assoc['files'][ $local_file ] = $this_item;
+							MyAgilePrivacy::download_remote_file( $remote_url, $local_file, $version, null );
 						}
 					}
 
@@ -1624,6 +1642,9 @@ class MyAgilePrivacyAdmin {
 			}
 		}
 
+	    // Invalidate the JSON cache since cookie data has changed
+	    MyAgilePrivacy::flush_json_cache();
+
 		header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
 	}
 
@@ -1958,7 +1979,7 @@ class MyAgilePrivacyAdmin {
 
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $cleaned_options );
 
-		$post_status_to_search = array( 'draft', 'publish', '__blocked', '__always_allowed' );
+		$post_status_to_search = array( 'publish', '__blocked', '__always_allowed' );
 
 		$cc_args = array(
 			'posts_per_page'   	=> 	-1,
@@ -2023,8 +2044,8 @@ class MyAgilePrivacyAdmin {
 								}
 
 								$item_for_hash_calculation = array(
-									isset( $all_meta['_map_remote_id'] ) ? (string)$all_meta['_map_remote_id'][0] : null,
-									isset( $all_meta['_map_api_key'] ) ? (string)$all_meta['_map_api_key'][0] : null,
+									isset( $all_meta['_map_remote_id'] ) ? (string)$all_meta['_map_remote_id'][0] : '',
+									isset( $all_meta['_map_api_key'] ) ? (string)$all_meta['_map_api_key'][0] : '',
 									$necessary_value,
 									isset( $all_meta['_map_is_readonly'] ) ? (string)$all_meta['_map_is_readonly'][0] : null,
 								);
@@ -2655,6 +2676,9 @@ class MyAgilePrivacyAdmin {
 				'cookie_shied_value' 		=>	$cookie_shied_value,
 				'internal_error_message'	=>	( $action_result && isset( $action_result['internal_error_message'] ) ) ? $action_result['internal_error_message'] : null,
 			);
+
+		    // Invalidate the JSON cache since cookie data has changed
+		    MyAgilePrivacy::flush_json_cache();
 
 			wp_send_json( $answer );
 
@@ -3493,6 +3517,7 @@ class MyAgilePrivacyAdmin {
 	{
 		global $locale;
 
+		$links[] = '<a href="'. get_admin_url( null, 'edit.php?post_type='.MAP_POST_TYPE_COOKIES.'&page=my-agile-privacy-c_settings' ) .'&page=my-agile-privacy-c_dashboard">'.wp_kses_post( __( 'Dashboard', 'MAP_txt' ) ).'</a>';
 		$links[] = '<a href="'. get_admin_url( null, 'edit.php?post_type='.MAP_POST_TYPE_COOKIES.'&page=my-agile-privacy-c_settings' ) .'">'.wp_kses_post( __( 'Settings', 'MAP_txt' ) ).'</a>';
 		$links[] = '<a href="https://www.myagileprivacy.com/" target="_blank">'.wp_kses_post( __( 'Support', 'MAP_txt' ) ).'</a>';
 
@@ -4233,6 +4258,9 @@ class MyAgilePrivacyAdmin {
 				$is_updating = false;
 			}
 		}
+
+	    // Invalidate the JSON cache since cookie data has changed
+	    MyAgilePrivacy::flush_json_cache();
 	}
 
 	/**
@@ -4303,6 +4331,9 @@ class MyAgilePrivacyAdmin {
 			$json_translations = wp_slash( json_encode( $sanitized_translations ) );
 			update_post_meta( $main_post_id, '_map_translations', $json_translations );
 		}
+
+	    // Invalidate the JSON cache since cookie data has changed
+	    MyAgilePrivacy::flush_json_cache();
 	}
 
 
