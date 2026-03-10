@@ -135,11 +135,13 @@ $locale = MyAgilePrivacy::get_locale();
 					</div> <!-- ./ styled_radio -->
 
 					<div class="form-text">
-						<?php echo wp_kses_post( __( 'Warning: if you disable this, add the proper link for consent revisit in the foote area, in order to stay GDPR compliant. You can use the [myagileprivacy_showconsent] shortcode.', 'MAP_txt' ) ); ?>
+						<?php echo wp_kses_post( __( 'Warning: if you disable this option, add a link in the site footer to review/modify consent to remain GDPR-compliant. You can use the shortcode [myagileprivacy_showconsent].', 'MAP_txt' ) ); ?><br>
+						<?php echo wp_kses_post( __( 'If the consent modification widget is disabled and the shortcode is not present, the widget will still be displayed to ensure compliance.', 'MAP_txt' ) ); ?>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
+
 
 			<div class="showagain_tab displayNone">
 

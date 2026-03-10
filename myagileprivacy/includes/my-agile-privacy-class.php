@@ -258,79 +258,84 @@ final class MyAgilePrivacy {
 		add_action( 'wp_ajax_nopriv_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 		add_action( 'wp_ajax_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 
-		$skip = $this::check_buffer_skip_conditions( false );
-
-		if( $skip == 'false' && isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
+		if( isset( $the_settings['pa'] ) &&
+			$the_settings['pa'] == 1 )
 		{
-			$rconfig = self::get_rconfig();
+			$skip = $this::check_buffer_skip_conditions( false );
 
-			$logic_legacy_mode = false;
-
-			if(
-				($rconfig &&
-					isset( $rconfig['js_legacy_mode'] ) &&
-					$rconfig['js_legacy_mode'] == 1
-				) ||
-				( $the_settings['scanner_compatibility_mode'] && $the_settings['forced_legacy_mode'] ) ||
-				$the_settings['missing_cookie_shield']
-
-			)
+			if( $skip == 'false' )
 			{
-				$logic_legacy_mode = true;
-			}
+				$rconfig = self::get_rconfig();
 
-			if( $logic_legacy_mode )
-			{
-				add_action( 'wp_head', array( $plugin_frontend, 'wp_head_inject' ), isset( $rconfig['js_legacy_mode_head_prio'] ) ? intval( $rconfig['js_legacy_mode_head_prio'] ) : PHP_INT_MIN );
-			}
+				$logic_legacy_mode = false;
 
-			/**
-			 * The class for html parsing
-			 */
-
-			if( !class_exists( 'agile_simple_html_dom_node' ) )
-			{
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/simple_html_dom.php';
-			}
-
-			if( $the_settings['scanner_compatibility_mode'] &&
-				$the_settings['scanner_start_hook_prio'] &&
-				$the_settings['scanner_end_hook_prio'] )
-			{
-				if( $the_settings['scanner_hook_type'] == 'template_redirect-shutdown' )
+				if(
+					($rconfig &&
+						isset( $rconfig['js_legacy_mode'] ) &&
+						$rconfig['js_legacy_mode'] == 1
+					) ||
+					( $the_settings['scanner_compatibility_mode'] && $the_settings['forced_legacy_mode'] ) ||
+					$the_settings['missing_cookie_shield']
+				)
 				{
-					//customized settings
-					add_action( 'template_redirect', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
+					$logic_legacy_mode = true;
+				}
 
-					global $wp_version;
-					if ( version_compare( $wp_version, '6.9', '>=' ) )
+				if( $logic_legacy_mode )
+				{
+					add_action( 'wp_head', array( $plugin_frontend, 'wp_head_inject' ), isset( $rconfig['js_legacy_mode_head_prio'] ) ? intval( $rconfig['js_legacy_mode_head_prio'] ) : PHP_INT_MIN );
+				}
+
+				/**
+				 * The class for html parsing
+				 */
+
+				if( !class_exists( 'agile_simple_html_dom_node' ) )
+				{
+					require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/simple_html_dom.php';
+				}
+
+				if( $the_settings['scanner_compatibility_mode'] &&
+					$the_settings['scanner_start_hook_prio'] &&
+					$the_settings['scanner_end_hook_prio'] )
+				{
+					if( $the_settings['scanner_hook_type'] == 'template_redirect-shutdown' )
 					{
-						add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), 0 );
+						//customized settings
+						add_action( 'template_redirect', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
+
+						global $wp_version;
+						if ( version_compare( $wp_version, '6.9', '>=' ) )
+						{
+							add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), 0 );
+						}
+						else
+						{
+							add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
+						}
+					}
+					elseif( $the_settings['scanner_hook_type'] == 'init-shutdown' )
+					{
+						//customized settings
+						add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
+						add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
 					}
 					else
 					{
+						//customized settings
+						add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
 						add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
 					}
 				}
-				elseif( $the_settings['scanner_hook_type'] == 'init-shutdown' )
-				{
-					//customized settings
-					add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
-					add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
-				}
 				else
 				{
-					//customized settings
-					add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
-					add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), $the_settings['scanner_end_hook_prio'] );
+					//standard settings
+					add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ) );
+					add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), -1000 );
 				}
 			}
-			else
-			{
-				//standard settings
-				add_action( 'init', array( $plugin_frontend, 'map_buffer_start' ) );
-				add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), -1000 );
-			}
+
+
 		}
 
 		/*auto update*/
@@ -681,6 +686,7 @@ final class MyAgilePrivacy {
 	            case 'add_personal_policy_to_first_layer':
 	            case 'dont_ask_license_code':
 	            case 'send_ga4_event_on_consent_change':
+	            case 'missing_api_support':
 	                $logic = 'bool';
 	                break;
 
@@ -762,6 +768,7 @@ final class MyAgilePrivacy {
 	            case 'fixed_translations_encoded':
 	            case 'layer_1_button_order':
 	            case 'site_and_policy_settings':
+	            case 'missing_api_support_timestamp':
 	                $logic = 'raw';
 	                break;
 
@@ -961,6 +968,12 @@ final class MyAgilePrivacy {
 	    {
 	        // AMP check
 	        if( ( function_exists('amp_is_request') && amp_is_request()) || isset($_GET['amp']) )
+	        {
+	            return 'true';
+	        }
+
+	        //bricks
+	        if( isset( $_GET['bricks'] ) && $_GET['bricks'] == 'run' )
 	        {
 	            return 'true';
 	        }
@@ -1333,6 +1346,10 @@ final class MyAgilePrivacy {
 
 			'send_ga4_event_on_consent_change'			=>	false,
 
+			'missing_api_support'						=> 	false,
+			'missing_api_support_timestamp'				=> 	null,
+
+
 		);
 
 		$settings = apply_filters( 'map_plugin_settings', $settings );
@@ -1704,6 +1721,9 @@ final class MyAgilePrivacy {
 
 		//remove unnecessary slashes
 		$final_url = preg_replace( '/([^:])(\/{2,})/', '$1/', $final_url );
+
+		// Align scheme to current request (fixes http/https mismatch)
+		$final_url = set_url_scheme( $final_url );
 
 		return  $final_url;
 	}
@@ -2820,6 +2840,8 @@ final class MyAgilePrivacy {
 
 		$the_settings = self::get_settings();
 
+		$MAP_SUPPORTED_LANGUAGES = MAP_SUPPORTED_LANGUAGES;
+
 		$return_data = array(
 			'with_multilang'				=>	false,
 			'is_wpml_enabled'				=>	false,
@@ -3012,9 +3034,25 @@ final class MyAgilePrivacy {
 		}
 		else
 		{
+
 			$website_l_allowed = array(
 				MAP_SUPPORTED_LANGUAGES[ $the_settings['default_locale'] ][ '2char' ]
 			);
+
+			//check $return_data['current_language']
+			$website_locale_2_char = substr( $return_data['current_language'], 0, 2 );
+
+			foreach( $MAP_SUPPORTED_LANGUAGES as $lang_code => $lang_data )
+			{
+				$lang_code_2char = $lang_data['2char'];
+
+				if( $website_locale_2_char == $lang_data['2char'] )
+				{
+					$return_data['current_language'] = $lang_code;
+				}
+			}
+
+			$website_l_allowed[] = $website_locale_2_char;
 
 			if( isset( $the_settings['enable_language_fallback'] ) &&
 				$the_settings['enable_language_fallback'] &&
@@ -3028,8 +3066,6 @@ final class MyAgilePrivacy {
 		}
 
 		$l_allowed = MyAgilePrivacy::get_option( MAP_PLUGIN_L_ALLOWED, array() );
-
-		$MAP_SUPPORTED_LANGUAGES = MAP_SUPPORTED_LANGUAGES;
 
 		uasort( $MAP_SUPPORTED_LANGUAGES, function( $a, $b )
 		{
@@ -3620,6 +3656,50 @@ final class MyAgilePrivacy {
 		}
 
 		return 	$locale;
+	}
+
+	/**
+	 * Detects whether the current web server is Nginx.
+	 *
+	 * Uses WordPress global variables set in wp-includes/vars.php as primary source,
+	 * with a fallback to SERVER_SOFTWARE string detection.
+	 *
+	 * Note: detection may be unreliable behind reverse proxies (e.g. Cloudflare),
+	 * in which case the function returns null.
+	 *
+	 * @return bool|null True if Nginx, false if not Nginx, null if unable to determine.
+	 */
+	public static function is_nginx()
+	{
+	    // Primary: use WordPress globals set in wp-includes/vars.php (available since WP 4.0)
+	    global $is_nginx, $is_apache, $is_IIS, $is_iis7;
+
+	    if ( ! empty( $is_nginx ) ) {
+	        return true;
+	    }
+
+	    if ( ! empty( $is_apache ) || ! empty( $is_IIS ) || ! empty( $is_iis7 ) ) {
+	        return false;
+	    }
+
+	    // Fallback: parse SERVER_SOFTWARE header directly
+	    if ( ! empty( $_SERVER['SERVER_SOFTWARE'] ) )
+	    {
+	        $software = strtolower( (string) $_SERVER['SERVER_SOFTWARE'] );
+
+	        if ( strpos( $software, 'nginx' ) !== false ) {
+	            return true;
+	        }
+
+	        if ( strpos( $software, 'apache' ) !== false ||
+	             strpos( $software, 'iis' ) !== false ||
+	             strpos( $software, 'litespeed' ) !== false ) {
+	            return false;
+	        }
+	    }
+
+	    // Unable to determine (e.g. behind a reverse proxy)
+	    return null;
 	}
 
 	/**

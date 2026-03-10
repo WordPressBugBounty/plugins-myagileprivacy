@@ -932,8 +932,9 @@ final class MyAgilePrivacyFrontend {
 		    }
 
 		    $item_type = 'def';
+		    $blog_id   = is_multisite() ? get_current_blog_id() : 1;
 
-	        $cache_key = 'notify_html_' . $item_type. '_' . $current_lang;
+	        $cache_key = 'notify_html_' . $item_type. '_' . $current_lang. '_' . $blog_id;;
 	        $cached    = MyAgilePrivacy::get_json_cache( $cache_key );
 
 	        if( !$skip_json_cache )
@@ -1277,12 +1278,11 @@ final class MyAgilePrivacyFrontend {
 	//add script attributes
 	public function add_script_attributes( $tag, $handle, $src )
 	{
-		if ( $handle === $this->plugin_name )
-		{
-			$tag = str_replace( ' src=', ' ' . MAP_INLINE_SCRIPT_EXTRA_ATTRS . ' src=', $tag );
-		}
-
-		return $tag;
+	    if ( strpos( $handle, $this->plugin_name ) !== false )
+	    {
+	        $tag = str_replace( ' src=', ' ' . MAP_INLINE_SCRIPT_EXTRA_ATTRS . ' src=', $tag );
+	    }
+	    return $tag;
 	}
 
 	/**
@@ -1902,7 +1902,6 @@ final class MyAgilePrivacyFrontend {
 					{
 						$vv['always_allowed'] = true;
 					}
-
 				}
 			}
 
@@ -1927,10 +1926,9 @@ final class MyAgilePrivacyFrontend {
 				$this->head_script = $this->get_head_script_string( false );
 			}
 
-
 			static $already_started = false;
 
-			if ( $already_started )
+			if( $already_started )
 			{
 				return;
 			}
@@ -1976,6 +1974,7 @@ final class MyAgilePrivacyFrontend {
 	public function get_head_script_string( $block_mode = false )
 	{
 		$the_settings = MyAgilePrivacy::get_settings();
+		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		$skip_json_cache = false;
 
@@ -2329,6 +2328,25 @@ final class MyAgilePrivacyFrontend {
 	    {
 	        $allow_js_fast_callback = 1;
 	    }
+
+	    if( $allow_js_fast_callback )
+	    {
+	    	$is_nginx = MyAgilePrivacy::is_nginx();
+
+	    	if( $is_nginx === true )
+	    	{
+	    		$allow_js_fast_callback = 0;
+	    	}
+	    }
+
+		if( $allow_js_fast_callback &&
+		    isset( $the_settings['missing_api_support'] ) &&
+		    $the_settings['missing_api_support'] &&
+		    isset( $the_settings['missing_api_support_timestamp'] ) &&
+		    ( time() - intval( $the_settings['missing_api_support_timestamp'] ) ) < ( 7 * 24 * 60 * 60 ) ) // valid only for 1 week
+		{
+		    $allow_js_fast_callback = 0;
+		}
 
 	    $cookie_domain_path = null;
 
@@ -2938,8 +2956,8 @@ final class MyAgilePrivacyFrontend {
 				if( isset( $the_settings['pa'] ) &&
 					$the_settings['pa'] == 1 )
 				{
-
 					$detected = intval( $_POST['detected'] );
+					$missing_api_support = intval( $_POST['missing_api_support'] );
 
 					if( $detected == 0 )
 					{
@@ -2967,6 +2985,15 @@ final class MyAgilePrivacyFrontend {
 							MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 						}
 					}
+
+					if( $missing_api_support == 1 )
+					{
+						$the_settings['missing_api_support'] = true;
+						$the_settings['missing_api_support_timestamp'] = strtotime( "now" );
+
+						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+					}
+
 				}
 
 				$success = true;

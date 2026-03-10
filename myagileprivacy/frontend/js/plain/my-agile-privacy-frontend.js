@@ -6,7 +6,7 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0001",
+	'js_internal_version' 				: "3.0003",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -122,14 +122,17 @@ if( typeof MAP_Cookie === 'undefined' )
 	}
 
 	var MAP_Cookie = {
+		_isNoSetResult: null,
 		_isUserAgentNoCookieSet: function () {
-			var userAgent = navigator?.userAgent;
-
-			return MAP_UA_NO_COOKIE_SET.some( function( forbidden ){
-				return userAgent.includes( forbidden );
+			if (this._isNoSetResult !== null) return this._isNoSetResult;
+			var userAgent = navigator?.userAgent || '';
+			this._isNoSetResult = MAP_UA_NO_COOKIE_SET.some(function(f){
+				return userAgent.includes(f);
 			});
+			return this._isNoSetResult;
 		},
-		set: function( name, value, days, domain ) {
+		_cookie_cache: {},
+		set: function(name, value, days, domain ) {
 
 			if( this._isUserAgentNoCookieSet() )
 			{
@@ -149,11 +152,12 @@ if( typeof MAP_Cookie === 'undefined' )
 		            var d = domain.charAt(0) === '.' ? domain : '.' + domain;
 		            domainStr = "; domain=" + d;
 		        }
-        		document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
+	    		document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
+	    		if( this._cookie_cache ) delete this._cookie_cache[name];
 			}
 			catch( e )
 			{
-				console.debug( e );
+				MapLogger.debug( e );
 				return null;
 			}
 		},
@@ -165,6 +169,7 @@ if( typeof MAP_Cookie === 'undefined' )
 			}
 
 			try {
+
 				var expires = "; expires=" + GMTString;
 
 		        var domainStr = "";
@@ -173,16 +178,18 @@ if( typeof MAP_Cookie === 'undefined' )
 		            var d = domain.charAt(0) === '.' ? domain : '.' + domain;
 		            domainStr = "; domain=" + d;
 		        }
+	    		document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
+	    		if( this._cookie_cache ) delete this._cookie_cache[name];
 
-            	document.cookie = name + "=" + value + expires + "; path=/" + domainStr;
 			}
 			catch( e )
 			{
-				console.debug( e );
+				MapLogger.debug( e );
 				return null;
 			}
 		},
 		read: function (name) {
+			if( this._cookie_cache && name in this._cookie_cache ) return this._cookie_cache[name];
 			try {
 				var nameEQ = name + "=";
 				var ca = document.cookie.split(';');
@@ -192,14 +199,17 @@ if( typeof MAP_Cookie === 'undefined' )
 						c = c.substring(1, c.length);
 					}
 					if (c.indexOf(nameEQ) === 0) {
-						return c.substring(nameEQ.length, c.length);
+						var val = c.substring(nameEQ.length, c.length);
+						if( this._cookie_cache ) this._cookie_cache[name] = val;
+						return val;
 					}
 				}
+				if( this._cookie_cache ) this._cookie_cache[name] = null;
 				return null;
 			}
 			catch( e )
 			{
-				console.debug( e );
+				MapLogger.debug( e );
 				return null;
 			}
 		},
@@ -3240,45 +3250,26 @@ var MAP =
 		}
 	},
 
+
 	optimizeMobile: function()
 	{
 		//for preserving scope
 		var that = this;
+		var _optimize = function( relaunch ) {
 
-		setTimeout( function() {
-
-			try {
-
+			try
+			{
 				if( that.bar_open )
 				{
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
-
-					var viewport_width = window.innerWidth;
-					var viewport_height = window.innerHeight;
+					var viewport_width  = window.visualViewport ? window.visualViewport.width  : window.innerWidth;
+					var viewport_height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
 					if( viewport_width <= 450 )
 					{
-						var coeff = 250;
+						var internal_height = Math.floor( viewport_height * 0.30 );
 
-						if( viewport_height <= 700 )
-						{
-							coeff += 200;
-						}
-
-						if( MAP_SYS?.map_notify_title == 1 )
-						{
-							coeff += 50;
-						}
-
-						if( MAP_SYS?.map_first_layer_branded == 1 )
-						{
-							coeff += 60;
-						}
-
-						var internal_height = viewport_height - coeff;
-
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ', viewport_height = '+ viewport_height + ', internal_height=' + internal_height );
-
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ', viewport_height=' + viewport_height + ', internal_height=' + internal_height );
 						that.map_notification_message.classList.add( 'extraNarrow' );
 						that.map_notification_message.style.maxHeight = internal_height + 'px';
 						that.map_notification_message.scrollTop = 0;
@@ -3286,14 +3277,7 @@ var MAP =
 						//map_flex and extraNarrow are tied attributes
 						if( !that.map_notification_message.classList.contains( 'map-iab-context' ) )
 						{
-							if( viewport_height <= 700 )
-							{
-								that.map_notification_message.classList.remove( 'map_flex' );
-							}
-							else
-							{
-								that.map_notification_message.classList.add( 'map_flex' );
-							}
+							that.map_notification_message.classList.remove( 'map_flex' );
 						}
 					}
 					else
@@ -3308,7 +3292,6 @@ var MAP =
 						that.map_notification_message.style.maxHeight = '';
 					}
 				}
-
 				that.setOverflowMaxHeight();
 
 				//second-layer image fix (wprocket)
@@ -3317,13 +3300,17 @@ var MAP =
 					img.style.height = "unset!important";
 				});
 
+				if( relaunch )
+				{
+					setTimeout( function() { _optimize( false ); }, 500 );
+				}
 			}
 			catch( error )
 			{
 				console.error( error );
 			}
-
-		}, 400 );
+		};
+		setTimeout( function() { _optimize( true ); }, 1 );
 	},
 
 	accept_close: function()
@@ -3336,6 +3323,11 @@ var MAP =
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function accept_close' );
 
 			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+
+			if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+			{
+				window.CookieShield.resetAcceptedAllCache();
+			}
 
 			that.updateSomeConsentGivenStatus();
 
@@ -3457,6 +3449,11 @@ var MAP =
 
 			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 			MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+
+			if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+			{
+				window.CookieShield.resetAcceptedAllCache();
+			}
 
 			that.updateSomeConsentGivenStatus();
 
@@ -4093,6 +4090,11 @@ var MAP =
 						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
+						if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+						{
+							window.CookieShield.resetAcceptedAllCache();
+						}
+
 						that.updateSomeConsentGivenStatus();
 
 						that.tryToUnblockScripts( true, cookieName );
@@ -4214,6 +4216,11 @@ var MAP =
 
 						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
+
+						if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+						{
+							window.CookieShield.resetAcceptedAllCache();
+						}
 
 						that.updateSomeConsentGivenStatus();
 
@@ -4754,7 +4761,7 @@ var MAP =
 		}
 	},
 
-	checkJsShield: function()
+	checkJsShield: function( send_due_to_error = false )
 	{
 		try {
 
@@ -4785,6 +4792,11 @@ var MAP =
 				};
 
 				MAP_SYS.map_missing_cookie_shield = 0;
+			}
+
+			if( send_due_to_error )
+			{
+				data['missing_api_support'] = 1;
 			}
 
 			fetch( map_ajax.ajax_url, {
@@ -5440,7 +5452,7 @@ function map_on_document_load_event()
 			                    MAP.sendDetectedKeys();
 			                }
 
-			                MAP.checkJsShield();
+			                MAP.checkJsShield( true );
 			                MAP.checkConsentModeStatus();
 			            });
 
@@ -5462,7 +5474,7 @@ function map_on_document_load_event()
 				}
 
 				setTimeout( function() {
-					MAP.checkJsShield();
+					MAP.checkJsShield( false );
 					MAP.checkConsentModeStatus();
 				}, 800 );
 			}

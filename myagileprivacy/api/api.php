@@ -448,6 +448,9 @@ function map_api_save_cookie_shield_status( &$the_settings, $cookie_shield_detec
 			$the_settings['missing_cookie_shield']           = true;
 			$the_settings['missing_cookie_shield_timestamp'] = time();
 
+			$the_settings['missing_api_support'] = false;
+			$the_settings['missing_api_support_timestamp'] = null;
+
 			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 		}
 	}
@@ -459,6 +462,9 @@ function map_api_save_cookie_shield_status( &$the_settings, $cookie_shield_detec
 			$the_settings['missing_cookie_shield']           = false;
 			$the_settings['cookie_shield_running']           = true;
 			$the_settings['cookie_shield_running_timestamp'] = time();
+
+			$the_settings['missing_api_support'] = false;
+			$the_settings['missing_api_support_timestamp'] = null;
 
 			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 		}

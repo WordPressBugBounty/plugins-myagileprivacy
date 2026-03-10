@@ -1922,6 +1922,7 @@ final class MyAgilePrivacyAdmin {
 			'currentAndSupportedLanguages' 	=> 	MyAgilePrivacy::getCurrentAndSupportedLanguages(),
 			'integrityChecks'				=>	MyAgilePrivacy::getGlobalIntegrityChecks( 'backend' ),
 			'frontend_regulation'			=>	$frontend_regulation,
+			'is_multisite'					=>	is_multisite(),
 		);
 
 		//bof theme calc

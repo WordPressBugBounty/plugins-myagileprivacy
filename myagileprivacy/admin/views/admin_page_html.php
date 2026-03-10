@@ -53,7 +53,6 @@
 	{
 		$hide_cmode_alert = false;
 	}
-
 ?>
 
 <script type="text/javascript">

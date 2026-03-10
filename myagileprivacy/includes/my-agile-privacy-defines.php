@@ -9,7 +9,7 @@
  * @subpackage MyAgilePrivacy/includes
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.3.0' );
+define( 'MAP_PLUGIN_VERSION', '3.3.1' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_PLUGIN_FILENAME', realpath( dirname( __FILE__ ) . '/../my-agile-privacy.php' ) );

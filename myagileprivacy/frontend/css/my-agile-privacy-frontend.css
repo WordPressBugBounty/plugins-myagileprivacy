@@ -990,7 +990,7 @@ span.map-necessary-caption {
     z-index: -1;
 }
 .map-modal.map-blowup {
-    z-index: 9999999999;
+    z-index: 9999999999!important;
     transform: scale(1);
 
   }
