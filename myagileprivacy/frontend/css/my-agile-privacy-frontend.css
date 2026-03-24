@@ -1,60 +1,88 @@
 /*!
-* MyAgilePrivacy (https://www.myagileprivacy.com/)
-* My Agile Privacy Main Css
-*/
+ * MyAgilePrivacy (https://www.myagileprivacy.com/)
+ * My Agile Privacy Main CSS
+ */
 
-/*signature class - do not remove*/
+
+/* ============================================================
+   1. SIGNATURE & BASE
+   ============================================================ */
+
+/* Signature class - do not remove */
 .map-css-signature-my-agile-privacy-frontend { display: none !important; }
+
+.sr-only {
+    display: none !important;
+    font-size: 16px;
+}
+
+.mapShowItem {
+    display: block !important;
+}
+
+.map-fade {
+    transition: opacity .15s linear;
+}
+
+
+/* ============================================================
+   2. SHARED FONT RESET
+   All MAP root elements share the same font stack.
+   ============================================================ */
+
+#my-agile-privacy-notification-area,
+#map-blocked-content-notification-area,
+#mapSettingsPopup,
+#my-agile-privacy-consent-again {
+    font-family: -apple-system, sans-serif !important;
+    font-display: swap !important;
+}
+
+
+/* ============================================================
+   3. NOTIFICATION AREA — BASE LAYOUT
+   ============================================================ */
 
 #my-agile-privacy-notification-area,
 #map-blocked-content-notification-area {
-	position: fixed;
-	box-sizing: border-box;
-	display: none;
+    position: fixed;
+    box-sizing: border-box;
+    display: none;
     z-index: 1000000000;
     overflow: hidden;
-
-    font-family:-apple-system,sans-serif !important;
-    font-display:swap !important;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
-#my-agile-privacy-notification-area:focus{
+#my-agile-privacy-notification-area {
+    font-size: 18px;
+    line-height: 35px;
+}
+
+#my-agile-privacy-notification-area:focus {
     outline: 0px !important;
-}
-
-#mapSettingsPopup{
-    font-family:-apple-system,sans-serif !important;
-    font-display:swap !important;
-}
-
-#my-agile-privacy-consent-again {
-    font-family:-apple-system,sans-serif !important;
-    font-display:swap !important;
 }
 
 #my-agile-privacy-notification-content {
     padding: 20px 40px 20px 40px;
 }
 
-#map-blocked-content-notification-area {
-    padding: 20px 40px;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    font-size: 14px;
-    line-height: 24px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+/* Shadow variants */
+#my-agile-privacy-notification-area.map-shadow-soft,
+#map-blocked-content-notification-area.map-shadow-soft {
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px,
+                rgba(17, 17, 26, 0.1) 0px 16px 56px,
+                rgba(17, 17, 26, 0.1) 0px 24px 80px;
 }
 
-#map-blocked-content-notification-area.isBottom{
-    position:fixed;
-    bottom:0px;
+#my-agile-privacy-notification-area.map-shadow-hard,
+#map-blocked-content-notification-area.map-shadow-hard {
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
 }
 
-#map-blocked-content-notification-area.isTop {
-    position:fixed;
-    top:0px;
-}
+
+/* ============================================================
+   4. NOTIFICATION AREA — TITLE BAR
+   ============================================================ */
 
 #my-agile-privacy-notification-area .map_notify_title {
     padding: 10px 80px 10px 40px;
@@ -65,14 +93,14 @@
 
 #my-agile-privacy-notification-area .map_notify_title .banner-title-logo {
     width: 20px;
-	height: 20px;
-	background-color: #F93F00;
+    height: 20px;
+    background-color: #F93F00;
     -webkit-mask-image: url('../svg/fox-black.svg');
     mask-image: url('../svg/fox-black.svg');
-	mask-repeat: no-repeat;
-	mask-position: center;
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
     margin-right: 5px;
 }
 
@@ -81,13 +109,9 @@
 }
 
 
-/* banner */
-
-#my-agile-privacy-notification-area {
-    font-size: 18px;
-    line-height: 35px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-}
+/* ============================================================
+   5. NOTIFICATION AREA — MESSAGE AREA
+   ============================================================ */
 
 #my-agile-privacy-notification-area .map-area-container .map_notification-message {
     align-content: center;
@@ -99,24 +123,41 @@
     align-content: center;
 }
 
-
 #my-agile-privacy-notification-area .map-area-container .map_notification-message p.map_p_splitted {
-    margin:0px !important;
-    padding:0px !important;
+    margin: 0px !important;
+    padding: 0px !important;
 }
 
-#my-agile-privacy-notification-area.map-shadow-soft,
-#map-blocked-content-notification-area.map-shadow-soft {
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+#my-agile-privacy-notification-area .map_notification-message.extraNarrow {
+    overflow-y: scroll;
 }
 
-#my-agile-privacy-notification-area.map-shadow-hard,
-#map-blocked-content-notification-area.map-shadow-hard {
-    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+/* IAB context overrides */
+#my-agile-privacy-notification-area.mapSizeWide .map_notification-message.map-iab-context {
+    flex-basis: 80% !important;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification-message.map-iab-context {
+    flex-basis: 80% !important;
 }
 
 
-/* Banner Dimension */
+#my-agile-privacy-notification-area .map_notification-message,
+#my-agile-privacy-notification-area .map_notification-message p,
+#mapSettingsPopup .map-tab-container p {
+    font-size: var(--map-text-size)!important;
+    line-height: var(--map-text-lh)!important;
+}
+
+#my-agile-privacy-notification-area .map_notification_container a{
+    font-size: var(--map-text-size)!important;
+}
+
+
+/* ============================================================
+   6. NOTIFICATION AREA — BANNER DIMENSIONS
+   ============================================================ */
+
 #my-agile-privacy-notification-area.mapSizeWide {
     width: 100%;
 }
@@ -129,7 +170,11 @@
     width: 70vw;
 }
 
-/* Banner Positioning */
+
+/* ============================================================
+   7. NOTIFICATION AREA — BANNER POSITIONING
+   ============================================================ */
+
 #my-agile-privacy-notification-area.mapPositionTopLeft {
     top: 0;
     left: 0;
@@ -143,11 +188,11 @@
 #my-agile-privacy-notification-area.mapPositionTopCenter {
     top: 0;
     left: 50%;
-    transform: translate(-50%,0);
-    -webkit-transform: translate(-50%,0);
-    -moz-transform: translate(-50%,0);
-    -ms-transform: translate(-50%,0);
-    -o-transform: translate(-50%,0);
+    transform: translate(-50%, 0);
+    -webkit-transform: translate(-50%, 0);
+    -moz-transform: translate(-50%, 0);
+    -ms-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
 }
 
 #my-agile-privacy-notification-area.mapPositionBottomLeft {
@@ -163,45 +208,47 @@
 #my-agile-privacy-notification-area.mapPositionBottomCenter {
     bottom: 0;
     left: 50%;
-    transform: translate(-50%,0);
-    -webkit-transform: translate(-50%,0);
-    -moz-transform: translate(-50%,0);
-    -ms-transform: translate(-50%,0);
-    -o-transform: translate(-50%,0);
+    transform: translate(-50%, 0);
+    -webkit-transform: translate(-50%, 0);
+    -moz-transform: translate(-50%, 0);
+    -ms-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
 }
 
 #my-agile-privacy-notification-area.mapPositionCenterLeft {
     top: 50%;
     left: 0;
-    transform: translate(0,-50%);
-    -webkit-transform: translate(0,-50%);
-    -moz-transform: translate(0,-50%);
-    -ms-transform: translate(0,-50%);
-    -o-transform: translate(0,-50%);
+    transform: translate(0, -50%);
+    -webkit-transform: translate(0, -50%);
+    -moz-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    -o-transform: translate(0, -50%);
 }
 
 #my-agile-privacy-notification-area.mapPositionCenterRight {
     top: 50%;
     right: 0;
-    transform: translate(0,-50%);
-    -webkit-transform: translate(0,-50%);
-    -moz-transform: translate(0,-50%);
-    -ms-transform: translate(0,-50%);
-    -o-transform: translate(0,-50%);
+    transform: translate(0, -50%);
+    -webkit-transform: translate(0, -50%);
+    -moz-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    -o-transform: translate(0, -50%);
 }
 
 #my-agile-privacy-notification-area.mapPositionCenterCenter {
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
-    -webkit-transform: translate(-50%,-50%);
-    -moz-transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
-    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
 }
 
 
-/* floating banner*/
+/* ============================================================
+   8. NOTIFICATION AREA — FLOATING BANNER OFFSETS
+   ============================================================ */
 
 #my-agile-privacy-notification-area.mapPositionTopLeft.map_floating_banner,
 #my-agile-privacy-notification-area.mapPositionTopRight.map_floating_banner,
@@ -231,20 +278,28 @@
     width: calc(100% - 6vw);
 }
 
-/* Buttons Positioning */
+
+/* ============================================================
+   9. NOTIFICATION AREA — BUTTONS
+   ============================================================ */
 
 #my-agile-privacy-notification-area .map_notification_container a {
     padding: 8px 0px;
     width: 100%;
     text-decoration: none;
-    cursor: pointer!important;
+    cursor: pointer !important;
 }
 
-#my-agile-privacy-notification-area .map_notification_container a:focus{
-    outline:2px solid #2a2828;
+#my-agile-privacy-notification-area .map_notification_container a:focus {
+    outline: 2px solid #2a2828;
 }
 
+#my-agile-privacy-notification-area .map_notification_container a:hover {
+    filter: brightness(95%);
+    -webkit-filter: brightness(95%);
+}
 
+/* Wide layout — buttons inline */
 #my-agile-privacy-notification-area.mapSizeWide .map_notification_container {
     margin-top: 20px;
 }
@@ -258,6 +313,7 @@
     margin-right: 0;
 }
 
+/* Wide layout — buttons aside */
 #my-agile-privacy-notification-area.mapSizeWide.mapButtonsAside .map-area-container {
     display: flex;
     flex-direction: row;
@@ -284,32 +340,63 @@
     display: block;
     text-align: center;
     cursor: pointer;
-
 }
+
 #my-agile-privacy-notification-area.mapSizeWide.mapButtonsAside .map_notification_container a:last-child {
     margin-bottom: 0px;
 }
 
+/* IAB context aside */
+#my-agile-privacy-notification-area.mapSizeWide .map_notification_container.map-iab-context {
+    flex-basis: 20% !important;
+    flex-direction: column !important;
+    display: flex;
+    gap: 10px;
+}
 
-
+/* Boxed layout */
 #my-agile-privacy-notification-area.mapSizeBoxed .map_notification_container {
     margin-top: 30px;
     display: flex;
     justify-content: space-around;
 }
+
 #my-agile-privacy-notification-area.mapSizeBoxed .map_notification_container a {
     text-align: center;
     width: 30%;
-    cursor:pointer;
+    cursor: pointer;
 }
 
-#my-agile-privacy-notification-area .map_notification_container a:hover {
-    filter: brightness(95%);
-    -webkit-filter: brightness(95%);
+/* Button icons */
+#my-agile-privacy-notification-area .map-button span {
+    position: relative;
+    display: inline-block;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    margin-right: 3px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
 }
 
+#my-agile-privacy-notification-area .map-button.map-accept-button span {
+    -webkit-mask-image: url('../svg/check-duotone.svg');
+    mask-image: url('../svg/check-duotone.svg');
+}
 
-/* close button X */
+#my-agile-privacy-notification-area .map-button.map-reject-button span {
+    -webkit-mask-image: url('../svg/times-duotone.svg');
+    mask-image: url('../svg/times-duotone.svg');
+}
+
+#my-agile-privacy-notification-area .map-button.map-customize-button span {
+    -webkit-mask-image: url('../svg/indent-duotone.svg');
+    mask-image: url('../svg/indent-duotone.svg');
+}
+
+/* Close button X */
 #my-agile-privacy-notification-area .map-closebutton-right {
     position: absolute;
     top: 12px;
@@ -319,8 +406,8 @@
 
 #my-agile-privacy-notification-area .map-closebutton-right a {
     color: #fff;
-    text-decoration: none!important;
-    line-height: 30px!important;
+    text-decoration: none !important;
+    line-height: 30px !important;
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a:hover {
@@ -328,6 +415,1228 @@
     -webkit-filter: brightness(90%);
 }
 
+
+/* ============================================================
+   10. NOTIFICATION AREA — LINKS & MISC
+   ============================================================ */
+
+#my-agile-privacy-notification-area .map-triggerGotoIABTCF,
+#my-agile-privacy-notification-area .map-triggerGotoIABTCFVendors,
+#my-agile-privacy-notification-area .map-genericFirstLayerLink {
+    font-size: inherit !important;
+    color: inherit !important;
+    line-height: inherit !important;
+    text-decoration: underline !important;
+}
+
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a {
+    all: unset;
+    color: #444 !important;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: inherit;
+}
+
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:hover {
+    color: #444;
+    text-decoration: underline;
+}
+
+#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+.showConsentAgain {
+    cursor: pointer !important;
+}
+
+.map_settings_button {
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   11. NOTIFICATION AREA — BLOCKED CONTENT BAR
+   ============================================================ */
+
+#map-blocked-content-notification-area {
+    padding: 20px 40px;
+    width: 100%;
+    left: 0;
+    text-align: center;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+#map-blocked-content-notification-area.isBottom {
+    position: fixed;
+    bottom: 0px;
+}
+
+#map-blocked-content-notification-area.isTop {
+    position: fixed;
+    top: 0px;
+}
+
+
+/* ============================================================
+   12. NOTIFICATION AREA — BRANDED BANNER LAYOUT
+   ============================================================ */
+
+#my-agile-privacy-notification-area.mapSizeWideBranded {
+    width: 90vw;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container {
+    margin-top: 20px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a {
+    display: block;
+    margin-right: 0;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a:last-child {
+    margin-right: 0;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    gap: 20px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container .map_notification-message {
+    flex-basis: 100%;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container {
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 0;
+    padding-left: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a {
+    text-align: center;
+    width: 30%;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a:last-child {
+    margin-bottom: 0px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container.map-iab-context {
+    flex-basis: 20% !important;
+    display: flex;
+    gap: 10px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 30px;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
+    max-width: 300px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box img {
+    max-width: 100%;
+}
+
+
+/* ============================================================
+   13. INLINE & CUSTOM NOTIFY
+   ============================================================ */
+
+.map_inline_notify {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #444;
+    border: 1px solid #FFEEBA;
+    background: #FFF3CD;
+    font-size: 1rem;
+    text-align: center;
+    line-height: 1.5rem;
+}
+
+.map_custom_notify {
+    display: none;
+    background: #fff9ec;
+    padding: 15px;
+    border: 2px solid #FFE5A7;
+}
+
+
+/* ============================================================
+   14. CONSENT-AGAIN BUTTON
+   ============================================================ */
+
+#my-agile-privacy-consent-again {
+    position: fixed;
+    bottom: 10px;
+    margin: 0;
+    padding: 6px 15px 6px 40px;
+    font-size: 12px;
+    background: #fff;
+    color: #444;
+    z-index: 1000000000;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 15px;
+}
+
+#my-agile-privacy-consent-again.withEffects {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+#my-agile-privacy-consent-again.map_displayNone {
+    display: none;
+}
+
+/* Positioning */
+#my-agile-privacy-consent-again.left_position {
+    left: 20px;
+}
+
+#my-agile-privacy-consent-again.right_position {
+    right: 20px;
+}
+
+#my-agile-privacy-consent-again.center_position {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Logo */
+#my-agile-privacy-consent-again .map_logo_container {
+    position: absolute;
+    top: -1px;
+    display: block;
+    left: 6px;
+    width: 25px;
+    height: 100%;
+    background-color: #F93F00;
+    -webkit-mask-image: url('../svg/fox-black.svg');
+    mask-image: url('../svg/fox-black.svg');
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+/* No-logo variant */
+#my-agile-privacy-consent-again.nologo {
+    padding-left: 15px;
+}
+
+#my-agile-privacy-consent-again.nologo .map_logo_container {
+    display: none;
+}
+
+/* No-text (icon-only) variant */
+#my-agile-privacy-consent-again.notext a.showConsent,
+#my-agile-privacy-consent-again.notext .map_cookie_policy_link {
+    display: none;
+}
+
+#my-agile-privacy-consent-again.notext {
+    padding: 5px;
+    cursor: pointer;
+}
+
+#my-agile-privacy-consent-again.notext .map_logo_container {
+    position: static;
+    width: 30px;
+    height: 30px;
+}
+
+#my-agile-privacy-consent-again.notext:focus-within {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+/* Links */
+#my-agile-privacy-consent-again a {
+    color: #444;
+}
+
+#my-agile-privacy-consent-again a:hover {
+    text-decoration: underline;
+}
+
+
+/* ============================================================
+   15. MODAL — BASE STRUCTURE
+   ============================================================ */
+
+.map-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000000001;
+    overflow: hidden;
+    outline: 0;
+    font-size: 16px !important;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+}
+
+.map-modal a {
+    text-decoration: none;
+}
+
+.map-modal .row {
+    margin: 0 -15px;
+}
+
+.map-modal .modal-body {
+    padding: 0;
+    position: relative;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+/* Dialog */
+.map-modal .map-modal-dialog {
+    position: relative;
+    width: auto;
+    margin: .5rem;
+    pointer-events: none;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    min-height: calc(100% - (.5rem * 2));
+}
+
+
+.map-modal .map-modal-dialog .map-h4-heading {
+    color: #212529 !important;
+    margin: 0 !important;
+}
+
+/* Content box */
+.map-modal-content {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    box-sizing: border-box;
+    outline: 0;
+    padding: 20px 25px;
+    max-width: 96vw;
+}
+
+.map-modal-content.withEffects {
+    border-radius: .2rem;
+}
+
+.map-modal-content .map-modal-body {
+    margin: 0px;
+    padding: 0;
+}
+
+/* Headings */
+.map-modal .map-h4-heading {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Close button */
+.map-modal .map-modal-close {
+    all: unset !important;
+    position: absolute !important;
+    right: 35px !important;
+    top: 25px !important;
+    display: block !important;
+    color: #444 !important;
+    cursor: pointer !important;
+    z-index: 1000 !important;
+}
+
+.map-modal .map-modal-close:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+.map-modal .map-modal-close:hover {
+    color: unset;
+    border: none;
+    transform: scale(1.1);
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    -o-transform: scale(1.1);
+    background: none;
+}
+
+
+/* ============================================================
+   16. MODAL — BACKDROP
+   ============================================================ */
+
+.map-modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100001;
+    background-color: #000;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    transition: opacity ease-in-out 0.5s;
+}
+
+.map-modal-backdrop.map-fade {
+    opacity: 0;
+}
+
+.map-modal-backdrop.map-show {
+    opacity: .5;
+    display: block;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    z-index: 1000000000;
+}
+
+.map-modal-open {
+    overflow: hidden;
+}
+
+.map-modal-open .map-modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+/* ============================================================
+   17. MODAL — SHOW / FADE / BLOWUP ANIMATIONS
+   ============================================================ */
+
+.map-modal.map-fade .map-modal-dialog {
+    transition: -webkit-transform .3s ease-out;
+    transition: transform .3s ease-out;
+    transition: transform .3s ease-out, -webkit-transform .3s ease-out;
+    -webkit-transform: translate(0, -25%);
+    transform: translate(0, -25%);
+}
+
+.map-modal.map-show .map-modal-dialog {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+}
+
+.map-modal.map-show {
+    display: block;
+}
+
+.map-modal.map-blowup {
+    transform: scale(1);
+}
+
+.map-modal.map-blowup.map-show {
+    z-index: 9999999999 !important;
+}
+
+.map-modal.map-blowup.map-out {
+    z-index: -1;
+}
+
+.map-modal.map-blowup .map-modal-dialog {
+    animation: blowUpModalAnimation 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+.map-modal.map-blowup.map-out .map-modal-dialog {
+    animation: blowUpModalAnimationTwo 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes blowUpModalAnimation {
+    0%   { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+@keyframes blowUpModalAnimationTwo {
+    0%   { transform: scale(1); opacity: 1; }
+    50%  { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+
+/* ============================================================
+   18. MODAL — FULL-SCREEN STRETCH (blowup layout fix)
+   ============================================================ */
+
+.map-modal.map-blowup.map-show {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+}
+
+.map-modal .map-modal-dialog {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: 100% !important;
+    flex: 1 1 auto;
+    display: flex !important;
+    align-items: stretch !important;
+}
+
+.map-modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+}
+
+.map-modal-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+}
+
+
+/* ============================================================
+   19. MODAL — BODY CONTENT
+   ============================================================ */
+
+.map-modal-body .modal_credits {
+    font-size: 11px;
+    text-align: right;
+    padding: 15px 5px 0px 5px;
+    border-top: 1px solid #d6d6d6;
+}
+
+.map-modal-body a {
+    all: unset;
+    color: #444 !important;
+    cursor: pointer;
+}
+
+.map-modal-body img {
+    max-width: 100% !important;
+    max-height: 30px !important;
+}
+
+.map-modal-body .modal_credits a {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.map-modal-body .map-modal-cookie-policy-link a {
+    font-size: inherit;
+}
+
+.map-modal-body .map-modal-cookie-policy-link a:hover {
+    color: #444;
+    text-decoration: underline;
+}
+
+.map-modal-body .map-modal-cookie-policy-link a:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+/* Tab container */
+.map-modal-body .map-tab-container {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.map-modal-body .map-tab-container .map-cookielist-overflow-container {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+}
+
+
+/* ============================================================
+   20. SWITCH / TOGGLE
+   ============================================================ */
+
+.map-switch {
+    display: inline-block;
+    position: relative;
+    min-height: 1px;
+    padding-left: 38px;
+    font-size: 14px;
+}
+
+.map-switch input[type="checkbox"] {
+    display: none !important;
+}
+
+.map-switch .map-slider {
+    background-color: #e3e1e8;
+    height: 20px;
+    width: 38px;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+    font-size: 11px;
+}
+
+.map-switch .map-slider:before {
+    background-color: #fff;
+    bottom: 2px;
+    content: "";
+    height: 15px;
+    left: 3px;
+    position: absolute;
+    transition: .4s;
+    width: 15px;
+    border-radius: 50%;
+}
+
+.map-switch .map-slider:after {
+    content: attr(data-map-disable);
+    position: absolute;
+    right: 50px;
+    color: #000;
+    font-size: 12px;
+    text-align: right;
+    min-width: 75px;
+    top: 4px;
+    text-transform: none;
+}
+
+/* Checked state */
+.map-switch input:checked + .map-slider {
+    background-color: #4dd06b;
+}
+
+.map-switch input:checked + .map-slider:before {
+    transform: translateX(18px);
+}
+
+.map-switch input:checked + .map-slider:after {
+    content: attr(data-map-enable);
+}
+
+/* Flags variant */
+.map-switch input:checked.map-flags + .map-slider {
+    background-color: #ffcc08;
+}
+
+.map-switch input:checked.map-flags + .map-slider:before {
+    transform: translateX(9px);
+}
+
+/* Activated states */
+.map-tab-section.map_cookie_description_wrapper._is_activated .map-slider:not(.map-nested) {
+    background-color: #4dd06b;
+}
+
+.map-tab-section.map_consent_description_wrapper._is_activated .map-slider {
+    background-color: #4dd06b;
+}
+
+span.map-necessary-caption {
+    color: #000;
+    font-size: 12px;
+    margin: 0px;
+}
+
+
+/* ============================================================
+   21. TAB SYSTEM
+   ============================================================ */
+
+.map-tab-content {
+    background: #ffffff;
+    display: none;
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.map-tab-content > .map-active {
+    display: block;
+}
+
+.map-tab-content p {
+    color: #343438;
+    font-size: 14px;
+    margin-top: 0;
+}
+
+.map-tab-content p a {
+    font-size: inherit;
+}
+
+.map-tab-content p a:hover {
+    text-decoration: underline;
+}
+
+.map-nav-pills {
+    width: 100%;
+    padding: 5px 30px 5px 30px;
+    box-sizing: border-box;
+}
+
+/* Tab section */
+.map-tab-section {
+    margin: 0px 5px 0px 0px;
+}
+
+.map-tab-section .map-tab-content {
+    padding: 10px 20px 5px 20px;
+}
+
+.map-tab-section .cookielawinfo-row-cat-table td,
+.map-tab-section .cookielawinfo-row-cat-table th {
+    font-size: 12px;
+}
+
+/* Tab header */
+.map-tab-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    margin-top: 5px;
+    cursor: pointer;
+    background-color: #f2f2f2;
+    transition: background-color 0.2s ease-out 0.3s, color 0.2s ease-out 0s;
+}
+
+.map-tab-header.withEffects {
+    border-radius: 5px;
+}
+
+.map-tab-header.map-no-flex {
+    display: block;
+}
+
+.map-tab-header.map-second-level-nested {
+    display: block;
+    padding: 0px;
+    background: unset;
+}
+
+.map-tab-header.map-simple-header {
+    padding: unset !important;
+    margin-top: 0px !important;
+    background-color: unset !important;
+    cursor: unset !important;
+}
+
+.map-tab-header.map-simple-header a:hover {
+    text-decoration: underline !important;
+}
+
+.map-tab-header.map-nocursor,
+.map-tab-header .map-nocursor {
+    cursor: unset;
+}
+
+.map-tab-header .map_displayInline {
+    display: inline !important;
+}
+
+.map-tab-header .map-forced-underline {
+    text-decoration: underline !important;
+}
+
+/* Tab nav links */
+.map-tab-header a.map-nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    color: #000;
+    margin: 0px;
+    max-width: 80%;
+}
+
+.map-tab-header a.map-nav-link-equivalent {
+    max-width: 80%;
+}
+
+.map-tab-header a.map-nav-link:focus,
+.map-tab-header a.map-nav-link-equivalent:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+.map-tab-header .map-nav-link-wrapper {
+    position: relative;
+    font-size: inherit;
+    color: inherit;
+    margin: 0px;
+}
+
+/* Arrow indicator */
+.map-tab-header a:before {
+    width: 10px;
+    height: 2px;
+    left: 0;
+    top: calc(50% - 1px);
+}
+
+.map-tab-header.map-standard-header a:before {
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid #4a6e78;
+    border-bottom: 1px solid #4a6e78;
+    content: " ";
+    transform: rotate(-45deg);
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    margin-right: 10px;
+}
+
+.map-tab-header.map-tab-active .map-nav-link:before {
+    transform: rotate(45deg);
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* ============================================================
+   22. SETTINGS POPUP (mapSettingsPopup)
+   ============================================================ */
+
+#mapSettingsPopup .map-wrappertab-navigation {
+    list-style-type: none;
+    padding: 0;
+}
+
+#mapSettingsPopup .map-wrappertab-navigation li {
+    list-style-type: none;
+    padding: 0;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+#mapSettingsPopup .map-wrappertab-navigation li a {
+    display: block;
+    padding: 4px 12px;
+    background-color: #f2f2f2;
+    font-size: inherit;
+    transition: all 200ms;
+}
+
+#mapSettingsPopup .map-wrappertab-navigation li a:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+#mapSettingsPopup .map-wrappertab-navigation li a.active-wrappertab-nav,
+#mapSettingsPopup .map-wrappertab-navigation li a:hover {
+    background-color: #0092baa8;
+    color: white !important;
+}
+
+#mapSettingsPopup .map-wrappertab {
+    display: none;
+}
+
+#mapSettingsPopup .map-wrappertab.map-wrappertab-active {
+    display: block;
+}
+
+/* Privacy policy link */
+#mapSettingsPopup .map-wrappertab a.map-privacy-policy-link {
+    font-size: 12px !important;
+}
+
+#mapSettingsPopup .map-wrappertab a.map-privacy-policy-link:hover {
+    text-decoration: underline;
+}
+
+/* Vendor description */
+#mapSettingsPopup .map-wrappertab .map-vendor-description,
+#mapSettingsPopup .map-wrappertab .map-vendor-description b {
+    font-size: 12px !important;
+}
+
+/* Headings */
+#mapSettingsPopup .map-h1-heading {
+    font-size: 22px;
+    font-weight: bold;
+    color: inherit;
+    margin: 0 0 8px 0;
+}
+
+#mapSettingsPopup .map-h2-heading {
+    font-size: 20px;
+    font-weight: bold;
+    color: inherit;
+    margin: 22px 0 8px 0;
+}
+
+#mapSettingsPopup .map-h3-heading {
+    font-size: 18px;
+    color: inherit;
+    font-style: italic;
+    margin: 16px 0 8px 0;
+}
+
+/* IAB button */
+#mapSettingsPopup .map-privacy-iab-button {
+    font-size: inherit;
+    display: inline-block;
+    text-decoration: underline;
+    color: inherit;
+}
+
+#mapSettingsPopup .map-privacy-iab-button:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+#mapSettingsPopup .map-privacy-iab-button:hover {
+    text-decoration: none;
+}
+
+/* Tooltip */
+#mapSettingsPopup .map-item-tooltip {
+    cursor: pointer;
+}
+
+#mapSettingsPopup .map-item-tooltip:hover {
+    text-decoration: underline;
+}
+
+
+/* ============================================================
+   23. INFO OVERLAY (deviceStorageDisclosureUrl)
+   ============================================================ */
+
+#map-info-overlay-backdrop {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 1000000002;
+    background-color: #000;
+    opacity: 0;
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#map-info-overlay-backdrop.map-info-overlay-show {
+    opacity: 0.5;
+}
+
+#map-info-overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 9999999999999999 !important;
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-family: -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    box-sizing: border-box;
+}
+
+#map-info-overlay.map-info-overlay-show {
+    opacity: 1;
+}
+
+#map-info-overlay-inner {
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#map-info-overlay-content {
+    position: relative;
+    background-color: #fff;
+    width: 100%;
+    max-width: 960px;
+    min-height: 60vh;
+    box-sizing: border-box;
+    padding: 40px 45px;
+    border-radius: 0.2rem;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+                rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+/* Close button */
+#map-info-overlay-close {
+    all: unset;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    cursor: pointer;
+    color: #444;
+    font-size: 20px;
+    line-height: 1;
+    z-index: 10;
+}
+
+#map-info-overlay-close:hover {
+    transform: scale(1.1);
+}
+
+#map-info-overlay-close:focus {
+    outline: 1px solid rgb(33, 37, 41) !important;
+    outline-offset: 1px !important;
+}
+
+/* Loading / error states */
+#map-info-overlay-content .map-info-overlay-loading {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    padding: 40px 0;
+}
+
+#map-info-overlay-content .map-info-error {
+    background: #fee;
+    color: #c33;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    border-left: 4px solid #c33;
+}
+
+/* Title and divider */
+#map-info-overlay-content .map-info-overlay-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #212529;
+    margin: 0 0 4px 0;
+    padding-right: 40px;
+    line-height: 1.3;
+}
+
+#map-info-overlay-content .map-info-overlay-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 8px 0;
+    padding-right: 40px;
+}
+
+#map-info-overlay-content .map-info-overlay-divider {
+    border: none;
+    border-top: 1px solid #d6d6d6;
+    margin: 16px 0 24px 0;
+}
+
+/* Sections */
+#map-info-overlay-content .map-info-section {
+    margin-bottom: 30px;
+}
+
+#map-info-overlay-content .map-info-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+/* Cards */
+#map-info-overlay-content .map-info-card {
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+}
+
+#map-info-overlay-content .map-info-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e8e8e8;
+    gap: 16px;
+    box-sizing: border-box;
+}
+
+#map-info-overlay-content .map-info-card-row:last-child {
+    border-bottom: none;
+}
+
+#map-info-overlay-content .map-info-card-row:nth-child(even) {
+    background: #fff;
+}
+
+#map-info-overlay-content .map-info-card-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 120px;
+}
+
+#map-info-overlay-content .map-info-card-value {
+    color: #333;
+    font-size: 13px;
+    text-align: right;
+    flex: 1;
+    word-break: break-word;
+}
+
+/* Badges */
+#map-info-overlay-content .map-info-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: #667eea;
+}
+
+#map-info-overlay-content .map-info-badge-cookie {
+    background: #e05c5c;
+}
+
+#map-info-overlay-content .map-info-badge-localstorage {
+    background: #3bb8b0;
+}
+
+/* IAB purpose badges */
+#map-info-overlay-content .map-info-purposes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+#map-info-overlay-content .map-info-purpose-badge {
+    background: #764ba2;
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Purpose description list */
+#map-info-overlay-content .map-info-purpose-list {
+    font-size: 12px;
+    color: #555;
+    text-align: right;
+    line-height: 1.9;
+}
+
+#map-info-overlay-content .map-info-purpose-list div {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+
+/* ============================================================
+   24. MEDIA QUERIES
+   ============================================================ */
+
+/* ------ min-width: 992px (desktop) ------ */
+
+@media (min-width: 992px) {
+
+    .map-modal.map-blowup.map-show {
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .map-modal .map-modal-dialog {
+        width: 80vw !important;
+        min-height: 80vh !important;
+        flex: 0 0 auto;
+    }
+
+    .map-modal-content {
+        min-height: 80vh !important;
+        padding: 30px 40px !important;
+        border-radius: 0.2rem !important;
+    }
+
+    .map-modal-body .map-tab-container .map-cookielist-overflow-container {
+        max-height: 50vh !important;
+    }
+
+    #mapSettingsPopup.mapNoCookies .map-modal-dialog{
+        width: 50vw !important;
+        min-height: 40vh !important;
+    }
+
+    #mapSettingsPopup.mapNoCookies .map-modal-dialog .map-modal-content{
+        min-height: 30vh !important;
+    }
+
+}
+
+/* ------ max-width: 1024px (tablet landscape) ------ */
 
 @media (max-width: 1024px) {
 
@@ -370,1055 +1679,6 @@
         width: 80vw;
     }
 
-    #map-blocked-content-notification-area {
-        font-size: 14px;
-        line-height: 20px;
-        padding: 15px 25px;
-    }
-}
-
-@media (max-width: 768px) {
-    #map-blocked-content-notification-area {
-        font-size: 12px;
-        line-height: 18px;
-        padding: 15px;
-    }
-}
-
-@media (max-width: 425px) {
-    #my-agile-privacy-notification-area.mapSizeBoxed {
-        width: 100vw;
-    }
-
-    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {
-        width: 100vw;
-    }
-
-    #my-agile-privacy-notification-area.mapSizeBoxed.map_floating_banner,
-    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig.map_floating_banner,
-    #my-agile-privacy-notification-area.mapSizeWide.map_floating_banner {
-        width: calc(100vw - 6vw);
-    }
-
-    #my-agile-privacy-notification-area .map_notification_container .map-button {
-        margin-right: 2px !important;
-    }
-}
-
-@media (max-width: 320px) {
-    #my-agile-privacy-notification-area {
-        font-size: 12px;
-        line-height: 16px;
-    }
-
-    #my-agile-privacy-notification-content {
-        padding: 20px;
-    }
-
-    #my-agile-privacy-notification-area .map_notify_title {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-
-    #my-agile-privacy-notification-area .map_notification_container .map-button {
-        font-size: 12px;
-    }
-}
-
-.map-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000000001;
-    overflow: hidden;
-    outline: 0;
-    font-size: unset;
-    font-size: 16px !important;
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0);
-}
-
-
-.map-modal .map-h4-heading {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-@media (max-width: 320px) {
-    .map-modal .map-h4-heading {
-        font-size: 20px !important;
-    }
-}
-
-.map-modal-body .modal_credits {
-	font-size: 11px;
-	text-align: right;
-    padding: 15px 5px 0px 5px;
-    border-top: 1px solid #d6d6d6;
-}
-
-.map-modal-body a {
-    all: unset;
-    color: #444 !important;
-    cursor: pointer;
-}
-
-#my-agile-privacy-notification-area .map-modal-cookie-policy-link a{
-    all: unset;
-    color: #444 !important;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-#my-agile-privacy-notification-area .map-modal-cookie-policy-link {
-    width:100%;
-    display: flex;
-    gap:10px;
-}
-
-@media (max-width: 800px) {
-
-    #my-agile-privacy-notification-area .map-modal-cookie-policy-link {
-        flex-direction: column;
-        gap:0px;
-    }
-}
-
-.map-modal-body .map-modal-cookie-policy-link a,
-#my-agile-privacy-notification-area .map-modal-cookie-policy-link a{
-    font-size: inherit;
-}
-
-.map-modal-body .map-modal-cookie-policy-link a:hover,
-#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:hover{
-    color: #444;
-    text-decoration: underline;
-}
-
-.map-modal-body .map-modal-cookie-policy-link a:focus,
-#my-agile-privacy-notification-area .map-modal-cookie-policy-link a:focus{
-    outline: 1px solid rgb(33, 37, 41)!important;
-    outline-offset: 1px!important;
-}
-
-.map-modal-body img{
-    max-width: 100% !important;
-    max-height: 30px!important;
-}
-
-.map-modal-body .modal_credits a {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
-.map-modal-body .map-tab-container {
-    height: 50vh;
-    overflow: hidden;
-}
-
-.map-modal-body .map-tab-container .map-cookielist-overflow-container {
-    overflow-y: auto;
-    max-height: 70%;
-}
-
-.map-modal-backdrop.map-fade {
-    opacity: 0;
-}
-
-.map-modal-backdrop.map-show {
-    opacity: .5;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-    z-index: 1000000000;
-}
-
-.map-modal-open {
-    overflow: hidden;
-}
-
-.map-modal-open .map-modal {
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-
-.map-modal.map-fade .map-modal-dialog {
-    transition: -webkit-transform .3s ease-out;
-    transition: transform .3s ease-out;
-    transition: transform .3s ease-out,-webkit-transform .3s ease-out;
-    -webkit-transform: translate(0,-25%);
-    transform: translate(0,-25%)
-}
-
-.map-modal.map-show .map-modal-dialog {
-    -webkit-transform: translate(0,0);
-    transform: translate(0,0)
-}
-
-
-
-.map-modal-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100001;
-    background-color: #000;
-    -webkit-transform: scale(0);
-    transform: scale(0);
-    transition: opacity ease-in-out 0.5s;
-}
-
-
-.map-modal-backdrop.map-fade {
-    opacity: 0
-}
-
-.map-modal-backdrop.map-show {
-    opacity: .5;
-    display: block;
-}
-
-.map-modal.map-show {
-    display: block;
-}
-
-.map-modal a {
-    text-decoration: none;
-}
-
-.map-modal .map-modal-dialog {
-    position: relative;
-    width: auto;
-    margin: .5rem;
-    pointer-events: none;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    text-align: left;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-align: center;
-    align-items: center;
-    min-height: calc(100% - (.5rem * 2))
-}
-
-.map-modal .map-modal-dialog .map-h4-heading {
-    color: #212529 !important;
-    margin: 0 !important;
-}
-
-@media (min-width: 576px) {
-    .map-modal .map-modal-dialog {
-        max-width:500px;
-        margin: 1.75rem auto;
-        min-height: calc(100% - (1.75rem * 2))
-    }
-}
-
-@media (min-width: 992px) {
-    .map-modal .map-modal-dialog {
-        max-width: 900px;
-    }
-}
-
-.map-modal-content {
-    position: relative;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    width: 100%;
-    pointer-events: auto;
-    background-color: #fff;
-    background-clip: padding-box;
-    box-sizing: border-box;
-    outline: 0;
-    padding: 20px 25px;
-    max-width: 96vw;
-}
-
-.map-modal-content.withEffects{
-    border-radius: .2rem;
-}
-
-.map-modal-content .map-modal-body{
-    margin:0px;
-    padding: 0;
-}
-
-.map-modal .row {
-    margin: 0 -15px;
-}
-
-.map-modal .modal-body {
-    padding: 0;
-    position: relative;
-    -ms-flex: 1 1 auto;
-    flex: 1 1 auto;
-}
-
-.map-modal .map-modal-close {
-    all: unset!important;
-    position: absolute!important;
-    right: 35px!important;
-    top: 25px!important;
-	display: block!important;
-    color: #444!important;
-    cursor: pointer!important;
-    z-index:1000!important;
-}
-
-.map-modal .map-modal-close:focus {
-    outline: 1px solid rgb(33, 37, 41)!important;
-    outline-offset: 1px!important;
-}
-
-.map-modal .map-modal-close:hover {
-    color: unset;
-    border: none;
-    transform: scale(1.1);
-    -webkit-transform: scale(1.1);
-    -moz-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    -o-transform: scale(1.1);
-    background: none;
-}
-
-.map-switch {
-    display: inline-block;
-    position: relative;
-    min-height: 1px;
-    padding-left: 38px;
-    font-size: 14px;
-}
-
-.map-switch input[type="checkbox"] {
-    display: none!important;
-}
-
-.map-switch .map-slider {
-    background-color: #e3e1e8;
-    height: 20px;
-    width: 38px;
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
-}
-
-.map-switch .map-slider:before {
-    background-color: #fff;
-    bottom: 2px;
-    content: "";
-    height: 15px;
-    left: 3px;
-    position: absolute;
-    transition: .4s;
-    width: 15px;
-}
-
-.map-switch input:checked + .map-slider {
-    background-color: #4dd06b;
-}
-
-.map-switch input:checked + .map-slider:before {
-    transform: translateX(18px);
-}
-
-.map-switch input:checked.map-flags + .map-slider {
-    background-color: #ffcc08;
-}
-
-.map-switch input:checked.map-flags + .map-slider:before {
-    transform: translateX(9px);
-}
-
-
-
-.map-tab-section.map_cookie_description_wrapper._is_activated .map-slider:not(.map-nested){
-    background-color: #4dd06b;
-}
-
-.map-tab-section.map_consent_description_wrapper._is_activated .map-slider{
-    background-color: #4dd06b;
-}
-
-
-.map-switch .map-slider {
-    border-radius: 34px;
-    font-size: 11px;
-}
-
-.map-switch .map-slider:before {
-    border-radius: 50%;
-}
-
-.map-tab-content {
-    background: #ffffff;
-}
-
-.map-tab-content>.map-active {
-    display: block;
-}
-
-.map-fade {
-    transition: opacity .15s linear;
-}
-
-.map-tab-content {
-    width: 100%;
-    padding: 30px;
-}
-
-@media (max-width: 768px) {
-    .map-tab-content {
-        padding: 30px 10px;
-    }
-}
-
-.map-tab-content p {
-    color: #343438;
-    font-size: 14px;
-    margin-top: 0;
-}
-
-.map-tab-content p a{
-    font-size: inherit;
-}
-
-.map-tab-content p a:hover{
-    text-decoration: underline;
-}
-
-
-@media (min-width: 576px) {
-    .map-modal .map-modal-dialog {
-        max-width:500px;
-        margin: 1.75rem auto;
-        min-height: calc(100% - (1.75rem * 2))
-    }
-}
-
-
-.map-nav-pills, .map-tab-content {
-    width: 100%;
-    padding: 5px 30px 5px 30px;
-    box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-    .map-nav-pills, .map-tab-content {
-        padding: 30px 10px;
-    }
-}
-
-
-.map-tab-header {
-    display: flex;
-    justify-content: space-between;
-}
-
-.map-tab-header.map-no-flex{
-    display: block;
-}
-
-
-.map-tab-header.map-second-level-nested{
-    display: block;
-    padding: 0px;
-    background: unset;
-}
-
-
-.map-tab-header a:before {
-    width: 10px;
-    height: 2px;
-    left: 0;
-    top: calc(50% - 1px);
-}
-
-
-.map-tab-header.map-standard-header a:before {
-
-    width: 7px;
-    height: 7px;
-    border-right: 1px solid #4a6e78;
-    border-bottom: 1px solid #4a6e78;
-    content: " ";
-    transform: rotate(-45deg);
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    margin-right: 10px;
-}
-
-.map-tab-header a.map-nav-link-equivalent {
-    max-width: 80%;
-}
-
-.map-tab-header a.map-nav-link {
-    position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 1em;
-    color: #000;
-    margin:0px;
-    max-width: 80%;
-}
-
-.map-tab-header a.map-nav-link:focus,
-.map-tab-header a.map-nav-link-equivalent:focus{
-    outline: 1px solid rgb(33, 37, 41)!important;
-    outline-offset: 1px!important;
-}
-
-
-
-.map-tab-header .map-nav-link-wrapper {
-    position: relative;
-    font-size: inherit;
-    color: inherit;
-    margin:0px;
-}
-
-
-@media (max-width: 425px) {
-    .map-tab-header a.map-nav-link {
-        max-width:180px;
-    }
-}
-
-
-.map-tab-header.map-tab-active .map-nav-link:before {
-    transform: rotate(45deg);
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-}
-
-.map-tab-header {
-    padding: 12px 15px;
-    margin-top: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-out 0.3s, color 0.2s ease-out 0s;
-    background-color: #f2f2f2;
-}
-
-.map-tab-header.map-simple-header{
-    padding:unset!important;
-    margin-top:0px!important;
-    background-color: unset!important;
-    cursor: unset!important;
-}
-.map-tab-header.map-simple-header a:hover{
-    text-decoration: underline!important;
-}
-
-
-
-.map-tab-header.map-nocursor,
-.map-tab-header .map-nocursor{
-    cursor: unset;
-}
-
-.map-tab-header .map_displayInline{
-    display: inline!important;
-}
-
-.map-tab-header .map-forced-underline{
-    text-decoration: underline!important;
-}
-
-.map-tab-header.withEffects{
-    border-radius: 5px;
-}
-
-.map-tab-content {
-    display: none;
-}
-
-.map-tab-section .map-tab-content {
-    padding: 10px 20px 5px 20px;
-}
-
-.map-tab-section {
-    margin: 0px 5px 0px 0px;
-
-}
-
-
-@media (min-width: 992px) {
-    .map-modal .map-modal-dialog {
-        max-width: 800px;
-    }
-}
-
-.map-switch .map-slider:after {
-    content: attr(data-map-disable);
-    position: absolute;
-    right: 50px;
-    color: #000;
-    font-size: 12px;
-    text-align: right;
-    min-width: 75px;
-    top:4px;
-    text-transform: none;
-}
-
-.map-switch input:checked + .map-slider:after {
-    content: attr(data-map-enable);
-}
-
-span.map-necessary-caption {
-    color: #000;
-    font-size: 12px;
-    margin:0px;
-}
-
-.map-modal.map-blowup.map-out {
-    z-index: -1;
-}
-.map-modal.map-blowup {
-    z-index: 9999999999!important;
-    transform: scale(1);
-
-  }
-  .map-modal.map-blowup .map-modal-dialog {
-    animation: blowUpModalAnimation 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  }
-  .map-modal.map-blowup.map-out .map-modal-dialog
-  {
-    animation: blowUpModalAnimationTwo 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  }
-
-  @keyframes blowUpModalAnimation {
-    0% {
-      transform: scale(0);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes blowUpModalAnimationTwo {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-        transform: scale(0.5);
-        opacity: 0;
-      }
-    100% {
-      transform: scale(0);
-      opacity: 0;
-    }
-  }
-  .map-tab-section .cookielawinfo-row-cat-table td, .map-tab-section .cookielawinfo-row-cat-table th {
-    font-size: 12px;
-}
-.map_settings_button{
-    cursor: pointer;
-}
-
-.sr-only{
-    display: none!important;
-    font-size:16px;
-}
-
-.map_inline_notify{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #444;
-    border: 1px solid #FFEEBA;
-    background: #FFF3CD;
-    font-size:1rem;
-    text-align: center;
-    line-height: 1.5rem;
-}
-
-.map_custom_notify{
-    display: none;
-	background: #fff9ec;
-	padding: 15px;
-	border: 2px solid #FFE5A7;
-}
-
-.mapShowItem{
-    display: block !important;
-}
-
-#my-agile-privacy-consent-again {
-	position: fixed;
-	bottom: 10px;
-	margin: 0;
-    padding: 6px 15px 6px 40px;
-	font-size: 12px;
-	background: #fff;
-	color: #444;
-	z-index: 1000000000;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    border-radius: 15px;
-}
-
-#my-agile-privacy-consent-again.withEffects{
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-}
-
-#my-agile-privacy-consent-again.map_displayNone{
-    display:none;
-}
-
-#my-agile-privacy-consent-again.left_position {
-	left: 20px;
-}
-
-#my-agile-privacy-consent-again.right_position {
-	right: 20px;
-}
-
-#my-agile-privacy-consent-again.center_position {
-	left: 50%;
-	transform: translateX(-50%);
-}
-
-#my-agile-privacy-consent-again .map_logo_container {
-	position: absolute;
-	top: -1px;
-    display: block;
-	left: 6px;
-    width: 25px;
-	height: 100%;
-	background-color: #F93F00;
-    -webkit-mask-image: url('../svg/fox-black.svg');
-    mask-image: url('../svg/fox-black.svg');
-	mask-repeat: no-repeat;
-	mask-position: center;
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
-}
-
-#my-agile-privacy-consent-again.notext:focus-within {
-    outline: 1px solid rgb(33, 37, 41) !important;
-    outline-offset: 1px !important;
-}
-
-#my-agile-privacy-consent-again.nologo {
-	padding-left: 15px;
-}
-
-#my-agile-privacy-consent-again.nologo .map_logo_container {
-	display: none;
-}
-
-#my-agile-privacy-consent-again.notext a.showConsent,
-#my-agile-privacy-consent-again.notext .map_cookie_policy_link {
-	display: none;
-}
-
-#my-agile-privacy-consent-again.notext {
-	padding: 5px;
-	cursor: pointer;
-}
-
-#my-agile-privacy-consent-again.notext .map_logo_container {
-	position: static;
-	width: 30px;
-	height: 30px;
-}
-
-#my-agile-privacy-consent-again a {
-	color: #444;
-}
-
-#my-agile-privacy-consent-again a:hover {
-	text-decoration: underline;
-}
-
-/* icone bottoni */
-
-#my-agile-privacy-notification-area .map-button span {
-	position: relative;
-	display: inline-block;
-	top: 2px;
-	width: 12px;
-	height: 12px;
-	margin-right: 3px;
-	mask-repeat: no-repeat;
-	mask-position: center;
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
-}
-
-#my-agile-privacy-notification-area .map-button.map-accept-button span {
-    -webkit-mask-image: url('../svg/check-duotone.svg');
-    mask-image: url('../svg/check-duotone.svg');
-}
-
-#my-agile-privacy-notification-area .map-button.map-reject-button span {
-    -webkit-mask-image: url('../svg/times-duotone.svg');
-    mask-image: url('../svg/times-duotone.svg');
-}
-
-#my-agile-privacy-notification-area .map-button.map-customize-button span {
-	-webkit-mask-image: url('../svg/indent-duotone.svg');
-    mask-image: url('../svg/indent-duotone.svg');
-}
-
-
-/*Font size fix and icons */
-@media (max-width: 576px) {
-
-    #my-agile-privacy-notification-area .map_notification_container .map-button span{
-        display: block;
-        margin: 0px auto;
-    }
-
-    #my-agile-privacy-notification-area .map_notification_container .map-button {
-        font-size:14px;
-    }
-}
-
-#my-agile-privacy-notification-area .map_notification-message.extraNarrow {
-    overflow-y: scroll;
-}
-
-#my-agile-privacy-notification-area .map-triggerGotoIABTCF,
-#my-agile-privacy-notification-area .map-triggerGotoIABTCFVendors,
-#my-agile-privacy-notification-area .map-genericFirstLayerLink{
-    font-size: inherit !important;
-    color: inherit !important;
-    line-height: inherit !important;
-    text-decoration: underline !important;
-}
-
-
-.showConsentAgain {
-    cursor: pointer !important;
-}
-
-
-#mapSettingsPopup .map-consent-extrawrapper{
-
-}
-
-#mapSettingsPopup .map-wrappertab-navigation{
-    list-style-type: none;
-    padding: 0;
-}
-
-#mapSettingsPopup .map-wrappertab-navigation li{
-    list-style-type: none;
-    padding: 0;
-    display: inline-block;
-    margin-right: 8px;
-}
-
-
-#mapSettingsPopup .map-wrappertab-navigation li a{
-    display: block;
-    padding: 4px 12px;
-    background-color: #f2f2f2;
-    font-size: inherit;
-    transition: all 200ms;
-}
-
-#mapSettingsPopup .map-wrappertab-navigation li a:focus{
-    outline: 1px solid rgb(33, 37, 41)!important;
-    outline-offset: 1px!important;
-}
-
-#mapSettingsPopup .map-wrappertab-navigation li a.active-wrappertab-nav,
-#mapSettingsPopup .map-wrappertab-navigation li a:hover{
-    background-color: #0092baa8;
-    color: white!important;
-
-}
-
-#mapSettingsPopup .map-wrappertab{
-    display: none;
-}
-
-
-#mapSettingsPopup .map-wrappertab.map-wrappertab-active{
-    display: block;
-}
-
-
-#mapSettingsPopup .map-wrappertab a.map-privacy-policy-link{
-    font-size:12px!important;
-}
-
-#mapSettingsPopup .map-wrappertab a.map-privacy-policy-link:hover{
-    text-decoration: underline;
-}
-
-
-#mapSettingsPopup .map-wrappertab .map-vendor-description,
-#mapSettingsPopup .map-wrappertab .map-vendor-description b{
-    font-size:12px!important;
-}
-
-
-#mapSettingsPopup .map-h1-heading{
-    font-size: 22px;
-    font-weight: bold;
-    color:inherit;
-    margin: 0 0 8px 0;
-}
-
-#mapSettingsPopup .map-h2-heading{
-    font-size: 20px;
-    font-weight: bold;
-    color:inherit;
-    margin: 0 0 8px 0;
-    margin: 22px 0 8px 0;
-}
-
-#mapSettingsPopup .map-h3-heading{
-    font-size: 18px;
-    color:inherit;
-    font-style: italic;
-    margin: 16px 0 8px 0;
-}
-
-
-#mapSettingsPopup .map-privacy-iab-button{
-    font-size: inherit;
-    display: inline-block;
-    text-decoration: underline;
-    color: inherit;
-}
-
-#mapSettingsPopup .map-privacy-iab-button:focus{
-    outline: 1px solid rgb(33, 37, 41)!important;
-    outline-offset: 1px!important;
-}
-
-
-#mapSettingsPopup .map-privacy-iab-button:hover{
-    text-decoration: none;
-}
-
-#mapSettingsPopup .map-item-tooltip{
-    cursor: pointer;
-}
-
-#mapSettingsPopup .map-item-tooltip:hover{
-    text-decoration: underline;
-}
-
-
-#my-agile-privacy-notification-area.mapSizeWide .map_notification-message.map-iab-context{
-    flex-basis: 80%!important;
-}
-
-#my-agile-privacy-notification-area.mapSizeWide .map_notification_container.map-iab-context{
-    flex-basis: 20%!important;
-    flex-direction: column!important;
-    display: flex;
-    gap: 10px;
-}
-
-/* Branded Banner Layout */
-#my-agile-privacy-notification-area.mapSizeWideBranded {
-    width: 90vw;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container {
-    margin-top: 20px;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a {
-    display: block;
-    margin-right: 0;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container a:last-child {
-    margin-right: 0;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
-    flex: 1 1 auto; /* Permette all'area di espandersi */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Mantiene l'allineamento orizzontale */
-    align-items: center; /* Centra verticalmente */
-    padding-top: 25px;
-    padding-bottom: 25px;
-    gap: 20px;
-
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container .map_notification-message {
-    flex-basis: 100%;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container {
-    flex-basis: 100%;
-    width:100%;
-    margin-top: 0;
-    padding-left: 10px;
-    font-size: 18px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: row;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a {
-    
-    text-align: center;
-    width: 30%;
-
-}
-#my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map_notification_container a:last-child {
-    margin-bottom: 0px;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification-message.map-iab-context{
-    flex-basis: 80%!important;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container.map-iab-context{
-    flex-basis: 20%!important;
-    /* flex-direction: column!important; */
-    display: flex;
-    gap: 10px;
-}
-
-
-#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    gap: 30px;
-}
-
-#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
-    max-width: 300px;
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-}
-#my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box img {
-    max-width:100%;
-}
-
-@media (max-width: 1024px) {
     #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
         display: block;
         padding-bottom: 0;
@@ -1437,16 +1697,118 @@ span.map-necessary-caption {
     }
 }
 
-@media (max-width: 425px) {
-    #my-agile-privacy-notification-area.mapSizeWideBranded.map_floating_banner {
-        width: calc(100vw - 6vw);
-    }
+/* ------ max-width: 800px ------ */
 
-    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
-        padding-top: 0;
+@media (max-width: 800px) {
+
+    #my-agile-privacy-notification-area .map-modal-cookie-policy-link {
+        flex-direction: column;
+        gap: 0px;
     }
 }
+
+/* ------ max-width: 768px (tablet portrait) ------ */
+
+@media (max-width: 768px) {
+
+    #map-blocked-content-notification-area {
+        font-size: 14px;
+        line-height: 20px;
+        padding: 15px 25px;
+    }
+
+    .map-tab-content,
+    .map-nav-pills {
+        padding: 30px 10px;
+    }
+
+    #my-agile-privacy-notification-area .map_notification-message,
+    #my-agile-privacy-notification-area .map_notification-message p,
+    #mapSettingsPopup .map-tab-container p {
+        font-size: calc(var(--map-text-size) - 4px) !important;
+        line-height: calc(var(--map-text-lh) - 8px) !important;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container a{
+        font-size: calc(var(--map-text-size) - 4px) !important;
+    }
+
+    #map-info-overlay-content {
+        padding: 30px 20px;
+        min-height: 80vh;
+    }
+
+    #map-info-overlay-content .map-info-overlay-title {
+        font-size: 18px;
+    }
+
+    #map-info-overlay-content .map-info-card-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    #map-info-overlay-content .map-info-card-label {
+        min-width: unset;
+    }
+
+    #map-info-overlay-content .map-info-card-value {
+        text-align: left;
+    }
+
+    #map-info-overlay-content .map-info-purposes {
+        justify-content: flex-start;
+    }
+
+    #map-info-overlay-content .map-info-purpose-list {
+        text-align: left;
+    }
+
+    #map-info-overlay-content .map-info-purpose-list div {
+        justify-content: flex-start;
+    }
+}
+
+/* ------ max-width: 576px ------ */
+
+@media (max-width: 576px) {
+
+    #my-agile-privacy-notification-area .map_notification_container .map-button span {
+        display: block;
+        margin: 0px auto;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container .map-button {
+        font-size: 14px;
+    }
+}
+
+/* ------ max-width: 450px ------ */
+
+@media (max-width: 450px) {
+
+    #my-agile-privacy-notification-area .map_notification_container {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container a {
+        width: 100% !important;
+    }
+
+    .map-tab-header a.map-nav-link {
+        max-width: 130px !important;
+    }
+
+    .map-tab-header a.map-consent-mode-link {
+        max-width: 70px !important;
+    }
+}
+
+/* ------ max-width: 430px ------ */
+
 @media (max-width: 430px) {
+
     #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
         flex-direction: column;
         align-items: center;
@@ -1461,25 +1823,69 @@ span.map-necessary-caption {
     }
 }
 
-/*fix for extra narrow display*/
-@media (max-width: 450px) {
-    #my-agile-privacy-notification-area .map_notification_container {
-        flex-direction: column!important;
-        align-items: center!important;
-        gap: 10px!important;
+/* ------ max-width: 425px ------ */
+
+@media (max-width: 425px) {
+
+    #my-agile-privacy-notification-area.mapSizeBoxed {
+        width: 100vw;
     }
 
-    #my-agile-privacy-notification-area .map_notification_container a {
-        width: 100% !important;
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {
+        width: 100vw;
     }
 
-    .map-tab-header a.map-nav-link {
-        max-width: 130px!important;
+    #my-agile-privacy-notification-area.mapSizeBoxed.map_floating_banner,
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig.map_floating_banner,
+    #my-agile-privacy-notification-area.mapSizeWide.map_floating_banner {
+        width: calc(100vw - 6vw);
     }
 
-    .map-tab-header a.map-consent-mode-link {
-        max-width: 70px!important;
+    #my-agile-privacy-notification-area .map_notification_container .map-button {
+        margin-right: 2px !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded.map_floating_banner {
+        width: calc(100vw - 6vw);
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+        padding-top: 0;
+    }
+
+    #map-info-overlay-inner {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    #map-info-overlay-content {
+        padding: 25px 15px;
     }
 }
 
+/* ------ max-width: 320px ------ */
 
+@media (max-width: 320px) {
+
+    #my-agile-privacy-notification-area {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    #my-agile-privacy-notification-content {
+        padding: 20px;
+    }
+
+    #my-agile-privacy-notification-area .map_notify_title {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container .map-button {
+        font-size: 12px;
+    }
+
+    .map-modal .map-h4-heading {
+        font-size: 20px !important;
+    }
+}

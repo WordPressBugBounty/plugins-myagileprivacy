@@ -258,7 +258,9 @@ final class MyAgilePrivacyFrontend {
 		$background_style = ( $the_settings['button_accept_button_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_accept_button_color'] ).' !important ' : '';
 
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
-		$text_size_style = 'font-size:'.esc_attr( $the_settings['text_size'] ).'px!important';
+
+		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
 
 		$class = ' class="map-button map-button-style map-accept-button"';
 
@@ -298,7 +300,9 @@ final class MyAgilePrivacyFrontend {
 		$background_style = ( $the_settings['button_reject_button_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_reject_button_color'] ).' !important ' : '';
 
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
-		$text_size_style = 'font-size:'.esc_attr( $the_settings['text_size'] ).'px !important';
+
+		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
 
 		$class = ' class="map-button map-button-style map-reject-button"';
 
@@ -337,7 +341,9 @@ final class MyAgilePrivacyFrontend {
 		$background_style = ( $the_settings['button_customize_button_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_customize_button_color'] ).' !important' : '';
 
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
-		$text_size_style = 'font-size:'.esc_attr( $the_settings['text_size'] ).'px !important';
+
+		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
 
 		$class = ' class="map-button map-button-style map-customize-button"';
 
@@ -583,6 +589,17 @@ final class MyAgilePrivacyFrontend {
 			'lang' => '',
 		), $atts ) );
 
+		$iab_tcf_context = false;
+
+	    if(
+	        $rconfig &&
+	        isset( $rconfig['allow_iab'] ) &&
+	        $rconfig['allow_iab'] == 1 &&
+	        $the_settings['enable_iab_tcf'] )
+	    {
+	        $iab_tcf_context = true;
+	    }
+
 		$remove_dpo_text = true;
 		$remove_dpo_other_text = true;
 		$remove_ccpa_text = true;
@@ -624,6 +641,8 @@ final class MyAgilePrivacyFrontend {
 		$cookies_categories_data = $this->get_cookie_categories_description( 'publish' );
 		$cookie_list_html = "";
 
+		$counter = 0;
+
 		//preventing double cookie print
 		$all_remote_ids = array();
 
@@ -640,11 +659,23 @@ final class MyAgilePrivacyFrontend {
 				else
 				{
 					$all_remote_ids[] = $the_remote_id;
+					$counter++;
 				}
 
 				$cookie_list_html .= "<p><b>".$value['post_title']."</b><br>";
 				$cookie_list_html .= $value['post_content']."</p>";
 			}
+		}
+
+		if( $counter == 0 && !$iab_tcf_context )
+		{
+			$cookie_list_html .= "<p>".$the_translations[$current_lang]['layer2_nocookie']."</p>";
+		}
+
+		if( $iab_tcf_context )
+		{
+			$cookie_list_html .= "<p><b>".$the_translations[$current_lang]['cookie_iab_title']."</b><br>";
+			$cookie_list_html .= $the_translations[$current_lang]['cookie_iab_desc']."</p>";
 		}
 
 		if( !$text )
@@ -933,8 +964,9 @@ final class MyAgilePrivacyFrontend {
 
 		    $item_type = 'def';
 		    $blog_id   = is_multisite() ? get_current_blog_id() : 1;
+		    $scheme    = is_ssl() ? 'https' : 'http';
 
-	        $cache_key = 'notify_html_' . $item_type. '_' . $current_lang. '_' . $blog_id;;
+	        $cache_key = 'notify_html_' . $item_type. '_' . $current_lang. '_' . $blog_id. '_'.$scheme;
 	        $cached    = MyAgilePrivacy::get_json_cache( $cache_key );
 
 	        if( !$skip_json_cache )
@@ -1353,12 +1385,22 @@ final class MyAgilePrivacyFrontend {
 				$cookie_process_delayed_mode = true;
 			}
 
+			$force_js_learning_mode = 0;
+
+			if( $rconfig &&
+				isset( $rconfig['force_js_learning_mode'] ) &&
+				$rconfig['force_js_learning_mode'] == 1
+			)
+			{
+				$force_js_learning_mode = 1;
+			}
+
 			wp_localize_script( $this->plugin_name, 'map_ajax',
 				array(
 					'ajax_url' 						=> 	admin_url( 'admin-ajax.php' ),
 					'api_url'                       =>  plugin_dir_url( dirname( __FILE__ ) ) . 'api/api.php',
 					'security' 						=> 	wp_create_nonce( 'map_js_shield_callback' ),
-					'force_js_learning_mode' 		=> 	$rconfig['force_js_learning_mode'],
+					'force_js_learning_mode' 		=> 	$force_js_learning_mode,
 					'scanner_compatibility_mode'	=> 	$the_settings['scanner_compatibility_mode'],
 					'cookie_process_delayed_mode'	=> 	intval( $cookie_process_delayed_mode ),
 			) );
@@ -2005,7 +2047,10 @@ final class MyAgilePrivacyFrontend {
 	    }
 
 	    $lang      = MyAgilePrivacy::getCurrentLang4Char();
-	    $cache_key = 'head_script_' . ( $block_mode ? 'block' : 'string' ) . '_' . $lang;
+	    $blog_id   = is_multisite() ? get_current_blog_id() : 1;
+	    $scheme    = is_ssl() ? 'https' : 'http';
+
+	    $cache_key = 'head_script_' . ( $block_mode ? 'block' : 'string' ) . '_' . $lang. '_' .$blog_id.'_'.$scheme;
 
 	    if( !$skip_json_cache )
 	    {
@@ -2042,10 +2087,12 @@ final class MyAgilePrivacyFrontend {
 	    $MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
 	    $frontend_regulation = $MyAgilePrivacyRegulationHelper->getFrontendConfig();
 
+	    //get base directory, safe mode for multisite
+		$_plugin_url = MyAgilePrivacy::get_plugin_url( __FILE__ );
+
 	    $manifest_assoc = null;
 
-	    if( !MAP_DEV_MODE &&
-	        $rconfig &&
+	    if( $rconfig &&
 	        isset( $rconfig['allow_manifest'] ) &&
 	        $rconfig['allow_manifest']
 	    )
@@ -2071,17 +2118,17 @@ final class MyAgilePrivacyFrontend {
 
 	    if( $the_settings['is_on'] == true )
 	    {
-	        $main_frontend_js = plugin_dir_url(__FILE__) . "js/plain/my-agile-privacy-frontend$minified_filename_add.js$version_param";
+	        $main_frontend_js = $_plugin_url . "js/plain/my-agile-privacy-frontend$minified_filename_add.js$version_param";
 
 	        if( isset( $rconfig ) &&
 	            isset( $rconfig['use_css_reset'] ) &&
 	            $rconfig['use_css_reset'] == 1 )
 	        {
-	            $frontend_css[] = plugin_dir_url(__FILE__) . "css/my-agile-privacy-reset$minified_filename_add.css$version_param";
+	            $frontend_css[] = $_plugin_url . "css/my-agile-privacy-reset$minified_filename_add.css$version_param";
 	        }
 
-	        $frontend_css[] = plugin_dir_url(__FILE__) . "css/animate.min.css$version_param";
-	        $frontend_css[] = plugin_dir_url(__FILE__) . "css/my-agile-privacy-frontend$minified_filename_add.css$version_param";
+	        $frontend_css[] = $_plugin_url . "css/animate.min.css$version_param";
+	        $frontend_css[] = $_plugin_url . "css/my-agile-privacy-frontend$minified_filename_add.css$version_param";
 	    }
 
 	    $js_shield_url = null;
@@ -2284,11 +2331,13 @@ final class MyAgilePrivacyFrontend {
 	        }
 	    }
 
-	    $map_js_basedirectory = plugin_dir_url(__FILE__);
+	    //get base directory, safe mode for multisite
+	    $_plugin_url = MyAgilePrivacy::get_plugin_url( __FILE__ );
 
 	    if( MAP_DEV_MODE )
 	    {
-	        $map_js_basedirectory .= '../dev/MyAgilePrivacyIabTCF/';
+	        $dev_plugin_url = MyAgilePrivacy::get_plugin_url( MAP_PLUGIN_FILENAME );
+	        $map_js_basedirectory = $dev_plugin_url.'/dev/MyAgilePrivacyIabTCF/';
 	    }
 	    else
 	    {

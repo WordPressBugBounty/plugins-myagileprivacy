@@ -94,6 +94,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_notify_message_v2" name="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
 							value="<?php echo esc_attr( $the_translations[$lang_code]['notify_message_v2'] ); ?>">
 
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_notify_message_nocookie" name="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_nocookie]"
+							value="<?php echo esc_attr( $the_translations[$lang_code]['notify_message_nocookie'] ); ?>">
+
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_layer2_nocookie" name="translations[<?php echo esc_attr( $lang_code ); ?>][layer2_nocookie]"
+							value="<?php echo esc_attr( $the_translations[$lang_code]['layer2_nocookie'] ); ?>">
+
 						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_accept" name="translations[<?php echo esc_attr( $lang_code ); ?>][accept]"
 							value="<?php echo esc_attr( $the_translations[$lang_code]['accept'] ); ?>">
 
@@ -193,10 +199,22 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									<div class="preview-content">
 										<div class="preview-text-container">
 
-											<span
+											<?php if( $no_cookies && !$iab_tcf_context ): ?>
+
+												<span
+												role="button" tabindex="0"
+												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_nocookie]"
+												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_nocookie'] ); ?></span>
+
+											<?php else: ?>
+
+												<span
 												role="button" tabindex="0"
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
 												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span>
+
+
+											<?php endif; ?>
 
 											<?php
 

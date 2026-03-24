@@ -51,6 +51,14 @@ final class MyAgilePrivacyBannerRenderer
 	private $frontend;
 
 	/**
+	 * Lazy-loaded cache for cookie categories data.
+	 * Populated on first call to get_cookies_categories_data().
+	 *
+	 * @var array|null
+	 */
+	private $cookies_categories_data = null;
+
+	/**
 	 * @param array                  $the_settings
 	 * @param array                  $rconfig
 	 * @param array                  $the_translations
@@ -106,31 +114,71 @@ final class MyAgilePrivacyBannerRenderer
 	}
 
 	/**
+	 * Returns (and caches) the cookie categories data.
+	 * Calls get_cookie_categories_description() only once per render lifecycle.
+	 *
+	 * @return array
+	 */
+	private function get_cookies_categories_data()
+	{
+		if( $this->cookies_categories_data === null )
+		{
+			$this->cookies_categories_data = $this->frontend->get_cookie_categories_description( 'publish' );
+		}
+
+		return $this->cookies_categories_data;
+	}
+
+	/**
+	 * Returns true if the cookie list for the second layer contains zero items.
+	 *
+	 * @return bool
+	 */
+	private function has_no_cookies()
+	{
+		$cookies_categories_data = $this->get_cookies_categories_data();
+
+		foreach( $cookies_categories_data as $v )
+		{
+			foreach( $v as $value )
+			{
+				// At least one item found — not empty.
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Returns the computed style variables used across multiple render methods.
 	 *
 	 * @return array
 	 */
 	private function get_style_vars()
 	{
-		$s = $this->the_settings;
+	    $s = $this->the_settings;
+	    $color_style         = ( $s['text'] != '' ) ? 'color:'.$s['text'].' !important' : '';
+	    $background_style    = $s['background'] != '' ? 'background-color:'.$s['background'] : '';
+	    $border_radius_style = 'border-radius:'.$s['elements_border_radius'].'px';
 
-		$color_style         = ( $s['text'] != '' ) ? 'color:'.$s['text'].' !important' : '';
-		$background_style    = $s['background'] != '' ? 'background-color:'.$s['background'] : '';
-		$border_radius_style = 'border-radius:'.$s['elements_border_radius'].'px';
-		$text_size           = 'font-size:'.$s['text_size'].'px!important';
-		$text_lineheight     = 'line-height:'.$s['text_lineheight'].'px!important';
+	    $text_size_val       = (int) $s['text_size'];
+	    $text_lineheight_val = (int) $s['text_lineheight'];
 
-		return array(
-			'color_style'                           => $color_style,
-			'background_style'                      => $background_style,
-			'border_radius_style'                   => $border_radius_style,
-			'text_size'                             => $text_size,
-			'text_lineheight'                       => $text_lineheight,
-			'composed_style'                        => implode( ';', array( $color_style, $background_style, $border_radius_style, $text_size, $text_lineheight ) ),
-			'composed_style_paragraph_first_layer'  => implode( ';', array( $text_size, $text_lineheight, $color_style ) ),
-			'composed_style_paragraph_second_layer' => implode( ';', array( $text_size, $text_lineheight ) ),
-			'notification_bar_composed_style'       => implode( ';', array( $color_style, $background_style, $border_radius_style ) ),
-		);
+		$text_size       = '--map-text-size:'.$text_size_val.'px; font-size:var(--map-text-size)';
+		$text_lineheight = '--map-text-lh:'.$text_lineheight_val.'px; line-height:var(--map-text-lh)';
+
+	    return array(
+	        'color_style'                           => $color_style,
+	        'background_style'                      => $background_style,
+	        'border_radius_style'                   => $border_radius_style,
+	        'text_size'                             => $text_size,
+	        'text_lineheight'                       => $text_lineheight,
+	        'composed_style'                        => implode( ';', array( $color_style, $background_style, $border_radius_style, $text_size, $text_lineheight ) ),
+	        'composed_style_paragraph_first_layer'  => implode( ';', array( $text_size, $text_lineheight, $color_style ) ),
+	        'composed_style_paragraph_second_layer' => implode( ';', array( $text_size, $text_lineheight ) ),
+	        'notification_bar_composed_style'       => implode( ';', array( $color_style, $background_style, $border_radius_style ) ),
+	    );
 	}
 
 	/**
@@ -142,9 +190,13 @@ final class MyAgilePrivacyBannerRenderer
 	{
 		$s = $this->the_settings;
 
+		$iab_tcf_context = $this->is_iab_tcf_context();
+		$no_cookies = $this->has_no_cookies();
+
 		$cookie_banner_vertical_position   = $s['cookie_banner_vertical_position'];
 		$cookie_banner_horizontal_position = $s['cookie_banner_horizontal_position'];
 
+		$with_no_cookies_class = ( $no_cookies && !$iab_tcf_context ) ? 'mapNoCookies' : '';
 		$with_css_effects_class = ( $s['with_css_effects'] == true ) ? 'withEffects' : '';
 		$map_shadow_class       = ( $s['cookie_banner_shadow'] == false ) ? '' : $s['cookie_banner_shadow'];
 		$floating_banner        = ( $s['floating_banner'] == false ) ? '' : 'map_floating_banner';
@@ -189,7 +241,7 @@ final class MyAgilePrivacyBannerRenderer
 			$new_size = 'mapSizeWideBranded';
 		}
 
-		$composed_class = implode( ' ', array( $new_position, $new_size, $floating_banner, $with_css_effects_class, $animation_class, $map_shadow_class ) );
+		$composed_class = implode( ' ', array( $with_no_cookies_class, $new_position, $new_size, $floating_banner, $with_css_effects_class, $animation_class, $map_shadow_class ) );
 
 		if( !$new_position )
 		{
@@ -345,17 +397,33 @@ final class MyAgilePrivacyBannerRenderer
 		$t    = $this->the_translations[ $lang ];
 		$s    = $this->the_settings;
 
+		$no_cookies = $this->has_no_cookies();
+
 		$allowed_paragraph_split         = false;
 		$map_notification_container_flex = '';
 
-		if( !$iab_tcf_context &&
-			$t['notify_message_v2'] == $t['notify_message_v2_short'] )
+		if( $iab_tcf_context )
 		{
-			$allowed_paragraph_split         = true;
-			$map_notification_container_flex = 'map_flex';
+		    $notify_message_text = $t['notify_message_v2'];
+		}
+		elseif( $no_cookies )
+		{
+		    $notify_message_text             = $t['notify_message_nocookie'];
+		    $allowed_paragraph_split         = true;
+		    $map_notification_container_flex = 'map_flex';
+		}
+		else
+		{
+		    $notify_message_text = $t['notify_message_v2'];
+
+		    if( $t['notify_message_v2'] == $t['notify_message_v2_short'] )
+		    {
+		        $allowed_paragraph_split         = true;
+		        $map_notification_container_flex = 'map_flex';
+		    }
 		}
 
-		$notify_message = do_shortcode( stripslashes( esc_html( $t['notify_message_v2'].'[myagileprivacy_extra_info]' ) ) );
+		$notify_message = do_shortcode( stripslashes( esc_html( $notify_message_text.'[myagileprivacy_extra_info]' ) ) );
 
 		if( $allowed_paragraph_split )
 		{
@@ -493,7 +561,8 @@ final class MyAgilePrivacyBannerRenderer
 				' class="'.esc_attr( $position_vars['composed_class'] ).' mapButtonsAside"'.
 				' data-nosnippet="true"'.
 				' style="'.esc_attr( $style_vars['composed_style'] ).'"'.
-				' data-animation="'.$s['cookie_banner_animation'].'">'.
+				' data-animation="'.$s['cookie_banner_animation'].'"'.
+				'>'.
 				$notify_title.
 				$notify_close_button.
 				'<div id="my-agile-privacy-notification-content">'.
@@ -620,6 +689,7 @@ final class MyAgilePrivacyBannerRenderer
 		$position_vars = $this->get_position_vars();
 
 		$iab_tcf_context = $this->is_iab_tcf_context();
+		$no_cookies      = $this->has_no_cookies();
 
 		$cookie_policy_url        = $this->get_cookie_policy_url();
 		$personal_data_policy_url = $this->get_personal_data_policy_url();
@@ -646,7 +716,9 @@ final class MyAgilePrivacyBannerRenderer
 			$layer2_overflow_wrapper_class = '';
 		}
 
-		$html  = '<div class="map-modal" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="0" aria-labelledby="mapSettingsPopup">';
+		$with_no_cookies_class = ( $no_cookies && !$iab_tcf_context ) ? 'mapNoCookies' : '';
+
+		$html  = '<div class="map-modal '.esc_attr( $with_no_cookies_class ).'" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="0" aria-labelledby="mapSettingsPopup">';
 		$html .= '<div class="map-modal-dialog">';
 		$html .= '<div class="map-modal-content map-bar-popup '.esc_attr( $position_vars['with_css_effects_class'] ).'">';
 		$html .= '<div class="map-modal-body">';
@@ -665,16 +737,34 @@ final class MyAgilePrivacyBannerRenderer
 
 		if( $iab_tcf_context )
 		{
-			$html .= $this->render_iab_tabs_header();
-			$html .= '<div id="map-privacy-cookie-thirdypart-wrapper" class="map-wrappertab map-wrappertab-active map-privacy-cookie-thirdypart-wrapper">';
+			$thirdypart_active_class = $no_cookies ? '' : 'map-wrappertab-active';
+			$iab_active_class        = $no_cookies ? 'map-wrappertab-active' : '';
+
+			if( !$no_cookies )
+			{
+				$html .= $this->render_iab_tabs_header(); // opens map-consent-extrawrapper + nav tabs
+			}
+			else
+			{
+				$html .= '<div class="map-consent-extrawrapper">'; // opens the wrapper without nav tabs
+			}
+
+			$html .= '<div id="map-privacy-cookie-thirdypart-wrapper" class="map-wrappertab '.esc_attr( $thirdypart_active_class ).' map-privacy-cookie-thirdypart-wrapper">';
 		}
 
-		$html .= $this->render_cookie_list( $position_vars['with_css_effects_class'] );
+		if( $no_cookies && !$iab_tcf_context )
+		{
+			$html .= '<p>'.esc_html( $t['layer2_nocookie'] ).'</p>';
+		}
+		else
+		{
+			$html .= $this->render_cookie_list( $position_vars['with_css_effects_class'] );
+		}
 
 		if( $iab_tcf_context )
 		{
 			$html .= '</div>'; // map-privacy-cookie-thirdypart-wrapper
-			$html .= '<div id="map-privacy-iab-tcf-wrapper" class="map-wrappertab map-privacy-iab-tcf-wrapper"></div>';
+			$html .= '<div id="map-privacy-iab-tcf-wrapper" class="map-wrappertab '.esc_attr( $iab_active_class ).' map-privacy-iab-tcf-wrapper"></div>';
 			$html .= '</div>'; // map-consent-extrawrapper
 		}
 
@@ -741,7 +831,7 @@ final class MyAgilePrivacyBannerRenderer
 		$microsoft_consent_mode_options_shown = false;
 		$clarity_consent_mode_options_shown   = false;
 
-		$cookies_categories_data = $this->frontend->get_cookie_categories_description( 'publish' );
+		$cookies_categories_data = $this->get_cookies_categories_data();
 
 		$all_remote_ids = array();
 		$html           = '';
@@ -755,7 +845,7 @@ final class MyAgilePrivacyBannerRenderer
 				if( in_array( $the_remote_id, $all_remote_ids ) ) continue;
 				$all_remote_ids[] = $the_remote_id;
 
-				$cleaned_cookie_name         = str_replace( '"', '', $value['post_title'] );
+				$cleaned_cookie_name         = str_replace( '"', '', $value['post_data']->post_title );
 				$the_post_is_readonly        = isset( $value['post_meta']['_map_is_readonly'][0] )                 ? $value['post_meta']['_map_is_readonly'][0]                 : false;
 				$the_post_installation_type  = isset( $value['post_meta']['_map_installation_type'][0] )           ? $value['post_meta']['_map_installation_type'][0]           : 'js_noscript';
 				$the_post_code               = isset( $value['post_meta']['_map_code'][0] )                        ? $value['post_meta']['_map_code'][0]                        : null;
@@ -895,7 +985,7 @@ final class MyAgilePrivacyBannerRenderer
 
 		$html  = '<div class="map-tab-section map_cookie_description_wrapper '.esc_attr( $wrapper_added_class ).'" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">';
 		$html .= '<div class="map-tab-header map-standard-header '.esc_attr( $with_css_effects_class.$this_extra_header_class ).'">';
-		$html .= '<a class="map_expandItem map-nav-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0">'.esc_html( $value['post_title'] ).'</a>';
+		$html .= '<a class="map_expandItem map-nav-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0">'.esc_html( $value['post_data']->post_title ).'</a>';
 
 		if( $k == 'necessary' )
 		{
@@ -906,8 +996,8 @@ final class MyAgilePrivacyBannerRenderer
 			$html .=
 				'<div class="map-switch">'.
 					'<input data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" type="checkbox" id="map-checkbox-'.esc_attr( $the_remote_id ).'" class="map-user-preference-checkbox MapDoNotTouch"/>'.
-					'<div class="map-slider map-for-map-checkbox-'.esc_attr( $the_remote_id ).'" role="checkbox" aria-label="'.esc_attr( $value['post_title'] ).'" tabindex="0" aria-checked="mixed" data-map-enable="'.esc_attr( $is_enabled_text ).'" data-map-disable="'.esc_attr( $is_disabled_text ).'">'.
-						'<span class="sr-only">'.esc_html( $value['post_title'] ).'</span>'.
+					'<div class="map-slider map-for-map-checkbox-'.esc_attr( $the_remote_id ).'" role="checkbox" aria-label="'.esc_attr( $value['post_data']->post_title ).'" tabindex="0" aria-checked="mixed" data-map-enable="'.esc_attr( $is_enabled_text ).'" data-map-disable="'.esc_attr( $is_disabled_text ).'">'.
+						'<span class="sr-only">'.esc_html( $value['post_data']->post_title ).'</span>'.
 					'</div>'.
 				'</div>';
 		}

@@ -191,6 +191,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['blocked_content'] = 'Attenzione: alcune funzionalità di questa pagina potrebbero essere bloccate a seguito delle tue scelte privacy';
 		$default_txt['it_IT']['notify_message_v2'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
 		$default_txt['it_IT']['notify_message_v2_short'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
+		$default_txt['it_IT']['notify_message_nocookie'] = 'Questo sito utilizza cookie tecnici necessari al suo funzionamento. Non utilizziamo cookie di profilazione o di terze parti. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
+		$default_txt['it_IT']['layer2_nocookie'] = 'Su questo sito non sono presenti cookie di terze parti o strumenti di tracciamento.';
 		$default_txt['it_IT']['view_the_cookie_policy'] = 'Visualizza la Cookie Policy';
 		$default_txt['it_IT']['view_the_personal_data_policy'] = "Visualizza l'Informativa Privacy";
 		$default_txt['it_IT']['manage_consent'] = 'Consenso';
@@ -239,7 +241,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['anchor_text_4'] = 'GDPR Cookie Banner by My Agile Privacy®';
 		$default_txt['it_IT']['anchor_text_5'] = 'Cookie Consent e Privacy Policy by My Agile Privacy®';
 		$default_txt['it_IT']['anchor_text_6'] = 'CMP e Cookie Banner by My Agile Privacy®';
-
+		$default_txt['it_IT']['cookie_iab_title'] = 'Gestione del consenso IAB TCF';
+		$default_txt['it_IT']['cookie_iab_desc'] = 'Questo sito aderisce al Transparency and Consent Framework (TCF) di IAB Europe. Aderendo a questo sistema, potrebbero essere installati cookie tecnici e di terze parti da parte dei vendor registrati nel Global Vendor List di IAB Europe, sulla base delle preferenze espresse dall\'utente. L\'elenco completo dei vendor attivi e la gestione del consenso sono consultabili in qualsiasi momento tramite il pannello delle preferenze di My Agile Privacy.';
 
 		//english - en_US - en - eng
 		$default_txt['en_US'] = array();
@@ -249,6 +252,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['blocked_content'] = 'Warning: some page functionalities could not work due to your privacy choices';
 		$default_txt['en_US']['notify_message_v2'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
 		$default_txt['en_US']['notify_message_v2_short'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
+		$default_txt['en_US']['notify_message_nocookie'] = 'This site uses technical cookies necessary for its operation. We do not use profiling or third-party cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
+		$default_txt['en_US']['layer2_nocookie'] = 'This site does not use any third-party cookies or tracking tools.';
 		$default_txt['en_US']['view_the_cookie_policy'] = 'View the Cookie Policy';
 		$default_txt['en_US']['view_the_personal_data_policy'] = 'View the Personal Data Policy';
 		$default_txt['en_US']['manage_consent'] = 'Consent';
@@ -297,7 +302,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['anchor_text_4'] = 'GDPR Cookie Banner by My Agile Privacy®';
 		$default_txt['en_US']['anchor_text_5'] = 'Cookie Consent and Privacy Policy by My Agile Privacy®';
 		$default_txt['en_US']['anchor_text_6'] = 'CMP and Cookie Banner by My Agile Privacy®';
-
+		$default_txt['en_US']['cookie_iab_title'] = 'IAB TCF Consent Management';
+		$default_txt['en_US']['cookie_iab_desc'] = 'This site adheres to the Transparency and Consent Framework (TCF) by IAB Europe. By adhering to this system, vendors registered in the IAB Europe Global Vendor List may install technical and third-party cookies based on the preferences expressed by the user. The complete list of active vendors and consent management are available at any time through the My Agile Privacy preferences panel.';
 
 		//french - fr_FR - fr - fra
 		$default_txt['fr_FR'] = array();
@@ -307,6 +313,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['blocked_content'] = 'Avertissement: certaines fonctionnalités de la page pourraient ne pas fonctionner en raison de vos choix de confidentialité';
 		$default_txt['fr_FR']['notify_message_v2'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
 		$default_txt['fr_FR']['notify_message_v2_short'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
+		$default_txt['fr_FR']['notify_message_nocookie'] = 'Ce site utilise des cookies techniques nécessaires à son fonctionnement. Nous n\'utilisons pas de cookies de profilage ou de tiers. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
+		$default_txt['fr_FR']['layer2_nocookie'] = 'Ce site n\'utilise pas de cookies tiers ni d\'outils de suivi.';
 		$default_txt['fr_FR']['view_the_cookie_policy'] = 'Politique relative aux cookies';
 		$default_txt['fr_FR']['view_the_personal_data_policy'] = 'Consultez la politique de données personnelles';
 		$default_txt['fr_FR']['manage_consent'] = 'Consentement';
@@ -355,7 +363,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['anchor_text_4'] = 'RGPD Cookie Banner par My Agile Privacy®';
 		$default_txt['fr_FR']['anchor_text_5'] = 'Cookie Consent et Privacy Policy par My Agile Privacy®';
 		$default_txt['fr_FR']['anchor_text_6'] = 'CMP et Cookie Banner par My Agile Privacy®';
-
+		$default_txt['fr_FR']['cookie_iab_title'] = 'Gestion du consentement IAB TCF';
+		$default_txt['fr_FR']['cookie_iab_desc'] = 'Ce site adhère au Transparency and Consent Framework (TCF) d\'IAB Europe. En adhérant à ce système, des cookies techniques et de tiers peuvent être installés par les vendors enregistrés dans la Global Vendor List d\'IAB Europe, selon les préférences exprimées par l\'utilisateur. La liste complète des vendors actifs et la gestion du consentement sont consultables à tout moment via le panneau des préférences de My Agile Privacy.';
 
 		//spanish - es_ES - es - esp
 		$default_txt['es_ES'] = array();
@@ -365,6 +374,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['blocked_content'] = 'Advertencia: algunas funciones de esta página pueden estar bloqueadas como resultado de sus opciones de privacidad';
 		$default_txt['es_ES']['notify_message_v2'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
 		$default_txt['es_ES']['notify_message_v2_short'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
+		$default_txt['es_ES']['notify_message_nocookie'] = 'Este sitio utiliza cookies técnicas necesarias para su funcionamiento. No utilizamos cookies de perfilado ni de terceros. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
+		$default_txt['es_ES']['layer2_nocookie'] = 'Este sitio no utiliza cookies de terceros ni herramientas de seguimiento.';
 		$default_txt['es_ES']['view_the_cookie_policy'] = 'Política de cookies';
 		$default_txt['es_ES']['view_the_personal_data_policy'] = 'Consulte la política de datos personales';
 		$default_txt['es_ES']['manage_consent'] = 'Consentimiento';
@@ -413,7 +424,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['anchor_text_4'] = 'RGPD Cookie Banner por My Agile Privacy®';
 		$default_txt['es_ES']['anchor_text_5'] = 'Cookie Consent y Privacy Policy por My Agile Privacy®';
 		$default_txt['es_ES']['anchor_text_6'] = 'CMP y Cookie Banner por My Agile Privacy®';
-
+		$default_txt['es_ES']['cookie_iab_title'] = 'Gestión del consentimiento IAB TCF';
+		$default_txt['es_ES']['cookie_iab_desc'] = 'Este sitio se adhiere al Transparency and Consent Framework (TCF) de IAB Europe. Al adherirse a este sistema, los vendors registrados en la Global Vendor List de IAB Europe podrían instalar cookies técnicas y de terceros, según las preferencias expresadas por el usuario. La lista completa de vendors activos y la gestión del consentimiento son consultables en cualquier momento a través del panel de preferencias de My Agile Privacy.';
 
 		//german - de_DE - de - deu
 		$default_txt['de_DE'] = array();
@@ -423,6 +435,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['blocked_content'] = 'Warnung: Einige Funktionen dieser Seite können aufgrund Ihrer Datenschutzeinstellungen blockiert werden';
 		$default_txt['de_DE']['notify_message_v2'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
 		$default_txt['de_DE']['notify_message_v2_short'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
+		$default_txt['de_DE']['notify_message_nocookie'] = 'Diese Website verwendet technische Cookies, die für ihren Betrieb notwendig sind. Wir verwenden keine Profiling- oder Drittanbieter-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
+		$default_txt['de_DE']['layer2_nocookie'] = 'Auf dieser Website werden keine Drittanbieter-Cookies oder Tracking-Tools verwendet.';
 		$default_txt['de_DE']['view_the_cookie_policy'] = 'Cookie-Richtlinie';
 		$default_txt['de_DE']['view_the_personal_data_policy'] = 'Sehen Sie sich die Datenschutzrichtlinie an';
 		$default_txt['de_DE']['manage_consent'] = 'Zustimmung';
@@ -471,7 +485,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['anchor_text_4'] = 'DSGVO Cookie Banner von My Agile Privacy®';
 		$default_txt['de_DE']['anchor_text_5'] = 'Cookie Consent und Privacy Policy von My Agile Privacy®';
 		$default_txt['de_DE']['anchor_text_6'] = 'CMP und Cookie Banner von My Agile Privacy®';
-
+		$default_txt['de_DE']['cookie_iab_title'] = 'Einwilligungsverwaltung IAB TCF';
+		$default_txt['de_DE']['cookie_iab_desc'] = 'Diese Website nimmt am Transparency and Consent Framework (TCF) von IAB Europe teil. Durch die Teilnahme an diesem System können von den im Global Vendor List von IAB Europe registrierten Vendoren technische und Drittanbieter-Cookies installiert werden, basierend auf den vom Nutzer angegebenen Präferenzen. Die vollständige Liste der aktiven Vendoren und die Einwilligungsverwaltung sind jederzeit über das Einstellungspanel von My Agile Privacy abrufbar.';
 
 		//portuguese - pt_PT - pt - por
 		$default_txt['pt_PT'] = array();
@@ -481,6 +496,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['blocked_content'] = 'Aviso: algumas funcionalidades da página podem não funcionar devido às suas escolhas de privacidade';
 		$default_txt['pt_PT']['notify_message_v2'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
 		$default_txt['pt_PT']['notify_message_v2_short'] = 'Este site utiliza cookies técnicos e de perfil. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
+		$default_txt['pt_PT']['notify_message_nocookie'] = 'Este site utiliza cookies técnicos necessários para o seu funcionamento. Não utilizamos cookies de perfil ou de terceiros. Você pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, você continuará sem aceitar.';
+		$default_txt['pt_PT']['layer2_nocookie'] = 'Este site não utiliza cookies de terceiros nem ferramentas de rastreamento.';
 		$default_txt['pt_PT']['view_the_cookie_policy'] = 'Ver a Política de Cookies';
 		$default_txt['pt_PT']['view_the_personal_data_policy'] = 'Ver a Política de Dados Pessoais';
 		$default_txt['pt_PT']['manage_consent'] = 'Consentimento';
@@ -529,7 +546,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['anchor_text_4'] = 'RGPD Cookie Banner por My Agile Privacy®';
 		$default_txt['pt_PT']['anchor_text_5'] = 'Cookie Consent e Privacy Policy por My Agile Privacy®';
 		$default_txt['pt_PT']['anchor_text_6'] = 'CMP e Cookie Banner por My Agile Privacy®';
-
+		$default_txt['pt_PT']['cookie_iab_title'] = 'Gestão do consentimento IAB TCF';
+		$default_txt['pt_PT']['cookie_iab_desc'] = 'Este site adere ao Transparency and Consent Framework (TCF) da IAB Europe. Ao aderir a este sistema, os vendors registados na Global Vendor List da IAB Europe podem instalar cookies técnicos e de terceiros, com base nas preferências expressas pelo utilizador. A lista completa de vendors ativos e a gestão do consentimento podem ser consultadas a qualquer momento através do painel de preferências do My Agile Privacy.';
 
 		//dutch - nl_NL - nl - dut
 		$default_txt['nl_NL'] = array();
@@ -538,7 +556,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['is_disabled'] = 'Uitgeschakeld';
 		$default_txt['nl_NL']['blocked_content'] = 'Waarschuwing: sommige functionaliteiten van de pagina kunnen niet werken vanwege uw privacykeuzes';
 		$default_txt['nl_NL']['notify_message_v2'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
-		$default_txt['nl_NL']['notify_message_v2_text'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
+		$default_txt['nl_NL']['notify_message_v2_short'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
+		$default_txt['nl_NL']['notify_message_nocookie'] = 'Deze site maakt gebruik van technische cookies die noodzakelijk zijn voor het functioneren ervan. Wij gebruiken geen profileringscookies of cookies van derden. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
+		$default_txt['nl_NL']['layer2_nocookie'] = 'Op deze site zijn geen cookies van derden of trackingtools aanwezig.';
 		$default_txt['nl_NL']['view_the_cookie_policy'] = 'Bekijk het Cookiebeleid';
 		$default_txt['nl_NL']['view_the_personal_data_policy'] = 'Bekijk het Beleid voor Persoonsgegevens';
 		$default_txt['nl_NL']['manage_consent'] = 'Toestemming';
@@ -587,7 +607,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['anchor_text_4'] = 'AVG Cookie Banner door My Agile Privacy®';
 		$default_txt['nl_NL']['anchor_text_5'] = 'Cookie Consent en Privacy Policy door My Agile Privacy®';
 		$default_txt['nl_NL']['anchor_text_6'] = 'CMP en Cookie Banner door My Agile Privacy®';
-
+		$default_txt['nl_NL']['cookie_iab_title'] = 'Beheer van toestemming IAB TCF';
+		$default_txt['nl_NL']['cookie_iab_desc'] = 'Deze website sluit zich aan bij het Transparency and Consent Framework (TCF) van IAB Europe. Door deelname aan dit systeem kunnen vendors die zijn geregistreerd in de Global Vendor List van IAB Europe technische en third-party cookies installeren, op basis van de door de gebruiker opgegeven voorkeuren. De volledige lijst van actieve vendors en het beheer van toestemming zijn op elk moment raadpleegbaar via het voorkeursvenster van My Agile Privacy.';
 
 		//polish - pl_PL - pl - pol
 		$default_txt['pl_PL'] = array();
@@ -596,7 +617,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['is_disabled'] = 'Wyłączone';
 		$default_txt['pl_PL']['blocked_content'] = 'Uwaga: niektóre funkcje strony mogą nie działać z powodu wybranych przez Ciebie opcji prywatności';
 		$default_txt['pl_PL']['notify_message_v2'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
-		$default_txt['pl_PL']['notify_message_v2_text'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
+		$default_txt['pl_PL']['notify_message_v2_short'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
+		$default_txt['pl_PL']['notify_message_nocookie'] = 'Ta strona używa technicznych plików cookie niezbędnych do jej działania. Nie używamy plików cookie profilujących ani stron trzecich. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
+		$default_txt['pl_PL']['layer2_nocookie'] = 'Na tej stronie nie ma plików cookie stron trzecich ani narzędzi śledzenia.';
 		$default_txt['pl_PL']['view_the_cookie_policy'] = 'Zobacz Politykę Cookie';
 		$default_txt['pl_PL']['view_the_personal_data_policy'] = 'Zobacz Politykę Danych Osobowych';
 		$default_txt['pl_PL']['manage_consent'] = 'Zgoda';
@@ -645,7 +668,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['anchor_text_4'] = 'RODO Cookie Banner by My Agile Privacy®';
 		$default_txt['pl_PL']['anchor_text_5'] = 'Cookie Consent i Privacy Policy by My Agile Privacy®';
 		$default_txt['pl_PL']['anchor_text_6'] = 'CMP i Cookie Banner by My Agile Privacy®';
-
+		$default_txt['pl_PL']['cookie_iab_title'] = 'Zarządzanie zgodą IAB TCF';
+		$default_txt['pl_PL']['cookie_iab_desc'] = 'Ta strona przystępuje do Transparency and Consent Framework (TCF) IAB Europe. Przystępując do tego systemu, dostawcy zarejestrowani w Global Vendor List IAB Europe mogą instalować techniczne pliki cookie oraz pliki cookie stron trzecich, na podstawie preferencji wyrażonych przez użytkownika. Pełna lista aktywnych dostawców i zarządzanie zgodą są dostępne w dowolnym momencie za pośrednictwem panelu preferencji My Agile Privacy.';
 
 		//greek - el - el - gre
 		$default_txt['el'] = array();
@@ -654,7 +678,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['el']['is_disabled'] = 'Απενεργοποιήθηκε';
 		$default_txt['el']['blocked_content'] = 'Προειδοποίηση: ορισμένες λειτουργίες της σελίδας ενδέχεται να μην λειτουργούν λόγω των επιλογών απορρήτου σας';
 		$default_txt['el']['notify_message_v2'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
-		$default_txt['el']['notify_message_v2_text'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
+		$default_txt['el']['notify_message_v2_short'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
+		$default_txt['el']['notify_message_nocookie'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies απαραίτητα για τη λειτουργία του. Δεν χρησιμοποιούμε cookies εξατομίκευσης ή τρίτων. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
+		$default_txt['el']['layer2_nocookie'] = 'Σε αυτόν τον ιστότοπο δεν υπάρχουν cookies τρίτων ή εργαλεία παρακολούθησης.';
 		$default_txt['el']['view_the_cookie_policy'] = 'Δείτε την Πολιτική Cookies';
 		$default_txt['el']['view_the_personal_data_policy'] = 'Δείτε την Πολιτική Προσωπικών Δεδομένων';
 		$default_txt['el']['manage_consent'] = 'Συναίνεση';
@@ -703,7 +729,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['el']['anchor_text_4'] = 'GDPR Cookie Banner από My Agile Privacy®';
 		$default_txt['el']['anchor_text_5'] = 'Cookie Consent και Privacy Policy από My Agile Privacy®';
 		$default_txt['el']['anchor_text_6'] = 'CMP και Cookie Banner από My Agile Privacy®';
-
+		$default_txt['el']['cookie_iab_title'] = 'Διαχείριση συναίνεσης IAB TCF';
+		$default_txt['el']['cookie_iab_desc'] = 'Αυτός ο ιστότοπος συμμετέχει στο Transparency and Consent Framework (TCF) του IAB Europe. Συμμετέχοντας σε αυτό το σύστημα, οι vendors που είναι εγγεγραμμένοι στο Global Vendor List του IAB Europe μπορεί να εγκαταστήσουν τεχνικά και cookies τρίτων, βάσει των προτιμήσεων που εκφράζει ο χρήστης. Η πλήρης λίστα των ενεργών vendors και η διαχείριση της συναίνεσης είναι διαθέσιμες ανά πάσα στιγμή μέσω του πίνακα προτιμήσεων του My Agile Privacy.';
 
 		//hungarian - hu_HU - hu - hun
 		$default_txt['hu_HU'] = array();
@@ -713,6 +740,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['blocked_content'] = 'Figyelem: egyes oldal funkciók a választott adatvédelmi beállítások miatt nem működhetnek';
 		$default_txt['hu_HU']['notify_message_v2'] = 'Ez a webhely technikai és profilalkotási cookie-kat használ. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
 		$default_txt['hu_HU']['notify_message_v2_short'] = 'Ez a webhely technikai és profilalkotási cookie-kat használ. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
+		$default_txt['hu_HU']['notify_message_nocookie'] = 'Ez a webhely csak a működéséhez szükséges technikai cookie-kat használja. Nem használunk profilalkotási vagy harmadik féltől származó cookie-kat. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
+		$default_txt['hu_HU']['layer2_nocookie'] = 'Ezen a weboldalon nem találhatók harmadik féltől származó cookie-k vagy nyomkövetési eszközök.';
 		$default_txt['hu_HU']['view_the_cookie_policy'] = 'Cookie-szabályzat megtekintése';
 		$default_txt['hu_HU']['view_the_personal_data_policy'] = 'Személyes adatok kezelésére vonatkozó tájékoztató megtekintése';
 		$default_txt['hu_HU']['manage_consent'] = 'Hozzájárulás';
@@ -761,7 +790,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['anchor_text_4'] = 'GDPR Cookie Banner a My Agile Privacy®-tól';
 		$default_txt['hu_HU']['anchor_text_5'] = 'Cookie Consent és Privacy Policy a My Agile Privacy®-tól';
 		$default_txt['hu_HU']['anchor_text_6'] = 'CMP és Cookie Banner a My Agile Privacy®-tól';
-
+		$default_txt['hu_HU']['cookie_iab_title'] = 'IAB TCF hozzájáruláskezelés';
+		$default_txt['hu_HU']['cookie_iab_desc'] = 'Ez a weboldal csatlakozik az IAB Europe Transparency and Consent Framework (TCF) rendszeréhez. A rendszerhez való csatlakozással az IAB Europe Global Vendor List-jén regisztrált szállítók technikai és harmadik féltől származó cookie-kat telepíthetnek a felhasználó által megadott preferenciák alapján. Az aktív szállítók teljes listája és a hozzájárulás kezelése bármikor elérhető a My Agile Privacy beállítási paneljén keresztül.';
 
 		//norwegian - nb_NO - no - nor
 		$default_txt['nb_NO'] = array();
@@ -771,6 +801,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['blocked_content'] = 'Advarsel: enkelte funksjoner på siden kan ikke fungere på grunn av dine personvernvalg';
 		$default_txt['nb_NO']['notify_message_v2'] = 'Dette nettstedet bruker tekniske og profileringsinformasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
 		$default_txt['nb_NO']['notify_message_v2_short'] = 'Dette nettstedet bruker tekniske og profileringsinformasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
+		$default_txt['nb_NO']['notify_message_nocookie'] = 'Dette nettstedet bruker tekniske informasjonskapsler som er nødvendige for driften. Vi bruker ikke profilering eller tredjeparts informasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
+		$default_txt['nb_NO']['layer2_nocookie'] = 'Dette nettstedet bruker ingen tredjeparts informasjonskapsler eller sporingsverktøy.';
 		$default_txt['nb_NO']['view_the_cookie_policy'] = 'Se retningslinjer for informasjonskapsler';
 		$default_txt['nb_NO']['view_the_personal_data_policy'] = 'Se personvernerklæringen';
 		$default_txt['nb_NO']['manage_consent'] = 'Samtykke';
@@ -819,7 +851,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['anchor_text_4'] = 'GDPR Cookie Banner av My Agile Privacy®';
 		$default_txt['nb_NO']['anchor_text_5'] = 'Cookie Consent og Privacy Policy av My Agile Privacy®';
 		$default_txt['nb_NO']['anchor_text_6'] = 'CMP og Cookie Banner av My Agile Privacy®';
-
+		$default_txt['nb_NO']['cookie_iab_title'] = 'Samtykkehåndtering IAB TCF';
+		$default_txt['nb_NO']['cookie_iab_desc'] = 'Dette nettstedet tilslutter seg Transparency and Consent Framework (TCF) fra IAB Europe. Ved å tilslutte seg dette systemet kan leverandører registrert i IAB Europes Global Vendor List installere tekniske informasjonskapsler og tredjeparts informasjonskapsler, basert på brukerens uttrykte preferanser. Den fullstendige listen over aktive leverandører og samtykkehåndtering er tilgjengelig når som helst via innstillingspanelet til My Agile Privacy.';
 
 		//swedish - sv_SE - sv - swe
 		$default_txt['sv_SE'] = array();
@@ -829,6 +862,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['blocked_content'] = 'Varning: vissa sidfunktioner kanske inte fungerar på grund av dina integritetsval';
 		$default_txt['sv_SE']['notify_message_v2'] = 'Denna webbplats använder tekniska cookies och profileringscookies. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
 		$default_txt['sv_SE']['notify_message_v2_short'] = 'Denna webbplats använder tekniska cookies och profileringscookies. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
+		$default_txt['sv_SE']['notify_message_nocookie'] = 'Denna webbplats använder tekniska cookies som är nödvändiga för dess funktion. Vi använder inga profileringscookies eller cookies från tredje part. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
+		$default_txt['sv_SE']['layer2_nocookie'] = 'Denna webbplats använder inga tredjepartscookies eller spårningsverktyg.';
 		$default_txt['sv_SE']['view_the_cookie_policy'] = 'Visa cookiepolicyn';
 		$default_txt['sv_SE']['view_the_personal_data_policy'] = 'Visa policyn för personuppgifter';
 		$default_txt['sv_SE']['manage_consent'] = 'Samtycke';
@@ -877,7 +912,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['anchor_text_4'] = 'GDPR Cookie Banner av My Agile Privacy®';
 		$default_txt['sv_SE']['anchor_text_5'] = 'Cookie Consent och Privacy Policy av My Agile Privacy®';
 		$default_txt['sv_SE']['anchor_text_6'] = 'CMP och Cookie Banner av My Agile Privacy®';
-
+		$default_txt['sv_SE']['cookie_iab_title'] = 'Samtyckeshantering IAB TCF';
+		$default_txt['sv_SE']['cookie_iab_desc'] = 'Denna webbplats ansluter sig till Transparency and Consent Framework (TCF) från IAB Europe. Genom att ansluta till detta system kan leverantörer registrerade i IAB Europes Global Vendor List installera tekniska cookies och tredjepartscookies, baserat på de preferenser som användaren har angett. Den fullständiga listan över aktiva leverantörer och hanteringen av samtycke är tillgänglig när som helst via inställningspanelen för My Agile Privacy.';
 
 		//russian - ru_RU - ru - rus
 		$default_txt['ru_RU'] = array();
@@ -887,6 +923,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['blocked_content'] = 'Предупреждение: некоторые функции страницы могут не работать из‑за ваших настроек конфиденциальности';
 		$default_txt['ru_RU']['notify_message_v2'] = 'Этот сайт использует технические файлы cookie и файлы cookie для профилирования. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
 		$default_txt['ru_RU']['notify_message_v2_short'] = 'Этот сайт использует технические файлы cookie и файлы cookie для профилирования. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
+		$default_txt['ru_RU']['notify_message_nocookie'] = 'Этот сайт использует только технические файлы cookie, необходимые для его работы. Мы не используем файлы cookie для профилирования или файлы cookie третьих лиц. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
+		$default_txt['ru_RU']['layer2_nocookie'] = 'На этом сайте не используются файлы cookie третьих лиц или инструменты отслеживания.';
 		$default_txt['ru_RU']['view_the_cookie_policy'] = 'Просмотреть Политику использования файлов cookie';
 		$default_txt['ru_RU']['view_the_personal_data_policy'] = 'Просмотреть Политику обработки персональных данных';
 		$default_txt['ru_RU']['manage_consent'] = 'Согласие';
@@ -935,7 +973,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['anchor_text_4'] = 'GDPR Cookie Banner от My Agile Privacy®';
 		$default_txt['ru_RU']['anchor_text_5'] = 'Cookie Consent и Privacy Policy от My Agile Privacy®';
 		$default_txt['ru_RU']['anchor_text_6'] = 'CMP и Cookie Banner от My Agile Privacy®';
-
+		$default_txt['ru_RU']['cookie_iab_title'] = 'Управление согласием IAB TCF';
+		$default_txt['ru_RU']['cookie_iab_desc'] = 'Этот сайт присоединяется к Transparency and Consent Framework (TCF) от IAB Europe. Присоединяясь к этой системе, поставщики, зарегистрированные в Global Vendor List IAB Europe, могут устанавливать технические файлы cookie и файлы cookie третьих сторон на основе предпочтений, выраженных пользователем. Полный список активных поставщиков и управление согласием доступны в любой момент через панель настроек My Agile Privacy.';
 
 		//finnish - fi - fi - fin
 			$default_txt['fi'] = array();
@@ -945,6 +984,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['blocked_content'] = 'Varoitus: osa sivun toiminnoista ei välttämättä toimi tietosuojavalintojesi vuoksi';
 		$default_txt['fi']['notify_message_v2'] = 'Tämä sivusto käyttää teknisiä ja profilointievästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
 		$default_txt['fi']['notify_message_v2_short'] = 'Tämä sivusto käyttää teknisiä ja profilointievästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
+		$default_txt['fi']['notify_message_nocookie'] = 'Tämä sivusto käyttää vain toimintansa kannalta välttämättömiä teknisiä evästeitä. Emme käytä profilointi- tai kolmannen osapuolen evästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
+		$default_txt['fi']['layer2_nocookie'] = 'Tällä sivustolla ei ole kolmannen osapuolen evästeitä tai seurantatyökaluja.';
 		$default_txt['fi']['view_the_cookie_policy'] = 'Näytä evästekäytäntö';
 		$default_txt['fi']['view_the_personal_data_policy'] = 'Näytä henkilötietokäytäntö';
 		$default_txt['fi']['manage_consent'] = 'Suostumus';
@@ -993,7 +1034,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
 		$default_txt['fi']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
 		$default_txt['fi']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
-
+		$default_txt['fi']['cookie_iab_title'] = 'IAB TCF -suostumusten hallinta';
+		$default_txt['fi']['cookie_iab_desc'] = 'Tämä sivusto liittyy IAB Europen Transparency and Consent Framework (TCF) -järjestelmään. Järjestelmään liittymällä IAB Europen Global Vendor List -luetteloon rekisteröityneet toimittajat voivat asentaa teknisiä evästeitä ja kolmannen osapuolen evästeitä käyttäjän ilmaisemien asetusten perusteella. Täydellinen luettelo aktiivisista toimittajista ja suostumusten hallinta ovat saatavilla milloin tahansa My Agile Privacyn asetuspaneelin kautta.';
 
 		//danish - da_DK - da - dan
 		$default_txt['da_DK'] = array();
@@ -1003,6 +1045,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['blocked_content'] = 'Advarsel: nogle funktioner på siden fungerer muligvis ikke på grund af dine privatlivsvalg';
 		$default_txt['da_DK']['notify_message_v2'] = 'Dette websted bruger tekniske cookies og profileringscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
 		$default_txt['da_DK']['notify_message_v2_short'] = 'Dette websted bruger tekniske cookies og profileringscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
+		$default_txt['da_DK']['notify_message_nocookie'] = 'Dette websted bruger tekniske cookies, der er nødvendige for dets funktion. Vi bruger ikke profileringscookies eller tredjepartscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
+		$default_txt['da_DK']['layer2_nocookie'] = 'Dette websted bruger ingen tredjepartscookies eller sporingsværktøjer.';
 		$default_txt['da_DK']['view_the_cookie_policy'] = 'Se cookiepolitikken';
 		$default_txt['da_DK']['view_the_personal_data_policy'] = 'Se politikken for personoplysninger';
 		$default_txt['da_DK']['manage_consent'] = 'Samtykke';
@@ -1051,6 +1095,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['anchor_text_4'] = 'GDPR Cookie Banner af My Agile Privacy®';
 		$default_txt['da_DK']['anchor_text_5'] = 'Cookie Consent og Privacy Policy af My Agile Privacy®';
 		$default_txt['da_DK']['anchor_text_6'] = 'CMP og Cookie Banner af My Agile Privacy®';
+		$default_txt['da_DK']['cookie_iab_title'] = 'Samtykkehåndtering IAB TCF';
+		$default_txt['da_DK']['cookie_iab_desc'] = 'Dette websted tilslutter sig Transparency and Consent Framework (TCF) fra IAB Europe. Ved at tilslutte sig dette system kan leverandører registreret i IAB Europes Global Vendor List installere tekniske cookies og tredjeparts cookies baseret på brugerens udtrykte præferencer. Den komplette liste over aktive leverandører og samtykkehåndtering er tilgængelig til enhver tid via indstillingspanelet for My Agile Privacy.';
 
 
 		//turkish - tr_TR - tr - tur
@@ -1061,6 +1107,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['blocked_content'] = 'Uyarı: gizlilik tercihlerinize bağlı olarak sayfanın bazı işlevleri çalışmayabilir';
 		$default_txt['tr_TR']['notify_message_v2'] = 'Bu site teknik ve profilleme çerezleri kullanır. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
 		$default_txt['tr_TR']['notify_message_v2_short'] = 'Bu site teknik ve profilleme çerezleri kullanır. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
+		$default_txt['tr_TR']['notify_message_nocookie'] = 'Bu site, çalışması için gerekli teknik çerezleri kullanmaktadır. Profilleme veya üçüncü taraf çerezleri kullanmıyoruz. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
+		$default_txt['tr_TR']['layer2_nocookie'] = 'Bu sitede üçüncü taraf çerez veya izleme araçları bulunmamaktadır.';
 		$default_txt['tr_TR']['view_the_cookie_policy'] = 'Çerez Politikasını görüntüle';
 		$default_txt['tr_TR']['view_the_personal_data_policy'] = 'Kişisel Veriler Politikasını görüntüle';
 		$default_txt['tr_TR']['manage_consent'] = 'Onay';
@@ -1109,7 +1157,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
 		$default_txt['tr_TR']['anchor_text_5'] = 'Cookie Consent ve Privacy Policy - My Agile Privacy®';
 		$default_txt['tr_TR']['anchor_text_6'] = 'CMP ve Cookie Banner - My Agile Privacy®';
-
+		$default_txt['tr_TR']['cookie_iab_title'] = 'IAB TCF Rıza Yönetimi';
+		$default_txt['tr_TR']['cookie_iab_desc'] = 'Bu site, IAB Europe\'un Transparency and Consent Framework (TCF) sistemine katılmaktadır. Bu sisteme katılım yoluyla, IAB Europe Global Vendor List\'ine kayıtlı satıcılar, kullanıcının ifade ettiği tercihlere göre teknik ve üçüncü taraf çerezler yükleyebilir. Aktif satıcıların tam listesi ve rıza yönetimi, My Agile Privacy tercih paneli aracılığıyla her zaman görüntülenebilir.';
 
 		//czech - cs_CZ - cs - cze
 		$default_txt['cs_CZ'] = array();
@@ -1119,6 +1168,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['blocked_content'] = 'Upozornění: některé funkce stránky nemusí fungovat kvůli vašim volbám ochrany soukromí';
 		$default_txt['cs_CZ']['notify_message_v2'] = 'Tento web používá technické soubory cookie a soubory cookie pro profilování. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
 		$default_txt['cs_CZ']['notify_message_v2_short'] = 'Tento web používá technické soubory cookie a soubory cookie pro profilování. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
+		$default_txt['cs_CZ']['notify_message_nocookie'] = 'Tento web používá pouze technické soubory cookie nezbytné pro jeho provoz. Nepoužíváme profilovací soubory cookie ani soubory cookie třetích stran. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
+		$default_txt['cs_CZ']['layer2_nocookie'] = 'Na tomto webu nejsou přítomny žádné soubory cookie třetích stran ani nástroje pro sledování.';
 		$default_txt['cs_CZ']['view_the_cookie_policy'] = 'Zobrazit zásady používání souborů cookie';
 		$default_txt['cs_CZ']['view_the_personal_data_policy'] = 'Zobrazit zásady ochrany osobních údajů';
 		$default_txt['cs_CZ']['manage_consent'] = 'Souhlas';
@@ -1167,7 +1218,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
 		$default_txt['cs_CZ']['anchor_text_5'] = 'Cookie Consent a Privacy Policy od My Agile Privacy®';
 		$default_txt['cs_CZ']['anchor_text_6'] = 'CMP a Cookie Banner od My Agile Privacy®';
-
+		$default_txt['cs_CZ']['cookie_iab_title'] = 'Správa souhlasu IAB TCF';
+		$default_txt['cs_CZ']['cookie_iab_desc'] = 'Tento web se připojuje k Transparency and Consent Framework (TCF) od IAB Europe. Připojením k tomuto systému mohou dodavatelé registrovaní v Global Vendor List IAB Europe instalovat technické soubory cookie a soubory cookie třetích stran na základě preferencí vyjádřených uživatelem. Úplný seznam aktivních dodavatelů a správa souhlasu jsou kdykoli dostupné prostřednictvím panelu předvoleb My Agile Privacy.';
 
 		//romanian - ro_RO - ro - rum
 		$default_txt['ro_RO'] = array();
@@ -1177,6 +1229,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['blocked_content'] = 'Avertisment: unele funcționalități ale paginii ar putea să nu funcționeze din cauza alegerilor dvs. de confidențialitate';
 		$default_txt['ro_RO']['notify_message_v2'] = 'Acest site folosește cookie-uri tehnice și cookie-uri de profilare. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
 		$default_txt['ro_RO']['notify_message_v2_short'] = 'Acest site folosește cookie-uri tehnice și cookie-uri de profilare. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
+		$default_txt['ro_RO']['notify_message_nocookie'] = 'Acest site folosește doar cookie-uri tehnice necesare funcționării sale. Nu folosim cookie-uri de profilare sau cookie-uri terțe. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
+		$default_txt['ro_RO']['layer2_nocookie'] = 'Pe acest site nu sunt prezente cookie-uri terțe sau instrumente de urmărire.';
 		$default_txt['ro_RO']['view_the_cookie_policy'] = 'Vezi Politica de cookie-uri';
 		$default_txt['ro_RO']['view_the_personal_data_policy'] = 'Vezi Politica privind datele cu caracter personal';
 		$default_txt['ro_RO']['manage_consent'] = 'Consimțământ';
@@ -1225,7 +1279,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['anchor_text_4'] = 'GDPR Cookie Banner de la My Agile Privacy®';
 		$default_txt['ro_RO']['anchor_text_5'] = 'Cookie Consent și Privacy Policy de la My Agile Privacy®';
 		$default_txt['ro_RO']['anchor_text_6'] = 'CMP și Cookie Banner de la My Agile Privacy®';
-
+		$default_txt['ro_RO']['cookie_iab_title'] = 'Gestionarea consimțământului IAB TCF';
+		$default_txt['ro_RO']['cookie_iab_desc'] = 'Acest site aderă la Transparency and Consent Framework (TCF) al IAB Europe. Prin aderarea la acest sistem, vendorii înregistrați în Global Vendor List al IAB Europe pot instala cookie-uri tehnice și de terți, pe baza preferințelor exprimate de utilizator. Lista completă a vendorilor activi și gestionarea consimțământului sunt disponibile oricând prin panoul de preferințe al My Agile Privacy.';
 
 		//slovak - sk_SK - sk - slo
 		$default_txt['sk_SK'] = array();
@@ -1235,6 +1290,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['blocked_content'] = 'Upozornenie: niektoré funkcie stránky nemusia fungovať z dôvodu vašich nastavení ochrany súkromia';
 		$default_txt['sk_SK']['notify_message_v2'] = 'Táto stránka používa technické súbory cookie a profilovacie súbory cookie. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
 		$default_txt['sk_SK']['notify_message_v2_short'] = 'Táto stránka používa technické súbory cookie a profilovacie súbory cookie. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
+		$default_txt['sk_SK']['notify_message_nocookie'] = 'Táto stránka používa iba technické súbory cookie nevyhnutné pre jej fungovanie. Nepoužívame profilovacie súbory cookie ani súbory cookie tretích strán. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
+		$default_txt['sk_SK']['layer2_nocookie'] = 'Na tejto stránke sa nenachádzajú žiadne súbory cookie tretích strán ani nástroje na sledovanie.';
 		$default_txt['sk_SK']['view_the_cookie_policy'] = 'Zobraziť zásady používania súborov cookie';
 		$default_txt['sk_SK']['view_the_personal_data_policy'] = 'Zobraziť zásady spracúvania osobných údajov';
 		$default_txt['sk_SK']['manage_consent'] = 'Súhlas';
@@ -1283,7 +1340,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
 		$default_txt['sk_SK']['anchor_text_5'] = 'Cookie Consent a Privacy Policy od My Agile Privacy®';
 		$default_txt['sk_SK']['anchor_text_6'] = 'CMP a Cookie Banner od My Agile Privacy®';
-
+		$default_txt['sk_SK']['cookie_iab_title'] = 'Správa súhlasu IAB TCF';
+		$default_txt['sk_SK']['cookie_iab_desc'] = 'Táto stránka sa pripája k Transparency and Consent Framework (TCF) od IAB Europe. Pripojením k tomuto systému môžu dodávatelia registrovaní v Global Vendor List IAB Europe inštalovať technické súbory cookie a súbory cookie tretích strán na základe preferencií vyjadrených používateľom. Úplný zoznam aktívnych dodávateľov a správa súhlasu sú kedykoľvek dostupné prostredníctvom panela predvolieb My Agile Privacy.';
 
 		//slovenian - sl_SI - sl - slv
 		$default_txt['sl_SI'] = array();
@@ -1293,6 +1351,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['blocked_content'] = 'Opozorilo: nekatere funkcionalnosti strani morda ne bodo delovale zaradi vaših izbir zasebnosti';
 		$default_txt['sl_SI']['notify_message_v2'] = 'Ta spletna stran uporablja tehnične piškotke in piškotke za profiliranje. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
 		$default_txt['sl_SI']['notify_message_v2_short'] = 'Ta spletna stran uporablja tehnične piškotke in piškotke za profiliranje. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
+		$default_txt['sl_SI']['notify_message_nocookie'] = 'Ta spletna stran uporablja samo tehnične piškotke, potrebne za njeno delovanje. Ne uporabljamo piškotkov za profiliranje ali piškotkov tretjih oseb. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
+		$default_txt['sl_SI']['layer2_nocookie'] = 'Na tej spletni strani ni piškotkov tretjih oseb ali orodij za sledenje.';
 		$default_txt['sl_SI']['view_the_cookie_policy'] = 'Ogled pravilnika o piškotkih';
 		$default_txt['sl_SI']['view_the_personal_data_policy'] = 'Ogled pravilnika o osebnih podatkih';
 		$default_txt['sl_SI']['manage_consent'] = 'Soglasje';
@@ -1341,7 +1401,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['anchor_text_4'] = 'GDPR Cookie Banner z My Agile Privacy®';
 		$default_txt['sl_SI']['anchor_text_5'] = 'Cookie Consent in Privacy Policy z My Agile Privacy®';
 		$default_txt['sl_SI']['anchor_text_6'] = 'CMP in Cookie Banner z My Agile Privacy®';
-
+		$default_txt['sl_SI']['cookie_iab_title'] = 'Upravljanje privolitve IAB TCF';
+		$default_txt['sl_SI']['cookie_iab_desc'] = 'To spletno mesto se pridružuje Transparency and Consent Framework (TCF) IAB Europe. Z vstopom v ta sistem lahko ponudniki, registrirani v Global Vendor List IAB Europe, namestijo tehnične piškotke in piškotke tretjih oseb na podlagi preferenc, ki jih izrazi uporabnik. Celoten seznam aktivnih ponudnikov in upravljanje privolitve sta kadar koli dostopna prek nastavitvenega panela My Agile Privacy.';
 
 		//croatian - hr - hr - hrv
 		$default_txt['hr'] = array();
@@ -1351,6 +1412,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hr']['blocked_content'] = 'Upozorenje: neke funkcionalnosti stranice možda neće raditi zbog vaših odabira privatnosti';
 		$default_txt['hr']['notify_message_v2'] = 'Ova stranica koristi tehničke kolačiće i kolačiće za profiliranje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
 		$default_txt['hr']['notify_message_v2_short'] = 'Ova stranica koristi tehničke kolačiće i kolačiće za profiliranje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
+		$default_txt['hr']['notify_message_nocookie'] = 'Ova stranica koristi samo tehničke kolačiće potrebne za njeno funkcioniranje. Ne koristimo kolačiće za profiliranje ni kolačiće trećih strana. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
+		$default_txt['hr']['layer2_nocookie'] = 'Na ovoj stranici nema kolačića trećih strana ni alata za praćenje.';
 		$default_txt['hr']['view_the_cookie_policy'] = 'Pogledajte Politiku kolačića';
 		$default_txt['hr']['view_the_personal_data_policy'] = 'Pogledajte Politiku osobnih podataka';
 		$default_txt['hr']['manage_consent'] = 'Privola';
@@ -1399,7 +1462,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hr']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
 		$default_txt['hr']['anchor_text_5'] = 'Cookie Consent i Privacy Policy od My Agile Privacy®';
 		$default_txt['hr']['anchor_text_6'] = 'CMP i Cookie Banner od My Agile Privacy®';
-
+		$default_txt['hr']['cookie_iab_title'] = 'Upravljanje privolom IAB TCF';
+		$default_txt['hr']['cookie_iab_desc'] = 'Ova stranica pridružuje se Transparency and Consent Framework (TCF) IAB Europe. Pridruživanjem ovom sustavu vendori registrirani u Global Vendor List IAB Europe mogu instalirati tehničke kolačiće i kolačiće trećih strana, na temelju preferencija koje je izrazio korisnik. Potpuni popis aktivnih vendora i upravljanje privolom dostupni su u svakom trenutku putem upravljačke ploče preferencija My Agile Privacy.';
 
 		//lithuanian - lt_LT - lt - lit
 		$default_txt['lt_LT'] = array();
@@ -1409,6 +1473,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['blocked_content'] = 'Įspėjimas: kai kurios puslapio funkcijos gali neveikti dėl jūsų privatumo pasirinkimų';
 		$default_txt['lt_LT']['notify_message_v2'] = 'Ši svetainė naudoja techninius ir profiliavimo slapukus. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
 		$default_txt['lt_LT']['notify_message_v2_short'] = 'Ši svetainė naudoja techninius ir profiliavimo slapukus. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
+		$default_txt['lt_LT']['notify_message_nocookie'] = 'Ši svetainė naudoja tik techninius slapukus, reikalingus jos veikimui. Nenaudojame profiliavimo ar trečiųjų šalių slapukų. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
+		$default_txt['lt_LT']['layer2_nocookie'] = 'Šioje svetainėje nėra trečiųjų šalių slapukų ar sekimo įrankių.';
 		$default_txt['lt_LT']['view_the_cookie_policy'] = 'Peržiūrėti slapukų politiką';
 		$default_txt['lt_LT']['view_the_personal_data_policy'] = 'Peržiūrėti asmens duomenų politiką';
 		$default_txt['lt_LT']['manage_consent'] = 'Sutikimas';
@@ -1457,7 +1523,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['anchor_text_4'] = 'BDAR Cookie Banner su My Agile Privacy®';
 		$default_txt['lt_LT']['anchor_text_5'] = 'Cookie Consent ir Privacy Policy su My Agile Privacy®';
 		$default_txt['lt_LT']['anchor_text_6'] = 'CMP ir Cookie Banner su My Agile Privacy®';
-
+		$default_txt['lt_LT']['cookie_iab_title'] = 'IAB TCF sutikimo valdymas';
+		$default_txt['lt_LT']['cookie_iab_desc'] = 'Ši svetainė prisijungia prie IAB Europe Transparency and Consent Framework (TCF). Prisijungus prie šios sistemos, IAB Europe Global Vendor List registruoti tiekėjai gali įdiegti techninius ir trečiųjų šalių slapukus, remiantis vartotojo išreikštais nurodymais. Visas aktyvių tiekėjų sąrašas ir sutikimo valdymas yra pasiekiami bet kuriuo metu per My Agile Privacy nuostatų skydelį.';
 
 		//latvian - lv_LV - lv - lav
 		$default_txt['lv_LV'] = array();
@@ -1467,6 +1534,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['blocked_content'] = 'Brīdinājums: daļa lapas funkciju var nedarboties jūsu privātuma izvēļu dēļ';
 		$default_txt['lv_LV']['notify_message_v2'] = 'Šī vietne izmanto tehniskās un profilēšanas sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
 		$default_txt['lv_LV']['notify_message_v2_short'] = 'Šī vietne izmanto tehniskās un profilēšanas sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
+		$default_txt['lv_LV']['notify_message_nocookie'] = 'Šī vietne izmanto tikai tās darbībai nepieciešamās tehniskās sīkdatnes. Mēs neizmantojam profilēšanas vai trešo pušu sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
+		$default_txt['lv_LV']['layer2_nocookie'] = 'Šajā vietnē nav trešo pušu sīkdatņu vai izsekošanas rīku.';
 		$default_txt['lv_LV']['view_the_cookie_policy'] = 'Skatīt sīkdatņu politiku';
 		$default_txt['lv_LV']['view_the_personal_data_policy'] = 'Skatīt personas datu politiku';
 		$default_txt['lv_LV']['manage_consent'] = 'Piekrišana';
@@ -1515,7 +1584,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['anchor_text_4'] = 'VDAR Cookie Banner no My Agile Privacy®';
 		$default_txt['lv_LV']['anchor_text_5'] = 'Cookie Consent un Privacy Policy no My Agile Privacy®';
 		$default_txt['lv_LV']['anchor_text_6'] = 'CMP un Cookie Banner no My Agile Privacy®';
-
+		$default_txt['lv_LV']['cookie_iab_title'] = 'IAB TCF piekrišanas pārvaldība';
+		$default_txt['lv_LV']['cookie_iab_desc'] = 'Šī vietne pievienojas IAB Europe Transparency and Consent Framework (TCF). Pievienojoties šai sistēmai, IAB Europe Global Vendor List reģistrētie pārdevēji var instalēt tehniskās un trešo pušu sīkdatnes, pamatojoties uz lietotāja izteiktajām preferencēm. Pilns aktīvo pārdevēju saraksts un piekrišanas pārvaldība ir pieejami jebkurā laikā, izmantojot My Agile Privacy preferenču paneli.';
 
 		//albanian - sq_AL - sq - alb
 		$default_txt['sq_AL'] = array();
@@ -1525,6 +1595,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['blocked_content'] = 'Paralajmërim: disa funksionalitete të faqes mund të mos funksionojnë për shkak të zgjedhjeve tuaja të privatësisë';
 		$default_txt['sq_AL']['notify_message_v2'] = 'Kjo faqe përdor cookie teknike dhe cookie për profilizim. Mund t’i pranoni, t’i refuzoni ose t’i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
 		$default_txt['sq_AL']['notify_message_v2_short'] = 'Kjo faqe përdor cookie teknike dhe cookie për profilizim. Mund t’i pranoni, t’i refuzoni ose t’i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
+		$default_txt['sq_AL']['notify_message_nocookie'] = 'Kjo faqe përdor vetëm cookie teknike të nevojshme për funksionimin e saj. Ne nuk përdorim cookie profilizimi ose cookie të palëve të treta. Mund t\'i pranoni, t\'i refuzoni ose t\'i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
+		$default_txt['sq_AL']['layer2_nocookie'] = 'Në këtë faqe nuk ka cookie të palëve të treta ose mjete gjurmimi.';
 		$default_txt['sq_AL']['view_the_cookie_policy'] = 'Shiko Politikën e Cookie-ve';
 		$default_txt['sq_AL']['view_the_personal_data_policy'] = 'Shiko Politikën e të Dhënave Personale';
 		$default_txt['sq_AL']['manage_consent'] = 'Pëlqimi';
@@ -1574,7 +1646,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['anchor_text_4'] = 'GDPR Cookie Banner nga My Agile Privacy®';
 		$default_txt['sq_AL']['anchor_text_5'] = 'Cookie Consent dhe Privacy Policy nga My Agile Privacy®';
 		$default_txt['sq_AL']['anchor_text_6'] = 'CMP dhe Cookie Banner nga My Agile Privacy®';
-
+		$default_txt['sq_AL']['cookie_iab_title'] = 'Menaxhimi i pëlqimit IAB TCF';
+		$default_txt['sq_AL']['cookie_iab_desc'] = 'Ky sit i bashkohet Transparency and Consent Framework (TCF) të IAB Europe. Duke i bashkuar këtij sistemi, vendorët e regjistruar në Global Vendor List të IAB Europe mund të instalojnë cookie teknike dhe të palëve të treta, bazuar në preferencat e shprehura nga përdoruesi. Lista e plotë e vendorëve aktivë dhe menaxhimi i pëlqimit janë të aksesueshme në çdo moment nëpërmjet panelit të preferencave të My Agile Privacy.';
 
 		//azerbaijani - az - az - aze
 		$default_txt['az'] = array();
@@ -1584,6 +1657,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['az']['blocked_content'] = 'Xəbərdarlıq: məxfilik seçimlərinizə görə səhifənin bəzi funksiyaları işləməyə bilər';
 		$default_txt['az']['notify_message_v2'] = 'Bu sayt texniki və profilləşdirmə kukilərindən istifadə edir. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
 		$default_txt['az']['notify_message_v2_short'] = 'Bu sayt texniki və profilləşdirmə kukilərindən istifadə edir. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
+		$default_txt['az']['notify_message_nocookie'] = 'Bu sayt yalnız fəaliyyəti üçün lazımi texniki kukilərdən istifadə edir. Profilləşdirmə və ya üçüncü tərəf kukilərindən istifadə etmirik. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
+		$default_txt['az']['layer2_nocookie'] = 'Bu saytda üçüncü tərəf kukiləri və ya izləmə alətləri mövcud deyil.';
 		$default_txt['az']['view_the_cookie_policy'] = 'Kuki Siyasətinə baxın';
 		$default_txt['az']['view_the_personal_data_policy'] = 'Şəxsi Məlumatlar Siyasətinə baxın';
 		$default_txt['az']['manage_consent'] = 'Razılıq';
@@ -1632,7 +1707,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['az']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
 		$default_txt['az']['anchor_text_5'] = 'Cookie Consent və Privacy Policy - My Agile Privacy®';
 		$default_txt['az']['anchor_text_6'] = 'CMP və Cookie Banner - My Agile Privacy®';
-
+		$default_txt['az']['cookie_iab_title'] = 'IAB TCF razılıq idarəetməsi';
+		$default_txt['az']['cookie_iab_desc'] = 'Bu sayt IAB Europe-un Transparency and Consent Framework (TCF) sisteminə qoşulur. Bu sistemə qoşulmaqla IAB Europe Global Vendor List-ə qeydiyyatdan keçmiş vendorlar istifadəçinin ifadə etdiyi üstünlüklərə əsasən texniki və üçüncü tərəf kukiləri quraşdıra bilər. Aktiv vendorların tam siyahısı və razılıq idarəetməsi istənilən vaxt My Agile Privacy üstünlüklər paneli vasitəsilə əlçatandır.';
 
 		//bosnian - bs_BA - bs - bos
 		$default_txt['bs_BA'] = array();
@@ -1642,6 +1718,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['blocked_content'] = 'Upozorenje: neke funkcionalnosti stranice možda neće raditi zbog vaših izbora privatnosti';
 		$default_txt['bs_BA']['notify_message_v2'] = 'Ova web stranica koristi tehničke kolačiće i kolačiće za profilisanje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
 		$default_txt['bs_BA']['notify_message_v2_short'] = 'Ova web stranica koristi tehničke kolačiće i kolačiće za profilisanje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
+		$default_txt['bs_BA']['notify_message_nocookie'] = 'Ova web stranica koristi samo tehničke kolačiće potrebne za njeno funkcioniranje. Ne koristimo kolačiće za profilisanje ni kolačiće trećih strana. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
+		$default_txt['bs_BA']['layer2_nocookie'] = 'Na ovoj stranici nema kolačića trećih strana ni alata za praćenje.';
 		$default_txt['bs_BA']['view_the_cookie_policy'] = 'Pogledajte Politiku kolačića';
 		$default_txt['bs_BA']['view_the_personal_data_policy'] = 'Pogledajte Politiku o ličnim podacima';
 		$default_txt['bs_BA']['manage_consent'] = 'Saglasnost';
@@ -1690,7 +1768,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['anchor_text_4'] = 'GDPR Cookie Banner od My Agile Privacy®';
 		$default_txt['bs_BA']['anchor_text_5'] = 'Cookie Consent i Privacy Policy od My Agile Privacy®';
 		$default_txt['bs_BA']['anchor_text_6'] = 'CMP i Cookie Banner od My Agile Privacy®';
-
+		$default_txt['bs_BA']['cookie_iab_title'] = 'Upravljanje saglasnošću IAB TCF';
+		$default_txt['bs_BA']['cookie_iab_desc'] = 'Ova stranica pristupa Transparency and Consent Framework (TCF) IAB Europe. Pristupanjem ovom sistemu vendori registrovani u Global Vendor List IAB Europe mogu instalirati tehničke kolačiće i kolačiće trećih strana, na osnovu preferencija izraženih od strane korisnika. Potpuna lista aktivnih vendora i upravljanje saglasnošću dostupni su u svakom trenutku putem panela preferencija My Agile Privacy.';
 
 		//bulgarian - bg_BG - bg - bul
 		$default_txt['bg_BG'] = array();
@@ -1700,6 +1779,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['blocked_content'] = 'Предупреждение: някои функционалности на страницата може да не работят поради вашите настройки за поверителност';
 		$default_txt['bg_BG']['notify_message_v2'] = 'Този сайт използва технически бисквитки и бисквитки за профилиране. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
 		$default_txt['bg_BG']['notify_message_v2_short'] = 'Този сайт използва технически бисквитки и бисквитки за профилиране. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
+		$default_txt['bg_BG']['notify_message_nocookie'] = 'Този сайт използва само технически бисквитки, необходими за функционирането му. Не използваме бисквитки за профилиране или бисквитки на трети страни. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
+		$default_txt['bg_BG']['layer2_nocookie'] = 'На този сайт не са налични бисквитки на трети страни или инструменти за проследяване.';
 		$default_txt['bg_BG']['view_the_cookie_policy'] = 'Виж Политиката за бисквитки';
 		$default_txt['bg_BG']['view_the_personal_data_policy'] = 'Виж Политиката за лични данни';
 		$default_txt['bg_BG']['manage_consent'] = 'Съгласие';
@@ -1748,7 +1829,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['anchor_text_4'] = 'GDPR Cookie Banner от My Agile Privacy®';
 		$default_txt['bg_BG']['anchor_text_5'] = 'Cookie Consent и Privacy Policy от My Agile Privacy®';
 		$default_txt['bg_BG']['anchor_text_6'] = 'CMP и Cookie Banner от My Agile Privacy®';
-
+		$default_txt['bg_BG']['cookie_iab_title'] = 'Управление на съгласието IAB TCF';
+		$default_txt['bg_BG']['cookie_iab_desc'] = 'Този сайт се присъединява към Transparency and Consent Framework (TCF) на IAB Europe. Чрез присъединяването към тази система вендорите, регистрирани в Global Vendor List на IAB Europe, могат да инсталират технически бисквитки и бисквитки на трети страни въз основа на предпочитанията, изразени от потребителя. Пълният списък на активните вендори и управлението на съгласието са достъпни по всяко време чрез панела с предпочитания на My Agile Privacy.';
 
 		//catalan - ca - ca - cat
 		$default_txt['ca'] = array();
@@ -1758,6 +1840,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ca']['blocked_content'] = 'Avís: algunes funcionalitats de la pàgina podrien no funcionar a causa de les vostres opcions de privacitat';
 		$default_txt['ca']['notify_message_v2'] = 'Aquest lloc web utilitza galetes tècniques i galetes de perfilatge. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
 		$default_txt['ca']['notify_message_v2_short'] = 'Aquest lloc web utilitza galetes tècniques i galetes de perfilatge. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
+		$default_txt['ca']['notify_message_nocookie'] = 'Aquest lloc web utilitza només galetes tècniques necessàries per al seu funcionament. No utilitzem galetes de perfilatge ni de tercers. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
+		$default_txt['ca']['layer2_nocookie'] = 'En aquest lloc web no hi ha galetes de tercers ni eines de seguiment.';
 		$default_txt['ca']['view_the_cookie_policy'] = 'Veure la Política de galetes';
 		$default_txt['ca']['view_the_personal_data_policy'] = 'Veure la Política de dades personals';
 		$default_txt['ca']['manage_consent'] = 'Consentiment';
@@ -1806,7 +1890,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ca']['anchor_text_4'] = 'RGPD Cookie Banner per My Agile Privacy®';
 		$default_txt['ca']['anchor_text_5'] = 'Cookie Consent i Privacy Policy per My Agile Privacy®';
 		$default_txt['ca']['anchor_text_6'] = 'CMP i Cookie Banner per My Agile Privacy®';
-
+		$default_txt['ca']['cookie_iab_title'] = 'Gestió del consentiment IAB TCF';
+		$default_txt['ca']['cookie_iab_desc'] = 'Aquest lloc web s\'adhereix al Transparency and Consent Framework (TCF) d\'IAB Europe. En adherir-se a aquest sistema, els vendors registrats a la Global Vendor List d\'IAB Europe poden instal·lar galetes tècniques i de tercers, en funció de les preferències expressades per l\'usuari. La llista completa de vendors actius i la gestió del consentiment són consultables en qualsevol moment a través del panell de preferències de My Agile Privacy.';
 
 		//estonian - et - et - est
 		$default_txt['et'] = array();
@@ -1816,6 +1901,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['blocked_content'] = 'Hoiatus: mõned lehe funktsioonid ei pruugi teie privaatsusvalikute tõttu töötada';
 		$default_txt['et']['notify_message_v2'] = 'See veebisait kasutab tehnilisi ja profiilimise küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
 		$default_txt['et']['notify_message_v2_short'] = 'See veebisait kasutab tehnilisi ja profiilimise küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
+		$default_txt['et']['notify_message_nocookie'] = 'See veebisait kasutab ainult selle toimimiseks vajalikke tehnilisi küpsiseid. Me ei kasuta profiilimise ega kolmanda osapoole küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
+		$default_txt['et']['layer2_nocookie'] = 'Sellel veebisaidil ei ole kolmanda osapoole küpsiseid ega jälgimisvahendeid.';
 		$default_txt['et']['view_the_cookie_policy'] = 'Vaata küpsiste poliitikat';
 		$default_txt['et']['view_the_personal_data_policy'] = 'Vaata isikuandmete poliitikat';
 		$default_txt['et']['manage_consent'] = 'Nõusolek';
@@ -1864,7 +1951,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
 		$default_txt['et']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
 		$default_txt['et']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
-
+		$default_txt['et']['cookie_iab_title'] = 'IAB TCF nõusoleku haldamine';
+		$default_txt['et']['cookie_iab_desc'] = 'See veebisait ühineb IAB Europe Transparency and Consent Framework (TCF) süsteemiga. Süsteemiga ühinedes saavad IAB Europe Global Vendor List-is registreeritud tarnijad paigaldada tehnilisi ja kolmandate osapoolte küpsiseid, lähtudes kasutaja väljendatud eelistustest. Aktiivsete tarnijate täielik loend ja nõusoleku haldamine on igal ajal kättesaadavad My Agile Privacy eelistuste paneeli kaudu.';
 
 		//macedonian - mk_MK - mk - mac
 		$default_txt['mk_MK'] = array();
@@ -1874,6 +1962,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['blocked_content'] = 'Предупредување: некои функционалности на страницата можеби нема да работат поради вашите избори за приватност';
 		$default_txt['mk_MK']['notify_message_v2'] = 'Оваа страница користи технички колачиња и колачиња за профилирање. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
 		$default_txt['mk_MK']['notify_message_v2_short'] = 'Оваа страница користи технички колачиња и колачиња за профилирање. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
+		$default_txt['mk_MK']['notify_message_nocookie'] = 'Оваа страница користи само технички колачиња неопходни за нејзиното функционирање. Не користиме колачиња за профилирање ни колачиња на трети страни. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
+		$default_txt['mk_MK']['layer2_nocookie'] = 'На оваа страница нема колачиња на трети страни или алатки за следење.';
 		$default_txt['mk_MK']['view_the_cookie_policy'] = 'Погледнете ја Политиката за колачиња';
 		$default_txt['mk_MK']['view_the_personal_data_policy'] = 'Погледнете ја Политиката за лични податоци';
 		$default_txt['mk_MK']['manage_consent'] = 'Согласност';
@@ -1922,7 +2012,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['anchor_text_4'] = 'GDPR Cookie Banner од My Agile Privacy®';
 		$default_txt['mk_MK']['anchor_text_5'] = 'Cookie Consent и Privacy Policy од My Agile Privacy®';
 		$default_txt['mk_MK']['anchor_text_6'] = 'CMP и Cookie Banner од My Agile Privacy®';
-
+		$default_txt['mk_MK']['cookie_iab_title'] = 'Управување со согласност IAB TCF';
+		$default_txt['mk_MK']['cookie_iab_desc'] = 'Оваа страница се придружува на Transparency and Consent Framework (TCF) на IAB Europe. Со придружување кон овој систем, вендорите регистрирани во Global Vendor List на IAB Europe може да инсталираат технички колачиња и колачиња на трети страни, врз основа на преференциите изразени од корисникот. Целосната листа на активни вендори и управувањето со согласноста се достапни во секое време преку панелот со преференции на My Agile Privacy.';
 
 		//serbian - sr_RS - sr - srp
 		$default_txt['sr_RS'] = array();
@@ -1932,6 +2023,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['blocked_content'] = 'Упозорење: неке функционалности странице можда неће радити због ваших избора приватности';
 		$default_txt['sr_RS']['notify_message_v2'] = 'Овај сајт користи техничке колачиће и колачиће за профилисање. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
 		$default_txt['sr_RS']['notify_message_v2_short'] = 'Овај сајт користи техничке колачиће и колачиће за профилисање. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
+		$default_txt['sr_RS']['notify_message_nocookie'] = 'Овај сајт користи само техничке колачиће неопходне за његово функционисање. Не користимо колачиће за профилисање нити колачиће трећих страна. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
+		$default_txt['sr_RS']['layer2_nocookie'] = 'На овом сајту нема колачића трећих страна нити алата за праћење.';
 		$default_txt['sr_RS']['view_the_cookie_policy'] = 'Погледајте Политику колачића';
 		$default_txt['sr_RS']['view_the_personal_data_policy'] = 'Погледајте Политику о личним подацима';
 		$default_txt['sr_RS']['manage_consent'] = 'Сагласност';
@@ -1980,7 +2073,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['anchor_text_4'] = 'GDPR Cookie Banner од My Agile Privacy®';
 		$default_txt['sr_RS']['anchor_text_5'] = 'Cookie Consent и Privacy Policy од My Agile Privacy®';
 		$default_txt['sr_RS']['anchor_text_6'] = 'CMP и Cookie Banner од My Agile Privacy®';
-
+		$default_txt['sr_RS']['cookie_iab_title'] = 'Управљање сагласношћу IAB TCF';
+		$default_txt['sr_RS']['cookie_iab_desc'] = 'Овај сајт се придружује Transparency and Consent Framework (TCF) од IAB Europe. Придруживањем овом систему, вендори регистровани у Global Vendor List IAB Europe могу инсталирати техничке колачиће и колачиће трећих страна, на основу преференција изражених од стране корисника. Потпуна листа активних вендора и управљање сагласношћу доступни су у сваком тренутку путем панела подешавања My Agile Privacy.';
 
 		//ukrainian - uk - uk - ukr
 		$default_txt['uk'] = array();
@@ -1990,6 +2084,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['uk']['blocked_content'] = 'Попередження: деякі функції сторінки можуть не працювати через ваші налаштування конфіденційності';
 		$default_txt['uk']['notify_message_v2'] = 'Цей сайт використовує технічні cookie-файли та cookie-файли для профілювання. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
 		$default_txt['uk']['notify_message_v2_short'] = 'Цей сайт використовує технічні cookie-файли та cookie-файли для профілювання. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
+		$default_txt['uk']['notify_message_nocookie'] = 'Цей сайт використовує лише технічні cookie-файли, необхідні для його роботи. Ми не використовуємо cookie для профілювання або cookie третіх сторін. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
+		$default_txt['uk']['layer2_nocookie'] = 'На цьому сайті відсутні cookie третіх сторін або інструменти відстеження.';
 		$default_txt['uk']['view_the_cookie_policy'] = 'Переглянути Політику використання cookie';
 		$default_txt['uk']['view_the_personal_data_policy'] = 'Переглянути Політику щодо персональних даних';
 		$default_txt['uk']['manage_consent'] = 'Згода';
@@ -2038,6 +2134,8 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['uk']['anchor_text_4'] = 'GDPR Cookie Banner від My Agile Privacy®';
 		$default_txt['uk']['anchor_text_5'] = 'Cookie Consent та Privacy Policy від My Agile Privacy®';
 		$default_txt['uk']['anchor_text_6'] = 'CMP та Cookie Banner від My Agile Privacy®';
+		$default_txt['uk']['cookie_iab_title'] = 'Управління згодою IAB TCF';
+		$default_txt['uk']['cookie_iab_desc'] = 'Цей сайт приєднується до Transparency and Consent Framework (TCF) від IAB Europe. Приєднавшись до цієї системи, постачальники, зареєстровані в Global Vendor List IAB Europe, можуть встановлювати технічні та сторонні cookie-файли на основі уподобань, висловлених користувачем. Повний список активних постачальників і управління згодою доступні в будь-який момент через панель налаштувань My Agile Privacy.';
 
 		return $default_txt;
 	}

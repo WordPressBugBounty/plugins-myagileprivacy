@@ -6,7 +6,7 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0003",
+	'js_internal_version' 				: "3.0004",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -46,6 +46,7 @@ var MAP_SYS = {
 	'send_ga4_event_on_consent_change'	: null,
 	'allow_js_fast_callback'			: null,
 	'cookie_domain_path'				: null,
+	'allow_iab_disclosure_url'			: true,
 };
 
 // bof MapLogger
@@ -5158,14 +5159,14 @@ var MAP =
 
 	        // --- 4. PAYLOAD ---
 	        var data = {
-	            action             : 'map_diagnostic_data',
-	            send_detected_keys : send_detected_keys,
-	            detectableKeys     : detectableKeys_to_send,
-	            detectedKeys       : detectedKeys_to_send,
-	            cookie_shield_detected : cookie_shield_detected,
-	            is_consent_valid   : consent_is_valid_int,
-	            error_motivation   : error_motivation,
-	            error_code         : error_code !== null ? error_code : ''
+	            action             		: 'map_diagnostic_data',
+	            send_detected_keys 		: send_detected_keys,
+	            detectableKeys     		: detectableKeys_to_send,
+	            detectedKeys       		: detectedKeys_to_send,
+	            cookie_shield_detected 	: cookie_shield_detected,
+	            is_consent_valid   		: consent_is_valid_int,
+	            error_motivation   		: error_motivation,
+	            error_code         		: error_code !== null ? error_code : ''
 	        };
 
 	        return fetch( map_ajax.api_url, {

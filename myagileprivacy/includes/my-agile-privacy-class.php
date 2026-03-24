@@ -1715,15 +1715,12 @@ final class MyAgilePrivacy {
 	{
 		if( !defined( 'MAP_PLUGIN_NAME' ) ) return null;
 
-		$current_plugin_url = plugin_dir_url( MAP_PLUGIN_FILENAME );
+		$current_plugin_url = self::get_plugin_url( MAP_PLUGIN_FILENAME );
 
 		$final_url = $current_plugin_url. '/local-cache/'.MAP_PLUGIN_NAME.'/';
 
 		//remove unnecessary slashes
 		$final_url = preg_replace( '/([^:])(\/{2,})/', '$1/', $final_url );
-
-		// Align scheme to current request (fixes http/https mismatch)
-		$final_url = set_url_scheme( $final_url );
 
 		return  $final_url;
 	}
@@ -3656,6 +3653,25 @@ final class MyAgilePrivacy {
 		}
 
 		return 	$locale;
+	}
+
+	/**
+	 * Returns the plugin URL, normalized to the current site scheme.
+	 *
+	 * Handles multisite by replacing network_site_url() with the current
+	 * site URL, then enforces the correct http/https scheme via is_ssl().
+	 *
+	 * @param string $file Absolute path to the plugin file (__FILE__).
+	 * @return string Fully qualified plugin URL with correct scheme.
+	 */
+	public static function get_plugin_url( $file )
+	{
+	    $scheme      = is_ssl() ? 'https' : 'http';
+	    $network_url = set_url_scheme( network_site_url(),              $scheme );
+	    $site_url    = set_url_scheme( trailingslashit( get_site_url() ), $scheme );
+	    $plugin_url  = set_url_scheme( plugin_dir_url( $file ),         $scheme );
+
+	    return str_replace( $network_url, $site_url, $plugin_url );
 	}
 
 	/**

@@ -23,6 +23,7 @@
 #my-agile-privacy-notification-area .map-button,
 .map-modal,
 .map-modal h4,
+.map-modal-dialog,
 .map-modal-body .modal_credits,
 .map-modal-body a,
 .map-modal-body img,
@@ -40,7 +41,6 @@
 .map_settings_button,
 .map_inline_notify,
 .map_custom_notify,
-.map-cookielist-overflow-container
- {
+.map-cookielist-overflow-container {
     all: revert;
 }

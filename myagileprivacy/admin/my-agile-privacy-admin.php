@@ -902,8 +902,8 @@ final class MyAgilePrivacyAdmin {
 			$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
 			$the_settings['last_legit_sync'] = strtotime( "now" );
 			$the_settings['pa'] = $pa;
-			$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
-			$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : null;
+			$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : array();
+			$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : array();
 			$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : array();
 			MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
 			MyAgilePrivacy::update_option( MAP_PLUGIN_L_ALLOWED, $l_allowed );
@@ -2555,8 +2555,8 @@ final class MyAgilePrivacyAdmin {
 				$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
 				$the_settings['last_legit_sync'] = strtotime( "now" );
 				$the_settings['pa'] = $pa;
-				$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : null;
-				$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : null;
+				$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : array();
+				$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : array();
 				$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : array();
 
 				MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
@@ -3311,6 +3311,23 @@ final class MyAgilePrivacyAdmin {
 		)
 		{
 			$iab_tcf_context = true;
+		}
+
+		$no_cookies = false;
+
+		$post_status_to_search = array( 'publish' );
+
+		$cc_args = array(
+			'posts_per_page'   	=> 	-1,
+			'post_type'        	=>	MAP_POST_TYPE_COOKIES,
+			'post_status' 		=> 	$post_status_to_search,
+		);
+
+		$cc_query = new WP_Query( $cc_args );
+
+		if( !$cc_query->have_posts() )
+		{
+			$no_cookies = true;
 		}
 
 		$show_lpd = false;
