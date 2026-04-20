@@ -1,50 +1,30 @@
 <?php
 
-if( !defined( 'MAP_PLUGIN_NAME' ) )
-{
-	exit('Not allowed.');
-}
-
-$locale = MyAgilePrivacy::get_locale();
-
-
-if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
-{
-	if( $locale == 'it_IT' )
+	if( !defined( 'MAP_PLUGIN_NAME' ) )
 	{
-		if( $locale == 'it_IT' )
-		{
-			echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-pro&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'../img/banner_pro_ita.png" style="width:100%;"></a>';
-		}
-		else
-		{
-			echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-basic&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'../img/banner_pro_eng.png" style="width:100%;"></a>';
-		}
+	    exit('Not allowed.');
 	}
-	else
-	{
-		if( $locale == 'it_IT' )
-		{
-			echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-pro&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'../img/banner_ita.png" style="width:100%;"></a>';
-		}
-		else
-		{
-			echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-basic&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'../img/banner_eng.png" style="width:100%;"></a>';
-		}
-	}
-}
-else
-{
-	if( $locale == 'it_IT' )
-	{
-		echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-pro&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.plugin_dir_url( __DIR__ ).'../img/banner_ita.png" ></a>';
-	}
-	else
-	{
-		echo '<a href="https://www.myagileprivacy.com/?utm_source=referral&utm_medium=plugin-basic&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.plugin_dir_url( __DIR__  ).'../img/banner_eng.png" ></a>';
-	}
-}
 
+	$locale   = MyAgilePrivacy::get_locale();
+	$is_pro   = isset( $the_settings['pa'] ) && $the_settings['pa'] == 1;
+	$is_it    = $locale == 'it_IT';
+
+	$utm_medium = $is_pro ? 'plugin-pro' : 'plugin-basic';
+	$banner     = $is_it  ? 'banner_ita.png' : 'banner_eng.png';
+
+	if( $is_pro && $is_it )
+	{
+	    $banner = 'banner_pro_ita.png';
+	}
+	elseif( $is_pro && !$is_it )
+	{
+	    $banner = 'banner_pro_eng.png';
+	}
+
+	$url        = 'https://www.myagileprivacy.com/?utm_source=referral&utm_medium=' . $utm_medium . '&utm_campaign=backend';
+	$banner_url = esc_attr( plugin_dir_url( __DIR__ ) ) . '../img/' . $banner;
+
+	echo '<a href="' . esc_url( $url ) . '" target="blank"><img class="img-fluid" src="' . $banner_url . '" style="width:100%;"></a>';
 ?>
 
 <div>

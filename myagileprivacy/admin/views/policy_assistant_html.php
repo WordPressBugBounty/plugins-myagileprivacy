@@ -743,9 +743,6 @@
 											</p>
 
 											<p class="mb-0">
-												Attenzione: alcuni regolamenti prevedono regole specifiche riguardo alle categorie speciali di dati personali.
-
-
 												<?php echo wp_kses_post( __( 'Note: some regulations set specific rules regarding special categories of personal data.', 'MAP_txt' ) ); ?>
 											</p>
 											<div class="mt-0">

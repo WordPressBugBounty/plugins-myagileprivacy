@@ -1946,7 +1946,8 @@ class agile_simple_html_dom
 
 		// The start tag cannot contain another start tag, if so add as text
 		// i.e. "<<html>"
-		if ($pos = strpos($tag, '<') !== false) {
+		//php8fix: operator precedence bug — $pos was receiving boolean instead of int offset
+		if (($pos = strpos($tag, '<')) !== false) {
 			$tag = '<' . substr($tag, 0, -1);
 			$node->_[HDOM_INFO_TEXT] = $tag;
 			$this->link_nodes($node, false);
@@ -2333,7 +2334,10 @@ class agile_simple_html_dom
 
 	function createTextNode($value)
 	{
-		return @end(shd_str_get_html($value)->nodes);
+		//php8fix: end() requires a variable by reference; passing a function result is a Fatal Error in PHP 8
+		$_html = shd_str_get_html($value);
+		if( !$_html || empty($_html->nodes) ) return false;
+		return end($_html->nodes);
 	}
 
 	function getElementById($id)

@@ -9,7 +9,7 @@
  * @subpackage MyAgilePrivacy/includes
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.3.2' );
+define( 'MAP_PLUGIN_VERSION', '3.3.3' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_PLUGIN_FILENAME', realpath( dirname( __FILE__ ) . '/../my-agile-privacy.php' ) );
@@ -54,3 +54,9 @@ define( 'MAP_DB_PATCH_3_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_3_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
 define( 'MAP_SUMMARY_VERSION', '2.0.0' );
 define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
+define( 'MAP_IAB_VENDOR_COUNT', '1845' );
+define( 'MAP_PLUGIN_JUST_UPDATED_TRANSIENT', 'map_just_updated' );
+define( 'MAP_EXPIRED_CALLBACK_URL', array(
+	'it_IT'		=>	'https://www.myagileprivacy.com/helpdesk/perche-sul-mio-sito-compare-questa-icona/',
+	'default'	=>	'https://www.myagileprivacy.com/en/helpdesk/why-is-this-icon-showing-on-my-website/'
+) );

@@ -216,7 +216,15 @@ final class MyAgilePrivacyPoliciesHelper
 
 			// Serialized: avoid objects (O: or C:) to prevent side effects
 			if (self::is_serialized_without_objects($value)) {
-				$decoded = @unserialize($value);
+
+				if( version_compare( PHP_VERSION, '7.0.0', '>=' ) )
+				{
+					$decoded = @unserialize($value, array( 'allowed_classes' => false ));
+				}
+				else
+				{
+					$decoded = @unserialize($value);
+				}
 				if ($decoded !== false || $value === "b:0;") {
 					if (self::deep_scan($decoded, $pattern)) {
 						return true;

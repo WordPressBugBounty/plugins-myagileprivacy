@@ -107,29 +107,71 @@ final class MyAgilePrivacy {
 	}
 
 	/**
-	 * Determine if notice should be shown
+	 * Determine if expired notice should be shown
 	 */
-	public static function should_show_notice()
+	public static function should_show_expired_notice()
 	{
 		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['expired_30_days'] ) &&
+			$rconfig['expired_30_days'] == 1
+		)
+		{
+			return true;
+		}
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['expired_60_days'] ) &&
+			$rconfig['expired_60_days'] == 1
+		)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if feedback notice should be shown
+	 */
+	public static function should_show_feedback_notice()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['expired_30_days'] ) &&
+			$rconfig['expired_30_days'] == 1
+		)
+		{
+			return false;
+		}
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['expired_60_days'] ) &&
+			$rconfig['expired_60_days'] == 1
+		)
+		{
+			return false;
+		}
 
 		if( isset( $rconfig ) &&
 			isset( $rconfig['block_review_message'] ) &&
 			$rconfig['block_review_message'] )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice blocked via block_review_message' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice blocked via block_review_message' );
 			return false;
 		}
 
 		if( !current_user_can( 'manage_options' ) )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( ' should_show_notice -> missing user permission' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( ' should_show_feedback_notice -> missing user permission' );
 			return false;
 		}
 
 		if( !defined( 'MAP_REVIEW_STATUS') )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'missing should_show_notice review_status' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice -> missing review_status' );
 			return false;
 		}
 
@@ -167,7 +209,7 @@ final class MyAgilePrivacy {
 		// first show after first treshold
 		if( $current_time - $activation_date < MAP_NOTICE_FIRST_TRESHOLD )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check A)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check A)' );
 
 			return false;
 		}
@@ -175,7 +217,7 @@ final class MyAgilePrivacy {
 		// if feedback marked as later, show again after first treshold
 		if( $review_status === 'later' && ( $current_time - $last_show_time ) < MAP_NOTICE_FIRST_TRESHOLD )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check B)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check B)' );
 
 			return false;
 		}
@@ -183,12 +225,12 @@ final class MyAgilePrivacy {
 		// if feedback marked as done, show again after second treshold
 		if( $review_status === 'done' && ( $current_time - $last_show_time ) < MAP_NOTICE_SECOND_TRESHOLD )
 		{
-			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> false (check C)' );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check C)' );
 
 			return false;
 		}
 
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_notice --> true' );
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> true' );
 
 		return true;
 	}
@@ -363,6 +405,9 @@ final class MyAgilePrivacy {
 		//upgrader_process_complete
 		add_action( 'upgrader_process_complete', array( $plugin_admin, 'plugin_upgrade_callback' ), 10, 2);
 
+		//plugins_loaded: post-update transient check (unconditional - fires on any request type)
+		add_action( 'plugins_loaded', array( $plugin_admin, 'map_check_post_update_transient' ) );
+
 		//wp_footer hook
 		add_action( 'wp_footer', array( $plugin_admin, 'triggered_do_cron_sync' ) );
 
@@ -430,6 +475,7 @@ final class MyAgilePrivacy {
 
 		//hooks for review notice
 		add_action( 'admin_notices', array( $plugin_admin, 'show_review_notice' ) );
+		add_action( 'admin_notices', array( $plugin_admin, 'show_expired_notice' ) );
 		add_action( 'wp_ajax_map_review_later', array( $plugin_admin, 'review_later' ) );
 		add_action( 'wp_ajax_map_review_done', array( $plugin_admin, 'review_done' ) );
 
@@ -802,7 +848,7 @@ final class MyAgilePrivacy {
 	            break;
 
 	        case 'hexcolor':
-	            if ( preg_match( '/^#[a-f0-9]{6}|#[a-f0-9]{3}$/i', $value ) )
+				if ( preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
 	            {
 	                $ret = $value;
 	            }
@@ -862,7 +908,7 @@ final class MyAgilePrivacy {
 		}
 
 		$ABSPATH_MY = str_replace( array( '\\','/' ), DIRECTORY_SEPARATOR, ABSPATH );
-		return (( in_array($ABSPATH_MY.'wp-login.php', get_included_files()) || in_array( $ABSPATH_MY.'wp-register.php', get_included_files() ) ) || ( isset( $_GLOBALS ) && isset( $_GLOBALS['pagenow'] ) && $GLOBALS['pagenow'] === 'wp-login.php' ) || $_SERVER['PHP_SELF'] == '/wp-login.php' );
+		return (( in_array($ABSPATH_MY.'wp-login.php', get_included_files()) || in_array( $ABSPATH_MY.'wp-register.php', get_included_files() ) ) || ( isset( $GLOBALS['pagenow'] ) && $GLOBALS['pagenow'] === 'wp-login.php' ) || ( isset( $_SERVER['PHP_SELF'] ) && $_SERVER['PHP_SELF'] == '/wp-login.php' ) );
 	}
 
 
@@ -1415,7 +1461,8 @@ final class MyAgilePrivacy {
 				'data-map-disable' => array(),
 				'role' => array(),
 				'tabindex' => array(),
-				'aria-checked' => array()
+				'aria-checked' => array(),
+				'data-wg-notranslate' => array(),
 			),
 			'em' => array (
 				'id' => array(),
@@ -1669,7 +1716,8 @@ final class MyAgilePrivacy {
 
 				if( isset( $response->errors ) && is_array( $response->errors ) && !empty( $response->errors ) )
 				{
-					$error_code = array_key_first( $response->errors );
+					reset( $response->errors );
+					$error_code = key( $response->errors );
 					$error_message = $response->errors[ $error_code ][0];
 				}
 
@@ -1678,8 +1726,9 @@ final class MyAgilePrivacy {
 
 				if( isset( $http_response->errors ) && is_array( $http_response->errors ) && !empty( $http_response->errors ) )
 				{
-					$error_code_http = array_key_first( $http_response->errors );
-					$error_message_http = $http_response->errors[ $error_code ][0];
+					reset( $http_response->errors );
+					$error_code_http = key( $http_response->errors );
+					$error_message_http = $http_response->errors[ $error_code_http ][0];
 				}
 
 				$result = array(
@@ -1879,13 +1928,13 @@ final class MyAgilePrivacy {
 			copy( $tmp_file, $local_alt_filename_fullpath );
 		}
 
-		if( file_exists( $tmp_file ) ) @unlink( $tmp_file );
+		wp_delete_file( $tmp_file );
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'download_remote_file -> remote file downloaded to '.$local_filename_fullpath . ' from '.$remote_filename );
 
 		//old folder cleanup
 		$old_cache_dir = WP_CONTENT_DIR . '/local-cache/'.MAP_PLUGIN_NAME.'/';
-		MyAgilePrivacy::clear_cache( $old_cache_dir, true ) ;
+		MyAgilePrivacy::flush_manifest_file_cache( $old_cache_dir, true ) ;
 
 		return true;
 	}
@@ -1893,9 +1942,9 @@ final class MyAgilePrivacy {
 	/**
 	 * clear file cache
 	 */
-	public static function clear_cache( $directory = null, $remove_dir = false )
+	public static function flush_manifest_file_cache( $directory = null, $remove_dir = false )
 	{
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "clear_cache with params directory=$directory, remove_dir=$remove_dir" );
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "flush_manifest_file_cache with params directory=$directory, remove_dir=$remove_dir" );
 
 		if( !$directory )
 		{
@@ -1916,11 +1965,11 @@ final class MyAgilePrivacy {
 		foreach ( $objects as $object ) {
 			if ( $object != "." && $object != ".." ) {
 				if ( is_dir( $directory . DIRECTORY_SEPARATOR . $object ) && ! is_link( $directory . "/" . $object ) ) {
-					MyAgilePrivacy::clear_cache( $directory . DIRECTORY_SEPARATOR . $object );
+					MyAgilePrivacy::flush_manifest_file_cache( $directory . DIRECTORY_SEPARATOR . $object );
 				} else {
 					$this_filepath = $directory . DIRECTORY_SEPARATOR . $object;
 
-					if( file_exists( $this_filepath ) ) @unlink( $this_filepath );
+					wp_delete_file( $this_filepath );
 				}
 			}
 		}
@@ -2019,13 +2068,13 @@ final class MyAgilePrivacy {
 
 	    if( $written === false )
 	    {
-	        @unlink( $tmp_filepath );
+	        wp_delete_file( $tmp_filepath );
 	        return false;
 	    }
 
 	    if( !rename( $tmp_filepath, $filepath ) )
 	    {
-	        @unlink( $tmp_filepath );
+	        wp_delete_file( $tmp_filepath );
 	        return false;
 	    }
 
@@ -2116,13 +2165,13 @@ final class MyAgilePrivacy {
 
 	        if( $written === false )
 	        {
-	            @unlink( $tmp_filepath );
+	            wp_delete_file( $tmp_filepath );
 	            continue;
 	        }
 
 	        if( !rename( $tmp_filepath, $file ) )
 	        {
-	            @unlink( $tmp_filepath );
+	            wp_delete_file( $tmp_filepath );
 	            continue;
 	        }
 
@@ -2205,8 +2254,8 @@ final class MyAgilePrivacy {
 		return $return_data;
 	}
 
-	//f for cache purge
-	public static function tryCacheClear()
+	//f for cache purge (system cache)
+	public static function tryOtherPluginCacheClear()
 	{
 		//w3 total cache
 		if( function_exists( 'w3tc_pgcache_flush' ) )
@@ -2238,7 +2287,6 @@ final class MyAgilePrivacy {
 			wpfc_clear_all_cache();
 		}
 	}
-
 
 	/**
 	* sort frontend cookies
@@ -2751,7 +2799,7 @@ final class MyAgilePrivacy {
 
 		$fixed_translations = ( isset( $the_settings['fixed_translations_encoded'] ) && $the_settings['fixed_translations_encoded'] ) ? json_decode( $the_settings['fixed_translations_encoded'], true ) : array();
 
-		if( !is_null( $fixed_translations ) && !empty( $fixed_translations ) )
+		if( is_array( $fixed_translations ) && !empty( $fixed_translations ) )
 		{
 			foreach( $fixed_translations as $lang => $translations )
 			{
@@ -2869,6 +2917,12 @@ final class MyAgilePrivacy {
 				$wpml_current_lang = 'pt';
 			}
 
+			//english fix
+			if( $wpml_current_lang == 'En' )
+			{
+				$wpml_current_lang = 'en';
+			}
+
 			$language_list = icl_get_languages();
 			$language_list_codes = array();
 
@@ -2891,8 +2945,13 @@ final class MyAgilePrivacy {
 					$the_language_code = 'pt';
 				}
 
-				$language_list_codes[] = $the_language_code;
+				//english fix
+				if( $the_language_code == 'En' )
+				{
+					$the_language_code = 'en';
+				}
 
+				$language_list_codes[] = $the_language_code;
 			}
 
 			$return_data['language_list_codes'] = $language_list_codes;
@@ -2998,15 +3057,21 @@ final class MyAgilePrivacy {
 
 			$language_list_codes = array();
 
-			$language_list_codes[] = $weglot_options['original_language'];
-
-			foreach( $weglot_options['destination_language'] as $k => $v )
+			if( isset( $weglot_options['original_language'] ) )
 			{
-				$the_language_code = $v['language_to'];
-				$language_list_codes[] = $the_language_code;
+				$language_list_codes[] = $weglot_options['original_language'];
 			}
 
-			$multilang_default_lang = $weglot_options['original_language'];
+			if( isset( $weglot_options['destination_language'] ) && is_array( $weglot_options['destination_language'] ) )
+			{
+				foreach( $weglot_options['destination_language'] as $k => $v )
+				{
+					$the_language_code = $v['language_to'];
+					$language_list_codes[] = $the_language_code;
+				}
+			}
+
+			$multilang_default_lang = isset( $weglot_options['original_language'] ) ? $weglot_options['original_language'] : null;
 			$current_language = function_exists( 'weglot_get_current_language' ) ? weglot_get_current_language() : get_locale();
 
 			$return_data['language_list_codes'] = $language_list_codes;
@@ -3100,6 +3165,38 @@ final class MyAgilePrivacy {
 		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
 		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
 		$regulationList = $MyAgilePrivacyRegulationHelper->getRegulationList();
+		$availableCountries = $MyAgilePrivacyRegulationHelper->getAvailableCountries();
+
+
+		if( isset( $rconfig ) &&
+			isset( $rconfig['expired_60_days'] ) &&
+			$rconfig['expired_60_days'] == 1
+		)
+		{
+			$the_url = '#';
+
+			if( defined( 'MAP_EXPIRED_CALLBACK_URL') && MAP_EXPIRED_CALLBACK_URL )
+			{
+				$the_key = 'default';
+
+				if( $current_lang== 'it_IT' )
+				{
+					$the_key = $current_lang;
+				}
+
+				$the_url = MAP_EXPIRED_CALLBACK_URL[ $the_key ];
+			}
+
+
+			$text = '<p>' . __( 'Some features of My Agile Privacy® are currently unavailable. Please check your license to restore full functionality.', 'MAP_txt' ) . '<br><a href="' . esc_url( $the_url ) . '" target="blank">' . __( 'Reactivate now', 'MAP_txt' ) . '</a></p>';
+
+			return $text;
+		}
+
+		if( !is_array( $templateConfig ) )
+		{
+			$templateConfig = array();
+		}
 
 		$set_list = array();
 		$unset_list = array();
@@ -3114,7 +3211,17 @@ final class MyAgilePrivacy {
 
 		$website_name = get_site_url();
 
-		if( isset( $the_settings['website_name'] ) && $the_settings['website_name'] != '' )
+		$base_location = null;
+
+		if( isset( $site_and_policy_settings ) &&
+			isset( $site_and_policy_settings['base_location'] )
+		)
+		{
+			$base_location = $site_and_policy_settings['base_location'];
+		}
+
+		if( isset( $the_settings['website_name'] ) &&
+			$the_settings['website_name'] != '' )
 		{
 			$website_name = stripslashes( $the_settings['website_name'] );
 
@@ -3124,6 +3231,8 @@ final class MyAgilePrivacy {
 				isset( $rconfig['block_the_content_filter'] ) &&
 				$rconfig['block_the_content_filter'] == 1 ) ||
 				(
+					isset( $the_settings ) &&
+					isset( $the_settings['scanner_compatibility_mode'] ) &&
 					$the_settings['scanner_compatibility_mode']
 				)
 			)
@@ -3216,6 +3325,36 @@ final class MyAgilePrivacy {
 			}
 
 			$processed_keys[] = 'shortcode_dpo_address';
+		}
+
+		//base location specific texts
+		if(
+			isset( $availableCountries ) &&
+			isset( $availableCountries['all_supported_countries'] )
+		)
+		{
+			foreach( $availableCountries['all_supported_countries'] as $countryKey => $countryDescription )
+			{
+				$key = 'map_'.$countryKey.'_base_location';
+
+				$processed_keys[] = $key;
+
+				if( $countryKey !== $base_location )
+				{
+					if( $debug_mode ) $empty_text = strtoupper( '['.$key.']' );
+
+					$text = preg_replace( '#(<p class="'.$key.'">).*?(</p>)#s', $empty_text , $text );
+					$text = preg_replace( '#(<span class="'.$key.'">).*?(</span>)#s', $empty_text , $text );
+					$text = preg_replace( '#(<ul class="'.$key.'">).*?(</ul>)#s', $empty_text , $text );
+					$text = preg_replace( '#(<li class="'.$key.'">).*?(</li>)#s', $empty_text , $text );
+
+					$unset_list[] = $key;
+				}
+				else
+				{
+					$set_list[] = $key;
+				}
+			}
 		}
 
 		foreach( $regulationList as $regulation )
@@ -3717,6 +3856,66 @@ final class MyAgilePrivacy {
 	    // Unable to determine (e.g. behind a reverse proxy)
 	    return null;
 	}
+
+    /**
+     * Check if WordPress has direct filesystem write access to the plugins directory.
+     *
+     * @return bool
+     */
+    public static function verify_filesystem_write_access()
+    {
+        if( !function_exists( 'get_filesystem_method' ) )
+        {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        if( !class_exists( 'WP_Filesystem_Base' ) )
+        {
+            require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+        }
+
+        $context = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : ABSPATH . 'wp-content/plugins';
+
+        return 'direct' === get_filesystem_method( array(), $context );
+    }
+
+    /**
+     * Check if PHP can extract zip files (ZipArchive class).
+     *
+     * @return bool
+     */
+    public static function verify_zip_support()
+    {
+        if ( class_exists( 'ZipArchive' ) )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if WordPress can perform remote HTTP requests.
+     * Uses curl or allow_url_fopen — both work in CLI/cron context.
+     *
+     * @return bool
+     */
+    public static function verify_remote_download()
+    {
+        // Load HTTP utilities if not already available.
+        if( !function_exists( 'wp_http_supports' ) )
+        {
+            require_once ABSPATH . 'wp-includes/class-http.php';
+        }
+
+        if( function_exists( 'wp_http_supports' ) )
+        {
+            return wp_http_supports( array( 'ssl' ) );
+        }
+
+        // Fallback: check curl or allow_url_fopen directly.
+        return function_exists( 'curl_init' ) || (bool) ini_get( 'allow_url_fopen' );
+    }
 
 	/**
 	 * write to log file

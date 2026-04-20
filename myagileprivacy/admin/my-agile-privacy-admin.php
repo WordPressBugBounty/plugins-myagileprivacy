@@ -575,7 +575,7 @@ final class MyAgilePrivacyAdmin {
 				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC) );
 				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $manifest );
 
-				if( $manifest && isset( $manifest['manifest_version_file'] ) )
+				if( $manifest && isset( $manifest['manifest_version_file'] ) && isset( $manifest['files'] ) )
 				{
 					$manifest_assoc = array();
 
@@ -601,6 +601,7 @@ final class MyAgilePrivacyAdmin {
 						$do_get_file = true;
 
 						if( !(
+								isset( $rconfig['allow_iab'] ) &&
 								$rconfig['allow_iab'] == 1 &&
 								$the_settings['enable_iab_tcf']
 							) &&
@@ -665,7 +666,7 @@ final class MyAgilePrivacyAdmin {
 			{
 				$now = time();
 
-				if( $the_settings['learning_mode_last_active_timestamp'] == null )
+				if( $the_settings['learning_mode_last_active_timestamp'] === null )
 				{
 					$the_settings['learning_mode_last_active_timestamp'] = $now;
 
@@ -817,7 +818,8 @@ final class MyAgilePrivacyAdmin {
 			'version'			=>	MAP_PLUGIN_VERSION,
 		);
 
-		if( $currentAndSupportedLanguages['with_multilang'] )
+		if( $currentAndSupportedLanguages['with_multilang'] &&
+			is_array( $currentAndSupportedLanguages['language_list_codes'] ) )
 		{
 			$data_to_send['languages'] = implode( ',', $currentAndSupportedLanguages['language_list_codes'] );
 		}
@@ -833,7 +835,8 @@ final class MyAgilePrivacyAdmin {
 		$is_dm = false;
 
 		if( !$action_result ||
-			( $action_result && isset( $action_result['internal_error_message'] ) )
+			!is_array( $action_result ) ||
+			isset( $action_result['internal_error_message'] )
 		)
 		{
 			$rr = false;
@@ -1517,7 +1520,10 @@ final class MyAgilePrivacyAdmin {
 
 				if( isset( $autoconsume_options['forced']['do_empty_cache'] ) && $autoconsume_options['forced']['do_empty_cache'] == 1 )
 				{
-					MyAgilePrivacy::tryCacheClear();
+					MyAgilePrivacy::flush_manifest_file_cache();
+					// Invalidate the JSON cache since cookie data has changed
+					MyAgilePrivacy::flush_json_cache();
+					MyAgilePrivacy::tryOtherPluginCacheClear();
 				}
 			}
 		}
@@ -1544,13 +1550,18 @@ final class MyAgilePrivacyAdmin {
 		// Check nonce:
 		check_admin_referer( 'myagileprivacy-update-' . MAP_PLUGIN_SETTINGS_FIELD );
 
-		if( isset($_FILES) &&
+		if( isset( $_FILES['the_imported_file'] ) &&
 			$_FILES['the_imported_file']['error'] == UPLOAD_ERR_OK &&
-			is_uploaded_file($_FILES['the_imported_file']['tmp_name']))
+			is_uploaded_file( $_FILES['the_imported_file']['tmp_name'] ) )
 		{
 			$file_content = file_get_contents( $_FILES['the_imported_file']['tmp_name'] );
 
 			$cookies = json_decode( $file_content, true );
+
+			if( !is_array( $cookies ) || !isset( $cookies['standard'] ) || !isset( $cookies['custom'] ) )
+			{
+				return false;
+			}
 
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
@@ -1909,6 +1920,12 @@ final class MyAgilePrivacyAdmin {
 		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
 		$frontend_regulation = $MyAgilePrivacyRegulationHelper->getFrontendConfig();
 
+		$filesystem_write_access = MyAgilePrivacy::verify_filesystem_write_access();
+		$zip_support = MyAgilePrivacy::verify_zip_support();
+		$remote_download = MyAgilePrivacy::verify_remote_download();
+
+		$can_install_and_activate = $filesystem_write_access && $zip_support && $remote_download;
+
 		$other_data = array(
 			'map_version'					=>	MAP_PLUGIN_VERSION,
 			'summary_version'				=>	MAP_SUMMARY_VERSION,
@@ -1923,6 +1940,11 @@ final class MyAgilePrivacyAdmin {
 			'integrityChecks'				=>	MyAgilePrivacy::getGlobalIntegrityChecks( 'backend' ),
 			'frontend_regulation'			=>	$frontend_regulation,
 			'is_multisite'					=>	is_multisite(),
+
+			'filesystem_write_access'		=>	$filesystem_write_access,
+			'zip_support'					=>	$zip_support,
+			'remote_download'				=>	$remote_download,
+			'can_install_and_activate'		=>	$can_install_and_activate,
 		);
 
 		//bof theme calc
@@ -2243,9 +2265,11 @@ final class MyAgilePrivacyAdmin {
 
 		$answer = array(
 			'success'					=>	true,
-			'post_translations'			=> $_POST['translations'],
-
+			'post_translations' 		=> 	isset( $_POST['translations'] ) ? $_POST['translations'] : array(),
 		);
+
+	    // Invalidate the JSON cache since data has changed
+	    MyAgilePrivacy::flush_json_cache();
 
 		wp_send_json( $answer );
 	}
@@ -2422,7 +2446,7 @@ final class MyAgilePrivacyAdmin {
 
 			if( !$the_settings['license_valid'] ||
 				!$the_settings_save['pa'] ||
-				( isset( $_POST['license_code_field']) &&
+				( isset( $_POST['license_code_field'] ) &&
 					$the_settings_save['license_code'] != $_POST['license_code_field'] )
 			)
 			{
@@ -2433,7 +2457,7 @@ final class MyAgilePrivacyAdmin {
 			$the_timestamp = MyAgilePrivacy::get_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
 
 			if( ( $do_revalidation ||
-					$the_timestamp == null ||
+					$the_timestamp === null ||
 					$now - $the_timestamp > 86400 ||
 					$missing_key ) &&
 				isset( $_POST['license_code_field'] )
@@ -2463,7 +2487,8 @@ final class MyAgilePrivacyAdmin {
 				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $action_result );
 
 				if( !$action_result ||
-					( $action_result && isset( $action_result['internal_error_message'] ) )
+					!is_array( $action_result ) ||
+					isset( $action_result['internal_error_message'] )
 				)
 				{
 					$rr = false;
@@ -2535,7 +2560,7 @@ final class MyAgilePrivacyAdmin {
 
 			if( $do_clear_file_cache )
 			{
-				MyAgilePrivacy::clear_cache();
+				MyAgilePrivacy::flush_manifest_file_cache();
 				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 			}
 
@@ -5283,13 +5308,21 @@ final class MyAgilePrivacyAdmin {
 
 		if( !is_wp_error( $response ) )
 		{
-			$plugin_info = unserialize( $response['body'] );
+			if( version_compare( PHP_VERSION, '7.0.0', '>=' ) )
+			{
+				$plugin_info = unserialize( $response['body'], array( 'allowed_classes' => array( 'stdClass' ) ) );
+			}
+			else
+			{
+				$plugin_info = unserialize( $response['body'] );
+			}
 
 			return $plugin_info;
 		}
 		else
 		{
-			$error_code = array_key_first( $response->errors );
+			reset( $response->errors );
+			$error_code = key( $response->errors );
 			$error_message = $response->errors[ $error_code ][0];
 
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $error_message );
@@ -5298,13 +5331,27 @@ final class MyAgilePrivacyAdmin {
 		return null;
 	}
 
-	//f for review banner show
+	//f. for review expired notice
+	public function show_expired_notice()
+	{
+		$show_expired_notice = MyAgilePrivacy::should_show_expired_notice();
+
+		if( $show_expired_notice )
+		{
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "showing review notice, review_url_key=$review_url_key, review_urls=".print_r( $review_urls, true ) );
+
+			require_once plugin_dir_path( __FILE__ ).'views/expired_notice_html.php';
+		}
+
+	}
+
+	//f. for review banner show
 	public function show_review_notice()
 	{
 		//check for do not ask license code
 		MyAgilePrivacy::checkDoNotAskLicenseCode();
 
-		$show_notice = MyAgilePrivacy::should_show_notice();
+		$show_feedback_notice = MyAgilePrivacy::should_show_feedback_notice();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		$review_urls = null;
@@ -5334,9 +5381,9 @@ final class MyAgilePrivacyAdmin {
 			$review_url = $review_urls[ $review_url_key ];
 		}
 
-		if( $show_notice )
+		if( $show_feedback_notice )
 		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "showing review notice, review_url_key=$review_url_key, review_urls=".print_r( $review_urls, true ) );
+			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "showing review notice, review_url_key=$review_url_key, review_urls=".print_r( $review_urls, true ) );
 
 			require_once plugin_dir_path( __FILE__ ).'views/feedback_notice_html.php';
 		}
@@ -5393,12 +5440,42 @@ final class MyAgilePrivacyAdmin {
 			if( is_array( $options['plugins'] ) &&
 				in_array( $plugin_name, $options['plugins'] ) )
 			{
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
-				MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
-				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+				//flag the update so the post-update routine fires on the next request
+				set_transient( MAP_PLUGIN_JUST_UPDATED_TRANSIENT, 1, HOUR_IN_SECONDS );
 
 				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'plugin_upgrade_callback called after plugin update' );
 			}
 		}
+	}
+
+	//plugins_loaded callback: check whether a post-update routine needs to run
+	public function map_check_post_update_transient()
+	{
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_check_post_update_transient called - checking for transient' );
+
+		//delete_transient is race-condition safe: only the first request to win the
+		//deletion will proceed (atomic at DB level)
+		if( delete_transient( MAP_PLUGIN_JUST_UPDATED_TRANSIENT ) )
+		{
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_check_post_update_transient: transient found and deleted, calling post-update routine' );
+
+			$this->map_post_update_routine();
+		}
+	}
+
+	//post-update routine: runs once on the first request after a MAP plugin update
+	public function map_post_update_routine()
+	{
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_post_update_routine called after plugin update' );
+
+		MyAgilePrivacy::flush_manifest_file_cache();
+		// Invalidate the JSON cache since cookie data has changed
+		MyAgilePrivacy::flush_json_cache();
+		MyAgilePrivacy::tryOtherPluginCacheClear();
+
+        MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
+        MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
+        MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+
 	}
 }

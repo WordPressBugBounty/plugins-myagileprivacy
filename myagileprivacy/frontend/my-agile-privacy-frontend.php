@@ -260,16 +260,17 @@ final class MyAgilePrivacyFrontend {
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
 
 		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_lineheight_val = (int) esc_attr( $the_settings['text_lineheight'] );
+
 		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
+		$text_lineheight_style = '--map-text-lh:'.$text_lineheight_val.'px; line-height:var(--map-text-lh)';
 
 		$class = ' class="map-button map-button-style map-accept-button"';
-
-		$animation_attrs = '';
 
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_accept_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_accept_link_color'] ).' !important' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="accept" id="map-accept-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).';" '.esc_attr( $animation_attrs ).'>';
+		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="accept" id="map-accept-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] ) $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -302,14 +303,17 @@ final class MyAgilePrivacyFrontend {
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
 
 		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_lineheight_val = (int) esc_attr( $the_settings['text_lineheight'] );
+
 		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
+		$text_lineheight_style = '--map-text-lh:'.$text_lineheight_val.'px; line-height:var(--map-text-lh)';
 
 		$class = ' class="map-button map-button-style map-reject-button"';
 
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_reject_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_reject_link_color'] ).' !important' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="reject" id="map-reject-button"'. $class.' style="'.esc_attr( $margin_style ).'; '.esc_attr( $color_style) .'; '.esc_attr( $background_style ).'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).';">';
+		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="reject" id="map-reject-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] )  $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -343,14 +347,17 @@ final class MyAgilePrivacyFrontend {
 		$border_radius_style = 'border-radius:'.esc_attr( $the_settings['elements_border_radius'] ).'px !important';
 
 		$text_size_val = (int) esc_attr( $the_settings['text_size'] );
+		$text_lineheight_val = (int) esc_attr( $the_settings['text_lineheight'] );
+
 		$text_size_style = '--map-text-size:'.$text_size_val.'px;font-size:var(--map-text-size)';
+		$text_lineheight_style = '--map-text-lh:'.$text_lineheight_val.'px; line-height:var(--map-text-lh)';
 
 		$class = ' class="map-button map-button-style map-customize-button"';
 
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_customize_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_customize_link_color'] ).' !important ' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="customize" id="map-customize-button"'. $class.' style="'.esc_attr( $margin_style ).'; '.esc_attr( $color_style ) .'; '.esc_attr( $background_style ) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).';">';
+		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="customize" id="map-customize-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] ) $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -2597,7 +2604,7 @@ final class MyAgilePrivacyFrontend {
 
 	    $manifest_assoc_public = array();
 
-	    if( $manifest_assoc && isset( $manifest_assoc['manifest_version_file'] ) )
+	    if( $manifest_assoc && isset( $manifest_assoc['manifest_version_file'] ) && isset( $manifest_assoc['files'] ) )
 	    {
 	        foreach( $manifest_assoc['files'] as $the_file => $the_item )
 	        {
@@ -2624,6 +2631,13 @@ final class MyAgilePrivacyFrontend {
 	        $rconfig['disable_early_gcmode'] == 1 )
 	    {
 	        $early_gcmode = false;
+	    }
+
+	    $iab_vendor_count = 0;
+
+	    if( defined( 'MAP_IAB_VENDOR_COUNT' ) && MAP_IAB_VENDOR_COUNT )
+	    {
+	    	$iab_vendor_count = MAP_IAB_VENDOR_COUNT;
 	    }
 
 	    $map_full_config = array(
@@ -2664,6 +2678,7 @@ final class MyAgilePrivacyFrontend {
 	        'send_ga4_event_on_consent_change'                          => $send_ga4_event_on_consent_change,
 	        'allow_js_fast_callback'                                    => $allow_js_fast_callback,
 	        'cookie_domain_path'                                    	=> $cookie_domain_path,
+	        'iab_vendor_count'											=> $iab_vendor_count,
 	    );
 
 	    if( $iab_tcf_context )
@@ -3005,8 +3020,8 @@ final class MyAgilePrivacyFrontend {
 				if( isset( $the_settings['pa'] ) &&
 					$the_settings['pa'] == 1 )
 				{
-					$detected = intval( $_POST['detected'] );
-					$missing_api_support = intval( $_POST['missing_api_support'] );
+					$detected = isset( $_POST['detected'] ) ? intval( $_POST['detected'] ) : 0;
+					$missing_api_support = isset( $_POST['missing_api_support'] ) ? intval( $_POST['missing_api_support'] ) : 0;
 
 					if( $detected == 0 )
 					{
@@ -3091,8 +3106,8 @@ final class MyAgilePrivacyFrontend {
 				}
 
 				$the_settings['cmode_v2_js_on_error'] = $cmode_v2_js_on_error;
-				$the_settings['cmode_v2_js_error_code'] = intval( $_POST['error_code'] );
-				$the_settings['cmode_v2_js_error_motivation'] = sanitize_text_field( $_POST['error_motivation'] );
+				$the_settings['cmode_v2_js_error_code'] = isset( $_POST['error_code'] ) ? intval( $_POST['error_code'] ) : 0;
+				$the_settings['cmode_v2_js_error_motivation'] = isset( $_POST['error_motivation'] ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
 
 				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 

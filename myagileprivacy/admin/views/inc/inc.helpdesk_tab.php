@@ -28,8 +28,11 @@ $sito_area_privata_url = 'https://www.myagileprivacy.com/en/helpdesk/guide-to-us
 $personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/en/helpdesk/how-to-customise-the-my-agile-privacy-cookie-banner/';
 
 $consent_mode_v2 = 'https://www.myagileprivacy.com/en/supporting-consent-mode-v2-what-it-is-and-how-to-implement-it-gdpr-compliant-with-my-agile-privacy/';
+
+$cmode_uet = 'https://www.myagileprivacy.com/en/how-to-implement-microsoft-consent-mode-with-my-agile-privacy/';
+$cmode_clarity = 'https://www.myagileprivacy.com/en/how-to-implement-clarity-consent-mode-with-my-agile-privacy/';
+
 $policy_customization = 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-my-agile-privacy-policy-assistant/';
-https://www.myagileprivacy.com/helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/
 
 
 //per lang helpdesk defs
@@ -56,6 +59,10 @@ if( $locale && $locale == 'it_IT' )
 	$personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/helpdesk/come-personalizzare-il-cookie-banner-di-my-agile-privacy/';
 
 	$consent_mode_v2 = 'https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy/';
+
+	$cmode_uet = 'https://www.myagileprivacy.com/come-implementare-microsoft-consent-mode-con-my-agile-privacy/';
+	$cmode_clarity = 'https://www.myagileprivacy.com/come-implementare-clarity-consent-mode-con-my-agile-privacy/';
+
 	$policy_customization = 'https://www.myagileprivacy.com/helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/';
 }
 ?>
@@ -98,12 +105,31 @@ if( $locale && $locale == 'it_IT' )
 
 					<p>
 
-						<?php echo wp_kses_post( __( 'Consent Mode V2', 'MAP_txt' ) ); ?>
+						<?php echo wp_kses_post( __( 'Google Consent Mode V2', 'MAP_txt' ) ); ?>
 
 						<br>
 
 						<a target="_blank" href="<?php echo esc_attr( $consent_mode_v2 ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Google Consent Mode V2 on your website', 'MAP_txt' ) ); ?></a>
 					</p>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'Microsoft Consent Mode', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_attr( $cmode_uet ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Microsoft Consent Mode on your website', 'MAP_txt' ) ); ?></a>
+					</p>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'Clarity Consent Mode', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_attr( $cmode_clarity ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Clarity Consent Mode on your website', 'MAP_txt' ) ); ?></a>
+					</p>
+
 
 					<hr>
 

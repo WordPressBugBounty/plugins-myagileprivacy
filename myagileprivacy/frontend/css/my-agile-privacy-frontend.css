@@ -1014,6 +1014,8 @@
     font-size: 14px;
 }
 
+/* Hide the underlying hidden input */
+.map-switch input[type="hidden"],
 .map-switch input[type="checkbox"] {
     display: none !important;
 }
@@ -1057,25 +1059,25 @@
     text-transform: none;
 }
 
-/* Checked state */
-.map-switch input:checked + .map-slider {
+/* Checked state — driven by .map-slider-on class applied via JavaScript */
+.map-switch .map-slider-on {
     background-color: #4dd06b;
 }
 
-.map-switch input:checked + .map-slider:before {
+.map-switch .map-slider-on:before {
     transform: translateX(18px);
 }
 
-.map-switch input:checked + .map-slider:after {
+.map-switch .map-slider-on:after {
     content: attr(data-map-enable);
 }
 
 /* Flags variant */
-.map-switch input:checked.map-flags + .map-slider {
+.map-switch .map-slider-on.map-flags {
     background-color: #ffcc08;
 }
 
-.map-switch input:checked.map-flags + .map-slider:before {
+.map-switch .map-slider-on.map-flags:before {
     transform: translateX(9px);
 }
 
@@ -1711,6 +1713,12 @@ span.map-necessary-caption {
 
 @media (max-width: 768px) {
 
+    #my-agile-privacy-notification-area.mapSizeBoxed .map_notification_container,
+    #my-agile-privacy-notification-area.mapSizeWide .map_notification_container,
+    #my-agile-privacy-notification-area.mapSizeWideBranded .map_notification_container{
+        margin-top:15px!important;
+    }
+
     #map-blocked-content-notification-area {
         font-size: 14px;
         line-height: 20px;
@@ -1722,15 +1730,18 @@ span.map-necessary-caption {
         padding: 30px 10px;
     }
 
+    /*clamp: min, preferred, max*/
+
     #my-agile-privacy-notification-area .map_notification-message,
     #my-agile-privacy-notification-area .map_notification-message p,
     #mapSettingsPopup .map-tab-container p {
-        font-size: calc(var(--map-text-size) - 4px) !important;
-        line-height: calc(var(--map-text-lh) - 8px) !important;
+        font-size: clamp(12px, calc(var(--map-text-size) - 4px), 20px) !important;
+        line-height: clamp(18px, calc(var(--map-text-lh) - 8px), 24px) !important;
     }
 
-    #my-agile-privacy-notification-area .map_notification_container a{
-        font-size: calc(var(--map-text-size) - 4px) !important;
+    #my-agile-privacy-notification-area .map_notification_container a {
+        font-size: clamp(12px, calc(var(--map-text-size) - 4px), 20px) !important;
+        line-height: clamp(18px, calc(var(--map-text-lh) - 8px), 24px) !important;
     }
 
     #map-info-overlay-content {

@@ -6,53 +6,53 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2026-03-05 19:06+0000\n"
+"POT-Creation-Date: 2026-04-14 07:45+0000\n"
 "X-Generator: Loco https://localise.biz/"
 
-#: admin/views/policy_assistant_html.php:756
-#: admin/views/policy_assistant_html.php:2228
+#: admin/views/policy_assistant_html.php:753
+#: admin/views/policy_assistant_html.php:2225
 msgid ""
 "(e.g., diagnoses, medical conditions, treatments and medications, test "
 "results/reports, disability)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:761
-#: admin/views/policy_assistant_html.php:2233
+#: admin/views/policy_assistant_html.php:758
+#: admin/views/policy_assistant_html.php:2230
 msgid "(e.g., DNA profiles, results of genetic testing)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:760
-#: admin/views/policy_assistant_html.php:2232
+#: admin/views/policy_assistant_html.php:757
+#: admin/views/policy_assistant_html.php:2229
 msgid ""
 "(e.g., fingerprints, facial recognition templates, iris/retina scans, voice "
 "templates)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:762
-#: admin/views/policy_assistant_html.php:2234
+#: admin/views/policy_assistant_html.php:759
+#: admin/views/policy_assistant_html.php:2231
 msgid ""
 "(e.g., information on relationships or practices, self-declared orientation, "
 "memberships revealing orientation)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:758
-#: admin/views/policy_assistant_html.php:2230
+#: admin/views/policy_assistant_html.php:755
+#: admin/views/policy_assistant_html.php:2227
 msgid ""
 "(e.g., membership in a religious denomination or ethical belief organization)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:757
-#: admin/views/policy_assistant_html.php:2229
+#: admin/views/policy_assistant_html.php:754
+#: admin/views/policy_assistant_html.php:2226
 msgid "(e.g., membership, support or donations to parties/movements)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:759
-#: admin/views/policy_assistant_html.php:2231
+#: admin/views/policy_assistant_html.php:756
+#: admin/views/policy_assistant_html.php:2228
 msgid "(e.g., stated ethnicity or racial background)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:763
-#: admin/views/policy_assistant_html.php:2235
+#: admin/views/policy_assistant_html.php:760
+#: admin/views/policy_assistant_html.php:2232
 msgid "(e.g., union enrollment, payroll dues/withholdings)"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "-Select all relevant jurisdictions"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2815
+#: admin/my-agile-privacy-admin.php:2826
 msgid ""
 "<b>Allowed without notification</b>: represents a Cookie that you do not "
 "wish to block, and you want to prevent it from appearing in the list of "
@@ -77,20 +77,20 @@ msgid ""
 "caution."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2814
+#: admin/my-agile-privacy-admin.php:2825
 msgid ""
 "<b>Blocked without notification</b>: represents a Cookie that you want to "
 "block without it appearing in the list of Cookies for which you are "
 "requesting consent."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2813
+#: admin/my-agile-privacy-admin.php:2824
 msgid ""
 "<b>Draft</b>: represents a Cookie or a software that you are not currently "
 "using, and is available as a \"library\"."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2812
+#: admin/my-agile-privacy-admin.php:2823
 msgid ""
 "<b>Published</b>: the Cookie configuration is active according to the "
 "specified settings."
@@ -115,10 +115,16 @@ msgid ""
 "users can manage their preferences."
 msgstr ""
 
-#: admin/views/inc/inc.admin_sidebar.php:89
+#: admin/views/inc/inc.admin_sidebar.php:69
 msgid ""
 "<strong>Do you need support?</strong><br><u>Click here</u> and check the "
 "Help Desk section"
+msgstr ""
+
+#: admin/views/expired_notice_html.php:34
+msgid ""
+"<strong>Please check your license status and renew or reactivate it</strong> "
+"to restore full functionality and keep your website compliant."
 msgstr ""
 
 #: admin/views/policy_assistant_html.php:114
@@ -135,7 +141,7 @@ msgid ""
 "and tell us what you like most about our service."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2422
+#: admin/views/policy_assistant_html.php:2419
 msgid ""
 "A transfer occurs when personal data is processed or stored outside the "
 "European Economic Area (EEA), Switzerland, or a country deemed “adequate.” "
@@ -161,13 +167,13 @@ msgstr ""
 msgid "Accept button detailed preview"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2564
+#: admin/views/policy_assistant_html.php:2561
 msgid ""
 "Access to personal data is granted only to authorized and trained personnel, "
 "in accordance with internal security policies."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2123
+#: admin/views/policy_assistant_html.php:2120
 msgid "Account registration"
 msgstr ""
 
@@ -179,7 +185,7 @@ msgstr ""
 msgid "Activate IAB Transparency and Consent Framework"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4722
+#: admin/my-agile-privacy-admin.php:4750
 #: admin/views/inc/inc.policies_tab.php:375
 #: admin/views/inc/inc.dashboard_tab.php:59
 msgid "Active regulations"
@@ -199,33 +205,33 @@ msgstr ""
 msgid "Ad User Data"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:84
+#: admin/views/inc/inc.helpdesk_tab.php:91
 msgid "Adapt the contact forms to GDPR"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3914
+#: admin/my-agile-privacy-admin.php:3942
 msgid "Add custom code anyway."
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1099
-#: frontend/my-agile-privacy-frontend.php:1100
+#: frontend/my-agile-privacy-frontend.php:1138
+#: frontend/my-agile-privacy-frontend.php:1139
 msgid "Add New Cookie"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1169
-#: frontend/my-agile-privacy-frontend.php:1170
+#: frontend/my-agile-privacy-frontend.php:1208
+#: frontend/my-agile-privacy-frontend.php:1209
 msgid "Add New Policy"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4354
+#: admin/my-agile-privacy-admin.php:4382
 msgid "Additional code installation type"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2435
+#: admin/views/policy_assistant_html.php:2432
 msgid "Adequacy decisions by the European Commission or the Swiss authority;"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2436
+#: admin/views/policy_assistant_html.php:2433
 msgid ""
 "Adherence to a certified framework (e.g., the U.S. Data Privacy Framework);"
 msgstr ""
@@ -238,17 +244,17 @@ msgstr ""
 msgid "Advanced Settings"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3732 admin/my-agile-privacy-admin.php:4353
-#: admin/my-agile-privacy-admin.php:4567
+#: admin/my-agile-privacy-admin.php:3760 admin/my-agile-privacy-admin.php:4381
+#: admin/my-agile-privacy-admin.php:4595
 msgid "Allow automatic updates ?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3573 admin/my-agile-privacy-admin.php:3577
+#: admin/my-agile-privacy-admin.php:3601 admin/my-agile-privacy-admin.php:3605
 msgid "Allow updates?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2845 admin/my-agile-privacy-admin.php:2880
-#: frontend/my-agile-privacy-frontend.php:1157
+#: admin/my-agile-privacy-admin.php:2856 admin/my-agile-privacy-admin.php:2891
+#: frontend/my-agile-privacy-frontend.php:1196
 msgid "Allowed without notification"
 msgstr ""
 
@@ -271,13 +277,13 @@ msgstr ""
 msgid "Ancient Parchment"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:903
+#: admin/views/policy_assistant_html.php:900
 msgid ""
 "annual gross revenues exceeding USD 25 million (in the preceding calendar "
 "year); or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1463
+#: admin/views/policy_assistant_html.php:1460
 msgid "annual gross revenues of at least USD 25 million; and"
 msgstr ""
 
@@ -285,11 +291,11 @@ msgstr ""
 msgid "Any European Union country"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:782
+#: admin/views/policy_assistant_html.php:779
 msgid "Applicable policies"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1752
+#: admin/views/policy_assistant_html.php:1749
 msgid ""
 "Applies to any processing operation carried out by natural persons or legal "
 "entities, under public or private law, regardless of the "
@@ -297,7 +303,7 @@ msgid ""
 "one of these conditions is met:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:899
+#: admin/views/policy_assistant_html.php:896
 msgid ""
 "Applies to for-profit businesses that do business in California, collect or "
 "have collected personal information of California residents, and determine "
@@ -305,119 +311,119 @@ msgid ""
 "following conditions:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1258
+#: admin/views/policy_assistant_html.php:1255
 msgid ""
 "Applies to operators of websites/online services that do business in Nevada, "
 "collect personal information from Nevada consumers, and sell that "
 "information."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1662
+#: admin/views/policy_assistant_html.php:1659
 msgid ""
 "Applies to private individuals and federal bodies that process personal data "
 "of natural persons (cantonal authorities are governed by cantonal law)."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1705
+#: admin/views/policy_assistant_html.php:1702
 msgid ""
 "Applies to private‑sector organizations that, in the course of commercial "
 "activities, collect, use, or disclose personal information in Canada "
 "(including interprovincial or international transfers). "
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:952
+#: admin/views/policy_assistant_html.php:949
 msgid ""
 "Applies to those who do business in Colorado or intentionally target "
 "products/services to Colorado residents and, during a calendar year, meet at "
 "least one of these thresholds:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1002
+#: admin/views/policy_assistant_html.php:999
 msgid ""
 "Applies to those who do business in Connecticut or target products/services "
 "to Connecticut residents and, in the preceding calendar year, meet at least "
 "one of these thresholds:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1053
+#: admin/views/policy_assistant_html.php:1050
 msgid ""
 "Applies to those who do business in Delaware or target products/services to "
 "Delaware residents and, in the previous calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1104
+#: admin/views/policy_assistant_html.php:1101
 msgid ""
 "Applies to those who do business in Minnesota or target products/services to "
 "Minnesota residents and, during a calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1155
+#: admin/views/policy_assistant_html.php:1152
 msgid ""
 "Applies to those who do business in Montana or target products/services to "
 "Montana residents and, during a calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1207
+#: admin/views/policy_assistant_html.php:1204
 msgid ""
 "Applies to those who do business in Nebraska or target products/services to "
 "Nebraska residents and process or sell personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1306
+#: admin/views/policy_assistant_html.php:1303
 msgid ""
 "Applies to those who do business in New Hampshire or target "
 "products/services to New Hampshire residents and, in the previous calendar "
 "year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1357
+#: admin/views/policy_assistant_html.php:1354
 msgid ""
 "Applies to those who do business in New Jersey or target products/services "
 "to New Jersey residents and, in the previous calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1408
+#: admin/views/policy_assistant_html.php:1405
 msgid ""
 "Applies to those who do business in Oregon or target products/services to "
 "Oregon residents and, during a calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1459
+#: admin/views/policy_assistant_html.php:1456
 msgid ""
 "Applies to those who do business in Tennessee or target products/services to "
 "Tennessee residents and meet all of the following:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1510
+#: admin/views/policy_assistant_html.php:1507
 msgid ""
 "Applies to those who do business in Texas or target products/services to "
 "Texas residents and process or sell personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1557
+#: admin/views/policy_assistant_html.php:1554
 msgid ""
 "Applies to those who do business in Utah or target products/services to Utah "
 "residents and satisfy all of the following conditions:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1607
+#: admin/views/policy_assistant_html.php:1604
 msgid ""
 "Applies to those who do business in Virginia or target products/services to "
 "Virginia residents and, in a calendar year:"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:801
-#: admin/views/policy_assistant_html.php:848
+#: admin/views/policy_assistant_html.php:798
+#: admin/views/policy_assistant_html.php:845
 msgid "Applies to your processing of personal data when:"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:5094
+#: admin/my-agile-privacy-admin.php:5122
 msgid ""
 "Attention: Modifying the cookie without specific expertise may result in "
 "loss of compliance."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4847
+#: admin/my-agile-privacy-admin.php:4875
 msgid ""
 "Attention: Modifying the policy without specific expertise may result in "
 "loss of compliance."
@@ -438,7 +444,7 @@ msgstr ""
 msgid "Auto Close Timeout"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4350
+#: admin/my-agile-privacy-admin.php:4378
 msgid "Auto Detected"
 msgstr ""
 
@@ -448,7 +454,7 @@ msgstr ""
 msgid "Background colour"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2970 admin/my-agile-privacy-admin.php:2971
+#: admin/my-agile-privacy-admin.php:2981 admin/my-agile-privacy-admin.php:2982
 #: admin/views/backup_restore_html.php:41
 #: admin/views/inc/inc.backup_restore_tab.php:16
 msgid "Backup & Restore"
@@ -474,7 +480,7 @@ msgstr ""
 msgid "Banner title"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:131
+#: admin/views/inc/inc.helpdesk_tab.php:157
 msgid ""
 "Below are the configuration guides for the most commonly used ones. Make "
 "sure to follow the instructions to ensure compliance and performance."
@@ -494,8 +500,8 @@ msgstr ""
 msgid "Big and Branded"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:760
-#: admin/views/policy_assistant_html.php:2232
+#: admin/views/policy_assistant_html.php:757
+#: admin/views/policy_assistant_html.php:2229
 msgid "Biometric data processed for the purpose of unique identification"
 msgstr ""
 
@@ -515,8 +521,8 @@ msgstr ""
 msgid "Blocked Content Widget text colour"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2844 admin/my-agile-privacy-admin.php:2879
-#: frontend/my-agile-privacy-frontend.php:1148
+#: admin/my-agile-privacy-admin.php:2855 admin/my-agile-privacy-admin.php:2890
+#: frontend/my-agile-privacy-frontend.php:1187
 msgid "Blocked without notification"
 msgstr ""
 
@@ -544,13 +550,13 @@ msgstr ""
 msgid "Buy now a license code!"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:906
+#: admin/views/policy_assistant_html.php:903
 msgid ""
 "buy, sell, or share, in a year, the personal information of 100,000 or more "
 "California consumers or households; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2164
+#: admin/views/policy_assistant_html.php:2161
 msgid ""
 "By \"last meaningful interaction\" we mean, for example, opening a "
 "communication, clicking within a communication, or submitting a request "
@@ -592,7 +598,7 @@ msgid ""
 "compliance in case of regulatory adjustments."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4848 admin/my-agile-privacy-admin.php:5095
+#: admin/my-agile-privacy-admin.php:4876 admin/my-agile-privacy-admin.php:5123
 msgid "By modifying the text, you assume all risks."
 msgstr ""
 
@@ -610,11 +616,11 @@ msgstr ""
 msgid "Canada"
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:454
+#: admin/views/inc/inc.translations_tab.php:472
 msgid "Cancel"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:895
+#: admin/views/policy_assistant_html.php:892
 msgid "CCPA / CPRA (California)"
 msgstr ""
 
@@ -633,17 +639,17 @@ msgstr ""
 msgid "Change this only if asked by customer support. (Default value: -10000)."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3527 admin/my-agile-privacy-admin.php:3531
+#: admin/my-agile-privacy-admin.php:3555 admin/my-agile-privacy-admin.php:3559
 msgid "Changelog"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2055
-#: admin/views/policy_assistant_html.php:2064
+#: admin/views/policy_assistant_html.php:2052
+#: admin/views/policy_assistant_html.php:2061
 msgid "Check the features present on your site"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2458
-#: admin/views/policy_assistant_html.php:2467
+#: admin/views/policy_assistant_html.php:2455
+#: admin/views/policy_assistant_html.php:2464
 msgid "Check the protection systems in place"
 msgstr ""
 
@@ -660,6 +666,7 @@ msgstr ""
 msgid "Choose Page"
 msgstr ""
 
+#: admin/views/inc/inc.helpdesk_tab.php:126
 #: admin/views/inc/fields.clarity_consent_mode_tab.php:29
 msgid "Clarity Consent Mode"
 msgstr ""
@@ -668,7 +675,7 @@ msgstr ""
 msgid "Clean All Cookie"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2586
+#: admin/views/policy_assistant_html.php:2583
 msgid ""
 "Clearly show your users the measures you have implemented to protect data."
 msgstr ""
@@ -677,15 +684,15 @@ msgstr ""
 msgid "Click here to access your user area."
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:175
+#: admin/views/inc/inc.translations_tab.php:181
 msgid "Click here to reset the current language"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2220
+#: admin/views/policy_assistant_html.php:2217
 msgid "Collection and processing of special categories of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2202
+#: admin/views/policy_assistant_html.php:2199
 msgid "Collection of personal data of users under 18."
 msgstr ""
 
@@ -697,37 +704,37 @@ msgstr ""
 msgid "Colorado"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2484
+#: admin/views/policy_assistant_html.php:2481
 msgid "Communication encryption (https)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2486
+#: admin/views/policy_assistant_html.php:2483
 msgid ""
 "Communications between your browser and the site are protected by HTTPS "
 "encryption, which prevents the interception or tampering of data exchanged "
 "while you browse."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1848
+#: admin/views/policy_assistant_html.php:1845
 #: admin/views/inc/fields.identity_tab.php:33
 msgid "Company Address"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1883
+#: admin/views/policy_assistant_html.php:1880
 #: admin/views/inc/fields.identity_tab.php:75
 msgid "Company E-mail"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1830
+#: admin/views/policy_assistant_html.php:1827
 #: admin/views/inc/fields.identity_tab.php:12
 msgid "Company Name / Site Holder"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2667
+#: admin/views/policy_assistant_html.php:2664
 msgid "Complete Configuration"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3001 admin/my-agile-privacy-admin.php:3002
+#: admin/my-agile-privacy-admin.php:3012 admin/my-agile-privacy-admin.php:3013
 #: admin/views/compliance_report_html.php:29
 #: admin/views/inc/inc.compliance_report_tab.php:16
 msgid "Compliance Report"
@@ -742,9 +749,9 @@ msgstr ""
 msgid "Compliant"
 msgstr ""
 
-#: includes/my-agile-privacy-class.php:2399
-#: includes/my-agile-privacy-class.php:2439
-#: includes/my-agile-privacy-class.php:2486
+#: includes/my-agile-privacy-class.php:2447
+#: includes/my-agile-privacy-class.php:2487
+#: includes/my-agile-privacy-class.php:2534
 #: admin/views/inc/inc.dashboard_tab.php:295
 msgid "Configuration complete"
 msgstr ""
@@ -767,10 +774,6 @@ msgstr ""
 
 #: admin/views/admin_page_html.php:186
 msgid "Consent"
-msgstr ""
-
-#: admin/views/inc/inc.helpdesk_tab.php:101
-msgid "Consent Mode V2"
 msgstr ""
 
 #: admin/views/inc/fields.consent_mode_tab.php:47
@@ -799,11 +802,11 @@ msgstr ""
 msgid "Consent Widget"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2082
+#: admin/views/policy_assistant_html.php:2079
 msgid "Contact forms"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:198
+#: admin/views/inc/inc.helpdesk_tab.php:224
 #: admin/views/inc/inc.dashboard_tab.php:359
 msgid "Contact us"
 msgstr ""
@@ -818,79 +821,79 @@ msgid ""
 "Are you sure you want to proceed?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1313
+#: admin/views/policy_assistant_html.php:1310
 msgid ""
 "control or process the personal data of at least 10,000 consumers and derive "
 "at least 25% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1060
+#: admin/views/policy_assistant_html.php:1057
 msgid ""
 "control or process the personal data of at least 10,000 consumers and derive "
 "more than 20% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1108
-#: admin/views/policy_assistant_html.php:1361
-#: admin/views/policy_assistant_html.php:1412
+#: admin/views/policy_assistant_html.php:1105
+#: admin/views/policy_assistant_html.php:1358
+#: admin/views/policy_assistant_html.php:1409
 msgid ""
 "control or process the personal data of at least 100,000 consumers "
 "(excluding data processed solely to complete a payment); or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1006
+#: admin/views/policy_assistant_html.php:1003
 msgid ""
 "control or process the personal data of at least 100,000 consumers "
 "(excluding personal data processed solely to complete a payment transaction);"
 " or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:956
-#: admin/views/policy_assistant_html.php:1611
+#: admin/views/policy_assistant_html.php:953
+#: admin/views/policy_assistant_html.php:1608
 msgid "control or process the personal data of at least 100,000 consumers; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1162
-#: admin/views/policy_assistant_html.php:1364
+#: admin/views/policy_assistant_html.php:1159
+#: admin/views/policy_assistant_html.php:1361
 msgid ""
 "control or process the personal data of at least 25,000 consumers and derive "
 "at least 25% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1111
-#: admin/views/policy_assistant_html.php:1415
+#: admin/views/policy_assistant_html.php:1108
+#: admin/views/policy_assistant_html.php:1412
 msgid ""
 "control or process the personal data of at least 25,000 consumers and derive "
 "more than 25% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1009
+#: admin/views/policy_assistant_html.php:1006
 msgid ""
 "control or process the personal data of at least 25,000 consumers and derive "
 "over 25% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1614
+#: admin/views/policy_assistant_html.php:1611
 msgid ""
 "control or process the personal data of at least 25,000 consumers and derive "
 "over 50% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:959
+#: admin/views/policy_assistant_html.php:956
 msgid ""
 "control or process the personal data of at least 25,000 consumers and derive "
 "revenue, or receive a discount on the price of goods or services, from the "
 "sale of personal data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1057
-#: admin/views/policy_assistant_html.php:1310
+#: admin/views/policy_assistant_html.php:1054
+#: admin/views/policy_assistant_html.php:1307
 msgid ""
 "control or process the personal data of at least 35,000 consumers (excluding "
 "data processed solely to complete a payment); or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1159
+#: admin/views/policy_assistant_html.php:1156
 msgid ""
 "control or process the personal data of at least 50,000 consumers (excluding "
 "data processed solely to complete a payment); or"
@@ -902,7 +905,7 @@ msgid ""
 "enabled."
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1098
+#: frontend/my-agile-privacy-frontend.php:1137
 msgid "Cookie"
 msgstr ""
 
@@ -928,11 +931,11 @@ msgstr ""
 msgid "Cookie Banner Shadow"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3568
+#: admin/my-agile-privacy-admin.php:3596
 msgid "Cookie ID"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1097
+#: frontend/my-agile-privacy-frontend.php:1136
 msgid "Cookie List"
 msgstr ""
 
@@ -940,7 +943,7 @@ msgstr ""
 msgid "Cookie metadata Sync"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3569 admin/my-agile-privacy-admin.php:4349
+#: admin/my-agile-privacy-admin.php:3597 admin/my-agile-privacy-admin.php:4377
 msgid "Cookie Name"
 msgstr ""
 
@@ -969,7 +972,7 @@ msgid ""
 "Cookie Shield is not active or needs your review. Check the settings below."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:5061
+#: admin/my-agile-privacy-admin.php:5089
 msgid "Cookie Text Preview"
 msgstr ""
 
@@ -981,11 +984,11 @@ msgstr ""
 msgid "Cookies detected"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:948
+#: admin/views/policy_assistant_html.php:945
 msgid "CPA (Colorado Privacy Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:998
+#: admin/views/policy_assistant_html.php:995
 msgid "CTDPA (Connecticut Data Privacy Act)"
 msgstr ""
 
@@ -993,19 +996,19 @@ msgstr ""
 msgid "Custom Css"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4011
+#: admin/my-agile-privacy-admin.php:4039
 msgid "Custom JavaScript Code"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4044
+#: admin/my-agile-privacy-admin.php:4072
 msgid "Custom JavaScript dependencies"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2184
+#: admin/views/policy_assistant_html.php:2181
 msgid "Customer reviews, ratings, testimonials, surveys, and feedback forms."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:90
+#: admin/views/inc/inc.helpdesk_tab.php:97
 msgid "Customizations"
 msgstr ""
 
@@ -1022,7 +1025,7 @@ msgstr ""
 msgid "Customize button"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:94
+#: admin/views/inc/inc.helpdesk_tab.php:101
 msgid "Customize cookie banner, text and translations, and user notifications"
 msgstr ""
 
@@ -1030,19 +1033,19 @@ msgstr ""
 msgid "Dark"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2935 admin/my-agile-privacy-admin.php:2936
-#: admin/my-agile-privacy-admin.php:3521
+#: admin/my-agile-privacy-admin.php:2946 admin/my-agile-privacy-admin.php:2947
+#: admin/my-agile-privacy-admin.php:3549
 msgid "Dashboard"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2527
+#: admin/views/policy_assistant_html.php:2524
 msgid ""
 "Data is regularly backed up and stored to protect it against accidental loss "
 "or technical incidents."
 msgstr ""
 
 #: admin/views/policy_assistant_html.php:69
-#: admin/views/policy_assistant_html.php:2279
+#: admin/views/policy_assistant_html.php:2276
 msgid "Data Sharing"
 msgstr ""
 
@@ -1090,19 +1093,19 @@ msgstr ""
 msgid "Denied"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:151
+#: admin/views/inc/inc.helpdesk_tab.php:177
 msgid ""
 "Depending on the license you have purchased, you will have access to one or "
 "more languages."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:909
+#: admin/views/policy_assistant_html.php:906
 msgid ""
 "derive 50% or more of annual revenues from selling or sharing personal "
 "information."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:83
+#: admin/views/inc/inc.helpdesk_tab.php:90
 msgid "Detect and automatically block cookies with Cookie Shield"
 msgstr ""
 
@@ -1120,7 +1123,7 @@ msgstr ""
 msgid "Disable Advanced Consent Mode"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:175
+#: admin/views/inc/inc.helpdesk_tab.php:201
 msgid ""
 "Discover how to manage your subscription and multiple installations through "
 "the dedicated private area."
@@ -1130,19 +1133,19 @@ msgstr ""
 msgid "Do reset given consent"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:147
+#: admin/views/inc/inc.helpdesk_tab.php:173
 msgid "Do you have a multilingual website?"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:127
+#: admin/views/inc/inc.helpdesk_tab.php:153
 msgid "Do you use a cache plugin?"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:139
+#: admin/views/inc/inc.helpdesk_tab.php:165
 msgid "Do you use another cache plugin?"
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:175
+#: admin/views/inc/inc.translations_tab.php:181
 msgid "Do you want to revert to the default content?"
 msgstr ""
 
@@ -1162,21 +1165,21 @@ msgstr ""
 msgid "Don't you have a license key?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1049
+#: admin/views/policy_assistant_html.php:1046
 msgid "DPDPA (Delaware Personal Data Privacy Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1974
+#: admin/views/policy_assistant_html.php:1971
 #: admin/views/inc/inc.identity_tab.php:124
 msgid "DPO Address"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1937
+#: admin/views/policy_assistant_html.php:1934
 #: admin/views/inc/inc.identity_tab.php:84
 msgid "DPO Email"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1956
+#: admin/views/policy_assistant_html.php:1953
 #: admin/views/inc/inc.identity_tab.php:106
 msgid "DPO Name / Company name"
 msgstr ""
@@ -1185,7 +1188,7 @@ msgstr ""
 msgid "DPO settings"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1564
+#: admin/views/policy_assistant_html.php:1561
 msgid ""
 "during a calendar year, control or process the personal data of at least 100,"
 "000 consumers; or control or process the personal data of at least 25,000 "
@@ -1193,7 +1196,7 @@ msgid ""
 "data."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1466
+#: admin/views/policy_assistant_html.php:1463
 msgid ""
 "during a calendar year, control or process the personal data of at least 175,"
 "000 consumers (excluding data processed solely to complete a payment); or "
@@ -1201,16 +1204,16 @@ msgid ""
 "at least 50% of gross revenue from the sale of personal data."
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1101
+#: frontend/my-agile-privacy-frontend.php:1140
 msgid "Edit Cookie"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:5001
+#: admin/my-agile-privacy-admin.php:5029
 msgid "Edit Cookie Text"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4754
-#: frontend/my-agile-privacy-frontend.php:1171
+#: admin/my-agile-privacy-admin.php:4782
+#: frontend/my-agile-privacy-frontend.php:1210
 msgid "Edit Policy"
 msgstr ""
 
@@ -1218,7 +1221,7 @@ msgstr ""
 msgid "Elements Border Radius"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2144
+#: admin/views/policy_assistant_html.php:2141
 msgid ""
 "Email marketing and newsletters, postal mailings (direct mail), SMS/MMS, "
 "other messaging services."
@@ -1322,7 +1325,7 @@ msgstr ""
 msgid "Enforce Youtube Privacy"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2012
+#: admin/views/policy_assistant_html.php:2009
 msgid ""
 "Enter the details of the entity that determines the purposes and means of "
 "processing: legal or personal name, full address, contact email for "
@@ -1343,7 +1346,7 @@ msgstr ""
 msgid "Enter your license key here"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1214
+#: admin/views/policy_assistant_html.php:1211
 msgid ""
 "Entities that fall within the SBA (Small Business Administration) definition "
 "of small business are largely exempt from the law, but may not sell special "
@@ -1354,8 +1357,8 @@ msgstr ""
 msgid "Example code:"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1139
-#: frontend/my-agile-privacy-frontend.php:1209
+#: frontend/my-agile-privacy-frontend.php:1178
+#: frontend/my-agile-privacy-frontend.php:1248
 msgid "Expired"
 msgstr ""
 
@@ -1375,11 +1378,11 @@ msgstr ""
 msgid "Feature not available for your license"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2632
+#: admin/views/policy_assistant_html.php:2629
 msgid "Final step: Go to the link below to complete the association."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2629
+#: admin/views/policy_assistant_html.php:2626
 msgid ""
 "First, create the Cookie Policy and Privacy Policy pages. Then insert the "
 "corresponding shortcode into each page."
@@ -1389,13 +1392,13 @@ msgstr ""
 msgid "Floating Banner"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:65
+#: admin/views/inc/inc.helpdesk_tab.php:72
 msgid ""
 "Follow the guides found in this section to install and configure My Agile "
 "Privacy®, and bring your website into compliance in a few simple steps."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:153
+#: admin/views/inc/inc.helpdesk_tab.php:179
 msgid ""
 "Follow these implementation guides for a correct display of textual content."
 msgstr ""
@@ -1404,14 +1407,14 @@ msgstr ""
 msgid "For further information you can check:"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:152
+#: admin/views/inc/inc.helpdesk_tab.php:178
 #, php-format
 msgid ""
 "For the updated list and implementation instructions, please refer to the <a "
 "href=\"%s\" target=\"_blank\">technical sheet.</a>"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2258
+#: admin/views/policy_assistant_html.php:2255
 msgid ""
 "For transparency to users, you should disclose what is actually active "
 "(contact forms, newsletters, payments, members-only area, reviews, social "
@@ -1423,17 +1426,17 @@ msgstr ""
 msgid "Force Cookies and Policy syncronization"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2083
+#: admin/views/policy_assistant_html.php:2080
 msgid ""
 "Forms that collect user information—such as names, email addresses, and "
 "phone numbers—as well as user requests."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2804
+#: admin/my-agile-privacy-admin.php:2815
 msgid "Fox profile"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3570
+#: admin/my-agile-privacy-admin.php:3598
 msgid "Free Available"
 msgstr ""
 
@@ -1445,22 +1448,22 @@ msgid ""
 "it."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:797
+#: admin/views/policy_assistant_html.php:794
 msgid "GDPR (European Union)"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:112
+#: admin/views/inc/inc.helpdesk_tab.php:138
 msgid ""
 "GDPR, CCPA, nLPD, PIPEDA, LGPD: Which privacy regulations should I choose "
 "and how do I customize the policies?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:761
-#: admin/views/policy_assistant_html.php:2233
+#: admin/views/policy_assistant_html.php:758
+#: admin/views/policy_assistant_html.php:2230
 msgid "Genetic data"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2636
+#: admin/views/policy_assistant_html.php:2633
 msgid "Go to Settings > Policy Tab"
 msgstr ""
 
@@ -1472,11 +1475,11 @@ msgstr ""
 msgid "Go to the Cookie List"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:166
+#: admin/views/inc/inc.helpdesk_tab.php:192
 msgid "Go to the FAQ"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:176
+#: admin/views/inc/inc.helpdesk_tab.php:202
 msgid "Go to the guide related to the private area."
 msgstr ""
 
@@ -1484,7 +1487,7 @@ msgstr ""
 msgid "Go to the Helpdesk"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:198
+#: admin/views/inc/inc.helpdesk_tab.php:224
 msgid "Go to the Helpdesk on the website"
 msgstr ""
 
@@ -1494,6 +1497,10 @@ msgstr ""
 
 #: admin/views/inc/inc.compliance_report_tab.php:59
 msgid "Google Analytics consistency"
+msgstr ""
+
+#: admin/views/inc/inc.helpdesk_tab.php:108
+msgid "Google Consent Mode V2"
 msgstr ""
 
 #: admin/views/inc/fields.consent_mode_tab.php:40
@@ -1514,7 +1521,7 @@ msgstr ""
 msgid "Green Tea"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1561
+#: admin/views/policy_assistant_html.php:1558
 msgid "have annual gross revenues of at least USD 25 million; and"
 msgstr ""
 
@@ -1526,12 +1533,12 @@ msgstr ""
 msgid "Heading text Color"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:756
-#: admin/views/policy_assistant_html.php:2228
+#: admin/views/policy_assistant_html.php:753
+#: admin/views/policy_assistant_html.php:2225
 msgid "Health data"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2990 admin/my-agile-privacy-admin.php:2991
+#: admin/my-agile-privacy-admin.php:3001 admin/my-agile-privacy-admin.php:3002
 msgid "Help Desk"
 msgstr ""
 
@@ -1539,7 +1546,7 @@ msgstr ""
 msgid "Helpdesk"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2811
+#: admin/my-agile-privacy-admin.php:2822
 msgid "Here is the mapping of the possible states of the Cookies:"
 msgstr ""
 
@@ -1557,7 +1564,7 @@ msgstr ""
 msgid "Here you can find the compliance report for your website."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2784
+#: admin/my-agile-privacy-admin.php:2795
 msgid ""
 "Here you will find a list of all the available policies. You can modify "
 "specific options by clicking on the policy."
@@ -1567,36 +1574,44 @@ msgstr ""
 msgid "Horizontal Banner Position"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:138
+#: admin/views/inc/inc.helpdesk_tab.php:164
 msgid "How to configure LiteSpeed Cache with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:155
+#: admin/views/inc/inc.helpdesk_tab.php:181
 msgid "How to configure My Agile Privacy® for multilingual websites"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:135
+#: admin/views/inc/inc.helpdesk_tab.php:161
 msgid "How to configure Optimize Press with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:134
+#: admin/views/inc/inc.helpdesk_tab.php:160
 msgid "How to configure Siteground Optimizer with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:137
+#: admin/views/inc/inc.helpdesk_tab.php:163
 msgid "How to configure Speedy Cache with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:136
+#: admin/views/inc/inc.helpdesk_tab.php:162
 msgid "How to configure W3 Total Cache with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:133
+#: admin/views/inc/inc.helpdesk_tab.php:159
 msgid "How to configure WP Rocket with My Agile Privacy®"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:105
+#: admin/views/inc/inc.helpdesk_tab.php:130
+msgid "How to implement Clarity Consent Mode on your website"
+msgstr ""
+
+#: admin/views/inc/inc.helpdesk_tab.php:112
 msgid "How to implement Google Consent Mode V2 on your website"
+msgstr ""
+
+#: admin/views/inc/inc.helpdesk_tab.php:121
+msgid "How to implement Microsoft Consent Mode on your website"
 msgstr ""
 
 #: admin/views/inc/inc.compliance_report_tab.php:23
@@ -1618,12 +1633,12 @@ msgstr ""
 msgid "I don't have a license key yet"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1901
+#: admin/views/policy_assistant_html.php:1898
 #: admin/views/inc/inc.identity_tab.php:51
 msgid "I have a DPO (Data Protection Officer)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2163
+#: admin/views/policy_assistant_html.php:2160
 msgid ""
 "I retain data for a maximum of 24 months from the last meaningful interaction"
 msgstr ""
@@ -1637,7 +1652,7 @@ msgid "I would like to customize the default language fallback setting."
 msgstr ""
 
 #: admin/views/admin_page_html.php:172 admin/views/policy_assistant_html.php:63
-#: admin/views/policy_assistant_html.php:1817
+#: admin/views/policy_assistant_html.php:1814
 msgid "Identity"
 msgstr ""
 
@@ -1645,7 +1660,7 @@ msgstr ""
 msgid "Identity Settings"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3749
+#: admin/my-agile-privacy-admin.php:3777
 msgid ""
 "If enabled, this will auto update this element text. Disable it if you would "
 "to change the text and keep it unchanged."
@@ -1657,19 +1672,19 @@ msgid ""
 "present, the widget will still be displayed to ensure compliance."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2630
+#: admin/views/policy_assistant_html.php:2627
 msgid ""
 "If these pages don’t exist yet, create and publish them, then add the "
 "relevant shortcodes to the page content."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3701
+#: admin/my-agile-privacy-admin.php:3729
 msgid ""
 "If this setting is enabled, the first-time activation by the user will "
 "trigger a page reload."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4054
+#: admin/my-agile-privacy-admin.php:4082
 msgid ""
 "If you are experiencing JavaScript errors with scripts dependent on this "
 "cookie, you can list them here by writing part of the source file path or "
@@ -1694,32 +1709,32 @@ msgid ""
 "preventive blocking of cookies"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2432
+#: admin/views/policy_assistant_html.php:2429
 msgid ""
 "In the event of transfers to countries outside the EEA or Switzerland, or to "
 "countries not deemed “adequate,” you must in all cases implement appropriate "
 "security measures and safeguards required by law, including:"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2809
+#: admin/my-agile-privacy-admin.php:2820
 msgid ""
 "In this section, you will find a detailed list of the cookies and third-"
 "party services used on your website."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2290
+#: admin/views/policy_assistant_html.php:2287
 msgid ""
 "In your business, do you use suppliers located outside the EU, Switzerland "
 "or other countries recognized as adequate?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2423
+#: admin/views/policy_assistant_html.php:2420
 msgid ""
 "Indicate whether transfers occur outside the EEA/Switzerland/adequate "
 "countries and, if so, specify the third countries involved."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2280
+#: admin/views/policy_assistant_html.php:2277
 msgid "Information about data sharing with third parties."
 msgstr ""
 
@@ -1773,11 +1788,11 @@ msgid ""
 "30)</small>"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:82
+#: admin/views/inc/inc.helpdesk_tab.php:89
 msgid "Install and configure My Agile Privacy®"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3571 admin/my-agile-privacy-admin.php:3786
+#: admin/my-agile-privacy-admin.php:3599 admin/my-agile-privacy-admin.php:3814
 msgid "Is necessary?"
 msgstr ""
 
@@ -1785,14 +1800,14 @@ msgstr ""
 msgid "Is your country not on the list?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1663
+#: admin/views/policy_assistant_html.php:1660
 msgid ""
 "It also applies if the processing takes place abroad when it has effects in "
 "Switzerland, for example because you offer goods or services to people in "
 "Switzerland or monitor their behavior."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1708
+#: admin/views/policy_assistant_html.php:1705
 msgid ""
 "It also applies to employers that are federal works, undertakings or "
 "businesses with respect to the personal information of their employees."
@@ -1812,11 +1827,11 @@ msgid ""
 "of personal data."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3944
+#: admin/my-agile-privacy-admin.php:3972
 msgid "JavaScript-Noscript code"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4406
+#: admin/my-agile-privacy-admin.php:4434
 msgid "Javascript-Noscript code"
 msgstr ""
 
@@ -1832,7 +1847,7 @@ msgstr ""
 msgid "Last cookies sync"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4356 admin/my-agile-privacy-admin.php:4568
+#: admin/my-agile-privacy-admin.php:4384 admin/my-agile-privacy-admin.php:4596
 msgid "Last update"
 msgstr ""
 
@@ -1840,7 +1855,7 @@ msgstr ""
 msgid "Lavender Blooms"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:116
+#: admin/views/inc/inc.helpdesk_tab.php:142
 msgid "Learn how to customize your Privacy Policies"
 msgstr ""
 
@@ -1861,7 +1876,7 @@ msgstr ""
 msgid "Legacy mode"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1748
+#: admin/views/policy_assistant_html.php:1745
 msgid "LGPD (Brazil - General Data Protection Law)"
 msgstr ""
 
@@ -1873,6 +1888,10 @@ msgstr ""
 msgid "License code"
 msgstr ""
 
+#: admin/views/expired_notice_html.php:29
+msgid "License issue detected for My Agile Privacy®"
+msgstr ""
+
 #: admin/views/inc/fields.license_tab.php:124
 msgid "License summary"
 msgstr ""
@@ -1881,11 +1900,11 @@ msgstr ""
 msgid "Light"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2428
+#: admin/views/policy_assistant_html.php:2425
 msgid "List of countries deemed adequate."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2587
+#: admin/views/policy_assistant_html.php:2584
 msgid "List only measures that are actually in place and maintained over time."
 msgstr ""
 
@@ -1898,20 +1917,28 @@ msgstr ""
 msgid "Localization"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2508
+#: admin/views/policy_assistant_html.php:2505
 msgid "Log monitoring"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3820 admin/my-agile-privacy-admin.php:4486
+#: admin/views/expired_notice_html.php:38
+msgid "Manage your license"
+msgstr ""
+
+#: admin/my-agile-privacy-admin.php:3848 admin/my-agile-privacy-admin.php:4514
 msgid "Managed setting via Privacy Settings ▸ Consent ▸ Google Consent Mode v2"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1100
+#: admin/views/policy_assistant_html.php:1097
 msgid "MCDPA (Minnesota Consumer Data Privacy Act)"
 msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:375
 msgid "Message"
+msgstr ""
+
+#: admin/views/inc/inc.helpdesk_tab.php:117
+msgid "Microsoft Consent Mode"
 msgstr ""
 
 #: admin/views/inc/fields.microsoft_consent_mode_tab.php:29
@@ -1926,8 +1953,8 @@ msgstr ""
 msgid "Misty Forest"
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:448
-#: admin/views/inc/inc.translations_tab.php:455
+#: admin/views/inc/inc.translations_tab.php:466
+#: admin/views/inc/inc.translations_tab.php:473
 msgid "Modify text"
 msgstr ""
 
@@ -1935,13 +1962,13 @@ msgstr ""
 msgid "Montana"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1151
+#: admin/views/policy_assistant_html.php:1148
 msgid "MTCDPA (Montana Consumer Data Privacy Act)"
 msgstr ""
 
 #. Name of the plugin
-#: frontend/my-agile-privacy-frontend.php:1096
-#: frontend/my-agile-privacy-frontend.php:1166
+#: frontend/my-agile-privacy-frontend.php:1135
+#: frontend/my-agile-privacy-frontend.php:1205
 msgid "My Agile Privacy®"
 msgstr ""
 
@@ -1953,21 +1980,21 @@ msgstr ""
 msgid "My Agile Privacy® Dashboard"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:150
+#: admin/views/inc/inc.helpdesk_tab.php:176
 msgid ""
 "My Agile Privacy® is compatible with the main multilingual plugins for "
 "WordPress and provides ready-made translations for elements such as the "
 "cookie banner, policies, and individual cookies in multiple languages."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:77
+#: admin/views/inc/inc.helpdesk_tab.php:84
 msgid ""
 "My Agile Privacy® is currently the easiest-to-configure Cookie Banner on the "
 "market, promising genuine compliance and adherence to the regulations as "
 "required by the Data Protection Authority."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:130
+#: admin/views/inc/inc.helpdesk_tab.php:156
 msgid ""
 "My Agile Privacy® works correctly with most cache plugins available on the "
 "market."
@@ -1981,7 +2008,7 @@ msgstr ""
 msgid "Native implementation via My Agile Privacy®"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1203
+#: admin/views/policy_assistant_html.php:1200
 msgid "NDPA (Nebraska Data Privacy Act)"
 msgstr ""
 
@@ -1989,19 +2016,19 @@ msgstr ""
 msgid "Nebraska"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3999
+#: admin/my-agile-privacy-admin.php:4027
 msgid "Need help ? See this cookie installation guide"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:197
+#: admin/views/inc/inc.helpdesk_tab.php:223
 msgid "Need more help?"
 msgstr ""
 
-#: includes/my-agile-privacy-class.php:2412
-#: includes/my-agile-privacy-class.php:2429
-#: includes/my-agile-privacy-class.php:2452
-#: includes/my-agile-privacy-class.php:2468
-#: includes/my-agile-privacy-class.php:2478
+#: includes/my-agile-privacy-class.php:2460
+#: includes/my-agile-privacy-class.php:2477
+#: includes/my-agile-privacy-class.php:2500
+#: includes/my-agile-privacy-class.php:2516
+#: includes/my-agile-privacy-class.php:2526
 #: admin/views/inc/inc.dashboard_tab.php:295
 msgid "Needs attention"
 msgstr ""
@@ -2010,7 +2037,7 @@ msgstr ""
 msgid "Nevada"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1102
+#: frontend/my-agile-privacy-frontend.php:1141
 msgid "New Cookie"
 msgstr ""
 
@@ -2022,45 +2049,45 @@ msgstr ""
 msgid "New Jersey"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1172
+#: frontend/my-agile-privacy-frontend.php:1211
 msgid "New Policy"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2143
+#: admin/views/policy_assistant_html.php:2140
 msgid "Newsletter"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2659
+#: admin/views/policy_assistant_html.php:2656
 msgid "Next"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1302
+#: admin/views/policy_assistant_html.php:1299
 msgid "NHPA (New Hampshire Privacy Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1353
+#: admin/views/policy_assistant_html.php:1350
 msgid "NJDPA (New Jersey Data Privacy Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1659
+#: admin/views/policy_assistant_html.php:1656
 msgid "nLPD / nFADP (Switzerland - new Federal Act on Data Protection)"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3694 admin/my-agile-privacy-admin.php:3741
-#: admin/my-agile-privacy-admin.php:4442 admin/my-agile-privacy-admin.php:4461
-#: admin/my-agile-privacy-admin.php:4546 admin/my-agile-privacy-admin.php:4608
+#: admin/my-agile-privacy-admin.php:3722 admin/my-agile-privacy-admin.php:3769
+#: admin/my-agile-privacy-admin.php:4470 admin/my-agile-privacy-admin.php:4489
+#: admin/my-agile-privacy-admin.php:4574 admin/my-agile-privacy-admin.php:4636
 #: admin/views/inc/inc.cookie_banner_tab.php:187
 #: admin/views/inc/inc.cookie_banner_tab.php:709
 #: admin/views/inc/inc.cookie_banner_tab.php:724
 msgid "No"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1211
-#: admin/views/policy_assistant_html.php:1262
+#: admin/views/policy_assistant_html.php:1208
+#: admin/views/policy_assistant_html.php:1259
 msgid "No numerical thresholds."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1514
+#: admin/views/policy_assistant_html.php:1511
 msgid ""
 "No numerical thresholds. Entities that fall within the SBA (Small Business "
 "Administration) definition of small business are largely exempt from the law,"
@@ -2072,7 +2099,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4019
+#: admin/my-agile-privacy-admin.php:4047
 msgid "Noscript Code"
 msgstr ""
 
@@ -2080,19 +2107,19 @@ msgstr ""
 msgid "Not Compliant"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:749
+#: admin/views/policy_assistant_html.php:746
 msgid ""
 "Note: some regulations set specific rules regarding special categories of "
 "personal data."
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1105
-#: frontend/my-agile-privacy-frontend.php:1175
+#: frontend/my-agile-privacy-frontend.php:1144
+#: frontend/my-agile-privacy-frontend.php:1214
 msgid "Nothing found"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1106
-#: frontend/my-agile-privacy-frontend.php:1176
+#: frontend/my-agile-privacy-frontend.php:1145
+#: frontend/my-agile-privacy-frontend.php:1215
 msgid "Nothing found in Trash"
 msgstr ""
 
@@ -2100,11 +2127,11 @@ msgstr ""
 msgid "Notification bar"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1254
+#: admin/views/policy_assistant_html.php:1251
 msgid "NRS 603A (Nevada Privacy Law)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1404
+#: admin/views/policy_assistant_html.php:1401
 msgid "OCPA (Oregon Consumer Privacy Act)"
 msgstr ""
 
@@ -2124,7 +2151,7 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4992
+#: admin/my-agile-privacy-admin.php:5020
 msgid ""
 "On this page, you can choose which cookies to keep always active (necessary) "
 "and which to enable only with your consent. You can decide whether to "
@@ -2141,7 +2168,7 @@ msgid ""
 "the Cookie Shield to \"Live\" mode."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2106
+#: admin/views/policy_assistant_html.php:2103
 msgid ""
 "Online payment processing, e‑commerce transactions, credit card transactions,"
 " and financial data handling."
@@ -2151,7 +2178,7 @@ msgstr ""
 msgid "Only in my country"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:198
+#: admin/views/inc/inc.helpdesk_tab.php:224
 #: admin/views/inc/inc.dashboard_tab.php:359
 msgid "or"
 msgstr ""
@@ -2164,7 +2191,7 @@ msgstr ""
 msgid "Other - None of the above"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2437
+#: admin/views/policy_assistant_html.php:2434
 msgid "Other instruments recognized under supranational or national law."
 msgstr ""
 
@@ -2181,11 +2208,11 @@ msgstr ""
 msgid "Partially Compliant"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2105
+#: admin/views/policy_assistant_html.php:2102
 msgid "Payments"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2526
+#: admin/views/policy_assistant_html.php:2523
 msgid "Periodic backups"
 msgstr ""
 
@@ -2193,7 +2220,7 @@ msgstr ""
 msgid "Personal Data Policy"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1701
+#: admin/views/policy_assistant_html.php:1698
 msgid "PIPEDA (Canada - federal private‑sector law)"
 msgstr ""
 
@@ -2242,17 +2269,17 @@ msgstr ""
 msgid "Policies configuration Status"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2962 admin/my-agile-privacy-admin.php:2963
-#: frontend/my-agile-privacy-frontend.php:1167
+#: admin/my-agile-privacy-admin.php:2973 admin/my-agile-privacy-admin.php:2974
+#: frontend/my-agile-privacy-frontend.php:1206
 msgid "Policies List"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1168
+#: frontend/my-agile-privacy-frontend.php:1207
 #: admin/views/inc/inc.compliance_report_tab.php:39
 msgid "Policy"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2953 admin/my-agile-privacy-admin.php:2954
+#: admin/my-agile-privacy-admin.php:2964 admin/my-agile-privacy-admin.php:2965
 #: admin/views/policy_assistant_html.php:38
 #: admin/views/policy_assistant_html.php:57
 msgid "Policy Assistant"
@@ -2263,44 +2290,44 @@ msgstr ""
 msgid "Policy Assistant."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2608
+#: admin/views/policy_assistant_html.php:2605
 msgid "Policy Configuration Complete!"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4814
+#: admin/my-agile-privacy-admin.php:4842
 msgid "Policy Preview"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:757
-#: admin/views/policy_assistant_html.php:2229
+#: admin/views/policy_assistant_html.php:754
+#: admin/views/policy_assistant_html.php:2226
 msgid "Political opinions"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4047 admin/views/admin_page_html.php:196
+#: admin/my-agile-privacy-admin.php:4075 admin/views/admin_page_html.php:196
 #: admin/views/policy_assistant_html.php:314
-#: admin/views/policy_assistant_html.php:883
-#: admin/views/policy_assistant_html.php:935
-#: admin/views/policy_assistant_html.php:986
-#: admin/views/policy_assistant_html.php:1036
-#: admin/views/policy_assistant_html.php:1087
-#: admin/views/policy_assistant_html.php:1138
-#: admin/views/policy_assistant_html.php:1189
-#: admin/views/policy_assistant_html.php:1241
-#: admin/views/policy_assistant_html.php:1289
-#: admin/views/policy_assistant_html.php:1340
-#: admin/views/policy_assistant_html.php:1391
-#: admin/views/policy_assistant_html.php:1442
-#: admin/views/policy_assistant_html.php:1493
-#: admin/views/policy_assistant_html.php:1540
-#: admin/views/policy_assistant_html.php:1590
-#: admin/views/policy_assistant_html.php:1641
-#: admin/views/policy_assistant_html.php:1688
-#: admin/views/policy_assistant_html.php:1734
-#: admin/views/policy_assistant_html.php:1792
-#: admin/views/policy_assistant_html.php:1907
-#: admin/views/policy_assistant_html.php:2088
-#: admin/views/policy_assistant_html.php:2297
-#: admin/views/policy_assistant_html.php:2491
+#: admin/views/policy_assistant_html.php:880
+#: admin/views/policy_assistant_html.php:932
+#: admin/views/policy_assistant_html.php:983
+#: admin/views/policy_assistant_html.php:1033
+#: admin/views/policy_assistant_html.php:1084
+#: admin/views/policy_assistant_html.php:1135
+#: admin/views/policy_assistant_html.php:1186
+#: admin/views/policy_assistant_html.php:1238
+#: admin/views/policy_assistant_html.php:1286
+#: admin/views/policy_assistant_html.php:1337
+#: admin/views/policy_assistant_html.php:1388
+#: admin/views/policy_assistant_html.php:1439
+#: admin/views/policy_assistant_html.php:1490
+#: admin/views/policy_assistant_html.php:1537
+#: admin/views/policy_assistant_html.php:1587
+#: admin/views/policy_assistant_html.php:1638
+#: admin/views/policy_assistant_html.php:1685
+#: admin/views/policy_assistant_html.php:1731
+#: admin/views/policy_assistant_html.php:1789
+#: admin/views/policy_assistant_html.php:1904
+#: admin/views/policy_assistant_html.php:2085
+#: admin/views/policy_assistant_html.php:2294
+#: admin/views/policy_assistant_html.php:2488
 #: admin/views/inc/inc.cookie_banner_tab.php:97
 #: admin/views/inc/inc.cookie_banner_tab.php:859
 #: admin/views/inc/inc.cookie_banner_tab.php:991
@@ -2324,60 +2351,64 @@ msgstr ""
 msgid "Pressing the following button will download your Cookie configuration."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4499
+#: admin/my-agile-privacy-admin.php:4527
 msgid ""
 "Preventive blocking <strong>is active</strong><br>(cookie setting: “not-"
 "necessary”)"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4495
+#: admin/my-agile-privacy-admin.php:4523
 msgid "Preventive blocking is not active<br>(cookie setting: “necessary”)"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4351
+#: admin/my-agile-privacy-admin.php:4379
 msgid "Preventive blocking status"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2650
+#: admin/views/policy_assistant_html.php:2647
 msgid "Previous"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2944 admin/my-agile-privacy-admin.php:2945
+#: admin/my-agile-privacy-admin.php:2955 admin/my-agile-privacy-admin.php:2956
 msgid "Privacy Settings"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2201
+#: admin/views/policy_assistant_html.php:2198
 msgid "Processing of minors' personal data"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2219
+#: admin/views/policy_assistant_html.php:2216
 msgid "Processing of special categories of personal data"
 msgstr ""
 
 #: admin/views/policy_assistant_html.php:72
-#: admin/views/policy_assistant_html.php:2457
+#: admin/views/policy_assistant_html.php:2454
 msgid "Protection Systems"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:164
+#: admin/views/inc/inc.helpdesk_tab.php:190
 msgid "Questions?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4754 admin/my-agile-privacy-admin.php:5001
+#: admin/my-agile-privacy-admin.php:4782 admin/my-agile-privacy-admin.php:5029
 msgid "Quickview for"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:759
-#: admin/views/policy_assistant_html.php:2231
+#: admin/views/policy_assistant_html.php:756
+#: admin/views/policy_assistant_html.php:2228
 msgid "Racial or ethnic origin"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3946 admin/my-agile-privacy-admin.php:4409
+#: admin/my-agile-privacy-admin.php:3974 admin/my-agile-privacy-admin.php:4437
 msgid "Raw code"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4031
+#: admin/my-agile-privacy-admin.php:4059
 msgid "Raw Html Code"
+msgstr ""
+
+#: includes/my-agile-privacy-class.php:3180
+msgid "Reactivate now"
 msgstr ""
 
 #: admin/views/inc/inc.cookie_banner_tab.php:409
@@ -2393,32 +2424,32 @@ msgstr ""
 msgid "Refuse button"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2546
+#: admin/views/policy_assistant_html.php:2543
 msgid ""
 "Regular security assessments and tests are conducted to identify and address "
 "potential system vulnerabilities."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:758
-#: admin/views/policy_assistant_html.php:2230
+#: admin/views/policy_assistant_html.php:755
+#: admin/views/policy_assistant_html.php:2227
 msgid "Religious or philosophical beliefs"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4716
+#: admin/my-agile-privacy-admin.php:4744
 msgid "Remember also associate in the Privacy Settings -> Policies tab."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4714
+#: admin/my-agile-privacy-admin.php:4742
 msgid "Remember to add the following shortcode to the correct page:"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:5096
+#: admin/my-agile-privacy-admin.php:5124
 msgid ""
 "Remember to disable automatic updates for this cookie to avoid losing the "
 "changes made."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4849
+#: admin/my-agile-privacy-admin.php:4877
 msgid ""
 "Remember to disable automatic updates for this policy to avoid losing the "
 "changes made."
@@ -2432,11 +2463,11 @@ msgstr ""
 msgid "Requires Google Analytics 4 installation"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4355
+#: admin/my-agile-privacy-admin.php:4383
 msgid "Requires page reload on user acceptance"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3572 admin/my-agile-privacy-admin.php:3685
+#: admin/my-agile-privacy-admin.php:3600 admin/my-agile-privacy-admin.php:3713
 msgid "Requires page reload on user acceptance?"
 msgstr ""
 
@@ -2468,11 +2499,11 @@ msgid ""
 "before importing."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2563
+#: admin/views/policy_assistant_html.php:2560
 msgid "Restriction of data access to duly authorized subjects only"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2183
+#: admin/views/policy_assistant_html.php:2180
 msgid "Reviews / Feedback collection"
 msgstr ""
 
@@ -2481,13 +2512,13 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2663
+#: admin/views/policy_assistant_html.php:2660
 msgid "Save & Next"
 msgstr ""
 
 #: admin/views/translations_html.php:36 admin/views/translations_html.php:49
 #: admin/views/admin_page_html.php:212 admin/views/admin_page_html.php:252
-#: admin/views/policy_assistant_html.php:2655
+#: admin/views/policy_assistant_html.php:2652
 #: admin/views/inc/inc.dashboard_tab.php:156
 #: admin/views/inc/inc.dashboard_tab.php:331
 msgid "Saving in progress"
@@ -2513,23 +2544,23 @@ msgstr ""
 msgid "Scanner Start Priority"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3574
+#: admin/my-agile-privacy-admin.php:3602
 msgid "Script Installation"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3931
+#: admin/my-agile-privacy-admin.php:3959
 msgid "Script Installation type"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1104
+#: frontend/my-agile-privacy-frontend.php:1143
 msgid "Search Cookies"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1174
+#: frontend/my-agile-privacy-frontend.php:1213
 msgid "Search Policy"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2545
+#: admin/views/policy_assistant_html.php:2542
 msgid "Security audits and checks"
 msgstr ""
 
@@ -2543,7 +2574,7 @@ msgstr ""
 
 #: admin/views/policy_assistant_html.php:238
 #: admin/views/policy_assistant_html.php:290
-#: admin/views/policy_assistant_html.php:2323
+#: admin/views/policy_assistant_html.php:2320
 msgid "Select countries"
 msgstr ""
 
@@ -2552,7 +2583,7 @@ msgstr ""
 msgid "Select One"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2260
+#: admin/views/policy_assistant_html.php:2257
 msgid "Select only the features that are actually active."
 msgstr ""
 
@@ -2605,19 +2636,19 @@ msgstr ""
 msgid "Send Google Analytics 4 events on consent changes"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3801
+#: admin/my-agile-privacy-admin.php:3829
 msgid ""
 "Setting the cookie as \"necessary\" will disable the preventive blocking, "
 "making the tool always active regardless of user consent."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3802
+#: admin/my-agile-privacy-admin.php:3830
 msgid ""
 "Setting the cookie as \"not necessary\" will activate the cookie only upon "
 "user consent."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3522
+#: admin/my-agile-privacy-admin.php:3550
 msgid "Settings"
 msgstr ""
 
@@ -2635,8 +2666,8 @@ msgstr ""
 msgid "Settings updated."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:762
-#: admin/views/policy_assistant_html.php:2234
+#: admin/views/policy_assistant_html.php:759
+#: admin/views/policy_assistant_html.php:2231
 msgid "Sex life or sexual orientation"
 msgstr ""
 
@@ -2677,7 +2708,7 @@ msgid "Show the policy link in the banner"
 msgstr ""
 
 #: admin/views/policy_assistant_html.php:66
-#: admin/views/policy_assistant_html.php:2054
+#: admin/views/policy_assistant_html.php:2051
 msgid "Site Features"
 msgstr ""
 
@@ -2689,11 +2720,18 @@ msgstr ""
 msgid "Soft"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2434
+#: includes/my-agile-privacy-class.php:3180
+#: includes/my-agile-privacy-banner-renderer.php:365
+msgid ""
+"Some features of My Agile Privacy® are currently unavailable. Please check "
+"your license to restore full functionality."
+msgstr ""
+
+#: admin/views/policy_assistant_html.php:2431
 msgid "Standard Contractual Clauses approved by the European Commission;"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:73
+#: admin/views/inc/inc.helpdesk_tab.php:80
 msgid "Start from here"
 msgstr ""
 
@@ -2717,11 +2755,11 @@ msgstr ""
 msgid "Strong"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:174
+#: admin/views/inc/inc.helpdesk_tab.php:200
 msgid "Subscription management and bulk operations"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4352
+#: admin/my-agile-privacy-admin.php:4380
 msgid "Suggested setting"
 msgstr ""
 
@@ -2735,11 +2773,11 @@ msgstr ""
 msgid "Suggested value for compliance:"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3809
+#: admin/my-agile-privacy-admin.php:3837
 msgid "Suggested value for this Cookie"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3523
+#: admin/my-agile-privacy-admin.php:3551
 msgid "Support"
 msgstr ""
 
@@ -2751,11 +2789,11 @@ msgstr ""
 msgid "Tab Position"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1506
+#: admin/views/policy_assistant_html.php:1503
 msgid "TDPSA (Texas Data Privacy and Security Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1818
+#: admin/views/policy_assistant_html.php:1815
 msgid "Tell us about your information."
 msgstr ""
 
@@ -2791,18 +2829,18 @@ msgstr ""
 msgid "Text colour"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2980 admin/my-agile-privacy-admin.php:2981
+#: admin/my-agile-privacy-admin.php:2991 admin/my-agile-privacy-admin.php:2992
 #: admin/views/translations_html.php:20
 msgid "Texts and Translations"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4055
+#: admin/my-agile-privacy-admin.php:4083
 msgid ""
 "Thanks to this functionality, these scripts will be unblocked only after the "
 "user has accepted this cookie."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3984
+#: admin/my-agile-privacy-admin.php:4012
 msgid "The API KEY for this cookie is"
 msgstr ""
 
@@ -2812,7 +2850,7 @@ msgid ""
 "works and what are the cookies used by the website."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2029
+#: admin/views/policy_assistant_html.php:2026
 msgid ""
 "The Data Protection Officer (DPO) monitors privacy compliance, serves as a "
 "point of contact for users and Supervisory Authorities, and advises the "
@@ -2837,7 +2875,7 @@ msgstr ""
 msgid "The last time cookies and policy were syncronized with remote db"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1759
+#: admin/views/policy_assistant_html.php:1756
 msgid ""
 "the offering or provision of goods or services is directed to individuals "
 "located in Brazil; or"
@@ -2849,7 +2887,7 @@ msgid ""
 "personal data, for example for answering back a user form submission."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1765
+#: admin/views/policy_assistant_html.php:1762
 msgid "the personal data were collected in Brazil."
 msgstr ""
 
@@ -2865,11 +2903,11 @@ msgid ""
 "your company is established and where the users you target are located."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1762
+#: admin/views/policy_assistant_html.php:1759
 msgid "the processing concerns data of individuals located in Brazil; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1756
+#: admin/views/policy_assistant_html.php:1753
 msgid "the processing is carried out within Brazilian territory; or"
 msgstr ""
 
@@ -2895,7 +2933,7 @@ msgstr ""
 msgid "The status of your license"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2509
+#: admin/views/policy_assistant_html.php:2506
 msgid ""
 "The system logs and monitors access and activity to detect suspicious or "
 "unauthorized attempts and ensure data security."
@@ -2912,19 +2950,25 @@ msgstr ""
 msgid "The value is in milliseconds. (Default value: 3000)."
 msgstr ""
 
+#: admin/views/expired_notice_html.php:31
+msgid ""
+"There is a problem with your My Agile Privacy® license. Some features may be "
+"limited or unavailable until the issue is resolved."
+msgstr ""
+
 #: admin/views/inc/fields.cookieshield_tab.php:58
 msgid ""
 "This advanced feature is essential for the automatic detection and blocking "
 "of the most common third-party cookies and software."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2259
+#: admin/views/policy_assistant_html.php:2256
 msgid ""
 "This allows the policies to be tailored, explaining to your users what data "
 "you collect and why. "
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3871
+#: admin/my-agile-privacy-admin.php:3899
 msgid ""
 "This Cookie is reserved by the system and it is not possible to associate "
 "other scripts with its execution."
@@ -2949,10 +2993,10 @@ msgstr ""
 msgid "This feature allows you to implement Microsoft's UET Consent Mode."
 msgstr ""
 
-#: admin/views/inc/inc.translations_tab.php:408
-#: admin/views/inc/inc.translations_tab.php:409
-#: admin/views/inc/inc.translations_tab.php:410
-#: admin/views/inc/inc.translations_tab.php:411
+#: admin/views/inc/inc.translations_tab.php:426
+#: admin/views/inc/inc.translations_tab.php:427
+#: admin/views/inc/inc.translations_tab.php:428
+#: admin/views/inc/inc.translations_tab.php:429
 msgid "This is an example cookie"
 msgstr ""
 
@@ -2971,11 +3015,11 @@ msgid ""
 "later."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3702
+#: admin/my-agile-privacy-admin.php:3730
 msgid "This setting does not apply if the cookie is set as 'necessary'."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3753
+#: admin/my-agile-privacy-admin.php:3781
 msgid "This setting is unavailable on custom added cookie"
 msgstr ""
 
@@ -2997,7 +3041,7 @@ msgstr ""
 msgid "This will sync Cookies And Policy in the next five minute"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1455
+#: admin/views/policy_assistant_html.php:1452
 msgid "TIPA (Tennessee Information Protection Act)"
 msgstr ""
 
@@ -3009,16 +3053,16 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:763
-#: admin/views/policy_assistant_html.php:2235
+#: admin/views/policy_assistant_html.php:760
+#: admin/views/policy_assistant_html.php:2232
 msgid "Trade union membership"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1553
+#: admin/views/policy_assistant_html.php:1550
 msgid "UCPA (Utah Consumer Privacy Act)"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:845
+#: admin/views/policy_assistant_html.php:842
 msgid "UK GDPR (United Kingdom)"
 msgstr ""
 
@@ -3061,7 +3105,7 @@ msgstr ""
 msgid "Use the \"Next\" button to proceed!"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2124
+#: admin/views/policy_assistant_html.php:2121
 msgid ""
 "User registration, user accounts and login, user profiles, and membership "
 "areas."
@@ -3079,12 +3123,12 @@ msgstr ""
 msgid "Utah"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1866
+#: admin/views/policy_assistant_html.php:1863
 #: admin/views/inc/fields.identity_tab.php:54
 msgid "Vat Id"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1603
+#: admin/views/policy_assistant_html.php:1600
 msgid "VCDPA (Virginia Consumer Data Protection Act)"
 msgstr ""
 
@@ -3105,11 +3149,11 @@ msgstr ""
 msgid "Video advanced privacy"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1103
+#: frontend/my-agile-privacy-frontend.php:1142
 msgid "View Cookie"
 msgstr ""
 
-#: frontend/my-agile-privacy-frontend.php:1173
+#: frontend/my-agile-privacy-frontend.php:1212
 msgid "View Policy"
 msgstr ""
 
@@ -3117,7 +3161,7 @@ msgstr ""
 msgid "Virginia"
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:165
+#: admin/views/inc/inc.helpdesk_tab.php:191
 msgid ""
 "Visit our FAQ section to view answers to the most common post-installation "
 "questions."
@@ -3132,7 +3176,7 @@ msgstr ""
 msgid "Warning: at least one country selection is required."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1802
+#: admin/views/policy_assistant_html.php:1799
 msgid "Warning: at least one regulation selection is required."
 msgstr ""
 
@@ -3149,13 +3193,13 @@ msgid ""
 "consultant."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3890
+#: admin/my-agile-privacy-admin.php:3918
 msgid ""
 "Warning: this cookie has been detected automatically and usually you "
 "shouldn't need to install other code."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4053
+#: admin/my-agile-privacy-admin.php:4081
 msgid "Warning: this feature is intended for advanced users and developers."
 msgstr ""
 
@@ -3175,7 +3219,7 @@ msgid ""
 "them. Do you really want to leave?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2810
+#: admin/my-agile-privacy-admin.php:2821
 msgid ""
 "We encourage you to use the \"Cookie Shield\" function in Learning mode to "
 "automatically detect the cookies and third-party services active on your "
@@ -3184,7 +3228,7 @@ msgid ""
 "appropriate."
 msgstr ""
 
-#: admin/views/inc/inc.helpdesk_tab.php:78
+#: admin/views/inc/inc.helpdesk_tab.php:85
 msgid ""
 "We have created a truly simple configuration process: to bring your website "
 "into compliance, you just need to follow the three steps outlined below."
@@ -3194,15 +3238,15 @@ msgstr ""
 msgid "Welcome to the My Agile Privacy® Dashboard.<br>Need help?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2783
+#: admin/my-agile-privacy-admin.php:2794
 msgid "Welcome to the Policy list! "
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:4713
+#: admin/my-agile-privacy-admin.php:4741
 msgid "Welcome to the preview of your Policy!"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:2808
+#: admin/my-agile-privacy-admin.php:2819
 msgid "Welcome to your Cookie list!"
 msgstr ""
 
@@ -3214,16 +3258,16 @@ msgstr ""
 msgid "What are \"Policies\" ?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:753
-#: admin/views/policy_assistant_html.php:2225
+#: admin/views/policy_assistant_html.php:750
+#: admin/views/policy_assistant_html.php:2222
 msgid "What are the special categories of personal data?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2413
+#: admin/views/policy_assistant_html.php:2410
 msgid "What does \"Data sharing/transfers abroad\" mean?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2617
+#: admin/views/policy_assistant_html.php:2614
 msgid "What happens next?"
 msgstr ""
 
@@ -3231,19 +3275,19 @@ msgstr ""
 msgid "What is \"Localization\"?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2021
+#: admin/views/policy_assistant_html.php:2018
 msgid "What is a DPO?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2579
+#: admin/views/policy_assistant_html.php:2576
 msgid "What should be included under \"Security Measures\"?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2250
+#: admin/views/policy_assistant_html.php:2247
 msgid "What should be included under \"Site Features\"?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2627
+#: admin/views/policy_assistant_html.php:2624
 msgid "What Steps Should I Take Now?"
 msgstr ""
 
@@ -3259,7 +3303,7 @@ msgstr ""
 msgid "Where are your customers located?"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2004
+#: admin/views/policy_assistant_html.php:2001
 msgid "Who is the Data Controller and what information is needed?"
 msgstr ""
 
@@ -3312,35 +3356,35 @@ msgid ""
 "or carry out other administrative tasks?"
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3693 admin/my-agile-privacy-admin.php:3740
-#: admin/my-agile-privacy-admin.php:4438 admin/my-agile-privacy-admin.php:4457
-#: admin/my-agile-privacy-admin.php:4542 admin/my-agile-privacy-admin.php:4604
+#: admin/my-agile-privacy-admin.php:3721 admin/my-agile-privacy-admin.php:3768
+#: admin/my-agile-privacy-admin.php:4466 admin/my-agile-privacy-admin.php:4485
+#: admin/my-agile-privacy-admin.php:4570 admin/my-agile-privacy-admin.php:4632
 #: admin/views/inc/inc.cookie_banner_tab.php:188
 #: admin/views/inc/inc.cookie_banner_tab.php:673
 #: admin/views/inc/inc.cookie_banner_tab.php:688
 msgid "Yes"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:832
-#: admin/views/policy_assistant_html.php:878
-#: admin/views/policy_assistant_html.php:930
-#: admin/views/policy_assistant_html.php:980
-#: admin/views/policy_assistant_html.php:1030
-#: admin/views/policy_assistant_html.php:1081
-#: admin/views/policy_assistant_html.php:1132
-#: admin/views/policy_assistant_html.php:1183
-#: admin/views/policy_assistant_html.php:1235
-#: admin/views/policy_assistant_html.php:1283
-#: admin/views/policy_assistant_html.php:1334
-#: admin/views/policy_assistant_html.php:1385
-#: admin/views/policy_assistant_html.php:1436
-#: admin/views/policy_assistant_html.php:1487
-#: admin/views/policy_assistant_html.php:1534
-#: admin/views/policy_assistant_html.php:1585
-#: admin/views/policy_assistant_html.php:1635
-#: admin/views/policy_assistant_html.php:1682
-#: admin/views/policy_assistant_html.php:1728
-#: admin/views/policy_assistant_html.php:1787
+#: admin/views/policy_assistant_html.php:829
+#: admin/views/policy_assistant_html.php:875
+#: admin/views/policy_assistant_html.php:927
+#: admin/views/policy_assistant_html.php:977
+#: admin/views/policy_assistant_html.php:1027
+#: admin/views/policy_assistant_html.php:1078
+#: admin/views/policy_assistant_html.php:1129
+#: admin/views/policy_assistant_html.php:1180
+#: admin/views/policy_assistant_html.php:1232
+#: admin/views/policy_assistant_html.php:1280
+#: admin/views/policy_assistant_html.php:1331
+#: admin/views/policy_assistant_html.php:1382
+#: admin/views/policy_assistant_html.php:1433
+#: admin/views/policy_assistant_html.php:1484
+#: admin/views/policy_assistant_html.php:1531
+#: admin/views/policy_assistant_html.php:1582
+#: admin/views/policy_assistant_html.php:1632
+#: admin/views/policy_assistant_html.php:1679
+#: admin/views/policy_assistant_html.php:1725
+#: admin/views/policy_assistant_html.php:1784
 msgid "Yes - this applies to my processing. Add it to my policies."
 msgstr ""
 
@@ -3354,12 +3398,12 @@ msgid ""
 "my website and I would to activate the IAB Transparency and Consent Framework"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:1926
+#: admin/views/policy_assistant_html.php:1923
 #: admin/views/inc/inc.identity_tab.php:71
 msgid "Yes, I have a DPO"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2317
+#: admin/views/policy_assistant_html.php:2314
 msgid "Yes, I use suppliers outside EU / Switzerland / adequate countries"
 msgstr ""
 
@@ -3380,41 +3424,41 @@ msgstr ""
 msgid "Yes, show the policy link in the banner"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:805
+#: admin/views/policy_assistant_html.php:802
 msgid ""
 "you are established in the EU/EEA and the processing is carried out in the "
 "context of the activities of your establishment, regardless of where the "
 "processing takes place or where the data subjects are located; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:851
+#: admin/views/policy_assistant_html.php:848
 msgid ""
 "you are established in the United Kingdom and the processing is carried out "
 "in the context of the activities of your establishment, regardless of where "
 "the processing takes place or where the data subjects are located; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:811
+#: admin/views/policy_assistant_html.php:808
 msgid ""
 "you are not established in the EU/EEA but you monitor the behavior of "
 "individuals to the extent that such behavior takes place within the EU/EEA "
 "(e.g., tracking, profiling, behavioral advertising, geolocation)."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:808
+#: admin/views/policy_assistant_html.php:805
 msgid ""
 "you are not established in the EU/EEA but you offer goods or services "
 "(including free of charge) to individuals located in the EU/EEA; or"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:857
+#: admin/views/policy_assistant_html.php:854
 msgid ""
 "you are not established in the United Kingdom but you monitor the behavior "
 "of individuals to the extent that such behavior takes place in the United "
 "Kingdom (e.g., tracking, profiling, geolocation)."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:854
+#: admin/views/policy_assistant_html.php:851
 msgid ""
 "you are not established in the United Kingdom but you offer goods or "
 "services (including free of charge) to individuals located in the United "
@@ -3423,7 +3467,7 @@ msgstr ""
 
 #: admin/views/inc/inc.advanced_tab.php:146
 #: admin/views/inc/inc.advanced_tab.php:240
-#: admin/views/inc/inc.translations_tab.php:176
+#: admin/views/inc/inc.translations_tab.php:182
 msgid ""
 "You can change the active languages on your plan from the <strong><a "
 "href=\"https://privatearea.myagileprivacy.com/\" target=\"_blank\">Private "
@@ -3440,11 +3484,11 @@ msgstr ""
 msgid "You can edit this text from the Texts and Translations section."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2631
+#: admin/views/policy_assistant_html.php:2628
 msgid "You can find the shortcodes on the page shown below."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2620
+#: admin/views/policy_assistant_html.php:2617
 msgid "You can further customize settings in the main plugin panel."
 msgstr ""
 
@@ -3486,7 +3530,7 @@ msgstr ""
 msgid "You still need to configure the regulations using the Policy Assistant."
 msgstr ""
 
-#: admin/my-agile-privacy-admin.php:3986
+#: admin/my-agile-privacy-admin.php:4014
 msgid "You will need this only for advanced installation"
 msgstr ""
 
@@ -3532,13 +3576,13 @@ msgstr ""
 msgid "Your license status"
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2610
+#: admin/views/policy_assistant_html.php:2607
 msgid ""
 "Your Policies has been successfully configured and update based on your "
 "preferences."
 msgstr ""
 
-#: admin/views/policy_assistant_html.php:2619
+#: admin/views/policy_assistant_html.php:2616
 msgid "Your Privacy Policies are already updated."
 msgstr ""
 

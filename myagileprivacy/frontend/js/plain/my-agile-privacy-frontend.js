@@ -6,7 +6,7 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0004",
+	'js_internal_version' 				: "3.0006",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -47,6 +47,11 @@ var MAP_SYS = {
 	'allow_js_fast_callback'			: null,
 	'cookie_domain_path'				: null,
 	'allow_iab_disclosure_url'			: true,
+	'iab_early_init_done'				: false,
+	'iab_full_init_done'				: false,
+	'iab_full_init_promise'				: null,
+	'iab_lang'							: null,
+	'iab_pending_consent'				: null,
 };
 
 // bof MapLogger
@@ -114,6 +119,7 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 
 	MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
+
 
 if( typeof MAP_Cookie === 'undefined' )
 {
@@ -2077,6 +2083,14 @@ var MAP =
 						e.preventDefault();
 						e.stopImmediatePropagation();
 
+						// Kick off full init (vendor-list.json + DOM render) in the background
+						// as soon as the user opens the second layer, so it is ready when
+						// the IAB tab is clicked. The tab nav listener handles the .then().
+						if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
+						{
+							window.MAPIABTCF_ensureFullInit();
+						}
+
 						MAP.settingsModal.classList.add( 'map-show' );
 						MAP.settingsModal.style.opacity = 0;
 						MAP.settingsModal.offsetWidth; // Trigger a reflow to ensure the transition starts
@@ -2140,8 +2154,9 @@ var MAP =
 							$_this.click();
 						});
 
-						setTimeout( function() {
-
+						// Ensure full init (vendor DOM) is complete before trying to click
+						// the vendor list button and scroll to it
+						var _doVendorScroll = function() {
 							try {
 
 								var $vendor_list_button = document.querySelector( '#map-iab-tcf-vendor-list' );
@@ -2164,8 +2179,19 @@ var MAP =
 							{
 								console.error( error );
 							}
+						};
 
-						}, 200);
+						if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
+						{
+							window.MAPIABTCF_ensureFullInit().then( function() {
+								setTimeout( _doVendorScroll, 200 );
+							});
+						}
+						else
+						{
+							setTimeout( _doVendorScroll, 200 );
+						}
+
 					});
 				});
 
@@ -2196,7 +2222,18 @@ var MAP =
 									await new Promise( resolve => setTimeout( resolve, 10 ) );
 								}
 
-								if( typeof window.MAPIABTCF_showCMPUI === 'function' )
+								// Ensure vendor-list.json and googleVendors.json are fetched
+								// and the full vendor DOM is rendered before showing the CMP UI
+								if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
+								{
+									window.MAPIABTCF_ensureFullInit().then( function() {
+										if( typeof window.MAPIABTCF_showCMPUI === 'function' )
+										{
+											window.MAPIABTCF_showCMPUI();
+										}
+									});
+								}
+								else if( typeof window.MAPIABTCF_showCMPUI === 'function' )
 								{
 									window.MAPIABTCF_showCMPUI();
 								}
@@ -2399,10 +2436,13 @@ var MAP =
 
 					if( final_target )
 					{
-						final_target.checked = !final_target.checked;
+						// Toggle value for hidden input and sync slider appearance
+						final_target.value = ( final_target.value === '1' ) ? '0' : '1';
+						MAP.mapSyncSlider( final_target );
 
 						//propagate event
-						final_target.dispatchEvent( new Event( 'click', { bubbles: true } ) );
+						//propagate event via custom event (hidden inputs don't fire native click)
+						final_target.dispatchEvent( new CustomEvent( 'map:toggle', { bubbles: true } ) );
 					}
 				}
 			});
@@ -2421,7 +2461,8 @@ var MAP =
 
 				//check consent-mode checkbox
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
-					elem.checked = true;
+					elem.value = '1';
+					MAP.mapSyncSlider( elem );
 
 					var consent_key = elem.getAttribute( 'data-consent-key' );
 
@@ -2451,13 +2492,15 @@ var MAP =
 
 					MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
-					elem.checked = true;
+					elem.value = '1';
+					MAP.mapSyncSlider( elem );
 				});
 
 				//check iab-preference checkbox
 				that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
 
-					elem.checked = true;
+					elem.value = '1';
+					MAP.mapSyncSlider( elem );
 				});
 
 				(async() => {
@@ -2501,7 +2544,8 @@ var MAP =
 					//uncheck consent-mode checkbox
 					that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
 
-						elem.checked = false;
+						elem.value = '0';
+						MAP.mapSyncSlider( elem );
 
 						var consent_key = elem.getAttribute( 'data-consent-key' );
 
@@ -2529,13 +2573,15 @@ var MAP =
 
 						MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
 
-						elem.checked = false;
+						elem.value = '0';
+						MAP.mapSyncSlider( elem );
 					});
 
 					//uncheck iab-preference checkbox
 					that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
 
-						elem.checked = false;
+						elem.value = '0';
+						MAP.mapSyncSlider( elem );
 					});
 
 					(async() => {
@@ -2662,23 +2708,23 @@ var MAP =
 			//for preserving scope
 			var that = this;
 
-			//usability fix - align checkbox - label
-			document.querySelectorAll( 'input[type="checkbox"][id]' ).forEach( function( checkbox ) {
+			//usability fix - align hidden input - label (aria-checked)
+			document.querySelectorAll( 'input[type="hidden"][id]' ).forEach( function( checkbox ) {
 			  var id = checkbox.id;
 			  if( !id ) return;
 			  document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
-				label.setAttribute( 'aria-checked', checkbox.checked ? 'true' : 'false' );
+				label.setAttribute( 'aria-checked', checkbox.value === '1' ? 'true' : 'false' );
 			  });
 			});
 
-			//usability fix - keep checkbox - label aligned
-			that.settingsModal.addEventListener( 'change', function( e ) {
-			  if( e.target.matches( 'input[type="checkbox"][id]' ) ) {
+			//usability fix - keep hidden input - label aligned (aria-checked)
+			that.settingsModal.addEventListener( 'map:toggle', function( e ) {
+			  if( e.target.matches( 'input[type="hidden"][id]' ) ) {
 				var id = e.target.id;
 				if( !id ) return;
 
 				document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
-				  label.setAttribute( 'aria-checked', e.target.checked ? 'true' : 'false' );
+				  label.setAttribute( 'aria-checked', e.target.value === '1' ? 'true' : 'false' );
 				});
 			  }
 			});
@@ -2754,10 +2800,12 @@ var MAP =
 
 						if( final_target )
 						{
-							final_target.checked = !final_target.checked;
+							// Toggle value for hidden input and sync slider appearance
+							final_target.value = ( final_target.value === '1' ) ? '0' : '1';
+							MAP.mapSyncSlider( final_target );
 
-							//propagate event
-							final_target.dispatchEvent( new Event( 'click', { bubbles: true } ) );
+							//propagate event via custom event (hidden inputs don't fire native click)
+							final_target.dispatchEvent( new CustomEvent( 'map:toggle', { bubbles: true } ) );
 						}
 					}
 				}
@@ -3786,7 +3834,10 @@ var MAP =
 										setTimeout( function() {
 
 											//prevent block using createElementBackup
-											var script = document.createElementBackup( 'script' );
+											var script = ( typeof document.createElementBackup === 'function' )
+											    ? document.createElementBackup( 'script' )
+											    : document.createElement( 'script' );
+
 											script.className = '_is_activated';
 											script.setAttribute( 'type',new_script_type );
 
@@ -3808,7 +3859,10 @@ var MAP =
 									else
 									{
 										//prevent block using createElementBackup
-										var script = document.createElementBackup( 'script' );
+										var script = ( typeof document.createElementBackup === 'function' )
+										    ? document.createElementBackup( 'script' )
+										    : document.createElement( 'script' );
+
 										script.className = '_is_activated';
 										script.setAttribute( 'type',new_script_type );
 
@@ -4023,7 +4077,7 @@ var MAP =
 				var cookieValue = MAP_Cookie.read( cookieName );
 				if( cookieValue == null )
 				{
-					if( $this.checked )
+					if( $this.value === '1' )
 					{
 						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
@@ -4042,13 +4096,15 @@ var MAP =
 					{
 						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting checked for cookieName' + cookieName );
 
-						$this.checked = true;
+						$this.value = '1';
+						MAP.mapSyncSlider( $this );
 					}
 					else
 					{
 						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting unchecked for cookieName' + cookieName );
 
-						$this.checked = false;
+						$this.value = '0';
+						MAP.mapSyncSlider( $this );
 					}
 				}
 			});
@@ -4057,9 +4113,9 @@ var MAP =
 			if( only_init_status == false )
 			{
 				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach(function( $this ) {
-					$this.addEventListener( 'click', function( e ) {
+					$this.addEventListener( 'map:toggle', function( e ) {
 
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-preference-checkbox map:toggle' );
 
 						e.stopImmediatePropagation();
 
@@ -4069,12 +4125,12 @@ var MAP =
 
 						var currentToggleElm = that.settingsModal.querySelectorAll( '.map-user-preference-checkbox[data-cookie-baseindex="'+$this.getAttribute('data-cookie-baseindex')+'"]' );
 
-						if( $this.checked )
+						if( $this.value === '1' )
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting 1 to cookieName=' + cookieName );
 
 							MAP_Cookie.set( cookieName, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
-							currentToggleElm.forEach( elm => elm.checked = true );
+							currentToggleElm.forEach( function( elm ) { elm.value = '1'; MAP.mapSyncSlider( elm ); } );
 
 							that.dispatchConsentEvents( 'myagileprivacy_single_cookie_accept' );
 						}
@@ -4083,7 +4139,7 @@ var MAP =
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting -1 to cookieName' + cookieName );
 
 							MAP_Cookie.set( cookieName, '-1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
-							currentToggleElm.forEach( elm => elm.checked = false );
+							currentToggleElm.forEach( function( elm ) { elm.value = '0'; MAP.mapSyncSlider( elm ); } );
 
 							that.dispatchConsentEvents( 'myagileprivacy_single_cookie_reject' );
 						}
@@ -4135,13 +4191,15 @@ var MAP =
 				{
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting checked for consent_key=${consent_key} ${consentVendor}` );
 
-					elem.checked = true;
+					elem.value = '1';
+					MAP.mapSyncSlider( elem );
 				}
 				else if( consentStatus === 'denied' )
 				{
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting unchecked for consent_key=${consent_key} ${consentVendor}` );
 
-					elem.checked = false;
+					elem.value = '0';
+					MAP.mapSyncSlider( elem );
 				}
 
 			});
@@ -4151,9 +4209,9 @@ var MAP =
 			if( only_init_status == false )
 			{
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach(function( elem ) {
-					elem.addEventListener( 'click', function( e ) {
+					elem.addEventListener( 'map:toggle', function( e ) {
 
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-consent-mode-preference-checkbox map:toggle' );
 
 						e.stopImmediatePropagation();
 
@@ -4161,7 +4219,7 @@ var MAP =
 
 						var currentToggleElm = that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox[data-consent-key="' + consent_key + '"]' );
 
-						if( elem.checked )
+						if( elem.value === '1' )
 						{
 							let consentVendor = '';
 
@@ -4185,7 +4243,7 @@ var MAP =
 
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting granted to consent_key=${consent_key} ${consentVendor}` );
 
-							currentToggleElm.forEach( elm => elm.checked = true );
+							currentToggleElm.forEach( function( elm ) { elm.value = '1'; MAP.mapSyncSlider( elm ); } );
 
 						}
 						else
@@ -4212,7 +4270,7 @@ var MAP =
 
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting denied to consent_key=${consent_key} ${consentVendor}` );
 
-							currentToggleElm.forEach( elm => elm.checked = false );
+							currentToggleElm.forEach( function( elm ) { elm.value = '0'; MAP.mapSyncSlider( elm ); } );
 						}
 
 						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire, MAP_SYS?.cookie_domain_path );
@@ -4232,14 +4290,14 @@ var MAP =
 
 			if( only_init_status == false )
 			{
-				//bof iab part - click event
-				that.settingsModal.addEventListener( 'click', function( e ) {
+				//bof iab part - map:toggle event
+				that.settingsModal.addEventListener( 'map:toggle', function( e ) {
 
 					var $this = e.target;
 
 					if( $this.matches( '.map-user-iab-preference-checkbox' ) )
 					{
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-iab-preference-checkbox click' );
+						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered map-user-iab-preference-checkbox map:toggle' );
 
 						e.stopImmediatePropagation();
 
@@ -4248,7 +4306,7 @@ var MAP =
 						var iab_category = $this.getAttribute( 'data-iab-category' );
 						var iab_key = $this.getAttribute( 'data-iab-key' );
 
-						if( $this.checked )
+						if( $this.value === '1' )
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 1 to iab_category=${iab_category} , iab_key=${iab_key}` );
 
@@ -4318,7 +4376,8 @@ var MAP =
 						that.updateLastConsentRecords();
 
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox ').forEach(function( $_this ) {
-							$_this.checked = true;
+							$_this.value = '1';
+							MAP.mapSyncSlider( $_this );
 						});
 
 						(async() => {
@@ -4350,7 +4409,8 @@ var MAP =
 						that.updateLastConsentRecords();
 
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( $elem ) {
-							$elem.checked = false;
+							$elem.value = '0';
+							MAP.mapSyncSlider( $elem );
 						});
 
 						(async() => {
@@ -5344,6 +5404,24 @@ var MAP =
 		{
 			console.error( error );
 		}
+	},
+
+	// Sync .map-slider-on CSS class with hidden input value
+	mapSyncSlider: function( input )
+	{
+		if( !input ) return;
+		var slider = input.nextElementSibling;
+		if( slider && slider.classList.contains( 'map-slider' ) )
+		{
+			if( input.value === '1' )
+			{
+				slider.classList.add( 'map-slider-on' );
+			}
+			else
+			{
+				slider.classList.remove( 'map-slider-on' );
+			}
+		}
 	}
 }
 
@@ -5577,11 +5655,13 @@ function map_trigger_custom_patch_1()
 	});
 	document.dispatchEvent(c);
 
+	/*
 	try {
 		wpcf7.submit = null;
 	} catch ( e ) {
 		console.debug( e );
 	}
+	*/
 }
 
 //avia maps

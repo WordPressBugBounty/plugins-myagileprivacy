@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
 Tested up to: 6.9
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -122,6 +122,16 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.3.3
+* Accessibility improvements
+* IAB TCF deferred loading and increased performances
+* IAB TCF payload size optimization
+* Added translations for French, German and Spanish
+* Full code revision for Php 8 warnings / errors
+* Weglot compatibility: plugin interface is excluded from auto-translation
+* WPML Bugfix
+* Frontend mobile optimization
 
 = 3.3.2
 * Added support for IAB TCF deviceStorageDisclosureUrl

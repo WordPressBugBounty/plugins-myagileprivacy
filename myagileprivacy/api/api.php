@@ -45,7 +45,7 @@ $map_options_table = $wpdb->base_prefix . 'options';
 
 if( is_multisite() )
 {
-	$current_domain = $_SERVER['HTTP_HOST'];
+	$current_domain = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
 
 	$blog = $wpdb->get_row( $wpdb->prepare(
 		"SELECT blog_id FROM {$wpdb->blogs} WHERE domain = %s LIMIT 1",

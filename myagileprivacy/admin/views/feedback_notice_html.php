@@ -62,69 +62,69 @@
 </script>
 
 <style>
-	#map_feedback_banner {
 
-		border-radius: 8px;
-		background: #fff;
-		border: none;
-		padding: 3em 4em 1.5em 4em;
-		margin: 50px 20px 30px 2px;
-		box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+.agile-notice {
+	border-radius: 8px;
+	background: #fff;
+	border: none;
+	padding: 3em 4em 1.5em 4em;
+	margin: 50px 20px 30px 2px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.agile-notice .content-wrapper {
+	display: flex;
+	align-items: center;
+	gap:30px;
+}
+
+.agile-notice .image-container {
+	flex-shrink: 0;
+	margin-right: 20px;
+}
+
+.agile-notice .image-container img {
+	max-width: 90px;
+	height: auto;
+}
+
+.agile-notice .content-container {
+	flex-grow: 1;
+}
+
+.agile-notice h4 {
+	font-size: 20px;
+	margin: 0;
+}
+
+.agile-notice p {
+	font-size: 16px;
+}
+
+.agile-notice .button-primary,
+.agile-notice .button-secondary {
+	font-size: 14px;
+}
+
+@media (max-width: 768px) {
+	.agile-notice {
+		flex-direction: column;
+		align-items: flex-start;
 	}
-	#map_feedback_banner .content-wrapper {
+
+	.agile-notice .image-container {
+		margin-right: 0;
+		margin-bottom: 20px;
+		width: 100%;
 		display: flex;
-		align-items: center;
-		gap:30px;
+		justify-content: center;
 	}
 
-	#map_feedback_banner .image-container {
-		flex-shrink: 0;
-		margin-right: 20px;
+	.agile-notice .image-container img {
+		max-width: 50%;
 	}
 
-	#map_feedback_banner .image-container img {
-		max-width: 90px;
-		height: auto;
+	.agile-notice .content-container {
+		width: 100%;
 	}
-
-	#map_feedback_banner .content-container {
-		flex-grow: 1;
-	}
-
-	#map_feedback_banner h4 {
-		font-size: 20px;
-		margin: 0;
-	}
-
-	#map_feedback_banner p {
-		font-size: 16px;
-	}
-
-	#map_feedback_banner .button-primary,
-	#map_feedback_banner .button-secondary {
-		font-size: 14px;
-	}
-
-	@media (max-width: 768px) {
-		#map_feedback_banner {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		#map_feedback_banner .image-container {
-			margin-right: 0;
-			margin-bottom: 20px;
-			width: 100%;
-			display: flex;
-			justify-content: center;
-		}
-
-		#map_feedback_banner .image-container img {
-			max-width: 50%;
-		}
-
-		#map_feedback_banner .content-container {
-			width: 100%;
-		}
-	}
+}
 </style>

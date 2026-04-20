@@ -234,9 +234,12 @@ final class MyAgilePrivacyRegulationHelper {
 			if( isset( self::$site_and_policy_settings['base_location'] ) &&
 				self::$site_and_policy_settings['base_location'] == 'us' )
 			{
-				foreach( self::$available_countries['usa_sub_list'] as $usa_item )
+				if( is_array( self::$available_countries ) && isset( self::$available_countries['usa_sub_list'] ) )
 				{
-					$areas[] = $usa_item;
+					foreach( self::$available_countries['usa_sub_list'] as $usa_item )
+					{
+						$areas[] = $usa_item;
+					}
 				}
 			}
 			else
@@ -580,7 +583,9 @@ final class MyAgilePrivacyRegulationHelper {
 
 		if( $pa &&
 			isset( self::$site_and_policy_settings['outside_adequate_suppliers'] ) &&
-			self::$site_and_policy_settings['outside_adequate_suppliers']
+			self::$site_and_policy_settings['outside_adequate_suppliers'] &&
+			is_array( self::$available_countries ) &&
+			isset( self::$available_countries['not_adequate'] )
 		)
 		{
 			foreach( self::$available_countries['not_adequate'] as $k => $v )
@@ -752,13 +757,15 @@ final class MyAgilePrivacyRegulationHelper {
 		$return_setting = 'opt-in';
 
 		if( isset( self::$site_and_policy_settings['base_location'] ) &&
-			isset( self::$available_countries ) )
+			is_array( self::$available_countries ) )
 		{
-			if( in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['gdpr_like_list'] ) )
+			if( isset( self::$available_countries['gdpr_like_list'] ) &&
+				in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['gdpr_like_list'] ) )
 			{
 				$return_setting = 'opt-in';
 			}
-			elseif( in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['usa_like'] ) )
+			elseif( isset( self::$available_countries['usa_like'] ) &&
+				in_array( self::$site_and_policy_settings['base_location'], self::$available_countries['usa_like'] ) )
 			{
 				$return_setting = 'opt-out';
 			}

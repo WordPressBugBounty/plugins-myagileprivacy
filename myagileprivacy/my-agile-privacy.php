@@ -5,7 +5,7 @@
  * Plugin Name:       My Agile Privacy®
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       My Agile Privacy® - CMP, Cookie Consent & Privacy Tools
- * Version:           3.3.2
+ * Version:           3.3.3
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy

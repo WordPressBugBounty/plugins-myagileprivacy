@@ -236,7 +236,9 @@ final class MyAgilePrivacyBannerRenderer
 			$new_size     = 'mapSizeBoxed';
 		}
 
-		if( !( isset( $s['pa'] ) && $s['pa'] ) )
+		if( !( isset( $s['pa'] ) && $s['pa'] ) ||
+			( isset( $this->rconfig['expired_60_days'] ) && $this->rconfig['expired_60_days'] )
+		)
 		{
 			$new_size = 'mapSizeWideBranded';
 		}
@@ -337,13 +339,40 @@ final class MyAgilePrivacyBannerRenderer
 	private function render_branded_content( $new_size )
 	{
 		if( $new_size == 'mapSizeWideBranded' ||
-			!( isset( $this->the_settings['pa'] ) && $this->the_settings['pa'] ) )
+			!( isset( $this->the_settings['pa'] ) && $this->the_settings['pa'] ) ||
+			( isset( $this->rconfig['expired_60_days'] ) && $this->rconfig['expired_60_days'] )
+		)
 		{
+			if( isset( $this->rconfig['expired_60_days'] ) && $this->rconfig['expired_60_days'] )
+			{
+				$the_url = '#';
 
-			return
-				'<div class="map_branded-box">'.
-					'<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/map_logo_branded.svg" alt="Privacy and Consent by My Agile Privacy®">'.
-				'</div>';
+				if( defined( 'MAP_EXPIRED_CALLBACK_URL') && MAP_EXPIRED_CALLBACK_URL )
+				{
+					$the_key = 'default';
+
+					if( $this->current_lang == 'it_IT' )
+					{
+						$the_key = $this->current_lang;
+					}
+
+					$the_url = MAP_EXPIRED_CALLBACK_URL[ $the_key ];
+				}
+
+				return
+					'<div class="map_branded-box">'.
+						'<a href="'.esc_url( $the_url ).'" target="blank">'.
+							'<img width="80" src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/warning_triangle.png" alt="'.esc_attr( __( 'Some features of My Agile Privacy® are currently unavailable. Please check your license to restore full functionality.', 'MAP_txt' ) ).'">'.
+						'</a>'.
+					'</div>';
+			}
+			else
+			{
+				return
+					'<div class="map_branded-box">'.
+						'<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/map_logo_branded.svg" alt="Privacy and Consent by My Agile Privacy®">'.
+					'</div>';
+			}
 		}
 
 		return '';
@@ -562,6 +591,7 @@ final class MyAgilePrivacyBannerRenderer
 				' data-nosnippet="true"'.
 				' style="'.esc_attr( $style_vars['composed_style'] ).'"'.
 				' data-animation="'.$s['cookie_banner_animation'].'"'.
+				' data-wg-notranslate '.
 				'>'.
 				$notify_title.
 				$notify_close_button.
@@ -718,7 +748,7 @@ final class MyAgilePrivacyBannerRenderer
 
 		$with_no_cookies_class = ( $no_cookies && !$iab_tcf_context ) ? 'mapNoCookies' : '';
 
-		$html  = '<div class="map-modal '.esc_attr( $with_no_cookies_class ).'" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="0" aria-labelledby="mapSettingsPopup">';
+		$html  = '<div class="map-modal '.esc_attr( $with_no_cookies_class ).'" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="0" aria-labelledby="mapSettingsPopup" data-wg-notranslate>';
 		$html .= '<div class="map-modal-dialog">';
 		$html .= '<div class="map-modal-content map-bar-popup '.esc_attr( $position_vars['with_css_effects_class'] ).'">';
 		$html .= '<div class="map-modal-body">';
@@ -774,7 +804,7 @@ final class MyAgilePrivacyBannerRenderer
 		$html .= $this->render_credits();
 
 		$html .= '</div>'; // map-modal-body
-		$html .= '<button type="button" tabindex="0" class="map-modal-close" id="mapModalClose">&#x2715;<span class="sr-only">'.esc_html( $t['close'] ).'</span></button>';
+		$html .= '<button type="button" tabindex="0" class="map-modal-close" id="mapModalClose">✕<span class="sr-only">'.esc_html( $t['close'] ).'</span></button>';
 		$html .= '</div>'; // map-modal-content
 		$html .= '</div>'; // map-modal-dialog
 		$html .= '</div>'; // map-modal
@@ -995,7 +1025,7 @@ final class MyAgilePrivacyBannerRenderer
 		{
 			$html .=
 				'<div class="map-switch">'.
-					'<input data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" type="checkbox" id="map-checkbox-'.esc_attr( $the_remote_id ).'" class="map-user-preference-checkbox MapDoNotTouch"/>'.
+					'<input data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" type="hidden" id="map-checkbox-'.esc_attr( $the_remote_id ).'" class="map-user-preference-checkbox MapDoNotTouch" value="0"/>'.
 					'<div class="map-slider map-for-map-checkbox-'.esc_attr( $the_remote_id ).'" role="checkbox" aria-label="'.esc_attr( $value['post_data']->post_title ).'" tabindex="0" aria-checked="mixed" data-map-enable="'.esc_attr( $is_enabled_text ).'" data-map-disable="'.esc_attr( $is_disabled_text ).'">'.
 						'<span class="sr-only">'.esc_html( $value['post_data']->post_title ).'</span>'.
 					'</div>'.
@@ -1047,7 +1077,7 @@ final class MyAgilePrivacyBannerRenderer
 		}
 		elseif( $the_post_is_readonly == false && $the_post_installation_type == 'raw_code' && $the_post_raw_code )
 		{
-			$html .= '<textarea style="display:none;" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.htmlspecialchars_decode( stripslashes( $the_post_raw_code ), ENT_QUOTES ).'</textarea>';
+			$html .= '<textarea aria-hidden="true" aria-label="'.esc_attr( $cleaned_cookie_name ).' raw script" style="display:none;" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.htmlspecialchars_decode( stripslashes( $the_post_raw_code ), ENT_QUOTES ).'</textarea>';
 		}
 
 		$html .= '</div>'; // map_cookie_description_wrapper
@@ -1070,7 +1100,7 @@ final class MyAgilePrivacyBannerRenderer
 			$html .= '<div class="map-tab-header map-standard-header map-nocursor withEffects">';
 				$html .= '<a class="map_expandItem map-contextual-expansion map-nav-link map-consent-mode-link map-settings-mobile" data-toggle="map-toggle-tab" role="button" tabindex="0">'.esc_html( $vv['human_name'] ).'</a>';
 				$html .= '<div class="map-switch">';
-					$html .= '<input type="checkbox" id="map-consent-'.esc_attr( $vv['key'] ).'" class="map-consent-mode-preference-checkbox '.esc_attr( $extra_class ).' MapDoNotTouch" data-consent-key="'.esc_attr( $vv['key'] ).'">';
+					$html .= '<input type="hidden" id="map-consent-'.esc_attr( $vv['key'] ).'" class="map-consent-mode-preference-checkbox '.esc_attr( $extra_class ).' MapDoNotTouch" data-consent-key="'.esc_attr( $vv['key'] ).'" value="0">';
 					$html .=
 						'<div'.
 							' class="map-slider map-nested map-for-map-consent-'.esc_attr( $vv['key'] ).'"'.
@@ -1129,7 +1159,7 @@ final class MyAgilePrivacyBannerRenderer
 
 		$html = '<div data-nosnippet class="modal_credits">';
 
-		if( isset( $this->rconfig ) && $this->rconfig['credits_image_only'] == 1 )
+		if( isset( $this->rconfig ) && isset( $this->rconfig['credits_image_only'] ) && $this->rconfig['credits_image_only'] == 1 )
 		{
 			$html .= $is_pro ? $img_pro_wide : $img_basic_wide;
 		}
