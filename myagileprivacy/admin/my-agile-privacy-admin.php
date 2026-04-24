@@ -533,7 +533,7 @@ final class MyAgilePrivacyAdmin {
 		if( $sync_last_execution )
 		{
 			//23 hours
-			if( $now - $sync_last_execution > 82800 )
+			if( $now - (int) $sync_last_execution > 82800 )
 			{
 				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'detected stale sync_last_execution' );
 
@@ -554,7 +554,7 @@ final class MyAgilePrivacyAdmin {
 				&& !( isset( $rconfig['forbid_local_js_caching'] ) && $rconfig['forbid_local_js_caching'] == 1 )
 			)
 			{
-				$cdn_basepath = 'https://cdn.myagileprivacy.com/';
+				$cdn_basepath = 'https://localcdn.myagileprivacy.com/';
 				$manifest_file = 'version_manifest.json';
 
 				if( MAP_DEV_MODE )
@@ -679,14 +679,14 @@ final class MyAgilePrivacyAdmin {
 
 					if( MAP_DEV_MODE )
 					{
-						if( $now - $the_settings['learning_mode_last_active_timestamp'] > 3600 )
+						if( $now - (int) $the_settings['learning_mode_last_active_timestamp'] > 3600 )
 						{
 							$turn_to_live = true;
 						}
 					}
 					else
 					{
-						if( $now - $the_settings['learning_mode_last_active_timestamp'] > 604800 )
+						if( $now - (int) $the_settings['learning_mode_last_active_timestamp'] > 604800 )
 						{
 							$turn_to_live = true;
 						}
@@ -747,7 +747,7 @@ final class MyAgilePrivacyAdmin {
 
 				if( $the_settings &&
 					( $the_settings['last_legit_sync'] ) &&
-					( $now - $the_settings['last_legit_sync'] > MAP_AUTORESET_SYNC_TRESHOLD ) )
+					( $now - (int) $the_settings['last_legit_sync'] > MAP_AUTORESET_SYNC_TRESHOLD ) )
 				{
 					$do_block = false;
 
@@ -2458,7 +2458,7 @@ final class MyAgilePrivacyAdmin {
 
 			if( ( $do_revalidation ||
 					$the_timestamp === null ||
-					$now - $the_timestamp > 86400 ||
+					$now - (int) $the_timestamp > 86400 ||
 					$missing_key ) &&
 				isset( $_POST['license_code_field'] )
 			)

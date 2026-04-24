@@ -153,7 +153,7 @@ final class MyAgilePrivacyRegulationHelper {
 		'tennessee',
 		'texas',
 		'utah',
-		'virgina',
+		'virginia',
 	);
 
 	/**

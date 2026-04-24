@@ -370,7 +370,7 @@ final class MyAgilePrivacyBannerRenderer
 			{
 				return
 					'<div class="map_branded-box">'.
-						'<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/map_logo_branded.svg" alt="Privacy and Consent by My Agile Privacy®">'.
+						'<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/map_logo_branded.svg" width="300" height="141" alt="Privacy and Consent by My Agile Privacy®">'.
 					'</div>';
 			}
 		}

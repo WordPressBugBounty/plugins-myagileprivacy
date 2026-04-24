@@ -93,8 +93,8 @@ final class MyAgilePrivacy {
 			isset( $the_settings['dont_ask_license_code'] ) &&
 			$the_settings['dont_ask_license_code'] &&
 			isset( $the_settings['dont_ask_license_code_timestamp'] ) &&
-			$the_settings['dont_ask_license_code_timestamp'] > 0 &&
-			$the_settings['dont_ask_license_code_timestamp'] <= $now - MAP_BYPASS_LICENSE_TRESHOLD
+			(int) $the_settings['dont_ask_license_code_timestamp'] > 0 &&
+			(int) $the_settings['dont_ask_license_code_timestamp'] <= $now - MAP_BYPASS_LICENSE_TRESHOLD
 		)
 		{
 			$the_settings['dont_ask_license_code'] = false;
@@ -207,7 +207,7 @@ final class MyAgilePrivacy {
 		}
 
 		// first show after first treshold
-		if( $current_time - $activation_date < MAP_NOTICE_FIRST_TRESHOLD )
+		if( $current_time - (int) $activation_date < MAP_NOTICE_FIRST_TRESHOLD )
 		{
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check A)' );
 
@@ -215,7 +215,7 @@ final class MyAgilePrivacy {
 		}
 
 		// if feedback marked as later, show again after first treshold
-		if( $review_status === 'later' && ( $current_time - $last_show_time ) < MAP_NOTICE_FIRST_TRESHOLD )
+		if( $review_status === 'later' && ( $current_time - (int) $last_show_time ) < MAP_NOTICE_FIRST_TRESHOLD )
 		{
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check B)' );
 
@@ -223,7 +223,7 @@ final class MyAgilePrivacy {
 		}
 
 		// if feedback marked as done, show again after second treshold
-		if( $review_status === 'done' && ( $current_time - $last_show_time ) < MAP_NOTICE_SECOND_TRESHOLD )
+		if( $review_status === 'done' && ( $current_time - (int) $last_show_time ) < MAP_NOTICE_SECOND_TRESHOLD )
 		{
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'should_show_feedback_notice --> false (check C)' );
 
@@ -848,7 +848,7 @@ final class MyAgilePrivacy {
 	            break;
 
 	        case 'hexcolor':
-				if ( preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
+				if ( is_string( $value ) && preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
 	            {
 	                $ret = $value;
 	            }

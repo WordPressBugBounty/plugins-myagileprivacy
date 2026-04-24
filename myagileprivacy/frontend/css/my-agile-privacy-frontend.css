@@ -567,6 +567,7 @@
 
 #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box img {
     max-width: 100%;
+    height: auto;
 }
 
 
