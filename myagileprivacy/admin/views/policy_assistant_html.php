@@ -2385,7 +2385,7 @@
 													}
 
 
-													if ($currentCol !== -1)
+													if($currentCol !== -1)
 													{
 														 echo "  </div>" . PHP_EOL;
 													}

@@ -1090,7 +1090,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
 								</div>
 
-								<div class="text show_boxed_preview" style="<?php echo $preview_text_styles; ?>"></div>
+								<div class="text show_boxed_preview" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
 							</div>
 							<div id="preview-button-container">
 								<div class="preview-button" id="preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style ); ?>"></div>

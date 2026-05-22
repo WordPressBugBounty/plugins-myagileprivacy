@@ -86,7 +86,7 @@ function shd_file_get_html(
 	);
 	// $contents = retrieve_url_contents($url);
 
-	if (empty($contents) || strlen($contents) > $maxLen) {
+	if(empty($contents) || strlen($contents) > $maxLen) {
 		$dom->clear();
 		return false;
 	}
@@ -114,7 +114,7 @@ function shd_str_get_html(
 		$defaultSpanText
 	);
 
-	if (empty($str) || strlen($str) > MAX_FILE_SIZE) {
+	if(empty($str) || strlen($str) > MAX_FILE_SIZE) {
 		$dom->clear();
 		return false;
 	}
@@ -170,7 +170,7 @@ final class agile_simple_html_dom_node
 	{
 		echo str_repeat("\t", $depth) . $this->tag;
 
-		if ($show_attr && count($this->attr) > 0) {
+		if($show_attr && count($this->attr) > 0) {
 			echo '(';
 			foreach ($this->attr as $k => $v) {
 				echo "[$k]=>\"$v\", ";
@@ -180,7 +180,7 @@ final class agile_simple_html_dom_node
 
 		echo "\n";
 
-		if ($this->nodes) {
+		if($this->nodes) {
 			foreach ($this->nodes as $node) {
 				$node->dump($show_attr, $depth + 1);
 			}
@@ -191,7 +191,7 @@ final class agile_simple_html_dom_node
 	{
 		$string = $this->tag;
 
-		if (count($this->attr) > 0) {
+		if(count($this->attr) > 0) {
 			$string .= '(';
 			foreach ($this->attr as $k => $v) {
 				$string .= "[$k]=>\"$v\", ";
@@ -199,10 +199,10 @@ final class agile_simple_html_dom_node
 			$string .= ')';
 		}
 
-		if (count($this->_) > 0) {
+		if(count($this->_) > 0) {
 			$string .= ' $_ (';
 			foreach ($this->_ as $k => $v) {
-				if (is_array($v)) {
+				if(is_array($v)) {
 					$string .= "[$k]=>(";
 					foreach ($v as $k2 => $v2) {
 						$string .= "[$k2]=>\"$v2\", ";
@@ -215,13 +215,13 @@ final class agile_simple_html_dom_node
 			$string .= ')';
 		}
 
-		if (isset($this->text)) {
+		if(isset($this->text)) {
 			$string .= " text: ({$this->text})";
 		}
 
 		$string .= ' HDOM_INNER_INFO: ';
 
-		if (isset($node->_[HDOM_INFO_INNER])) {
+		if(isset($node->_[HDOM_INFO_INNER])) {
 			$string .= "'" . $node->_[HDOM_INFO_INNER] . "'";
 		} else {
 			$string .= ' NULL ';
@@ -232,7 +232,7 @@ final class agile_simple_html_dom_node
 		$string .= ' tag_start: ' . $this->tag_start;
 		$string .= "\n";
 
-		if ($echo) {
+		if($echo) {
 			echo $string;
 			return;
 		} else {
@@ -245,7 +245,7 @@ final class agile_simple_html_dom_node
 		// I am SURE that this doesn't work properly.
 		// It fails to unset the current node from it's current parents nodes or
 		// children list first.
-		if ($parent !== null) {
+		if($parent !== null) {
 			$this->parent = $parent;
 			$this->parent->nodes[] = $this;
 			$this->parent->children[] = $this;
@@ -261,11 +261,11 @@ final class agile_simple_html_dom_node
 
 	function children($idx = -1)
 	{
-		if ($idx === -1) {
+		if($idx === -1) {
 			return $this->children;
 		}
 
-		if (isset($this->children[$idx])) {
+		if(isset($this->children[$idx])) {
 			return $this->children[$idx];
 		}
 
@@ -274,7 +274,7 @@ final class agile_simple_html_dom_node
 
 	function first_child()
 	{
-		if (count($this->children) > 0) {
+		if(count($this->children) > 0) {
 			return $this->children[0];
 		}
 		return null;
@@ -282,7 +282,7 @@ final class agile_simple_html_dom_node
 
 	function last_child()
 	{
-		if (count($this->children) > 0) {
+		if(count($this->children) > 0) {
 			return end($this->children);
 		}
 		return null;
@@ -290,13 +290,13 @@ final class agile_simple_html_dom_node
 
 	function next_sibling()
 	{
-		if ($this->parent === null) {
+		if($this->parent === null) {
 			return null;
 		}
 
 		$idx = array_search($this, $this->parent->children, true);
 
-		if ($idx !== false && isset($this->parent->children[$idx + 1])) {
+		if($idx !== false && isset($this->parent->children[$idx + 1])) {
 			return $this->parent->children[$idx + 1];
 		}
 
@@ -305,13 +305,13 @@ final class agile_simple_html_dom_node
 
 	function prev_sibling()
 	{
-		if ($this->parent === null) {
+		if($this->parent === null) {
 			return null;
 		}
 
 		$idx = array_search($this, $this->parent->children, true);
 
-		if ($idx !== false && $idx > 0) {
+		if($idx !== false && $idx > 0) {
 			return $this->parent->children[$idx - 1];
 		}
 
@@ -321,20 +321,20 @@ final class agile_simple_html_dom_node
 	function find_ancestor_tag($tag)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
-		if ($this->parent === null) {
+		if($this->parent === null) {
 			return null;
 		}
 
 		$ancestor = $this->parent;
 
 		while (!is_null($ancestor)) {
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'Current tag is: ' . $ancestor->tag);
 			}
 
-			if ($ancestor->tag === $tag) {
+			if($ancestor->tag === $tag) {
 				break;
 			}
 
@@ -346,11 +346,11 @@ final class agile_simple_html_dom_node
 
 	function innertext()
 	{
-		if (isset($this->_[HDOM_INFO_INNER])) {
+		if(isset($this->_[HDOM_INFO_INNER])) {
 			return $this->_[HDOM_INFO_INNER];
 		}
 
-		if (isset($this->_[HDOM_INFO_TEXT])) {
+		if(isset($this->_[HDOM_INFO_TEXT])) {
 			return $this->dom->restore_noise($this->_[HDOM_INFO_TEXT]);
 		}
 
@@ -367,11 +367,11 @@ final class agile_simple_html_dom_node
 	{
 		global $debug_object;
 
-		if (is_object($debug_object)) {
+		if(is_object($debug_object)) {
 			$text = '';
 
-			if ($this->tag === 'text') {
-				if (!empty($this->text)) {
+			if($this->tag === 'text') {
+				if(!empty($this->text)) {
 					$text = ' with text: ' . $this->text;
 				}
 			}
@@ -379,41 +379,41 @@ final class agile_simple_html_dom_node
 			$debug_object->debug_log(1, 'Innertext of tag: ' . $this->tag . $text);
 		}
 
-		if ($this->tag === 'root') {
+		if($this->tag === 'root') {
 			return $this->innertext();
 		}
 
 		// todo: What is the use of this callback? Remove?
-		if ($this->dom && $this->dom->callback !== null) {
+		if($this->dom && $this->dom->callback !== null) {
 			call_user_func_array($this->dom->callback, array($this));
 		}
 
-		if (isset($this->_[HDOM_INFO_OUTER])) {
+		if(isset($this->_[HDOM_INFO_OUTER])) {
 			return $this->_[HDOM_INFO_OUTER];
 		}
 
-		if (isset($this->_[HDOM_INFO_TEXT])) {
+		if(isset($this->_[HDOM_INFO_TEXT])) {
 			return $this->dom->restore_noise($this->_[HDOM_INFO_TEXT]);
 		}
 
 		$ret = '';
 
-		if ($this->dom && $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]) {
+		if($this->dom && $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]) {
 			$ret = $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]->makeup();
 		}
 
-		if (isset($this->_[HDOM_INFO_INNER])) {
+		if(isset($this->_[HDOM_INFO_INNER])) {
 			// todo: <br> should either never have HDOM_INFO_INNER or always
-			if ($this->tag !== 'br') {
+			if($this->tag !== 'br') {
 				$ret .= $this->_[HDOM_INFO_INNER];
 			}
-		} elseif ($this->nodes) {
+		} elseif($this->nodes) {
 			foreach ($this->nodes as $n) {
 				$ret .= $this->convert_text($n->outertext());
 			}
 		}
 
-		if (isset($this->_[HDOM_INFO_END]) && $this->_[HDOM_INFO_END] != 0) {
+		if(isset($this->_[HDOM_INFO_END]) && $this->_[HDOM_INFO_END] != 0) {
 			$ret .= '</' . $this->tag . '>';
 		}
 
@@ -422,7 +422,7 @@ final class agile_simple_html_dom_node
 
 	function text()
 	{
-		if (isset($this->_[HDOM_INFO_INNER])) {
+		if(isset($this->_[HDOM_INFO_INNER])) {
 			return $this->_[HDOM_INFO_INNER];
 		}
 
@@ -432,8 +432,8 @@ final class agile_simple_html_dom_node
 			case HDOM_TYPE_UNKNOWN: return '';
 		}
 
-		if (strcasecmp($this->tag, 'script') === 0) { return ''; }
-		if (strcasecmp($this->tag, 'style') === 0) { return ''; }
+		if(strcasecmp($this->tag, 'script') === 0) { return ''; }
+		if(strcasecmp($this->tag, 'style') === 0) { return ''; }
 
 		$ret = '';
 
@@ -442,10 +442,10 @@ final class agile_simple_html_dom_node
 		// NOTE: This indicates that there is a problem where it's set to NULL
 		// without a clear happening.
 		// WHY is this happening?
-		if (!is_null($this->nodes)) {
+		if(!is_null($this->nodes)) {
 			foreach ($this->nodes as $n) {
 				// Start paragraph after a blank line
-				if ($n->tag === 'p') {
+				if($n->tag === 'p') {
 					$ret = trim($ret) . "\n\n";
 				}
 
@@ -454,7 +454,7 @@ final class agile_simple_html_dom_node
 				// If this node is a span... add a space at the end of it so
 				// multiple spans don't run into each other.  This is plaintext
 				// after all.
-				if ($n->tag === 'span') {
+				if($n->tag === 'span') {
 					$ret .= $this->dom->default_span_text;
 				}
 			}
@@ -473,7 +473,7 @@ final class agile_simple_html_dom_node
 	function makeup()
 	{
 		// text, comment, unknown
-		if (isset($this->_[HDOM_INFO_TEXT])) {
+		if(isset($this->_[HDOM_INFO_TEXT])) {
 			return $this->dom->restore_noise($this->_[HDOM_INFO_TEXT]);
 		}
 
@@ -484,12 +484,12 @@ final class agile_simple_html_dom_node
 			++$i;
 
 			// skip removed attribute
-			if ($val === null || $val === false) { continue; }
+			if($val === null || $val === false) { continue; }
 
 			$ret .= $this->_[HDOM_INFO_SPACE][$i][0];
 
 			//no value attr: nowrap, checked selected...
-			if ($val === true) {
+			if($val === true) {
 				$ret .= $key;
 			} else {
 				switch ($this->_[HDOM_INFO_QUOTE][$i])
@@ -516,16 +516,16 @@ final class agile_simple_html_dom_node
 	function find($selector, $idx = null, $lowercase = false)
 	{
 		$selectors = $this->parse_selector($selector);
-		if (($count = count($selectors)) === 0) { return array(); }
+		if(($count = count($selectors)) === 0) { return array(); }
 		$found_keys = array();
 
 		// find each selector
 		for ($c = 0; $c < $count; ++$c) {
 			// The change on the below line was documented on the sourceforge
 			// code tracker id 2788009
-			// used to be: if (($levle=count($selectors[0]))===0) return array();
-			if (($levle = count($selectors[$c])) === 0) { return array(); }
-			if (!isset($this->_[HDOM_INFO_BEGIN])) { return array(); }
+			// used to be: if(($levle=count($selectors[0]))===0) return array();
+			if(($levle = count($selectors[$c])) === 0) { return array(); }
+			if(!isset($this->_[HDOM_INFO_BEGIN])) { return array(); }
 
 			$head = array($this->_[HDOM_INFO_BEGIN] => 1);
 			$cmd = ' '; // Combinator
@@ -545,7 +545,7 @@ final class agile_simple_html_dom_node
 			}
 
 			foreach ($head as $k => $v) {
-				if (!isset($found_keys[$k])) {
+				if(!isset($found_keys[$k])) {
 					$found_keys[$k] = 1;
 				}
 			}
@@ -560,24 +560,24 @@ final class agile_simple_html_dom_node
 		}
 
 		// return nth-element or array
-		if (is_null($idx)) { return $found; }
-		elseif ($idx < 0) { $idx = count($found) + $idx; }
+		if(is_null($idx)) { return $found; }
+		elseif($idx < 0) { $idx = count($found) + $idx; }
 		return (isset($found[$idx])) ? $found[$idx] : null;
 	}
 
 	protected function seek($selector, &$ret, $parent_cmd, $lowercase = false)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		list($tag, $id, $class, $attributes, $cmb) = $selector;
 		$nodes = array();
 
-		if ($parent_cmd === ' ') { // Descendant Combinator
+		if($parent_cmd === ' ') { // Descendant Combinator
 			// Find parent closing tag if the current element doesn't have a closing
 			// tag (i.e. void element)
 			$end = (!empty($this->_[HDOM_INFO_END])) ? $this->_[HDOM_INFO_END] : 0;
-			if ($end == 0) {
+			if($end == 0) {
 				$parent = $this->parent;
 				while (!isset($parent->_[HDOM_INFO_END]) && $parent !== null) {
 					$end -= 1;
@@ -590,15 +590,15 @@ final class agile_simple_html_dom_node
 			$nodes_start = $this->_[HDOM_INFO_BEGIN] + 1;
 			$nodes_count = $end - $nodes_start;
 			$nodes = array_slice($this->dom->nodes, $nodes_start, $nodes_count, true);
-		} elseif ($parent_cmd === '>') { // Child Combinator
+		} elseif($parent_cmd === '>') { // Child Combinator
 			$nodes = $this->children;
-		} elseif ($parent_cmd === '+'
+		} elseif($parent_cmd === '+'
 			&& $this->parent
 			&& in_array($this, $this->parent->children)) { // Next-Sibling Combinator
 				$index = array_search($this, $this->parent->children, true) + 1;
-				if ($index < count($this->parent->children))
+				if($index < count($this->parent->children))
 					$nodes[] = $this->parent->children[$index];
-		} elseif ($parent_cmd === '~'
+		} elseif($parent_cmd === '~'
 			&& $this->parent
 			&& in_array($this, $this->parent->children)) { // Subsequent Sibling Combinator
 				$index = array_search($this, $this->parent->children, true);
@@ -629,17 +629,17 @@ final class agile_simple_html_dom_node
 			}
 
 			// Skip if tag doesn't match
-			if ($pass && $tag !== '' && $tag !== $node->tag && $tag !== '*') {
+			if($pass && $tag !== '' && $tag !== $node->tag && $tag !== '*') {
 				$pass = false;
 			}
 
 			// Skip if ID doesn't exist
-			if ($pass && $id !== '' && !isset($node->attr['id'])) {
+			if($pass && $id !== '' && !isset($node->attr['id'])) {
 				$pass = false;
 			}
 
 			// Check if ID matches
-			if ($pass && $id !== '' && isset($node->attr['id'])) {
+			if($pass && $id !== '' && isset($node->attr['id'])) {
 				// Note: Only consider the first ID (as browsers do)
 
 				$node_id = explode(' ', trim($node->attr['id']))[0];
@@ -648,11 +648,11 @@ final class agile_simple_html_dom_node
 			}
 
 			// Check if all class(es) exist
-			if ($pass && $class !== '' && is_array($class) && !empty($class)) {
-				if (isset($node->attr['class'])) {
+			if($pass && $class !== '' && is_array($class) && !empty($class)) {
+				if(isset($node->attr['class'])) {
 					$node_classes = explode(' ', $node->attr['class']);
 
-					if ($lowercase) {
+					if($lowercase) {
 						$node_classes = array_map('strtolower', $node_classes);
 					}
 
@@ -668,7 +668,7 @@ final class agile_simple_html_dom_node
 			}
 
 			// Check attributes
-			if ($pass
+			if($pass
 				&& $attributes !== ''
 				&& is_array($attributes)
 				&& !empty($attributes)) {
@@ -690,31 +690,31 @@ final class agile_simple_html_dom_node
 						 * Note: This doesn't conflict with the CSS Standard which
 						 * doesn't work on numeric attributes anyway.
 						 */
-						if (is_numeric($att_name)
+						if(is_numeric($att_name)
 							&& $att_expr === ''
 							&& $att_val === '') {
 								$count = 0;
 
 								// Find index of current element in parent
 								foreach ($node->parent->children as $c) {
-									if ($c->tag === $node->tag) ++$count;
-									if ($c === $node) break;
+									if($c->tag === $node->tag) ++$count;
+									if($c === $node) break;
 								}
 
 								// If this is the correct node, continue with next
 								// attribute
-								if ($count === (int)$att_name) continue;
+								if($count === (int)$att_name) continue;
 						}
 
 						// Check attribute availability
-						if ($att_inv) { // Attribute should NOT be set
-							if (isset($node->attr[$att_name])) {
+						if($att_inv) { // Attribute should NOT be set
+							if(isset($node->attr[$att_name])) {
 								$pass = false;
 								break;
 							}
 						} else { // Attribute should be set
 							// todo: "plaintext" is not a valid CSS selector!
-							if ($att_name !== 'plaintext'
+							if($att_name !== 'plaintext'
 								&& !isset($node->attr[$att_name])) {
 									$pass = false;
 									break;
@@ -722,18 +722,18 @@ final class agile_simple_html_dom_node
 						}
 
 						// Continue with next attribute if expression isn't defined
-						if ($att_expr === '') continue;
+						if($att_expr === '') continue;
 
 						// If they have told us that this is a "plaintext"
 						// search then we want the plaintext of the node - right?
 						// todo "plaintext" is not a valid CSS selector!
-						if ($att_name === 'plaintext') {
+						if($att_name === 'plaintext') {
 							$nodeKeyValue = $node->text();
 						} else {
 							$nodeKeyValue = $node->attr[$att_name];
 						}
 
-						if (is_object($debug_object)) {
+						if(is_object($debug_object)) {
 							$debug_object->debug_log(2,
 								'testing node: '
 								. $node->tag
@@ -748,7 +748,7 @@ final class agile_simple_html_dom_node
 
 						// If lowercase is set, do a case insensitive test of
 						// the value of the selector.
-						if ($lowercase) {
+						if($lowercase) {
 							$check = $this->match(
 								$att_expr,
 								strtolower($att_val),
@@ -764,14 +764,14 @@ final class agile_simple_html_dom_node
 							);
 						}
 
-						if (is_object($debug_object)) {
+						if(is_object($debug_object)) {
 							$debug_object->debug_log(2,
 								'after match: '
 								. ($check ? 'true' : 'false')
 							);
 						}
 
-						if (!$check) {
+						if(!$check) {
 							$pass = false;
 							break;
 						}
@@ -779,11 +779,11 @@ final class agile_simple_html_dom_node
 			}
 
 			// Found a match. Add to list and clear node
-			if ($pass) $ret[$node->_[HDOM_INFO_BEGIN]] = 1;
+			if($pass) $ret[$node->_[HDOM_INFO_BEGIN]] = 1;
 			unset($node);
 		}
 		// It's passed by reference so this is actually what this function returns.
-		if (is_object($debug_object)) {
+		if(is_object($debug_object)) {
 			$debug_object->debug_log(1, 'EXIT - ret: ', $ret);
 		}
 	}
@@ -791,9 +791,9 @@ final class agile_simple_html_dom_node
 	protected function match($exp, $pattern, $value, $case_sensitivity)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) {$debug_object->debug_log_entry(1);}
+		if(is_object($debug_object)) {$debug_object->debug_log_entry(1);}
 
-		if ($case_sensitivity === 'i') {
+		if($case_sensitivity === 'i') {
 			$pattern = strtolower($pattern);
 			$value = strtolower($value);
 		}
@@ -836,7 +836,7 @@ final class agile_simple_html_dom_node
 	protected function parse_selector($selector_string)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		/**
 		 * Pattern of CSS selectors, modified from mootools (https://mootools.net/)
@@ -891,7 +891,7 @@ final class agile_simple_html_dom_node
 			PREG_SET_ORDER
 		);
 
-		if (is_object($debug_object)) {
+		if(is_object($debug_object)) {
 			$debug_object->debug_log(2, 'Matches Array: ', $matches);
 		}
 
@@ -902,15 +902,15 @@ final class agile_simple_html_dom_node
 			$m[0] = trim($m[0]);
 
 			// Skip NoOps
-			if ($m[0] === '' || $m[0] === '/' || $m[0] === '//') { continue; }
+			if($m[0] === '' || $m[0] === '/' || $m[0] === '//') { continue; }
 
 			// Convert to lowercase
-			if ($this->dom->lowercase) {
+			if($this->dom->lowercase) {
 				$m[1] = strtolower($m[1]);
 			}
 
 			// Extract classes
-			if ($m[3] !== '') { $m[3] = explode('.', $m[3]); }
+			if($m[3] !== '') { $m[3] = explode('.', $m[3]); }
 
 			/* Extract attributes (pattern based on the pattern above!)
 
@@ -949,32 +949,32 @@ final class agile_simple_html_dom_node
 			}
 
 			// Sanitize Separator
-			if ($m[5] !== '' && trim($m[5]) === '') { // Descendant Separator
+			if($m[5] !== '' && trim($m[5]) === '') { // Descendant Separator
 				$m[5] = ' ';
 			} else { // Other Separator
 				$m[5] = trim($m[5]);
 			}
 
 			// Clear Separator if it's a Selector List
-			if ($is_list = ($m[5] === ',')) { $m[5] = ''; }
+			if($is_list = ($m[5] === ',')) { $m[5] = ''; }
 
 			// Remove full match before adding to results
 			array_shift($m);
 			$result[] = $m;
 
-			if ($is_list) { // Selector List
+			if($is_list) { // Selector List
 				$selectors[] = $result;
 				$result = array();
 			}
 		}
 
-		if (count($result) > 0) { $selectors[] = $result; }
+		if(count($result) > 0) { $selectors[] = $result; }
 		return $selectors;
 	}
 
 	function __get($name)
 	{
-		if (isset($this->attr[$name])) {
+		if(isset($this->attr[$name])) {
 			return $this->convert_text($this->attr[$name]);
 		}
 		switch ($name) {
@@ -989,18 +989,18 @@ final class agile_simple_html_dom_node
 	function __set($name, $value)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		switch ($name) {
 			case 'outertext': return $this->_[HDOM_INFO_OUTER] = $value;
 			case 'innertext':
-				if (isset($this->_[HDOM_INFO_TEXT])) {
+				if(isset($this->_[HDOM_INFO_TEXT])) {
 					return $this->_[HDOM_INFO_TEXT] = $value;
 				}
 				return $this->_[HDOM_INFO_INNER] = $value;
 		}
 
-		if (!isset($this->attr[$name])) {
+		if(!isset($this->attr[$name])) {
 			$this->_[HDOM_INFO_SPACE][] = array(' ', '', '');
 			$this->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_DOUBLE;
 		}
@@ -1021,25 +1021,25 @@ final class agile_simple_html_dom_node
 
 	function __unset($name)
 	{
-		if (isset($this->attr[$name])) { unset($this->attr[$name]); }
+		if(isset($this->attr[$name])) { unset($this->attr[$name]); }
 	}
 
 	function convert_text($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		$converted_text = $text;
 
 		$sourceCharset = '';
 		$targetCharset = '';
 
-		if ($this->dom) {
+		if($this->dom) {
 			$sourceCharset = strtoupper($this->dom->_charset);
 			$targetCharset = strtoupper($this->dom->_target_charset);
 		}
 
-		if (is_object($debug_object)) {
+		if(is_object($debug_object)) {
 			$debug_object->debug_log(3,
 				'source charset: '
 				. $sourceCharset
@@ -1048,11 +1048,11 @@ final class agile_simple_html_dom_node
 			);
 		}
 
-		if (!empty($sourceCharset)
+		if(!empty($sourceCharset)
 			&& !empty($targetCharset)
 			&& (strcasecmp($sourceCharset, $targetCharset) != 0)) {
 			// Check if the reported encoding could have been incorrect and the text is actually already UTF-8
-			if ((strcasecmp($targetCharset, 'UTF-8') == 0)
+			if((strcasecmp($targetCharset, 'UTF-8') == 0)
 				&& ($this->is_utf8($text))) {
 				$converted_text = $text;
 			} else {
@@ -1061,12 +1061,12 @@ final class agile_simple_html_dom_node
 		}
 
 		// Lets make sure that we don't have that silly BOM issue with any of the utf-8 text we output.
-		if ($targetCharset === 'UTF-8') {
-			if (substr($converted_text, 0, 3) === "\xef\xbb\xbf") {
+		if($targetCharset === 'UTF-8') {
+			if(substr($converted_text, 0, 3) === "\xef\xbb\xbf") {
 				$converted_text = substr($converted_text, 3);
 			}
 
-			if (substr($converted_text, -3) === "\xef\xbb\xbf") {
+			if(substr($converted_text, -3) === "\xef\xbb\xbf") {
 				$converted_text = substr($converted_text, 0, -3);
 			}
 		}
@@ -1108,21 +1108,21 @@ final class agile_simple_html_dom_node
 		$width = -1;
 		$height = -1;
 
-		if ($this->tag !== 'img') {
+		if($this->tag !== 'img') {
 			return false;
 		}
 
 		// See if there is aheight or width attribute in the tag itself.
-		if (isset($this->attr['width'])) {
+		if(isset($this->attr['width'])) {
 			$width = $this->attr['width'];
 		}
 
-		if (isset($this->attr['height'])) {
+		if(isset($this->attr['height'])) {
 			$height = $this->attr['height'];
 		}
 
 		// Now look for an inline style.
-		if (isset($this->attr['style'])) {
+		if(isset($this->attr['style'])) {
 			// Thanks to user gnarf from stackoverflow for this regular expression.
 			$attributes = array();
 
@@ -1138,24 +1138,24 @@ final class agile_simple_html_dom_node
 			}
 
 			// If there is a width in the style attributes:
-			if (isset($attributes['width']) && $width == -1) {
+			if(isset($attributes['width']) && $width == -1) {
 				// check that the last two characters are px (pixels)
-				if (strtolower(substr($attributes['width'], -2)) === 'px') {
+				if(strtolower(substr($attributes['width'], -2)) === 'px') {
 					$proposed_width = substr($attributes['width'], 0, -2);
 					// Now make sure that it's an integer and not something stupid.
-					if (filter_var($proposed_width, FILTER_VALIDATE_INT)) {
+					if(filter_var($proposed_width, FILTER_VALIDATE_INT)) {
 						$width = $proposed_width;
 					}
 				}
 			}
 
 			// If there is a width in the style attributes:
-			if (isset($attributes['height']) && $height == -1) {
+			if(isset($attributes['height']) && $height == -1) {
 				// check that the last two characters are px (pixels)
-				if (strtolower(substr($attributes['height'], -2)) == 'px') {
+				if(strtolower(substr($attributes['height'], -2)) == 'px') {
 					$proposed_height = substr($attributes['height'], 0, -2);
 					// Now make sure that it's an integer and not something stupid.
-					if (filter_var($proposed_height, FILTER_VALIDATE_INT)) {
+					if(filter_var($proposed_height, FILTER_VALIDATE_INT)) {
 						$height = $proposed_height;
 					}
 				}
@@ -1190,7 +1190,7 @@ final class agile_simple_html_dom_node
 	{
 		$ret = $this->outertext();
 
-		if ($filepath !== '') {
+		if($filepath !== '') {
 			file_put_contents($filepath, $ret, LOCK_EX);
 		}
 
@@ -1199,14 +1199,14 @@ final class agile_simple_html_dom_node
 
 	function addClass($class)
 	{
-		if (is_string($class)) {
+		if(is_string($class)) {
 			$class = explode(' ', $class);
 		}
 
-		if (is_array($class)) {
+		if(is_array($class)) {
 			foreach($class as $c) {
-				if (isset($this->class)) {
-					if ($this->hasClass($c)) {
+				if(isset($this->class)) {
+					if($this->hasClass($c)) {
 						continue;
 					} else {
 						$this->class .= ' ' . $c;
@@ -1216,7 +1216,7 @@ final class agile_simple_html_dom_node
 				}
 			}
 		} else {
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'Invalid type: ', gettype($class));
 			}
 		}
@@ -1224,12 +1224,12 @@ final class agile_simple_html_dom_node
 
 	function hasClass($class)
 	{
-		if (is_string($class)) {
-			if (isset($this->class)) {
+		if(is_string($class)) {
+			if(isset($this->class)) {
 				return in_array($class, explode(' ', $this->class), true);
 			}
 		} else {
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'Invalid type: ', gettype($class));
 			}
 		}
@@ -1239,22 +1239,22 @@ final class agile_simple_html_dom_node
 
 	function removeClass($class = null)
 	{
-		if (!isset($this->class)) {
+		if(!isset($this->class)) {
 			return;
 		}
 
-		if (is_null($class)) {
+		if(is_null($class)) {
 			$this->removeAttribute('class');
 			return;
 		}
 
-		if (is_string($class)) {
+		if(is_string($class)) {
 			$class = explode(' ', $class);
 		}
 
-		if (is_array($class)) {
+		if(is_array($class)) {
 			$class = array_diff(explode(' ', $this->class), $class);
-			if (empty($class)) {
+			if(empty($class)) {
 				$this->removeAttribute('class');
 			} else {
 				$this->class = implode(' ', $class);
@@ -1289,7 +1289,7 @@ final class agile_simple_html_dom_node
 
 	function remove()
 	{
-		if ($this->parent) {
+		if($this->parent) {
 			$this->parent->removeChild($this);
 		}
 	}
@@ -1300,7 +1300,7 @@ final class agile_simple_html_dom_node
 		$cidx = array_search($node, $this->children, true);
 		$didx = array_search($node, $this->dom->nodes, true);
 
-		if ($nidx !== false && $cidx !== false && $didx !== false) {
+		if($nidx !== false && $cidx !== false && $didx !== false) {
 
 			foreach($node->children as $child) {
 				$node->removeChild($child);
@@ -1310,7 +1310,7 @@ final class agile_simple_html_dom_node
 				$enidx = array_search($entity, $node->nodes, true);
 				$edidx = array_search($entity, $node->dom->nodes, true);
 
-				if ($enidx !== false && $edidx !== false) {
+				if($enidx !== false && $edidx !== false) {
 					unset($node->nodes[$enidx]);
 					unset($node->dom->nodes[$edidx]);
 				}
@@ -1478,8 +1478,8 @@ class agile_simple_html_dom
 		$defaultSpanText = DEFAULT_SPAN_TEXT,
 		$options = 0)
 	{
-		if ($str) {
-			if (preg_match('/^http:\/\//i', $str) || is_file($str)) {
+		if($str) {
+			if(preg_match('/^http:\/\//i', $str) || is_file($str)) {
 				$this->load_file($str);
 			} else {
 				$this->load(
@@ -1494,7 +1494,7 @@ class agile_simple_html_dom
 		}
 		// Forcing tags to be closed implies that we don't trust the html, but
 		// it can lead to parsing errors if we SHOULD trust the html.
-		if (!$forceTagsClosed) {
+		if(!$forceTagsClosed) {
 			$this->optional_closing_array = array();
 		}
 
@@ -1526,7 +1526,7 @@ class agile_simple_html_dom
 		$this->remove_noise("'<\s*script\s*>(.*?)<\s*/\s*script\s*>'is");
 
 		// strip out the \r \n's if we are told to.
-		if ($stripRN) {
+		if($stripRN) {
 			$this->doc = str_replace("\r", ' ', $this->doc);
 			$this->doc = str_replace("\n", ' ', $this->doc);
 
@@ -1584,7 +1584,7 @@ class agile_simple_html_dom
 	function save($filepath = '')
 	{
 		$ret = $this->root->innertext();
-		if ($filepath !== '') { file_put_contents($filepath, $ret, LOCK_EX); }
+		if($filepath !== '') { file_put_contents($filepath, $ret, LOCK_EX); }
 		return $ret;
 	}
 
@@ -1595,7 +1595,7 @@ class agile_simple_html_dom
 
 	function clear()
 	{
-		if (isset($this->nodes)) {
+		if(isset($this->nodes)) {
 			foreach ($this->nodes as $n) {
 				$n->clear();
 				$n = null;
@@ -1605,19 +1605,19 @@ class agile_simple_html_dom
 		// This add next line is documented in the sourceforge repository.
 		// 2977248 as a fix for ongoing memory leaks that occur even with the
 		// use of clear.
-		if (isset($this->children)) {
+		if(isset($this->children)) {
 			foreach ($this->children as $n) {
 				$n->clear();
 				$n = null;
 			}
 		}
 
-		if (isset($this->parent)) {
+		if(isset($this->parent)) {
 			$this->parent->clear();
 			unset($this->parent);
 		}
 
-		if (isset($this->root)) {
+		if(isset($this->root)) {
 			$this->root->clear();
 			unset($this->root);
 		}
@@ -1653,7 +1653,7 @@ class agile_simple_html_dom
 		$this->root->_[HDOM_INFO_BEGIN] = -1;
 		$this->root->nodetype = HDOM_TYPE_ROOT;
 		$this->parent = $this->root;
-		if ($this->size > 0) { $this->char = $this->doc[0]; }
+		if($this->size > 0) { $this->char = $this->doc[0]; }
 	}
 
 	protected function parse()
@@ -1661,7 +1661,7 @@ class agile_simple_html_dom
 		while (true) {
 			// Read next tag if there is no text between current position and the
 			// next opening tag.
-			if (($s = $this->copy_until_char('<')) === '') {
+			if(($s = $this->copy_until_char('<')) === '') {
 				if($this->read_tag()) {
 					continue;
 				} else {
@@ -1683,12 +1683,12 @@ class agile_simple_html_dom
 
 		$charset = null;
 
-		if (function_exists('get_last_retrieve_url_contents_content_type')) {
+		if(function_exists('get_last_retrieve_url_contents_content_type')) {
 			$contentTypeHeader = get_last_retrieve_url_contents_content_type();
 			$success = preg_match('/charset=(.+)/', $contentTypeHeader, $matches);
-			if ($success) {
+			if($success) {
 				$charset = $matches[1];
-				if (is_object($debug_object)) {
+				if(is_object($debug_object)) {
 					$debug_object->debug_log(2,
 						'header content-type found charset of: '
 						. $charset
@@ -1697,33 +1697,33 @@ class agile_simple_html_dom
 			}
 		}
 
-		if (empty($charset)) {
+		if(empty($charset)) {
 			// https://www.w3.org/TR/html/document-metadata.html#statedef-http-equiv-content-type
 			$el = $this->root->find('meta[http-equiv=Content-Type]', 0, true);
 
-			if (!empty($el)) {
+			if(!empty($el)) {
 				$fullvalue = $el->content;
-				if (is_object($debug_object)) {
+				if(is_object($debug_object)) {
 					$debug_object->debug_log(2,
 						'meta content-type tag found'
 						. $fullvalue
 					);
 				}
 
-				if (!empty($fullvalue)) {
+				if(!empty($fullvalue)) {
 					$success = preg_match(
 						'/charset=(.+)/i',
 						$fullvalue,
 						$matches
 					);
 
-					if ($success) {
+					if($success) {
 						$charset = $matches[1];
 					} else {
 						// If there is a meta tag, and they don't specify the
 						// character set, research says that it's typically
 						// ISO-8859-1
-						if (is_object($debug_object)) {
+						if(is_object($debug_object)) {
 							$debug_object->debug_log(2,
 								'meta content-type tag couldn\'t be parsed. using iso-8859 default.'
 							);
@@ -1735,20 +1735,20 @@ class agile_simple_html_dom
 			}
 		}
 
-		if (empty($charset)) {
+		if(empty($charset)) {
 			// https://www.w3.org/TR/html/document-metadata.html#character-encoding-declaration
-			if ($meta = $this->root->find('meta[charset]', 0)) {
+			if($meta = $this->root->find('meta[charset]', 0)) {
 				$charset = $meta->charset;
-				if (is_object($debug_object)) {
+				if(is_object($debug_object)) {
 					$debug_object->debug_log(2, 'meta charset: ' . $charset);
 				}
 			}
 		}
 
-		if (empty($charset)) {
+		if(empty($charset)) {
 			// Try to guess the charset based on the content
 			// Requires Multibyte String (mbstring) support (optional)
-			if (function_exists('mb_detect_encoding')) {
+			if(function_exists('mb_detect_encoding')) {
 				/**
 				 * mb_detect_encoding() is not intended to distinguish between
 				 * charsets, especially single-byte charsets. Its primary
@@ -1768,47 +1768,47 @@ class agile_simple_html_dom
 					array( 'UTF-8', 'CP1252', 'ISO-8859-1' )
 				);
 
-				if ($encoding === 'CP1252' || $encoding === 'ISO-8859-1') {
+				if($encoding === 'CP1252' || $encoding === 'ISO-8859-1') {
 					// Due to a limitation of mb_detect_encoding
 					// 'CP1251'/'ISO-8859-5' will be detected as
 					// 'CP1252'/'ISO-8859-1'. This will cause iconv to fail, in
 					// which case we can simply assume it is the other charset.
-					if (!@iconv('CP1252', 'UTF-8', $this->doc)) {
+					if(!@iconv('CP1252', 'UTF-8', $this->doc)) {
 						$encoding = 'CP1251';
 					}
 				}
 
-				if ($encoding !== false) {
+				if($encoding !== false) {
 					$charset = $encoding;
-					if (is_object($debug_object)) {
+					if(is_object($debug_object)) {
 						$debug_object->debug_log(2, 'mb_detect: ' . $charset);
 					}
 				}
 			}
 		}
 
-		if (empty($charset)) {
+		if(empty($charset)) {
 			// Assume it's UTF-8 as it is the most likely charset to be used
 			$charset = 'UTF-8';
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'No match found, assume ' . $charset);
 			}
 		}
 
 		// Since CP1252 is a superset, if we get one of it's subsets, we want
 		// it instead.
-		if ((strtolower($charset) == 'iso-8859-1')
+		if((strtolower($charset) == 'iso-8859-1')
 			|| (strtolower($charset) == 'latin1')
 			|| (strtolower($charset) == 'latin-1')) {
 			$charset = 'CP1252';
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2,
 					'replacing ' . $charset . ' with CP1252 as its a superset'
 				);
 			}
 		}
 
-		if (is_object($debug_object)) {
+		if(is_object($debug_object)) {
 			$debug_object->debug_log(1, 'EXIT - ' . $charset);
 		}
 
@@ -1818,7 +1818,7 @@ class agile_simple_html_dom
 	protected function read_tag()
 	{
 		// Set end position if no further tags found
-		if ($this->char !== '<') {
+		if($this->char !== '<') {
 			$this->root->_[HDOM_INFO_END] = $this->cursor;
 			return false;
 		}
@@ -1827,7 +1827,7 @@ class agile_simple_html_dom
 		$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 
 		// end tag
-		if ($this->char === '/') {
+		if($this->char === '/') {
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 
 			// Skip whitespace in end tags (i.e. in "</   html>")
@@ -1835,7 +1835,7 @@ class agile_simple_html_dom
 			$tag = $this->copy_until_char('>');
 
 			// Skip attributes in end tags
-			if (($pos = strpos($tag, ' ')) !== false) {
+			if(($pos = strpos($tag, ' ')) !== false) {
 				$tag = substr($tag, 0, $pos);
 			}
 
@@ -1844,10 +1844,10 @@ class agile_simple_html_dom
 
 			// The end tag is supposed to close the parent tag. Handle situations
 			// when it doesn't
-			if ($parent_lower !== $tag_lower) {
+			if($parent_lower !== $tag_lower) {
 				// Parent tag does not have to be closed necessarily (optional closing tag)
 				// Current tag is a block tag, so it may close an ancestor
-				if (isset($this->optional_closing_tags[$parent_lower])
+				if(isset($this->optional_closing_tags[$parent_lower])
 					&& isset($this->block_tags[$tag_lower])) {
 
 					$this->parent->_[HDOM_INFO_END] = 0;
@@ -1862,17 +1862,17 @@ class agile_simple_html_dom
 					}
 
 					// If we don't have a match add current tag as text node
-					if (strtolower($this->parent->tag) !== $tag_lower) {
+					if(strtolower($this->parent->tag) !== $tag_lower) {
 						$this->parent = $org_parent; // restore origonal parent
 
-						if ($this->parent->parent) {
+						if($this->parent->parent) {
 							$this->parent = $this->parent->parent;
 						}
 
 						$this->parent->_[HDOM_INFO_END] = $this->cursor;
 						return $this->as_text_node($tag);
 					}
-				} elseif (($this->parent->parent)
+				} elseif(($this->parent->parent)
 					&& isset($this->block_tags[$tag_lower])
 				) {
 					// Grandparent exists and current tag is a block tag, so our
@@ -1889,12 +1889,12 @@ class agile_simple_html_dom
 					}
 
 					// If we don't have a match add current tag as text node
-					if (strtolower($this->parent->tag) !== $tag_lower) {
+					if(strtolower($this->parent->tag) !== $tag_lower) {
 						$this->parent = $org_parent; // restore origonal parent
 						$this->parent->_[HDOM_INFO_END] = $this->cursor;
 						return $this->as_text_node($tag);
 					}
-				} elseif (($this->parent->parent)
+				} elseif(($this->parent->parent)
 					&& strtolower($this->parent->parent->tag) === $tag_lower
 				) { // Grandparent exists and current tag closes it
 					$this->parent->_[HDOM_INFO_END] = 0;
@@ -1907,7 +1907,7 @@ class agile_simple_html_dom
 			// Set end position of parent tag to current cursor position
 			$this->parent->_[HDOM_INFO_END] = $this->cursor;
 
-			if ($this->parent->parent) {
+			if($this->parent->parent) {
 				$this->parent = $this->parent->parent;
 			}
 
@@ -1926,10 +1926,10 @@ class agile_simple_html_dom
 		// <!DOCTYPE html>
 		// <![CDATA[ ... ]]>
 		// <!-- Comment -->
-		if (isset($tag[0]) && $tag[0] === '!') {
+		if(isset($tag[0]) && $tag[0] === '!') {
 			$node->_[HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until_char('>');
 
-			if (isset($tag[2]) && $tag[1] === '-' && $tag[2] === '-') { // Comment ("<!--")
+			if(isset($tag[2]) && $tag[1] === '-' && $tag[2] === '-') { // Comment ("<!--")
 				$node->nodetype = HDOM_TYPE_COMMENT;
 				$node->tag = 'comment';
 			} else { // Could be doctype or CDATA but we don't care
@@ -1937,7 +1937,7 @@ class agile_simple_html_dom
 				$node->tag = 'unknown';
 			}
 
-			if ($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
+			if($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
 
 			$this->link_nodes($node, true);
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
@@ -1947,7 +1947,7 @@ class agile_simple_html_dom
 		// The start tag cannot contain another start tag, if so add as text
 		// i.e. "<<html>"
 		//php8fix: operator precedence bug — $pos was receiving boolean instead of int offset
-		if (($pos = strpos($tag, '<')) !== false) {
+		if(($pos = strpos($tag, '<')) !== false) {
 			$tag = '<' . substr($tag, 0, -1);
 			$node->_[HDOM_INFO_TEXT] = $tag;
 			$this->link_nodes($node, false);
@@ -1956,17 +1956,17 @@ class agile_simple_html_dom
 		}
 
 		// Handle invalid tag names (i.e. "<html#doc>")
-		if (!preg_match('/^\w[\w:-]*$/', $tag)) {
+		if(!preg_match('/^\w[\w:-]*$/', $tag)) {
 			$node->_[HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until('<>');
 
 			// Next char is the beginning of a new tag, don't touch it.
-			if ($this->char === '<') {
+			if($this->char === '<') {
 				$this->link_nodes($node, false);
 				return true;
 			}
 
 			// Next char closes current tag, add and be done with it.
-			if ($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
+			if($this->char === '>') { $node->_[HDOM_INFO_TEXT] .= '>'; }
 			$this->link_nodes($node, false);
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 			return true;
@@ -1978,7 +1978,7 @@ class agile_simple_html_dom
 		$node->tag = ($this->lowercase) ? $tag_lower : $tag;
 
 		// handle optional closing tags
-		if (isset($this->optional_closing_tags[$tag_lower])) {
+		if(isset($this->optional_closing_tags[$tag_lower])) {
 			// Traverse ancestors to close all optional closing tags
 			while (isset($this->optional_closing_tags[$tag_lower][strtolower($this->parent->tag)])) {
 				$this->parent->_[HDOM_INFO_END] = 0;
@@ -1997,11 +1997,11 @@ class agile_simple_html_dom
 			// Everything until the first equal sign should be the attribute name
 			$name = $this->copy_until($this->token_equal);
 
-			if ($name === '' && $this->char !== null && $space[0] === '') {
+			if($name === '' && $this->char !== null && $space[0] === '') {
 				break;
 			}
 
-			if ($guard === $this->pos) { // Escape infinite loop
+			if($guard === $this->pos) { // Escape infinite loop
 				$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 				continue;
 			}
@@ -2010,7 +2010,7 @@ class agile_simple_html_dom
 
 			// handle endless '<'
 			// Out of bounds before the tag ended
-			if ($this->pos >= $this->size - 1 && $this->char !== '>') {
+			if($this->pos >= $this->size - 1 && $this->char !== '>') {
 				$node->nodetype = HDOM_TYPE_TEXT;
 				$node->_[HDOM_INFO_END] = 0;
 				$node->_[HDOM_INFO_TEXT] = '<' . $tag . $space[0] . $name;
@@ -2021,7 +2021,7 @@ class agile_simple_html_dom
 
 			// handle mismatch '<'
 			// Attributes cannot start after opening tag
-			if ($this->doc[$this->pos - 1] == '<') {
+			if($this->doc[$this->pos - 1] == '<') {
 				$node->nodetype = HDOM_TYPE_TEXT;
 				$node->tag = 'text';
 				$node->attr = array();
@@ -2037,22 +2037,22 @@ class agile_simple_html_dom
 				return true;
 			}
 
-			if ($name !== '/' && $name !== '') { // this is a attribute name
+			if($name !== '/' && $name !== '') { // this is a attribute name
 				// [1] Whitespace after attribute name
 				$space[1] = $this->copy_skip($this->token_blank);
 
 				$name = $this->restore_noise($name); // might be a noisy name
 
-				if ($this->lowercase) { $name = strtolower($name); }
+				if($this->lowercase) { $name = strtolower($name); }
 
-				if ($this->char === '=') { // attribute with value
+				if($this->char === '=') { // attribute with value
 					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 					$this->parse_attr($node, $name, $space); // get attribute value
 				} else {
 					//no value attr: nowrap, checked selected...
 					$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
 					$node->attr[$name] = true;
-					if ($this->char != '>') { $this->char = $this->doc[--$this->pos]; } // prev
+					if($this->char != '>') { $this->char = $this->doc[--$this->pos]; } // prev
 				}
 
 				$node->_[HDOM_INFO_SPACE][] = $space;
@@ -2072,12 +2072,12 @@ class agile_simple_html_dom
 		$node->_[HDOM_INFO_ENDSPACE] = $space[0];
 
 		// handle empty tags (i.e. "<div/>")
-		if ($this->copy_until_char('>') === '/') {
+		if($this->copy_until_char('>') === '/') {
 			$node->_[HDOM_INFO_ENDSPACE] .= '/';
 			$node->_[HDOM_INFO_END] = 0;
 		} else {
 			// reset parent
-			if (!isset($this->self_closing_tags[strtolower($node->tag)])) {
+			if(!isset($this->self_closing_tags[strtolower($node->tag)])) {
 				$this->parent = $node;
 			}
 		}
@@ -2087,7 +2087,7 @@ class agile_simple_html_dom
 		// If it's a BR tag, we need to set it's text to the default text.
 		// This way when we see it in plaintext, we can generate formatting that the user wants.
 		// since a br tag never has sub nodes, this works well.
-		if ($node->tag === 'br') {
+		if($node->tag === 'br') {
 			$node->_[HDOM_INFO_INNER] = $this->default_br_text;
 		}
 
@@ -2098,7 +2098,7 @@ class agile_simple_html_dom
 	{
 		$is_duplicate = isset($node->attr[$name]);
 
-		if (!$is_duplicate) // Copy whitespace between "=" and value
+		if(!$is_duplicate) // Copy whitespace between "=" and value
 			$space[2] = $this->copy_skip($this->token_blank);
 
 		switch ($this->char) {
@@ -2128,11 +2128,11 @@ class agile_simple_html_dom
 
 		// PaperG: If this is a "class" selector, lets get rid of the preceeding
 		// and trailing space since some people leave it in the multi class case.
-		if ($name === 'class') {
+		if($name === 'class') {
 			$value = trim($value);
 		}
 
-		if (!$is_duplicate) {
+		if(!$is_duplicate) {
 			$node->_[HDOM_INFO_QUOTE][] = $quote_type;
 			$node->attr[$name] = $value;
 		}
@@ -2142,7 +2142,7 @@ class agile_simple_html_dom
 	{
 		$node->parent = $this->parent;
 		$this->parent->nodes[] = $node;
-		if ($is_child) {
+		if($is_child) {
 			$this->parent->children[] = $node;
 		}
 	}
@@ -2169,7 +2169,7 @@ class agile_simple_html_dom
 		$len = strspn($this->doc, $chars, $pos);
 		$this->pos += $len;
 		$this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
-		if ($len === 0) { return ''; }
+		if($len === 0) { return ''; }
 		return substr($this->doc, $pos, $len);
 	}
 
@@ -2184,16 +2184,16 @@ class agile_simple_html_dom
 
 	protected function copy_until_char($char)
 	{
-		if ($this->char === null) { return ''; }
+		if($this->char === null) { return ''; }
 
-		if (($pos = strpos($this->doc, $char, $this->pos)) === false) {
+		if(($pos = strpos($this->doc, $char, $this->pos)) === false) {
 			$ret = substr($this->doc, $this->pos, $this->size - $this->pos);
 			$this->char = null;
 			$this->pos = $this->size;
 			return $ret;
 		}
 
-		if ($pos === $this->pos) { return ''; }
+		if($pos === $this->pos) { return ''; }
 
 		$pos_old = $this->pos;
 		$this->char = $this->doc[$pos];
@@ -2204,7 +2204,7 @@ class agile_simple_html_dom
 	protected function remove_noise($pattern, $remove_tag = false)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		$count = preg_match_all(
 			$pattern,
@@ -2216,7 +2216,7 @@ class agile_simple_html_dom
 		for ($i = $count - 1; $i > -1; --$i) {
 			$key = '___noise___' . sprintf('% 5d', count($this->noise) + 1000);
 
-			if (is_object($debug_object)) {
+			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'key is: ' . $key);
 			}
 
@@ -2228,7 +2228,7 @@ class agile_simple_html_dom
 		// reset the length of content
 		$this->size = strlen($this->doc);
 
-		if ($this->size > 0) {
+		if($this->size > 0) {
 			$this->char = $this->doc[0];
 		}
 	}
@@ -2236,7 +2236,7 @@ class agile_simple_html_dom
 	function restore_noise($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		while (($pos = strpos($text, '___noise___')) !== false) {
 			// Sometimes there is a broken piece of markup, and we don't GET the
@@ -2245,7 +2245,7 @@ class agile_simple_html_dom
 			// todo: "___noise___1000" (or any number with four or more digits)
 			// in the DOM causes an infinite loop which could be utilized by
 			// malicious software
-			if (strlen($text) > $pos + 15) {
+			if(strlen($text) > $pos + 15) {
 				$key = '___noise___'
 				. $text[$pos + 11]
 				. $text[$pos + 12]
@@ -2253,11 +2253,11 @@ class agile_simple_html_dom
 				. $text[$pos + 14]
 				. $text[$pos + 15];
 
-				if (is_object($debug_object)) {
+				if(is_object($debug_object)) {
 					$debug_object->debug_log(2, 'located key of: ' . $key);
 				}
 
-				if (isset($this->noise[$key])) {
+				if(isset($this->noise[$key])) {
 					$text = substr($text, 0, $pos)
 					. $this->noise[$key]
 					. substr($text, $pos + 16);
@@ -2282,10 +2282,10 @@ class agile_simple_html_dom
 	function search_noise($text)
 	{
 		global $debug_object;
-		if (is_object($debug_object)) { $debug_object->debug_log_entry(1); }
+		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
 		foreach($this->noise as $noiseElement) {
-			if (strpos($noiseElement, $text) !== false) {
+			if(strpos($noiseElement, $text) !== false) {
 				return $noiseElement;
 			}
 		}

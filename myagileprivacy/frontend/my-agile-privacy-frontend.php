@@ -5,6 +5,34 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	exit('Not allowed.');
 }
 
+// Polyfill for hash_equals() — available natively from PHP 5.6.0.
+if( !function_exists( 'hash_equals' ) )
+{
+	function hash_equals( $known_string, $user_string )
+	{
+		if( !is_string( $known_string ) || !is_string( $user_string ) )
+		{
+			return false;
+		}
+
+		$known_length = strlen( $known_string );
+
+		if( $known_length !== strlen( $user_string ) )
+		{
+			return false;
+		}
+
+		$result = 0;
+
+		for ( $i = 0; $i < $known_length; $i++ )
+		{
+			$result |= ord( $known_string[ $i ] ) ^ ord( $user_string[ $i ] );
+		}
+
+		return $result === 0;
+	}
+}
+
 /**
  * The frontend-specific functionality of the plugin.
  *
@@ -669,8 +697,8 @@ final class MyAgilePrivacyFrontend {
 					$counter++;
 				}
 
-				$cookie_list_html .= "<p><b>".$value['post_title']."</b><br>";
-				$cookie_list_html .= $value['post_content']."</p>";
+				$cookie_list_html .= "<p><b>".esc_html( $value['post_title'] )."</b><br>";
+				$cookie_list_html .= wp_kses_post( $value['post_content'] )."</p>";
 			}
 		}
 
@@ -715,7 +743,7 @@ final class MyAgilePrivacyFrontend {
 					$lang = $currentAndSupportedLanguages['current_language'];
 
 					$post_custom = get_post_custom( $the_id );
-					$_map_translations_decoded = ( isset( $post_custom["_map_translations"][0] ) ) ? json_decode( $post_custom["_map_translations"][0], true )  : null;
+					$_map_translations_decoded = ( isset( $post_custom["_map_translations"][0] ) ) ? wp_unslash( json_decode( $post_custom["_map_translations"][0], true ) )  : null;
 
 					if( $_map_translations_decoded )
 					{
@@ -941,13 +969,6 @@ final class MyAgilePrivacyFrontend {
 		    	$skip_json_cache = true;
 		    }
 
-		    if( isset( $the_settings['pa'] ) &&
-		        $the_settings['pa'] == 1 &&
-		        $the_settings['scan_mode'] == 'learning_mode' )
-		    {
-		    	$skip_json_cache = true;
-		    }
-
 			if( $rconfig &&
 				isset( $rconfig['skip_json_cache'] ) &&
 				$rconfig['skip_json_cache'] == 1
@@ -963,6 +984,12 @@ final class MyAgilePrivacyFrontend {
 			{
 				$skip_json_cache = true;
 			}
+
+		    //skip cache for logged in admin users
+		    if( current_user_can( 'manage_options' ) )
+		    {
+		    	$skip_json_cache = true;
+		    }
 
 		    if( MAP_DEV_MODE )
 		    {
@@ -1317,7 +1344,7 @@ final class MyAgilePrivacyFrontend {
 	//add script attributes
 	public function add_script_attributes( $tag, $handle, $src )
 	{
-	    if ( strpos( $handle, $this->plugin_name ) !== false )
+	    if( strpos( $handle, $this->plugin_name ) !== false )
 	    {
 	        $tag = str_replace( ' src=', ' ' . MAP_INLINE_SCRIPT_EXTRA_ATTRS . ' src=', $tag );
 	    }
@@ -1375,12 +1402,13 @@ final class MyAgilePrivacyFrontend {
 			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array( 'jquery' ), $this->version, false );
 
-			if ( has_filter( 'script_loader_tag' ) )
+			if( has_filter( 'script_loader_tag' ) )
 			{
 				add_filter( 'script_loader_tag', array( $this, 'add_script_attributes' ), 10, 3 );
 			}
 
-			wp_localize_script( $this->plugin_name, 'map_cookiebar_settings', MyAgilePrivacy::get_json_settings() );
+			$json_settings = $this->getJsonSettings();
+			wp_localize_script( $this->plugin_name, 'map_cookiebar_settings', $json_settings );
 
 			$cookie_process_delayed_mode = false;
 
@@ -1402,15 +1430,8 @@ final class MyAgilePrivacyFrontend {
 				$force_js_learning_mode = 1;
 			}
 
-			wp_localize_script( $this->plugin_name, 'map_ajax',
-				array(
-					'ajax_url' 						=> 	admin_url( 'admin-ajax.php' ),
-					'api_url'                       =>  plugin_dir_url( dirname( __FILE__ ) ) . 'api/api.php',
-					'security' 						=> 	wp_create_nonce( 'map_js_shield_callback' ),
-					'force_js_learning_mode' 		=> 	$force_js_learning_mode,
-					'scanner_compatibility_mode'	=> 	$the_settings['scanner_compatibility_mode'],
-					'cookie_process_delayed_mode'	=> 	intval( $cookie_process_delayed_mode ),
-			) );
+			$map_ajax_settings = $this->getMapAjaxSettings( $force_js_learning_mode, intval( $cookie_process_delayed_mode ) );
+			wp_localize_script( $this->plugin_name, 'map_ajax', $map_ajax_settings );
 
 			if(
 				isset( $the_settings['pa'] ) &&
@@ -1434,7 +1455,7 @@ final class MyAgilePrivacyFrontend {
 	{
 		// Determine the inline script ID reliably.
 		$inline_id = '';
-		if ( isset( $attributes['id'] ) && is_string( $attributes['id'] ) )
+		if( isset( $attributes['id'] ) && is_string( $attributes['id'] ) )
 		{
 			$inline_id = $attributes['id'];
 		}
@@ -1446,7 +1467,7 @@ final class MyAgilePrivacyFrontend {
 		// Only target inline scripts tied to this handle.
 		// WP uses "{$handle}-js-extra|before|after".
 		$prefix = $this->plugin_name . '-js-';
-		if ( $inline_id === '' || strpos( $inline_id, $prefix ) !== 0 )
+		if( $inline_id === '' || strpos( $inline_id, $prefix ) !== 0 )
 		{
 			return $attributes;
 		}
@@ -1457,7 +1478,7 @@ final class MyAgilePrivacyFrontend {
 		// Merge without overwriting existing attributes.
 		foreach ( $extra as $name => $value )
 		{
-			if ( array_key_exists( $name, $attributes ) )
+			if( array_key_exists( $name, $attributes ) )
 			{
 				continue;
 			}
@@ -1485,19 +1506,19 @@ final class MyAgilePrivacyFrontend {
 			foreach( $matches as $m )
 			{
 				$name = strtolower( trim( $m[1] ) );
-				if ( $name === '' )
+				if( $name === '' )
 				{
 					continue;
 				}
 
-				if ( isset( $m[2] ) && $m[2] !== '' )
+				if( isset( $m[2] ) && $m[2] !== '' )
 				{
 					$val = trim( $m[2] );
 
 					// Strip surrounding quotes if present.
 					$first = substr( $val, 0, 1 );
 					$last  = substr( $val, -1 );
-					if ( ( $first === '"' && $last === '"' ) || ( $first === "'" && $last === "'" ) )
+					if( ( $first === '"' && $last === '"' ) || ( $first === "'" && $last === "'" ) )
 					{
 						$val = substr( $val, 1, -1 );
 					}
@@ -1996,24 +2017,156 @@ final class MyAgilePrivacyFrontend {
 	{
 		static $already_run = false;
 
-		if ( $already_run )
+		if( $already_run )
 		{
 			return;
 		}
 
 		$already_run = true;
 
-		if ( ob_get_level() < 1 )
+		if( ob_get_level() < 1 )
 		{
 			return;
 		}
 
-		if ( ob_get_length() === false || ob_get_length() < 1 )
+		if( ob_get_length() === false || ob_get_length() < 1 )
 		{
 			return;
 		}
 
 		ob_end_flush();
+	}
+
+	/**
+	 * get map_cookiebar_settings and map_ajax string
+	 * @access   public
+	 */
+	public function getJsonSettings()
+	{
+		$the_settings = MyAgilePrivacy::get_settings();
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		$skip_json_cache = false;
+
+	    if( !( isset( $the_settings['pa'] ) &&
+	    	$the_settings['pa'] == 1 ) )
+	    {
+	    	$skip_json_cache = true;
+	    }
+
+		if( $rconfig &&
+			isset( $rconfig['skip_json_cache'] ) &&
+			$rconfig['skip_json_cache'] == 1
+		)
+		{
+			$skip_json_cache = true;
+		}
+
+	    //skip cache for logged in admin users
+	    if( current_user_can( 'manage_options' ) )
+	    {
+	    	$skip_json_cache = true;
+	    }
+
+	    if( MAP_DEV_MODE )
+	    {
+	    	$skip_json_cache = true;
+	    }
+
+	    $lang      = MyAgilePrivacy::getCurrentLang4Char();
+	    $blog_id   = is_multisite() ? get_current_blog_id() : 1;
+	    $scheme    = is_ssl() ? 'https' : 'http';
+
+	    $cache_key = 'json_settings_script_' . $lang. '_' .$blog_id.'_'.$scheme;
+
+	    if( !$skip_json_cache )
+	    {
+		    $cached = MyAgilePrivacy::get_json_cache( $cache_key );
+
+		    if( $cached !== false )
+		    {
+		        return $cached;
+		    }
+	    }
+
+	    $fresh_data = MyAgilePrivacy::get_json_settings();
+
+	    if( !$skip_json_cache )
+	    {
+	    	MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data );
+	    }
+
+	    return $fresh_data;
+	}
+
+	/**
+	 * Get map_ajax settings array, with JSON cache support
+	 * @access public
+	 */
+	public function getMapAjaxSettings( $force_js_learning_mode=0, $cookie_process_delayed_mode=0 )
+	{
+	    $the_settings = MyAgilePrivacy::get_settings();
+	    $rconfig      = MyAgilePrivacy::get_rconfig();
+	    $skip_json_cache = false;
+
+	    if( !( isset( $the_settings['pa'] ) &&
+	        $the_settings['pa'] == 1 ) )
+	    {
+	        $skip_json_cache = true;
+	    }
+
+	    if( $rconfig &&
+	        isset( $rconfig['skip_json_cache'] ) &&
+	        $rconfig['skip_json_cache'] == 1
+	    )
+	    {
+	        $skip_json_cache = true;
+	    }
+
+	    //skip cache for logged in admin users
+	    if( current_user_can( 'manage_options' ) )
+	    {
+	    	$skip_json_cache = true;
+	    }
+
+	    if( MAP_DEV_MODE )
+	    {
+	        $skip_json_cache = true;
+	    }
+
+	    $lang      = MyAgilePrivacy::getCurrentLang4Char();
+	    $blog_id   = is_multisite() ? get_current_blog_id() : 1;
+	    $scheme    = is_ssl() ? 'https' : 'http';
+	    $cache_key = 'json_ajax_script_' . $lang . '_' . $blog_id . '_' . $scheme;
+
+	    if( !$skip_json_cache )
+	    {
+	        $cached = MyAgilePrivacy::get_json_cache( $cache_key );
+	        if( $cached !== false )
+	        {
+	            return $cached;
+	        }
+	    }
+
+	    $force_js_learning_mode      = 0; // adjust from your existing logic
+	    $cookie_process_delayed_mode = 0; // adjust from your existing logic
+
+	    $fresh_data = array(
+	        'ajax_url'                    => admin_url( 'admin-ajax.php' ),
+	        'api_url'                     => plugin_dir_url( dirname( __FILE__ ) ) . 'api/api.php',
+	        'api_token'                   => ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '',
+	        'security'                    => wp_create_nonce( 'map_js_shield_callback' ),
+	        'force_js_learning_mode'      => $force_js_learning_mode,
+	        'scanner_compatibility_mode'  => $the_settings['scanner_compatibility_mode'],
+	        'cookie_process_delayed_mode' => intval( $cookie_process_delayed_mode ),
+	    );
+
+	    if( !$skip_json_cache )
+	    {
+	        MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data );
+	    }
+
+	    return $fresh_data;
 	}
 
 	/**
@@ -2033,13 +2186,6 @@ final class MyAgilePrivacyFrontend {
 	    	$skip_json_cache = true;
 	    }
 
-	    if( isset( $the_settings['pa'] ) &&
-	        $the_settings['pa'] == 1 &&
-	        $the_settings['scan_mode'] == 'learning_mode' )
-	    {
-	    	$skip_json_cache = true;
-	    }
-
 		if( $rconfig &&
 			isset( $rconfig['skip_json_cache'] ) &&
 			$rconfig['skip_json_cache'] == 1
@@ -2047,6 +2193,12 @@ final class MyAgilePrivacyFrontend {
 		{
 			$skip_json_cache = true;
 		}
+
+	    //skip cache for logged in admin users
+	    if( current_user_can( 'manage_options' ) )
+	    {
+	    	$skip_json_cache = true;
+	    }
 
 	    if( MAP_DEV_MODE )
 	    {
@@ -2404,13 +2556,18 @@ final class MyAgilePrivacyFrontend {
 		    $allow_js_fast_callback = 0;
 		}
 
-	    $cookie_domain_path = null;
+	    $cookie_domain = null;
 
 	    if( isset( $rconfig ) &&
-	        isset( $rconfig['cookie_domain_path'] ) &&
-	        $rconfig['cookie_domain_path'] )
+	        isset( $rconfig['cookie_domain'] ) &&
+	        $rconfig['cookie_domain'] )
 	    {
-	        $cookie_domain_path = sanitize_text_field( $rconfig['cookie_domain_path'] );
+	        $candidate = sanitize_text_field( $rconfig['cookie_domain'] );
+
+	        if( preg_match( '/^\.?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i', $candidate ) )
+	        {
+	            $cookie_domain = $candidate;
+	        }
 	    }
 
 
@@ -2459,7 +2616,7 @@ final class MyAgilePrivacyFrontend {
 	        {
 	            $the_script = plugin_dir_url(__FILE__).'js/youtube_enforced_privacy.js';
 
-	            $head_script .= '<script class="map_advanced_shield_youtube_enforced_privacy" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	            $head_script .= '<script class="map_advanced_shield_youtube_enforced_privacy" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	            $blocks['enqueue'][] = $the_script;
 	        }
@@ -2470,7 +2627,7 @@ final class MyAgilePrivacyFrontend {
 	            {
 	                $the_script = plugin_dir_url(__FILE__).'../dev/dev.cookie-shield.js';
 
-	                $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	                $blocks['enqueue'][] = $the_script;
 
@@ -2512,7 +2669,7 @@ final class MyAgilePrivacyFrontend {
 	                {
 	                    $the_script = $base_ref.'test.cookie-shield.js';
 
-	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	                    $blocks['enqueue'][] = $the_script;
 
@@ -2535,7 +2692,7 @@ final class MyAgilePrivacyFrontend {
 
 	                    $the_script = $base_ref.$script_filename;
 
-	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	                    $blocks['enqueue'][] = $the_script;
 
@@ -2550,7 +2707,7 @@ final class MyAgilePrivacyFrontend {
 	            {
 	                $the_script = plugin_dir_url(__FILE__).'../dev/MyAgilePrivacyIabTCF/dev.MyAgilePrivacyIabTCF.js';
 
-	                $head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                $head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	                $blocks['enqueue'][] = $the_script;
 
@@ -2591,7 +2748,7 @@ final class MyAgilePrivacyFrontend {
 
 	                $the_script = $base_ref.$script_filename;
 
-	                $head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.$the_script.'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                $head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
 	                $blocks['enqueue'][] = $the_script;
 
@@ -2677,7 +2834,7 @@ final class MyAgilePrivacyFrontend {
 	        'frontend_regulation'                                       => $frontend_regulation,
 	        'send_ga4_event_on_consent_change'                          => $send_ga4_event_on_consent_change,
 	        'allow_js_fast_callback'                                    => $allow_js_fast_callback,
-	        'cookie_domain_path'                                    	=> $cookie_domain_path,
+	        'cookie_domain'                                    			=> $cookie_domain,
 	        'iab_vendor_count'											=> $iab_vendor_count,
 	    );
 
@@ -2685,6 +2842,19 @@ final class MyAgilePrivacyFrontend {
 	    {
 	        $map_full_config['load_iab_tcf'] = true;
 	        $map_full_config['iab_tcf_script_url'] = $iab_tcf_script_url;
+
+	        if( !empty( $cookie_domain ) )
+	        {
+	            $plugin_url  = plugin_dir_url( dirname( __FILE__ ) );
+	            $parsed      = parse_url( $plugin_url );
+	            if( is_array( $parsed ) )
+	            {
+	                $scheme      = isset( $parsed['scheme'] ) ? $parsed['scheme'] : 'https';
+	                $path        = isset( $parsed['path'] )   ? $parsed['path']   : '/';
+	                $bridge_base = $scheme . '://' . $cookie_domain . $path;
+	                $map_full_config['iab_bridge_url'] = $bridge_base . 'api/iab-bridge.php';
+	            }
+	        }
 	    }
 
 	    if( isset( $the_settings ) &&
@@ -2753,7 +2923,7 @@ final class MyAgilePrivacyFrontend {
 
 	    $map_full_config['cookie_api_key_not_to_block'] = $cookie_api_key_not_to_block;
 
-	    $base_config_script .= 'var map_full_config='.json_encode( $map_full_config ).';'.PHP_EOL;
+	    $base_config_script .= 'var map_full_config='.json_encode( $map_full_config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ).';'.PHP_EOL;
 
 	    if( $map_full_config['enable_clarity_cmode'] )
 	    {
@@ -2781,7 +2951,7 @@ final class MyAgilePrivacyFrontend {
 	                    $base_config_script .= 'var alt_mpx_settings='.json_encode( array(
 	                        'caller'                 => 'MAP',
 	                        'map_ga_consent_checker' => true,
-	                    )).';'.PHP_EOL;
+	                    ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ).';'.PHP_EOL;
 	                    $base_config_script .= "setTimeout( function() {
 	                        if( typeof window.MyAgilePixelProxyBeacon !== 'undefined' ) window.MyAgilePixelProxyBeacon( alt_mpx_settings );
 	                    }, 500 );".PHP_EOL;
@@ -2806,7 +2976,16 @@ final class MyAgilePrivacyFrontend {
 	            $base_config_script .= 'window.dataLayer = window.dataLayer || [];'.PHP_EOL;
 	            $base_config_script .= 'function gtag(){dataLayer.push(arguments);}'.PHP_EOL;
 	            $base_config_script .= "gtag('set', 'developer_id.dY2ZhMm', true);".PHP_EOL;
-	            $base_config_script .= 'var gTagManagerConsentListeners = [];'.PHP_EOL;
+	            $base_config_script .= 'window.gTagManagerConsentListeners = window.gTagManagerConsentListeners || [];'.PHP_EOL;
+
+	            //stub for gTagManagerConsentListeners
+				$base_config_script .= 'window.MAP = window.MAP || {};' . PHP_EOL;
+				$base_config_script .= 'if( typeof window.MAP.googleTagManagerConsentListener !== "function" ) {' . PHP_EOL;
+				$base_config_script .= '    window.MAP.googleTagManagerConsentListener = function(cb) {' . PHP_EOL;
+				$base_config_script .= '        window.gTagManagerConsentListeners = window.gTagManagerConsentListeners || [];' . PHP_EOL;
+				$base_config_script .= '        window.gTagManagerConsentListeners.push(cb);' . PHP_EOL;
+				$base_config_script .= '    };' . PHP_EOL;
+				$base_config_script .= '}' . PHP_EOL;
 	        }
 	    }
 
@@ -2899,6 +3078,8 @@ final class MyAgilePrivacyFrontend {
 			}
 		}
 
+		$consumed_keys = array();
+
 		foreach( $auto_activate_keys as $k => $v )
 		{
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $v, true );
@@ -2949,6 +3130,8 @@ final class MyAgilePrivacyFrontend {
 
 								update_post_meta( $main_post_id, "_map_auto_detected", 1 );
 
+								$consumed_keys[] = $v;
+
 								if( $currentAndSupportedLanguages['with_multilang'] )
 								{
 									//no further actions
@@ -2962,6 +3145,12 @@ final class MyAgilePrivacyFrontend {
 			}
 		}
 
+		if( !empty( $consumed_keys ) )
+		{
+			$residual_keys = array_diff( $js_cookie_shield_detected_keys, $consumed_keys );
+			MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, implode( ',', $residual_keys ) );
+		}
+
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'end internal_save_detected_keys' );
 
 		return true;
@@ -2973,11 +3162,10 @@ final class MyAgilePrivacyFrontend {
 	 */
 	public function map_remote_save_detected_keys_callback()
 	{
-		$referral_url = wp_get_referer();
+		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
+		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		$valid_referral_url = wp_validate_redirect( $referral_url );
-
-		if( $valid_referral_url )
+		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
 		{
 			$success = false;
 
@@ -3004,11 +3192,10 @@ final class MyAgilePrivacyFrontend {
 	 */
 	public function map_missing_cookie_shield_callback()
 	{
-		$referral_url = wp_get_referer();
+		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
+		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		$valid_referral_url = wp_validate_redirect( $referral_url );
-
-		if( $valid_referral_url )
+		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
 		{
 			$success = false;
 
@@ -3052,8 +3239,36 @@ final class MyAgilePrivacyFrontend {
 
 					if( $missing_api_support == 1 )
 					{
-						$the_settings['missing_api_support'] = true;
-						$the_settings['missing_api_support_timestamp'] = strtotime( "now" );
+						$now             = time();
+						$window_duration = defined( 'HOUR_IN_SECONDS' ) ? HOUR_IN_SECONDS : 3600;
+						$threshold       = 5;
+
+						$count        = isset( $the_settings['missing_api_support_failures_count'] )        ? intval( $the_settings['missing_api_support_failures_count'] )        : 0;
+						$window_start = isset( $the_settings['missing_api_support_failures_window_start'] ) ? intval( $the_settings['missing_api_support_failures_window_start'] ) : 0;
+
+						// reset the window if it has expired or never started
+						if( $window_start === 0 || ( $now - $window_start ) > $window_duration )
+						{
+							$window_start = $now;
+							$count        = 0;
+						}
+
+						$count++;
+
+						if( $count >= $threshold )
+						{
+							// threshold reached: activate the lockout flag and reset the counter
+							$the_settings['missing_api_support']                       = true;
+							$the_settings['missing_api_support_timestamp']             = $now;
+							$the_settings['missing_api_support_failures_count']        = 0;
+							$the_settings['missing_api_support_failures_window_start'] = 0;
+						}
+						else
+						{
+							// below threshold: just update the window state
+							$the_settings['missing_api_support_failures_count']        = $count;
+							$the_settings['missing_api_support_failures_window_start'] = $window_start;
+						}
 
 						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 					}
@@ -3080,11 +3295,10 @@ final class MyAgilePrivacyFrontend {
 	 */
 	public function map_check_consent_mode_status_callback()
 	{
-		$referral_url = wp_get_referer();
+		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
+		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		$valid_referral_url = wp_validate_redirect( $referral_url );
-
-		if( $valid_referral_url )
+		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
 		{
 			$success = false;
 
@@ -3131,11 +3345,10 @@ final class MyAgilePrivacyFrontend {
 	 */
 	public function map_save_detected_keys_callback()
 	{
-		$referral_url = wp_get_referer();
+		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
+		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		$valid_referral_url = wp_validate_redirect( $referral_url );
-
-		if( $valid_referral_url )
+		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
 		{
 			$success = false;
 
@@ -3315,13 +3528,13 @@ final class MyAgilePrivacyFrontend {
 							$found = array_filter( $parse_config['scripts_src_block'],  function( $e, $the_key ) use ( $src ){
 
 							// If 'src' is not set or empty, discard this element
-							if ( empty( $e['src'] ) )
+							if( empty( $e['src'] ) )
 							{
 								return false;
 							}
 
 							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-							if ( !empty( $e['added_src'] ) )
+							if( !empty( $e['added_src'] ) )
 							{
 								$match_src       = ( strpos( $src, $e['src'] ) !== false );
 								$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
@@ -3436,13 +3649,13 @@ final class MyAgilePrivacyFrontend {
 					$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $src ){
 
 						// If 'src' is not set or empty, discard this element
-						if ( empty( $e['src'] ) )
+						if( empty( $e['src'] ) )
 						{
 							return false;
 						}
 
 						// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-						if ( !empty( $e['added_src'] ) )
+						if( !empty( $e['added_src'] ) )
 						{
 							$match_src       = ( strpos( $src, $e['src'] ) !== false );
 							$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
@@ -3462,13 +3675,13 @@ final class MyAgilePrivacyFrontend {
 						$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $data_src ){
 
 							// If 'src' is not set or empty, discard this element
-							if ( empty( $e['src'] ) )
+							if( empty( $e['src'] ) )
 							{
 								return false;
 							}
 
 							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-							if ( !empty( $e['added_src'] ) )
+							if( !empty( $e['added_src'] ) )
 							{
 								$match_src       = ( strpos( $data_src, $e['src'] ) !== false );
 								$match_added_src = ( strpos( $data_src, $e['added_src'] ) !== false );

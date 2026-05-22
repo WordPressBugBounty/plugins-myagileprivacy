@@ -63,7 +63,7 @@ final class MyAgilePrivacy {
 	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'calling map_plugin_activate' );
 
-		if ( !self::get_option( MAP_PLUGIN_ACTIVATION_DATE, null ) )
+		if( !self::get_option( MAP_PLUGIN_ACTIVATION_DATE, null ) )
 		{
 			self::update_option( MAP_PLUGIN_ACTIVATION_DATE, time() );
 		}
@@ -347,7 +347,7 @@ final class MyAgilePrivacy {
 						add_action( 'template_redirect', array( $plugin_frontend, 'map_buffer_start' ), $the_settings['scanner_start_hook_prio'] );
 
 						global $wp_version;
-						if ( version_compare( $wp_version, '6.9', '>=' ) )
+						if( version_compare( $wp_version, '6.9', '>=' ) )
 						{
 							add_action( 'shutdown', array( $plugin_frontend, 'map_buffer_end' ), 0 );
 						}
@@ -412,7 +412,6 @@ final class MyAgilePrivacy {
 		add_action( 'wp_footer', array( $plugin_admin, 'triggered_do_cron_sync' ) );
 
 		/* admin callback actions */
-		add_action( 'wp_ajax_nopriv_check_license_status', array( $plugin_admin, 'check_license_status' ) );
 		add_action( 'wp_ajax_check_license_status', array( $plugin_admin, 'check_license_status' ) );
 
 
@@ -453,10 +452,8 @@ final class MyAgilePrivacy {
 		add_action( 'admin_notices', array( $plugin_admin, 'inline_help_text_after_editor' ) );
 
 		//admin callback actions
-		add_action( 'wp_ajax_nopriv_update_admin_settings_form', array( $plugin_admin, 'update_admin_settings_form_callback' ) );
 		add_action( 'wp_ajax_update_admin_settings_form', array( $plugin_admin, 'update_admin_settings_form_callback' ) );
 
-		add_action( 'wp_ajax_nopriv_update_translations_form', array( $plugin_admin, 'update_translations_form_callback' ) );
 		add_action( 'wp_ajax_update_translations_form', array( $plugin_admin, 'update_translations_form_callback' ) );
 
 		//admin post actions
@@ -485,19 +482,19 @@ final class MyAgilePrivacy {
 				$rconfig['disable_cronjob'] == 1 ) )
 		{
 			//clean old daily event schedule if exists
-			if ( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_hook' ) )
+			if( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_hook' ) )
 			{
 				wp_clear_scheduled_hook( 'my_agile_privacy_do_cron_sync_hook' );
 			}
 
 			//clean old daily event schedule if exists
-			if ( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_once_day_hook' ) )
+			if( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_once_day_hook' ) )
 			{
 				wp_clear_scheduled_hook( 'my_agile_privacy_do_cron_sync_once_day_hook' );
 			}
 
 			//schedule an action if it's not already scheduled
-			if ( ! wp_next_scheduled( 'my_agile_privacy_do_cron_sync_twice_day_hook' ) )
+			if( ! wp_next_scheduled( 'my_agile_privacy_do_cron_sync_twice_day_hook' ) )
 			{
 				wp_schedule_event( time(), 'twicedaily', 'my_agile_privacy_do_cron_sync_twice_day_hook' );
 			}
@@ -505,19 +502,19 @@ final class MyAgilePrivacy {
 		else
 		{
 			//clean old daily event schedule if exists
-			if ( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_hook' ) )
+			if( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_hook' ) )
 			{
 				wp_clear_scheduled_hook( 'my_agile_privacy_do_cron_sync_hook' );
 			}
 
 			//clean twice a day event schedule if exists
-			if ( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_twice_day_hook' ) )
+			if( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_twice_day_hook' ) )
 			{
 				wp_clear_scheduled_hook( 'my_agile_privacy_do_cron_sync_twice_day_hook' );
 			}
 
 			//clean once a day event schedule if exists
-			if ( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_once_day_hook' ) )
+			if( wp_next_scheduled( 'my_agile_privacy_do_cron_sync_once_day_hook' ) )
 			{
 				wp_clear_scheduled_hook( 'my_agile_privacy_do_cron_sync_once_day_hook' );
 			}
@@ -528,7 +525,7 @@ final class MyAgilePrivacy {
 				$rconfig['disable_install_counter'] == 1 ) )
 		{
 			//schedule an action if it's not already scheduled
-			if ( !wp_next_scheduled( 'my_agile_privacy_do_cron_sync_install_counter' ) )
+			if( !wp_next_scheduled( 'my_agile_privacy_do_cron_sync_install_counter' ) )
 			{
 				wp_schedule_event( time(), 'daily', 'my_agile_privacy_do_cron_sync_install_counter' );
 			}
@@ -678,7 +675,7 @@ final class MyAgilePrivacy {
 	    $logic = null;
 
 	    // get logic validation criteria
-	    if (
+	    if(
 	    	strpos( $key, 'customer_area_' ) === 0  ||
 	    	strpos( $key, 'regulation_' ) === 0  ||
 	    	strpos( $key, 'site_features_' ) === 0 ||
@@ -746,6 +743,8 @@ final class MyAgilePrivacy {
 	            case 'completion_percentage':
 	            case 'last_update_timestamp':
 	            case 'dont_ask_license_code_timestamp':
+	            case 'missing_api_support_failures_count':
+	            case 'missing_api_support_failures_window_start':
 	                $logic = 'int';
 	                break;
 
@@ -829,11 +828,11 @@ final class MyAgilePrivacy {
 	    switch ( $logic )
 	    {
 	        case 'bool':
-	            if ( $value === 'true' || $value === true )
+	            if( $value === 'true' || $value === true )
 	            {
 	                $ret = true;
 	            }
-	            elseif ( $value === 'false' || $value === false )
+	            elseif( $value === 'false' || $value === false )
 	            {
 	                $ret = false;
 	            }
@@ -848,7 +847,7 @@ final class MyAgilePrivacy {
 	            break;
 
 	        case 'hexcolor':
-				if ( is_string( $value ) && preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
+				if( is_string( $value ) && preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
 	            {
 	                $ret = $value;
 	            }
@@ -865,7 +864,7 @@ final class MyAgilePrivacy {
 
 	        case 'html_trim':
 	            $ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
-	            if ( ! is_null( $ret ) ) {
+	            if( ! is_null( $ret ) ) {
 	                $ret = trim( $ret );
 	            }
 	            break;
@@ -1394,6 +1393,8 @@ final class MyAgilePrivacy {
 
 			'missing_api_support'						=> 	false,
 			'missing_api_support_timestamp'				=> 	null,
+			'missing_api_support_failures_count'		=>	0,
+			'missing_api_support_failures_window_start'	=>	0,
 
 
 		);
@@ -1656,14 +1657,14 @@ final class MyAgilePrivacy {
 		$hex = strtolower($hex);
 
 		//remove the leading "#"
-		if (strlen($hex) == 7 || strlen($hex) == 4)
+		if(strlen($hex) == 7 || strlen($hex) == 4)
 			$hex = substr($hex, -(strlen($hex) - 1));
 
 		// $hex like "1a7"
-		if (preg_match('/^[a-f0-9]{6}$/i', $hex))
+		if(preg_match('/^[a-f0-9]{6}$/i', $hex))
 			return '#'.$hex;
 		// $hex like "162a7b"
-		elseif (preg_match('/^[a-f0-9]{3}$/i', $hex))
+		elseif(preg_match('/^[a-f0-9]{3}$/i', $hex))
 			return '#'.$hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
 		//any other format
 		else
@@ -1797,7 +1798,7 @@ final class MyAgilePrivacy {
 		{
 			$local_filename_fullpath = $directory.$local_filename;
 
-			if ( is_file( $local_filename_fullpath ) )
+			if( is_file( $local_filename_fullpath ) )
 			{
 				return true;
 			}
@@ -1869,7 +1870,7 @@ final class MyAgilePrivacy {
 		{
 			if( $alt_local_filename )
 			{
-				if ( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age &&
+				if( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age &&
 					is_file( $local_alt_filename_fullpath ) && filemtime( $local_alt_filename_fullpath ) > $max_age
 				)
 				{
@@ -1880,7 +1881,7 @@ final class MyAgilePrivacy {
 			}
 			else
 			{
-				if ( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age )
+				if( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age )
 				{
 					//no download needed
 					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'check C : no download needed' );
@@ -1908,12 +1909,19 @@ final class MyAgilePrivacy {
 			return false;
 		}
 
-		if ( !function_exists( 'download_url' ) )
+		if( !function_exists( 'download_url' ) )
 		{
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		$tmp_file = download_url( $remote_filename );
+		$download_url = $remote_filename;
+
+		if( $version_number )
+		{
+		    $download_url = add_query_arg( 'v', $version_number, $remote_filename );
+		}
+
+		$tmp_file = download_url( $download_url );
 
 		if( !$tmp_file || !is_string( $tmp_file ) )
 		{
@@ -1963,8 +1971,8 @@ final class MyAgilePrivacy {
 
 		$objects = scandir( $directory );
 		foreach ( $objects as $object ) {
-			if ( $object != "." && $object != ".." ) {
-				if ( is_dir( $directory . DIRECTORY_SEPARATOR . $object ) && ! is_link( $directory . "/" . $object ) ) {
+			if( $object != "." && $object != ".." ) {
+				if( is_dir( $directory . DIRECTORY_SEPARATOR . $object ) && ! is_link( $directory . "/" . $object ) ) {
 					MyAgilePrivacy::flush_manifest_file_cache( $directory . DIRECTORY_SEPARATOR . $object );
 				} else {
 					$this_filepath = $directory . DIRECTORY_SEPARATOR . $object;
@@ -3242,13 +3250,14 @@ final class MyAgilePrivacy {
 			else
 			{
 				//add paragraphs to text
+				$website_name = strip_shortcodes( $website_name );
 				$website_name = apply_filters( 'the_content', $website_name );
 			}
 		}
 
 		$text = str_replace( '[website_name]', $website_name, $text );
 
-		$text = str_replace( '[identity_vat_id]', ( isset( $templateConfig['map_identity_vat_id'] ) && $templateConfig['map_identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.stripslashes( $templateConfig['map_identity_vat_id'] ) : '', $text );
+		$text = str_replace( '[identity_vat_id]', ( isset( $templateConfig['map_identity_vat_id'] ) && $templateConfig['map_identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.esc_html( stripslashes( $templateConfig['map_identity_vat_id'] ) ) : '', $text );
 
 		$processed_keys[] = 'shortcode_identity_vat_id';
 
@@ -3295,7 +3304,7 @@ final class MyAgilePrivacy {
 		{
 			if( $templateConfig['shortcode_dpo_email'] )
 			{
-				$text = str_replace( 'MAP_DPO_MAIL', stripslashes( $templateConfig['shortcode_dpo_email'] ), $text );
+				$text = str_replace( 'MAP_DPO_MAIL', esc_html( stripslashes( $templateConfig['shortcode_dpo_email'] ) ), $text );
 			}
 			else
 			{
@@ -3306,7 +3315,7 @@ final class MyAgilePrivacy {
 
 			if( $templateConfig['shortcode_dpo_name'] )
 			{
-				$text = str_replace( 'MAP_DPO_NAME', stripslashes( $templateConfig['shortcode_dpo_name'] ), $text );
+				$text = str_replace( 'MAP_DPO_NAME', esc_html( stripslashes( $templateConfig['shortcode_dpo_name'] ) ), $text );
 			}
 			else
 			{
@@ -3317,7 +3326,7 @@ final class MyAgilePrivacy {
 
 			if( $templateConfig['shortcode_dpo_address'] )
 			{
-				$text = str_replace( 'MAP_DPO_ADDRESS', stripslashes( $templateConfig['shortcode_dpo_address'] ), $text );
+				$text = str_replace( 'MAP_DPO_ADDRESS', esc_html( stripslashes( $templateConfig['shortcode_dpo_address'] ) ), $text );
 			}
 			else
 			{
@@ -3417,7 +3426,7 @@ final class MyAgilePrivacy {
 					if( isset( $templateConfig[ $templateConfigKey ] ) &&
 						is_string( $templateConfig[ $templateConfigKey ] ) )
 					{
-						$text = str_replace( $shortcode_to_search, stripslashes( $templateConfig[ $templateConfigKey ] ), $text );
+						$text = str_replace( $shortcode_to_search, esc_html( stripslashes( $templateConfig[ $templateConfigKey ] ) ), $text );
 
 						$set_list[] = $templateConfigKey;
 					}
@@ -3435,10 +3444,10 @@ final class MyAgilePrivacy {
 
 		$processed_keys[] = 'shortcode_identity_name';
 
-		$text = str_replace( '[identity_address]', stripslashes( $templateConfig['shortcode_identity_address'] ), $text );
+		$text = str_replace( '[identity_address]', esc_html( stripslashes( $templateConfig['shortcode_identity_address'] ) ), $text );
 		$processed_keys[] = 'shortcode_identity_address';
 
-		$text = str_replace( '[identity_email]', stripslashes( $templateConfig['shortcode_identity_email'] ), $text );
+		$text = str_replace( '[identity_email]', esc_html( stripslashes( $templateConfig['shortcode_identity_email'] ) ), $text );
 		$processed_keys[] = 'shortcode_identity_email';
 
 		if( $caller == 'frontend' )
@@ -3829,24 +3838,24 @@ final class MyAgilePrivacy {
 	    // Primary: use WordPress globals set in wp-includes/vars.php (available since WP 4.0)
 	    global $is_nginx, $is_apache, $is_IIS, $is_iis7;
 
-	    if ( ! empty( $is_nginx ) ) {
+	    if( ! empty( $is_nginx ) ) {
 	        return true;
 	    }
 
-	    if ( ! empty( $is_apache ) || ! empty( $is_IIS ) || ! empty( $is_iis7 ) ) {
+	    if( ! empty( $is_apache ) || ! empty( $is_IIS ) || ! empty( $is_iis7 ) ) {
 	        return false;
 	    }
 
 	    // Fallback: parse SERVER_SOFTWARE header directly
-	    if ( ! empty( $_SERVER['SERVER_SOFTWARE'] ) )
+	    if( ! empty( $_SERVER['SERVER_SOFTWARE'] ) )
 	    {
 	        $software = strtolower( (string) $_SERVER['SERVER_SOFTWARE'] );
 
-	        if ( strpos( $software, 'nginx' ) !== false ) {
+	        if( strpos( $software, 'nginx' ) !== false ) {
 	            return true;
 	        }
 
-	        if ( strpos( $software, 'apache' ) !== false ||
+	        if( strpos( $software, 'apache' ) !== false ||
 	             strpos( $software, 'iis' ) !== false ||
 	             strpos( $software, 'litespeed' ) !== false ) {
 	            return false;
@@ -3886,7 +3895,7 @@ final class MyAgilePrivacy {
      */
     public static function verify_zip_support()
     {
-        if ( class_exists( 'ZipArchive' ) )
+        if( class_exists( 'ZipArchive' ) )
         {
             return true;
         }
@@ -3948,7 +3957,7 @@ final class MyAgilePrivacy {
 		$line = isset($bt[$depth])     ? $bt[$depth]['line'] : 0;
 		$func = isset($bt[$depth + 1]) ? $bt[$depth + 1]['function'] : null;
 
-		if (is_array($log) || is_object($log)) {
+		if(is_array($log) || is_object($log)) {
 			$data = print_r($log, true);
 		} else {
 			$data = $log;

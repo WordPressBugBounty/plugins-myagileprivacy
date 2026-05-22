@@ -48,7 +48,7 @@
 
 	if( isset( $map_stats ) && $map_stats && $map_stats->active_installs )
 	{
-		$installed_html = '<br><b>'.$map_stats->active_installs.'+</b>';
+		$installed_html = '<br><b>'.intval( $map_stats->active_installs ).'+</b>';
 
 		if( $locale == 'it_IT' )
 		{

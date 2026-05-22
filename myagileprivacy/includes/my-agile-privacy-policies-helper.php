@@ -59,12 +59,12 @@ final class MyAgilePrivacyPoliciesHelper
 			"custom_pattern"   => null // optional PCRE to override default shortcode pattern
 		);
 
-		if (function_exists("wp_parse_args")) {
+		if(function_exists("wp_parse_args")) {
 			$args = wp_parse_args($options, $defaults);
 		} else {
 			// Basic fallback (shouldn't be needed in WordPress)
 			$args = $defaults;
-			if (is_array($options)) {
+			if(is_array($options)) {
 				foreach ($options as $k => $v) {
 					$args[$k] = $v;
 				}
@@ -97,7 +97,7 @@ final class MyAgilePrivacyPoliciesHelper
 				? $q->posts
 				: array();
 
-			if (empty($posts)) {
+			if(empty($posts)) {
 				wp_reset_postdata();
 				break;
 			}
@@ -107,7 +107,7 @@ final class MyAgilePrivacyPoliciesHelper
 
 				// 1) Main content
 				$content = get_post_field("post_content", $post_id, "raw");
-				if (
+				if(
 					is_string($content) &&
 					$content !== "" &&
 					preg_match($pattern, $content)
@@ -116,15 +116,15 @@ final class MyAgilePrivacyPoliciesHelper
 				}
 
 				// 2) Post meta (Elementor, Beaver Builder, Oxygen, etc.)
-				if (!$found && !empty($args["include_meta"])) {
+				if(!$found && !empty($args["include_meta"])) {
 					$meta = get_post_meta($post_id);
-					if (!empty($meta) && is_array($meta)) {
+					if(!empty($meta) && is_array($meta)) {
 						foreach ($meta as $key => $values) {
-							if (!is_array($values)) {
+							if(!is_array($values)) {
 								continue;
 							}
 							foreach ($values as $val) {
-								if (
+								if(
 									self::scan_value_for_pattern_safe(
 										$val,
 										$pattern,
@@ -139,7 +139,7 @@ final class MyAgilePrivacyPoliciesHelper
 					}
 				}
 
-				if ($found) {
+				if($found) {
 					$ids[] = (int) $post_id;
 				}
 			}
@@ -147,7 +147,7 @@ final class MyAgilePrivacyPoliciesHelper
 			wp_reset_postdata();
 
 			// Continue if this batch was full
-			if (count($posts) < (int) $args["batch"]) {
+			if(count($posts) < (int) $args["batch"]) {
 				break;
 			}
 			$paged++;
@@ -177,36 +177,36 @@ final class MyAgilePrivacyPoliciesHelper
 		$pattern,
 		$max_bytes
 	) {
-		if (is_string($value)) {
+		if(is_string($value)) {
 			// Direct string check
-			if ($value !== "" && preg_match($pattern, $value)) {
+			if($value !== "" && preg_match($pattern, $value)) {
 				return true;
 			}
 
 			// Skip huge strings to avoid heavy JSON/unserialize operations
 			$len = strlen($value);
-			if ($max_bytes > 0 && $len > $max_bytes) {
+			if($max_bytes > 0 && $len > $max_bytes) {
 				return false;
 			}
 
 			// JSON (only if json_decode is available)
-			if (function_exists("json_decode")) {
+			if(function_exists("json_decode")) {
 				$t = ltrim($value);
-				if (
+				if(
 					$t !== "" &&
 					(substr($t, 0, 1) === "{" || substr($t, 0, 1) === "[")
 				) {
 					$decoded = json_decode($value, true);
-					if (function_exists("json_last_error")) {
-						if (json_last_error() === JSON_ERROR_NONE) {
-							if (self::deep_scan($decoded, $pattern)) {
+					if(function_exists("json_last_error")) {
+						if(json_last_error() === JSON_ERROR_NONE) {
+							if(self::deep_scan($decoded, $pattern)) {
 								return true;
 							}
 						}
 					} else {
 						// Older PHP fallback: if json_last_error doesn't exist
-						if (is_array($decoded) || is_object($decoded)) {
-							if (self::deep_scan($decoded, $pattern)) {
+						if(is_array($decoded) || is_object($decoded)) {
+							if(self::deep_scan($decoded, $pattern)) {
 								return true;
 							}
 						}
@@ -215,7 +215,7 @@ final class MyAgilePrivacyPoliciesHelper
 			}
 
 			// Serialized: avoid objects (O: or C:) to prevent side effects
-			if (self::is_serialized_without_objects($value)) {
+			if(self::is_serialized_without_objects($value)) {
 
 				if( version_compare( PHP_VERSION, '7.0.0', '>=' ) )
 				{
@@ -225,8 +225,8 @@ final class MyAgilePrivacyPoliciesHelper
 				{
 					$decoded = @unserialize($value);
 				}
-				if ($decoded !== false || $value === "b:0;") {
-					if (self::deep_scan($decoded, $pattern)) {
+				if($decoded !== false || $value === "b:0;") {
+					if(self::deep_scan($decoded, $pattern)) {
 						return true;
 					}
 				}
@@ -236,7 +236,7 @@ final class MyAgilePrivacyPoliciesHelper
 		}
 
 		// Arrays/objects: deep scan
-		if (is_array($value) || is_object($value)) {
+		if(is_array($value) || is_object($value)) {
 			return self::deep_scan($value, $pattern);
 		}
 
@@ -248,20 +248,20 @@ final class MyAgilePrivacyPoliciesHelper
 	*/
 	private static function deep_scan($data, $pattern)
 	{
-		if (is_string($data)) {
+		if(is_string($data)) {
 			return preg_match($pattern, $data) === 1;
 		}
-		if (is_array($data)) {
+		if(is_array($data)) {
 			foreach ($data as $v) {
-				if (self::deep_scan($v, $pattern)) {
+				if(self::deep_scan($v, $pattern)) {
 					return true;
 				}
 			}
 			return false;
 		}
-		if (is_object($data)) {
+		if(is_object($data)) {
 			foreach (get_object_vars($data) as $v) {
-				if (self::deep_scan($v, $pattern)) {
+				if(self::deep_scan($v, $pattern)) {
 					return true;
 				}
 			}
@@ -276,20 +276,20 @@ final class MyAgilePrivacyPoliciesHelper
 	*/
 	private static function is_serialized_without_objects($data)
 	{
-		if (!is_string($data)) {
+		if(!is_string($data)) {
 			return false;
 		}
 		$data = trim($data);
 
 		// Prevent unserializing objects
-		if (preg_match("/^(O|C):\d+:/", $data)) {
+		if(preg_match("/^(O|C):\d+:/", $data)) {
 			return false;
 		}
-		if (function_exists("is_serialized")) {
+		if(function_exists("is_serialized")) {
 			return is_serialized($data);
 		}
 		// Basic fallback: a:, s:, i:, d:, b:, N; (but not O:/C:)
-		if ($data === "N;") {
+		if($data === "N;") {
 			return true;
 		}
 		return (bool) preg_match("/^(a|s|i|d|b):/", $data);

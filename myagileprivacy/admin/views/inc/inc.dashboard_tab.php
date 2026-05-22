@@ -85,7 +85,7 @@ $caller = 'dashboardOptionsWrapper';
 						$hidden  = $total > $max ? array_slice( $list, $max ) : array();
 					?>
 
-					<?php if ( ! empty($list) ) : ?>
+					<?php if( ! empty($list) ) : ?>
 						<div class="mt-3 d-flex flex-wrap gap-2">
 						<?php foreach( $visible as $reg ) : ?>
 							<span class="badge rounded-pill bg-primary">
@@ -93,7 +93,7 @@ $caller = 'dashboardOptionsWrapper';
 							</span>
 						<?php endforeach; ?>
 
-						<?php if ( ! empty( $hidden ) ) : ?>
+						<?php if( ! empty( $hidden ) ) : ?>
 							<span class="badge rounded-pill bg-secondary"
 								data-bs-toggle="tooltip"
 								title="<?php echo esc_attr( implode( ', ', $hidden) ); ?>">

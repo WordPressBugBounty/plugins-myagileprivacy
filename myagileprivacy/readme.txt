@@ -3,8 +3,8 @@ Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
-Tested up to: 6.9
-Stable tag: 3.3.4
+Tested up to: 7.0
+Stable tag: 3.3.5
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -50,9 +50,13 @@ This plugin will:
 == Certified with Industry Standards ==
 My Agile Privacy® is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
 
-== Designed for Web Agencies ==
+== What Web Agencies Say ==
 
-[youtube https://youtu.be/5mw3xq0zEpI]
+[youtube https://youtu.be/2xIjWaR-hfY]
+
+[youtube https://youtu.be/pb_IV5GHosE]
+
+[youtube https://youtu.be/dyTVO_oTG28]
 
 == Features ==
 **This tool allows you to make your website privacy-compliant** through a guided process that is easy to use, even for non-experts. Using the Cookie Shield system, My Agile Privacy® scans your website, informing you about cookies and third-party services that need to be disclosed.
@@ -122,6 +126,12 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.3.5
+* Better internal caching mechanism
+* Frontend minor fix for inline notification
+* Google Tag Manager (GTM) and Google Tag Gateway (GTG) Consent Mode v2 stability fix
+* WordPress 7.0 compatibility
 
 = 3.3.4
 * Php 8 minor compatibility fix

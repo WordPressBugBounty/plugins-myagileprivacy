@@ -572,8 +572,15 @@ final class MyAgilePrivacyAdmin {
 					$manifest = json_decode( $manifest_content, true );
 				}
 
-				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC) );
-				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $manifest );
+				if( isset( $rconfig['manifest_added_files'] ) &&
+					is_array( $rconfig['manifest_added_files'] ) &&
+					count( $rconfig['manifest_added_files'] ) > 0 )
+				{
+					foreach( $rconfig['manifest_added_files'] as $manifest_added_file_key => $manifest_added_file_value )
+					{
+						$manifest['files'][ $manifest_added_file_key ] = $manifest_added_file_value;
+					}
+				}
 
 				if( $manifest && isset( $manifest['manifest_version_file'] ) && isset( $manifest['files'] ) )
 				{
@@ -1656,7 +1663,8 @@ final class MyAgilePrivacyAdmin {
 	    // Invalidate the JSON cache since cookie data has changed
 	    MyAgilePrivacy::flush_json_cache();
 
-		header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
+		wp_safe_redirect( wp_get_referer() );
+		exit;
 	}
 
 
@@ -2088,7 +2096,7 @@ final class MyAgilePrivacyAdmin {
 									'recalculated_textual_hash'	=>	$recalculated_textual_hash,
 								);
 
-								$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? json_decode( $all_meta["_map_translations"][0], true )  : null;
+								$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? wp_unslash( json_decode( $all_meta["_map_translations"][0], true ) )  : null;
 
 								if( $this_map_translations_decoded )
 								{
@@ -2172,7 +2180,7 @@ final class MyAgilePrivacyAdmin {
 								'recalculated_textual_hash'	=>	$recalculated_textual_hash,
 							);
 
-							$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? json_decode( $all_meta["_map_translations"][0], true )  : null;
+							$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? wp_unslash( json_decode( $all_meta["_map_translations"][0], true ) )  : null;
 
 							if( $this_map_translations_decoded )
 							{
@@ -5275,49 +5283,19 @@ final class MyAgilePrivacyAdmin {
 	*/
 	public function js_get_plugin_stats()
 	{
-		$args = (object) array(
-			'slug' 		=> MAP_PLUGIN_SLUG,
-			'fields'	=> array(
-							'active_installs'	=> true,
-							'downloaded'		=> false,
-							'rating'			=> false,
-							'description'		=> false,
-							'short_description' => false,
-							'donate_link'		=> false,
-							'tags'				=> false,
-							'sections'			=> false,
-							'homepage'			=> false,
-							'added'				=> false,
-							'last_updated'		=> false,
-							'compatibility'		=> false,
-							'tested'			=> false,
-							'requires'			=> false,
-							'downloadlink'		=> false,
-					)
-		);
+		$url = add_query_arg( array(
+			'action'                  => 'plugin_information',
+			'slug'                    => MAP_PLUGIN_SLUG,
+			'fields[active_installs]' => '1',
+		), 'https://api.wordpress.org/plugins/info/1.2/' );
 
-		$request = array(
-			'action' => 'plugin_information',
-			'timeout' => 15,
-			'request' => serialize( $args )
-		);
-
-		$url = 'http://api.wordpress.org/plugins/info/1.0/';
-
-		$response = wp_remote_post( $url, array( 'body' => $request ) );
+		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
 
 		if( !is_wp_error( $response ) )
 		{
-			if( version_compare( PHP_VERSION, '7.0.0', '>=' ) )
-			{
-				$plugin_info = unserialize( $response['body'], array( 'allowed_classes' => array( 'stdClass' ) ) );
-			}
-			else
-			{
-				$plugin_info = unserialize( $response['body'] );
-			}
+			$plugin_info = json_decode( wp_remote_retrieve_body( $response ) );
 
-			return $plugin_info;
+			return $plugin_info ? $plugin_info : null;
 		}
 		else
 		{

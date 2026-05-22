@@ -15,7 +15,7 @@ if( !defined( 'ABSPATH' ) )
 	while ( ! file_exists( $wp_load_path . '/wp-load.php' ) )
 	{
 		$wp_load_path = dirname( $wp_load_path );
-		if ( $wp_load_path === '/' ) {
+		if( $wp_load_path === '/' ) {
 			die( 'wp-load.php not found' );
 		}
 	}
@@ -77,7 +77,7 @@ function map_api_get_option( $option_name, $default = false )
 
 	$cached_value = wp_cache_get( $option_name, 'map_api_options' );
 
-	if ( $cached_value !== false )
+	if( $cached_value !== false )
 	{
 		return $cached_value;
 	}
@@ -87,7 +87,7 @@ function map_api_get_option( $option_name, $default = false )
 		$option_name
 	));
 
-	if ( $option_value !== null )
+	if( $option_value !== null )
 	{
 		$option_value = maybe_unserialize( $option_value );
 		wp_cache_set( $option_name, $option_value, 'map_api_options' );
@@ -113,7 +113,7 @@ function map_api_update_option( $option_name, $new_value )
 {
 	global $wpdb, $map_options_table;
 
-	if ( empty( $option_name ) )
+	if( empty( $option_name ) )
 	{
 		return false;
 	}
@@ -125,7 +125,7 @@ function map_api_update_option( $option_name, $new_value )
 		$option_name
 	));
 
-	if ( $option_exists > 0 )
+	if( $option_exists > 0 )
 	{
 		$result = $wpdb->update(
 			$map_options_table,
@@ -157,29 +157,51 @@ function map_api_update_option( $option_name, $new_value )
 // SECURITY
 // ============================================================
 
-/**
- * Verifies that the request originates from the same site by comparing
- * the host of the HTTP_REFERER header against the current HTTP_HOST.
- * Returns false if either value is missing or malformed.
- *
- * @return bool  True if the referrer host matches the current host, false otherwise.
- */
-function map_api_check_referrer()
+// Polyfill for hash_equals() — available natively from PHP 5.6.0.
+if( !function_exists( 'hash_equals' ) )
 {
-	if ( empty( $_SERVER['HTTP_REFERER'] ) )
+	function hash_equals( $known_string, $user_string )
+	{
+		if( !is_string( $known_string ) || !is_string( $user_string ) )
+		{
+			return false;
+		}
+
+		$known_length = strlen( $known_string );
+
+		if( $known_length !== strlen( $user_string ) )
+		{
+			return false;
+		}
+
+		$result = 0;
+
+		for ( $i = 0; $i < $known_length; $i++ )
+		{
+			$result |= ord( $known_string[ $i ] ) ^ ord( $user_string[ $i ] );
+		}
+
+		return $result === 0;
+	}
+}
+
+/**
+ * Verifies the request by validating an HMAC-SHA256 token derived from AUTH_KEY and AUTH_SALT.
+ * The token is stable per installation (no expiry) for compatibility with full-page cache.
+ *
+ * @return bool  True if the provided map_api_token matches the expected HMAC, false otherwise.
+ */
+function map_api_check_token()
+{
+	if( !defined( 'AUTH_KEY' ) || ! defined( 'AUTH_SALT' ) )
 	{
 		return false;
 	}
 
-	$referer_host = parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_HOST );
-	$current_host = $_SERVER['HTTP_HOST'];
+	$token    = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
+	$expected = hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT );
 
-	if ( empty( $referer_host ) || empty( $current_host ) )
-	{
-		return false;
-	}
-
-	return $referer_host === $current_host;
+	return !empty( $token ) && hash_equals( $expected, $token );
 }
 
 // ============================================================
@@ -188,7 +210,7 @@ function map_api_check_referrer()
 
 $action = isset( $_POST['action'] ) ? sanitize_text_field( $_POST['action'] ) : '';
 
-if ( empty( $action ) )
+if( empty( $action ) )
 {
 	http_response_code( 400 );
 	echo json_encode( array( 'success' => false, 'message' => 'Missing action' ) );
@@ -224,9 +246,9 @@ function map_diagnostic_data()
 {
 	global $map_api_debug;
 
-	if ( ! map_api_check_referrer() ) {
+	if( !map_api_check_token() ) {
 		http_response_code( 403 );
-		echo json_encode( array( 'success' => false, 'message' => 'Invalid referrer' ) );
+		echo json_encode( array( 'success' => false, 'message' => 'Invalid token' ) );
 		exit;
 	}
 
@@ -240,7 +262,7 @@ function map_diagnostic_data()
 	$detected_keys_raw      = isset( $_POST['detectedKeys'] )           ? sanitize_text_field( $_POST['detectedKeys'] )      : '';
 
 	// Debug mode: return received data without processing
-	if ( $map_api_debug )
+	if( $map_api_debug )
 	{
 		echo json_encode( array(
 			'success'               => true,
@@ -262,16 +284,19 @@ function map_diagnostic_data()
 	$the_settings = map_api_get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
 
 	// Plugin not active, do nothing
-	if ( ! isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 )
+	if( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 )
 	{
 		echo json_encode( array( 'success' => false ) );
 		exit;
 	}
 
+	// this endpoint just answered: clear any leftover lockout state
+	map_api_clear_missing_api_support_state( $the_settings );
+
 	$success = true;
 
 	// 1. Detected Keys (learning mode only)
-	if ( $send_detected_keys )
+	if( $send_detected_keys )
 	{
 		$success = map_api_internal_save_detected_keys( $the_settings, $detectable_keys_raw, $detected_keys_raw );
 	}
@@ -307,19 +332,19 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 	// Load existing saved keys
 	$js_cookie_shield_detected_keys = explode( ',', map_api_get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 
-	if ( ! $js_cookie_shield_detected_keys )
+	if( !$js_cookie_shield_detected_keys )
 	{
 		$js_cookie_shield_detected_keys = array();
 	}
 
 	// Merge detectableKeys
-	if ( $detectable_keys_raw )
+	if( $detectable_keys_raw )
 	{
 		foreach( explode( ',', $detectable_keys_raw ) as $v )
 		{
 			$v = sanitize_text_field( $v );
 
-			if ( $v && $v !== 'null' )
+			if( $v && $v !== 'null' )
 			{
 				$js_cookie_shield_detected_keys[] = $v;
 			}
@@ -327,12 +352,12 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 	}
 
 	// Merge detectedKeys
-	if ( $detected_keys_raw )
+	if( $detected_keys_raw )
 	{
 		foreach( explode( ',', $detected_keys_raw ) as $v )
 		{
 			$v = sanitize_text_field( $v );
-			if ( $v && $v !== 'null' ) {
+			if( $v && $v !== 'null' ) {
 				$js_cookie_shield_detected_keys[] = $v;
 			}
 		}
@@ -343,9 +368,15 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 	map_api_update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, implode( ',', $js_cookie_shield_detected_keys ) );
 
 	// Auto-activate matching cookie posts
-	if ( ! empty( $js_cookie_shield_detected_keys ) )
+	if( !empty( $js_cookie_shield_detected_keys ) )
 	{
-		map_api_auto_activate_cookie_posts( $js_cookie_shield_detected_keys );
+		$consumed_keys = map_api_auto_activate_cookie_posts( $js_cookie_shield_detected_keys );
+
+		if( !empty( $consumed_keys ) )
+		{
+			$residual_keys = array_diff( $js_cookie_shield_detected_keys, $consumed_keys );
+			map_api_update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, implode( ',', $residual_keys ) );
+		}
 	}
 
 	return true;
@@ -363,13 +394,13 @@ function map_api_auto_activate_cookie_posts( $keys )
 {
 	global $wpdb;
 
-	if ( empty( $keys ) ) return;
+	if( empty( $keys ) ) return array();
 
 	$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
 
 	// Find posts matching the given api keys
 	// Use call_user_func_array for compatibility with PHP 5.6 and WordPress < 4.8.3
-	$sql = "SELECT p.ID
+	$sql = "SELECT p.ID, pm.meta_value AS api_key
 		FROM {$wpdb->posts} p
 		INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID
 		WHERE p.post_type = %s
@@ -380,13 +411,15 @@ function map_api_auto_activate_cookie_posts( $keys )
 	$params = array_merge( array( $sql, MAP_POST_TYPE_COOKIES ), $keys );
 	$query  = call_user_func_array( array( $wpdb, 'prepare' ), $params );
 
-	$post_ids = $wpdb->get_col( $query );
+	$post_rows = $wpdb->get_results( $query, ARRAY_A );
 
-	if( empty( $post_ids ) ) return;
+	if( empty( $post_rows ) ) return array();
 
-	foreach( $post_ids as $post_id )
+	$consumed_keys = array();
+
+	foreach( $post_rows as $row )
 	{
-		$post_id = intval( $post_id );
+		$post_id = intval( $row['ID'] );
 
 		// Publish the post
 		$wpdb->update(
@@ -403,7 +436,7 @@ function map_api_auto_activate_cookie_posts( $keys )
 			$post_id
 		));
 
-		if ( $meta_exists )
+		if( $meta_exists )
 		{
 			$wpdb->update(
 				$wpdb->postmeta,
@@ -421,10 +454,14 @@ function map_api_auto_activate_cookie_posts( $keys )
 				array( '%d', '%s', '%d' )
 			);
 		}
+
+		$consumed_keys[] = $row['api_key'];
 	}
 
 	// Clear post transient cache
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_posts_%'" );
+
+	return $consumed_keys;
 }
 
 /**
@@ -438,9 +475,9 @@ function map_api_auto_activate_cookie_posts( $keys )
  */
 function map_api_save_cookie_shield_status( &$the_settings, $cookie_shield_detected )
 {
-	if ( $cookie_shield_detected == 0 )
+	if( $cookie_shield_detected == 0 )
 	{
-		if ( $the_settings['missing_cookie_shield'] == false ||
+		if( $the_settings['missing_cookie_shield'] == false ||
 			$the_settings['cookie_shield_running'] == true
 		)
 		{
@@ -448,23 +485,17 @@ function map_api_save_cookie_shield_status( &$the_settings, $cookie_shield_detec
 			$the_settings['missing_cookie_shield']           = true;
 			$the_settings['missing_cookie_shield_timestamp'] = time();
 
-			$the_settings['missing_api_support'] = false;
-			$the_settings['missing_api_support_timestamp'] = null;
-
 			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 		}
 	}
-	elseif ( $cookie_shield_detected == 1 )
+	elseif( $cookie_shield_detected == 1 )
 	{
-		if ( $the_settings['cookie_shield_running'] == false ||
+		if( $the_settings['cookie_shield_running'] == false ||
 			$the_settings['missing_cookie_shield'] == true
 		) {
 			$the_settings['missing_cookie_shield']           = false;
 			$the_settings['cookie_shield_running']           = true;
 			$the_settings['cookie_shield_running_timestamp'] = time();
-
-			$the_settings['missing_api_support'] = false;
-			$the_settings['missing_api_support_timestamp'] = null;
 
 			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 		}
@@ -492,14 +523,14 @@ function map_api_save_consent_mode_status( &$the_settings, $is_consent_valid, $e
 		$the_settings['cmode_v2_js_error_code']       !== $error_code ||
 		$the_settings['cmode_v2_js_error_motivation'] !== $error_motivation;
 
-	if ( !$has_changed ) return;
+	if( !$has_changed ) return;
 
-	if ( $the_settings['cmode_v2_js_on_error'] && ! $cmode_v2_js_on_error )
+	if( $the_settings['cmode_v2_js_on_error'] && ! $cmode_v2_js_on_error )
 	{
 		$the_settings['cmode_v2_js_on_error_first_relevation'] = 0;
 	}
 
-	if ( ! $the_settings['cmode_v2_js_on_error'] && $cmode_v2_js_on_error )
+	if( ! $the_settings['cmode_v2_js_on_error'] && $cmode_v2_js_on_error )
 	{
 		$the_settings['cmode_v2_js_on_error_first_relevation'] = time();
 	}
@@ -507,6 +538,32 @@ function map_api_save_consent_mode_status( &$the_settings, $is_consent_valid, $e
 	$the_settings['cmode_v2_js_on_error']        = $cmode_v2_js_on_error;
 	$the_settings['cmode_v2_js_error_code']       = $error_code;
 	$the_settings['cmode_v2_js_error_motivation'] = $error_motivation;
+
+	map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+}
+
+/**
+ * Clears the missing_api_support lockout flag and the failure counters.
+ * Called whenever map_diagnostic_data runs successfully, since the endpoint
+ * answering proves it is reachable.
+ * Idempotent: skips the DB write if all four keys are already cleared.
+ *
+ * @param array $the_settings  Current plugin settings, passed by reference.
+ */
+function map_api_clear_missing_api_support_state( &$the_settings )
+{
+	$needs_clear =
+		! empty( $the_settings['missing_api_support'] ) ||
+		! empty( $the_settings['missing_api_support_timestamp'] ) ||
+		! empty( $the_settings['missing_api_support_failures_count'] ) ||
+		! empty( $the_settings['missing_api_support_failures_window_start'] );
+
+	if( !$needs_clear ) return;
+
+	$the_settings['missing_api_support']                       = false;
+	$the_settings['missing_api_support_timestamp']             = null;
+	$the_settings['missing_api_support_failures_count']        = 0;
+	$the_settings['missing_api_support_failures_window_start'] = 0;
 
 	map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 }

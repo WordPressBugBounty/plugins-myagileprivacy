@@ -7,3 +7,35 @@
     Allow from all
   </IfModule>
 </Files>
+
+<Files "cache-json.php">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+  </IfModule>
+</Files>
+
+<Files "iab-bridge.php">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+  </IfModule>
+  <IfModule mod_headers.c>
+    Header always unset X-Frame-Options
+    Header always set Content-Security-Policy "frame-ancestors *"
+  </IfModule>
+</Files>
+
+<IfModule mod_headers.c>
+    SetEnvIf Request_URI "/local-cache/my-agile-privacy/(json/)?[^/]+\.json$" MAP_CORS_OK=1
+    SetEnvIf Request_URI "/wp-content/plugins/myagileprivacy/.+\.svg$" MAP_CORS_OK=1
+    SetEnvIf Request_URI "/wp-content/plugins/myagileprivacy/api/api.php$" MAP_CORS_OK=1
+    Header set   Access-Control-Allow-Origin "*"      env=MAP_CORS_OK
+    Header merge Vary                        "Origin" env=MAP_CORS_OK
+</IfModule>
