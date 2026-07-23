@@ -9,10 +9,9 @@
  * @subpackage MyAgilePrivacy/includes
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.3.5' );
+define( 'MAP_PLUGIN_VERSION', '3.3.6' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
-define( 'MAP_PLUGIN_FILENAME', realpath( dirname( __FILE__ ) . '/../my-agile-privacy.php' ) );
 define( 'MAP_USE_MINIFIED_FILES', true );
 define( 'MAP_DEV_MODE', false );
 define( 'MAP_SOFTWARE_KEY', 'map_wp' );
@@ -32,6 +31,8 @@ define( 'MAP_PLUGIN_DB_VERSION_NUMBER', 1 );
 define( 'MAP_PLUGIN_SYNC_IN_PROGRESS', MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
 define( 'MAP_MANIFEST_ASSOC', MAP_PLUGIN_DB_KEY_PREFIX . 'manifest' );
 define( 'MAP_PLUGIN_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_countries' );
+define( 'MAP_PLUGIN_LOCALIZED_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_localized_countries' );
+define( 'MAP_PLUGIN_PIXEL_SEEN', MAP_PLUGIN_DB_KEY_PREFIX . '_pixel_forward_seen' );
 define( 'MAP_POST_TYPE_COOKIES', 'my-agile-privacy-c' );
 define( 'MAP_POST_TYPE_POLICY', 'my-agile-privacy-p' );
 define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
@@ -45,18 +46,22 @@ define( 'MAP_NOTICE_LAST_SHOW_TIME', MAP_PLUGIN_DB_KEY_PREFIX.'-notice_last_show
 define( 'MAP_BYPASS_LICENSE_TRESHOLD', 86400 ); // 1 day: 24 * 60 * 60
 define( 'MAP_NOTICE_FIRST_TRESHOLD', 604800 ); // 7 days: 7 * 24 * 60 * 60
 define( 'MAP_NOTICE_SECOND_TRESHOLD', 12960000 ); // 5 months: 5 * 30 * 24 * 60 * 60
-define( 'MAP_ASSETS_EXCLUSION_PATTERNS', array(
-	'plugins/myagileprivacy/',
-	'wp-content/local-cache/'
-) );
+define( 'MAP_ASSETS_EXCLUSION_PATTERNS', 'plugins/myagileprivacy/,wp-content/local-cache/' );
 define( 'MAP_DB_PATCH_2_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_2_done' );
 define( 'MAP_DB_PATCH_3_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_3_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
 define( 'MAP_SUMMARY_VERSION', '2.0.0' );
 define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
-define( 'MAP_IAB_VENDOR_COUNT', '1845' );
+define( 'MAP_IAB_VENDOR_COUNT', '1725' );
 define( 'MAP_PLUGIN_JUST_UPDATED_TRANSIENT', 'map_just_updated' );
-define( 'MAP_EXPIRED_CALLBACK_URL', array(
-	'it_IT'		=>	'https://www.myagileprivacy.com/helpdesk/perche-sul-mio-sito-compare-questa-icona/',
-	'default'	=>	'https://www.myagileprivacy.com/en/helpdesk/why-is-this-icon-showing-on-my-website/'
-) );
+define( 'MAP_EXPIRED_CALLBACK_URL_IT',      'https://www.myagileprivacy.com/helpdesk/perche-sul-mio-sito-compare-questa-icona/' );
+define( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT', 'https://www.myagileprivacy.com/en/helpdesk/why-is-this-icon-showing-on-my-website/' );
+define( 'MAP_PLUGIN_PENDING_NOTICES',        MAP_PLUGIN_DB_KEY_PREFIX . '_pending_notices' );
+define( 'MAP_PLUGIN_ADVANCED_INSTALL_ERROR', MAP_PLUGIN_DB_KEY_PREFIX . '_advanced_install_error' );
+define( 'MAP_PLUGIN_GEO_RUNTIME',            MAP_PLUGIN_DB_KEY_PREFIX . '_geo_runtime' );
+define( 'MAP_PLUGIN_GTM_GATEWAY_DETECTED',   MAP_PLUGIN_DB_KEY_PREFIX . '_gtm_gateway_detected' );
+define( 'MAP_PLUGIN_CAPS_REGISTERED',        MAP_PLUGIN_DB_KEY_PREFIX . '_caps_registered' );
+define( 'MAP_PLUGIN_STATS_TABLE',            'map_stats_daily' );
+define( 'MAP_PLUGIN_STATS_SCHEMA_VERSION',   MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_schema' );
+define( 'MAP_PLUGIN_STATS_LAST_PRUNE',       MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_last_prune' );
+define( 'MAP_PLUGIN_STATS_CELL_CEIL',        1000000000000 );

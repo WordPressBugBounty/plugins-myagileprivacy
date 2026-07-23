@@ -22,6 +22,7 @@ if( isset( $the_settings['pa'] ) &&
 
 <div class="<?php if( $caller == 'genericOptionsWrapper') echo 'col-sm-8'; ?> <?php echo esc_attr( $first_class );?>">
 
+
 	<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
 		<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 	</span>
@@ -41,11 +42,13 @@ if( isset( $the_settings['pa'] ) &&
 			</div>
 		</div>
 
+		<?php map_render_help_fox( 'cookie_shield' ); ?>
 	</div>
 </div>
 
 
 <div class="<?php if( $caller == 'genericOptionsWrapper') echo 'col-sm-8'; ?> <?php echo esc_attr( $second_class );?>">
+
 
 	<div class="consistent-box">
 		<h4 class="mb-4">
@@ -63,7 +66,7 @@ if( isset( $the_settings['pa'] ) &&
 				<br>
 				<?php echo wp_kses_post( __( 'Important: Cookie Shield may not function properly when used in conjunction with minification or caching plugins. It is recommended to temporarily disable them in your system configuration.', 'MAP_txt' ) ); ?><br>
 				<br>
-				<?php echo wp_kses_post( __( 'Please note: The Shield is regularly updated to detect as many cookies and third-party software as possible. However, it may not identify all the content that must be detected and blocked according to the regulations in your country. If you have any questions, please don\'t hesitate to <a href="https://www.myagileprivacy.com/en/contact-us/">contact us</a>.', 'MAP_txt' ) ); ?>
+				<?php echo wp_kses_post( sprintf( __( 'Please note: The Shield is regularly updated to detect as many cookies and third-party software as possible. However, it may not identify all the content that must be detected and blocked according to the regulations in your country. If you have any questions, please don\'t hesitate to %1$scontact us%2$s.', 'MAP_txt' ), '<a href="' . esc_url( MAP_Helpdesk_Links::get( 'contact' ) ) . '" target="_blank" rel="noopener">', '</a>' ) ); ?>
 			</div>
 		</div>
 
@@ -119,6 +122,10 @@ if( isset( $the_settings['pa'] ) &&
 
 					?>
 				</select>
+
+				<div class="form-text">
+					<?php echo wp_kses_post( __( 'Learning Mode detects cookies while you browse the site without blocking; Live Mode enforces the preventive blocking. Set Live once the scan is complete.', 'MAP_txt' ) ); ?>
+				</div>
 
 			</div> <!-- /.col-sm-7 -->
 		</div> <!-- row -->
@@ -198,40 +205,61 @@ if( isset( $the_settings['pa'] ) &&
 					</div> <!-- row -->
 
 
-					<!-- video advanced privacy checkbox -->
+					<!-- video privacy mode select -->
 					<div class="row mb-4">
-						<label for="video_advanced_privacy_field" class="col-sm-5 col-form-label">
-							<?php echo wp_kses_post( __( 'Video advanced privacy', 'MAP_txt' ) ); ?>
+						<label for="video_privacy_mode_field" class="col-sm-5 col-form-label">
+							<?php echo wp_kses_post( __( 'Video privacy mode', 'MAP_txt' ) ); ?>
 						</label>
 						<div class="col-sm-7">
-							<div class="styled_radio d-inline-flex">
-								<div class="round d-flex me-4">
 
-									<input type="hidden" name="video_advanced_privacy_field" value="false"
-										id="video_advanced_privacy_field_no">
+							<select
+								id="video_privacy_mode_field"
+								name="video_privacy_mode_field"
+								class="form-control hideShowInput"
+								data-hide-show-ref="video_privacy_mode_ref"
+								style="max-width:100%;" >
+								<?php
 
-									<input
-										name="video_advanced_privacy_field"
-										type="checkbox"
-										value="true"
-										id="video_advanced_privacy_field"
-										<?php checked( $the_settings['video_advanced_privacy'], true ); ?>>
+								$valid_options = array(
+									'anonymous'		=>	array(  'label' => esc_attr( __( 'Anonymize video embeds', 'MAP_txt' ) ),
+															'selected' => false ),
+									'block'			=>	array(  'label' => esc_attr( __( 'Block with notice', 'MAP_txt' ) ),
+															'selected' => false ),
+								);
 
-									<label for="video_advanced_privacy_field" class="me-2 label-checkbox"></label>
+								$selected_value = $the_settings['video_privacy_mode'];
 
-									<label for="video_advanced_privacy_field">
-										<?php echo wp_kses_post( __( 'Video advanced privacy', 'MAP_txt' ) ); ?>
-									</label>
-								</div>
-							</div>
+								if( isset( $valid_options[ $selected_value ] ) )
+								{
+									$valid_options[ $selected_value ]['selected'] = true;
+								}
+
+								foreach( $valid_options as $key => $data )
+								{
+									if( $data['selected'] )
+									{
+										?>
+										<option value="<?php echo esc_attr( $key ); ?>" selected><?php echo esc_attr( $data['label'] ); ?></option>
+										<?php
+									}
+									else
+									{
+										?>
+										<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_attr( $data['label'] ); ?></option>
+										<?php
+									}
+								}
+
+								?>
+							</select>
 							<div class="form-text">
-								<?php echo wp_kses_post( __( 'Enabling this setting, YouTube and Vimeo videos will be made GDPR compliant by modifying the embedding URLs', 'MAP_txt' ) ); ?>.
+								<?php echo wp_kses_post( __( 'Choose how YouTube and Vimeo embeds are handled before consent: anonymized embedding, or full block with a notice that reopens the consent banner. When blocking is not possible, anonymized embedding is applied', 'MAP_txt' ) ); ?>.
 							</div>
 						</div> <!-- /.col-sm-6 -->
 					</div> <!-- row -->
 
 					<!-- youtube enforce privacy checkbox -->
-					<div class="row mb-4">
+					<div class="row mb-4 video_privacy_mode_ref displayNone" data-value="anonymous">
 						<label for="enforce_youtube_privacy_field" class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Enforce Youtube Privacy', 'MAP_txt' ) ); ?>
 						</label>
@@ -399,6 +427,7 @@ if( isset( $the_settings['pa'] ) &&
 
 		<?php endif; ?>
 
+		<?php map_render_help_fox( 'cookie_shield' ); ?>
 	</div> <!-- consistent-box -->
 
 </div> <!-- /.col-sm-8 -->

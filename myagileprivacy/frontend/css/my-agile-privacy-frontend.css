@@ -579,19 +579,272 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #444;
-    border: 1px solid #FFEEBA;
-    background: #FFF3CD;
+    color: #324962;
+    border: 1px solid #b6d4fe;
+    background: #d1e7ff;
     font-size: 1rem;
     text-align: center;
     line-height: 1.5rem;
 }
 
+.map_inline_notify svg {
+    pointer-events: none;
+}
+
+.map_inline_notify_video,
+.map_inline_notify_maps {
+    flex-direction: column;
+    padding: 16px;
+    min-height: 120px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.map_inline_notify_video svg,
+.map_inline_notify_maps svg {
+    width: 48px;
+    height: 48px;
+    max-width: 100%;
+    flex-shrink: 0;
+    margin-bottom: 10px;
+    opacity: 0.85;
+}
+
+.map_inline_notify_video .map_inline_notify_text,
+.map_inline_notify_maps .map_inline_notify_text {
+    max-width: 90%;
+}
+
+/* Blocked video placeholder: mimics a player so the block reads as a
+   video at a glance. Every part is drawn with currentColor + alpha so
+   it adapts to whatever background/text color the user configured for
+   the inline notify. Click behavior (showConsentAgain) is unchanged. */
+.map_video_placeholder {
+    position: relative;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .14);
+    overflow: hidden;
+    padding: 24px 24px 52px;
+}
+.map_video_placeholder .map_video_play {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(128, 128, 128, .18);   /* neutral: works on light and dark */
+    transition: transform .2s ease;
+}
+.map_video_placeholder:hover .map_video_play {
+    transform: scale(1.06);
+}
+/* pulsing ring */
+.map_video_placeholder .map_video_play::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    animation: map_video_ring 2.6s ease-out infinite;
+}
+/* play triangle */
+.map_video_placeholder .map_video_play::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+    border-style: solid;
+    border-width: 11px 0 11px 18px;
+    border-color: transparent transparent transparent currentColor;
+}
+@keyframes map_video_ring {
+    0%   { transform: scale(1);    opacity: .55; }
+    70%  { transform: scale(1.55); opacity: 0; }
+    100% { transform: scale(1.55); opacity: 0; }
+}
+/* fake player controls: decoration only */
+.map_video_placeholder .map_video_controls {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: .35;
+    pointer-events: none;
+}
+.map_video_placeholder .map_video_controls_play {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent currentColor;
+    flex-shrink: 0;
+}
+.map_video_placeholder .map_video_controls_bar {
+    position: relative;
+    flex: 1 1 auto;
+    height: 3px;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: .55;
+}
+.map_video_placeholder .map_video_controls_dot {
+    position: absolute;
+    left: 22%;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translateY(-50%);
+}
+.map_video_placeholder .map_video_controls_full {
+    width: 10px;
+    height: 10px;
+    border: 2px solid currentColor;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+/* Blocked map placeholder: mirrors the video treatment with map cues
+   (pin marker on the neutral disc + fake zoom controls), everything in
+   currentColor + alpha for the same option-driven adaptability. */
+.map_maps_placeholder {
+    position: relative;
+    z-index: 0;   /* own stacking context: the ::before map lives above the bg, below content */
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .14);
+    overflow: hidden;
+    padding: 24px 24px 52px;
+}
+/* Stylized city map, barely visible: one large non-repeating drawing
+   (river, curved arteries, side streets, roundabout, park, POIs) scaled
+   with cover so it never tiles. Neutral gray works on both light and
+   dark user-configured backgrounds. Decoration only. */
+.map_maps_placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'%3E%3Cpath d='M980 60 C1040 40 1120 70 1130 130 C1140 190 1060 230 990 210 C930 190 930 90 980 60 Z' fill='gray' fill-opacity='.3'/%3E%3Cg fill='none' stroke='gray'%3E%3Cpath d='M-40 170 C220 265 380 90 560 185 C740 280 900 430 1240 395' stroke-width='38' stroke-opacity='.45'/%3E%3Cpath d='M0 640 C320 560 720 300 1210 70' stroke-width='9'/%3E%3Cpath d='M0 310 C320 330 640 280 1210 350' stroke-width='7'/%3E%3Cpath d='M330 0 L470 810' stroke-width='6'/%3E%3Cpath d='M840 0 C820 260 880 520 850 810' stroke-width='5'/%3E%3Cpath d='M0 118 L350 98' stroke-width='3'/%3E%3Cpath d='M175 810 L214 590' stroke-width='3'/%3E%3Cpath d='M437 502 L860 540' stroke-width='3'/%3E%3Cpath d='M950 160 L1210 205' stroke-width='3'/%3E%3Cpath d='M620 0 L600 150' stroke-width='3'/%3E%3Ccircle cx='417' cy='500' r='20' stroke-width='5'/%3E%3C/g%3E%3Cg fill='gray'%3E%3Ccircle cx='250' cy='220' r='4'/%3E%3Ccircle cx='700' cy='380' r='4'/%3E%3Ccircle cx='1050' cy='520' r='4'/%3E%3Ccircle cx='520' cy='650' r='4'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: .05;
+    pointer-events: none;
+}
+.map_maps_placeholder .map_maps_pin {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(128, 128, 128, .18);   /* neutral: works on light and dark */
+    transition: transform .2s ease;
+}
+.map_maps_placeholder:hover .map_maps_pin {
+    transform: scale(1.06);
+}
+/* pulsing ring, same rhythm as the video play */
+.map_maps_placeholder .map_maps_pin::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    animation: map_video_ring 2.6s ease-out infinite;
+}
+/* the pin marker */
+.map_maps_placeholder .map_maps_pin::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: currentColor;
+}
+/* fake zoom controls: decoration only */
+.map_maps_placeholder .map_maps_controls {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    opacity: .35;
+    pointer-events: none;
+}
+.map_maps_placeholder .map_maps_controls_zoom_in,
+.map_maps_placeholder .map_maps_controls_zoom_out {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border: 2px solid currentColor;
+    box-sizing: border-box;
+}
+.map_maps_placeholder .map_maps_controls_zoom_in {
+    border-radius: 4px 4px 0 0;
+    border-bottom-width: 1px;
+}
+.map_maps_placeholder .map_maps_controls_zoom_out {
+    border-radius: 0 0 4px 4px;
+    border-top-width: 1px;
+}
+.map_maps_placeholder .map_maps_controls_zoom_in::before,
+.map_maps_placeholder .map_maps_controls_zoom_in::after,
+.map_maps_placeholder .map_maps_controls_zoom_out::before {
+    content: '';
+    position: absolute;
+    background: currentColor;
+}
+.map_maps_placeholder .map_maps_controls_zoom_in::before,
+.map_maps_placeholder .map_maps_controls_zoom_out::before {
+    left: 5px;
+    right: 5px;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+}
+.map_maps_placeholder .map_maps_controls_zoom_in::after {
+    top: 5px;
+    bottom: 5px;
+    left: 50%;
+    width: 2px;
+    margin-left: -1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map_video_placeholder .map_video_play::before,
+    .map_maps_placeholder .map_maps_pin::before {
+        animation: none;
+        opacity: .35;
+    }
+    .map_video_placeholder .map_video_play,
+    .map_video_placeholder:hover .map_video_play,
+    .map_maps_placeholder .map_maps_pin,
+    .map_maps_placeholder:hover .map_maps_pin {
+        transition: none;
+        transform: none;
+    }
+}
+
+/* Custom notify (shortcode widget next to blocked content): same
+   surface family as the blocked-content placeholders. */
 .map_custom_notify {
     display: none;
-    background: #fff9ec;
-    padding: 15px;
-    border: 2px solid #FFE5A7;
+    color: #324962;
+    background: #d1e7ff;
+    padding: 14px 18px;
+    border: 1px solid #b6d4fe;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .14);
 }
 
 

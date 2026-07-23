@@ -178,7 +178,16 @@ final class MyAgilePrivacyFrontend {
 			$path = WP_PLUGIN_DIR;
 		}
 
-		return load_textdomain( $domain, $path . '/' . $mofile );
+		$fullpath = $path . '/' . $mofile;
+
+		//avoid handing a missing .mo to WordPress: the core lazy loader would then warn
+		//on file_get_contents (e.g. for a locale we don't ship, or a removed .mo)
+		if( !is_readable( $fullpath ) )
+		{
+			return false;
+		}
+
+		return load_textdomain( $domain, $fullpath );
 	}
 
 
@@ -761,7 +770,7 @@ final class MyAgilePrivacyFrontend {
 								$the_settings['language_fallback_locale']
 							)
 							{
-								$language_key = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
+								$language_key = MyAgilePrivacy::normalizeLocaleTo2Char( $the_settings['language_fallback_locale'] );
 							}
 							else
 							{
@@ -1183,15 +1192,15 @@ final class MyAgilePrivacyFrontend {
 			'rewrite'				=> true,
 			'menu_icon' 			=> plugin_dir_url(__DIR__).'/admin/img/logo.png',
 			'capabilities' => array(
-				'publish_posts' => 'manage_options',
-				'edit_posts' => 'manage_options',
-				'edit_others_posts' => 'manage_options',
-				'delete_posts' => 'manage_options',
-				'delete_others_posts' => 'manage_options',
-				'read_private_posts' => 'manage_options',
-				'edit_post' => 'manage_options',
-				'delete_post' => 'manage_options',
-				'read_post' => 'manage_options',
+				'publish_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'edit_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'edit_others_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'delete_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'delete_others_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'read_private_posts' => MyAgilePrivacy::get_capability( 'options' ),
+				'edit_post' => MyAgilePrivacy::get_capability( 'options' ),
+				'delete_post' => MyAgilePrivacy::get_capability( 'options' ),
+				'read_post' => MyAgilePrivacy::get_capability( 'options' ),
 			),
 			'hierarchical'			=> false,
 			'menu_position' 		=> 5,
@@ -1243,6 +1252,8 @@ final class MyAgilePrivacyFrontend {
 			'parent_item_colon'		=> ''
 		);
 
+		$map_policy_cap = MyAgilePrivacy::get_capability( 'options' );
+
 		$args = array(
 			'labels'				=> $labels,
 			'public'				=> false,
@@ -1251,16 +1262,17 @@ final class MyAgilePrivacyFrontend {
 			'show_ui'				=> true,
 			'query_var'				=> true,
 			'rewrite'				=> true,
+			'menu_icon' 			=> plugin_dir_url(__DIR__).'/admin/img/logo.png',
 			'capabilities' => array(
-				'publish_posts' => 'manage_options',
-				'edit_posts' => 'manage_options',
-				'edit_others_posts' => 'manage_options',
+				'publish_posts' => $map_policy_cap,
+				'edit_posts' => $map_policy_cap,
+				'edit_others_posts' => $map_policy_cap,
 				'delete_posts' => 'do_not_allow',
-				'delete_others_posts' => 'manage_options',
-				'read_private_posts' => 'manage_options',
-				'edit_post' => 'manage_options',
-				'delete_post' => 'manage_options',
-				'read_post' => 'manage_options',
+				'delete_others_posts' => $map_policy_cap,
+				'read_private_posts' => $map_policy_cap,
+				'edit_post' => $map_policy_cap,
+				'delete_post' => $map_policy_cap,
+				'read_post' => $map_policy_cap,
 				'create_posts' => 'do_not_allow',
 			),
 			'hierarchical'			=> false,
@@ -1558,9 +1570,12 @@ final class MyAgilePrivacyFrontend {
 		);
 
 		$cc_args = array(
-			'posts_per_page'   => 	-1,
-			'post_type'        =>	MAP_POST_TYPE_COOKIES,
-			'post_status' 	   => 	$post_status,
+			'posts_per_page'   			=> 	-1,
+			'post_type'        			=>	MAP_POST_TYPE_COOKIES,
+			'post_status' 	   			=> 	$post_status,
+			'no_found_rows'    			=> 	true,
+			'update_post_meta_cache'	=> 	false,
+			'update_post_term_cache'	=> 	false,
 		);
 
 		$cc_query = new WP_Query( $cc_args );
@@ -1618,7 +1633,7 @@ final class MyAgilePrivacyFrontend {
 										$the_settings['language_fallback_locale']
 									)
 									{
-										$language_key = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
+										$language_key = MyAgilePrivacy::normalizeLocaleTo2Char( $the_settings['language_fallback_locale'] );
 									}
 									else
 									{
@@ -1664,15 +1679,35 @@ final class MyAgilePrivacyFrontend {
 						{
 							$the_key = ( $elem['post_meta']['_map_is_necessary'][0]  == 'necessary' ) ? 'necessary' : 'not-necessary';
 
-							//advanced consent mode ga4
+							//consent mode v2 ga4: basic = optional, advanced = always-on
 							if( ( $elem['api_key'] == 'google_analytics' || $elem['api_key'] == 'my_agile_pixel_ga' ) &&
 								isset( $the_settings ) &&
 								isset( $the_settings['cmode_v2_implementation_type'] ) &&
-								$the_settings['cmode_v2_implementation_type'] == 'native' &&
-								isset( $the_settings['cmode_v2_forced_off_ga4_advanced'] ) &&
-								$the_settings['cmode_v2_forced_off_ga4_advanced'] )
+								$the_settings['cmode_v2_implementation_type'] == 'native' )
 							{
-								$the_key = 'not-necessary';
+								if( isset( $the_settings['cmode_v2_forced_off_ga4_advanced'] ) &&
+									$the_settings['cmode_v2_forced_off_ga4_advanced'] )
+								{
+									$the_key = 'not-necessary';
+								}
+								else
+								{
+									$the_key = 'necessary';
+								}
+							}
+
+							//video privacy mode
+							if( in_array( $elem['api_key'], array( 'youtube', 'vimeo' ), true ) )
+							{
+								if( isset( $the_settings['video_privacy_mode'] ) &&
+									$the_settings['video_privacy_mode'] == 'block' )
+								{
+									$the_key = 'not-necessary';
+								}
+								else
+								{
+									$the_key = 'necessary';
+								}
 							}
 
 
@@ -1681,6 +1716,8 @@ final class MyAgilePrivacyFrontend {
 
 					}
 				}
+
+				wp_cache_delete( $main_post_id, 'post_meta' );
 			}
 
 			MyAgilePrivacy::internal_query_reset();
@@ -1863,9 +1900,12 @@ final class MyAgilePrivacyFrontend {
 			//check if exists
 
 			$cc_args = array(
-				'posts_per_page'   	=> 	-1,
-				'post_type'        	=>	MAP_POST_TYPE_COOKIES,
-				'post_status' 		=> 	$post_status_to_search,
+				'posts_per_page'   			=> 	-1,
+				'post_type'        			=>	MAP_POST_TYPE_COOKIES,
+				'post_status' 				=> 	$post_status_to_search,
+				'no_found_rows'    			=> 	true,
+				'update_post_meta_cache'	=> 	false,
+				'update_post_term_cache'	=> 	false,
 			);
 
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $cc_args );
@@ -1908,6 +1948,14 @@ final class MyAgilePrivacyFrontend {
 								$is_necessary = 'not-necessary';
 							}
 
+							//video privacy mode
+							if( in_array( $the_key, array( 'youtube', 'vimeo' ), true ) &&
+								isset( $the_settings['video_privacy_mode'] ) &&
+								$the_settings['video_privacy_mode'] == 'block' )
+							{
+								$is_necessary = 'not-necessary';
+							}
+
 							if( $the_key )
 							{
 								if( $this_post_status == 'publish' )
@@ -1935,6 +1983,8 @@ final class MyAgilePrivacyFrontend {
 							}
 						}
 					}
+
+					wp_cache_delete( $main_post_id, 'post_meta' );
 				}
 
 				MyAgilePrivacy::internal_query_reset();
@@ -1962,6 +2012,7 @@ final class MyAgilePrivacyFrontend {
 							in_array( $vv['key'], $key_to_not_block ) )
 						{
 							$vv['to_block'] = false;
+							$vv['map_key_not_blockable'] = true;
 						}
 
 						$vv['always_allowed'] = false;
@@ -2148,17 +2199,16 @@ final class MyAgilePrivacyFrontend {
 	        }
 	    }
 
-	    $force_js_learning_mode      = 0; // adjust from your existing logic
-	    $cookie_process_delayed_mode = 0; // adjust from your existing logic
-
 	    $fresh_data = array(
-	        'ajax_url'                    => admin_url( 'admin-ajax.php' ),
-	        'api_url'                     => plugin_dir_url( dirname( __FILE__ ) ) . 'api/api.php',
-	        'api_token'                   => ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '',
-	        'security'                    => wp_create_nonce( 'map_js_shield_callback' ),
-	        'force_js_learning_mode'      => $force_js_learning_mode,
-	        'scanner_compatibility_mode'  => $the_settings['scanner_compatibility_mode'],
-	        'cookie_process_delayed_mode' => intval( $cookie_process_delayed_mode ),
+	        'ajax_url'                    	=> admin_url( 'admin-ajax.php' ),
+	        'api_url'                     	=> MyAgilePrivacy::get_api_endpoint_url( dirname( __FILE__ ), 'api/api.php' ),
+	        'api_token'                   	=> ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '',
+	        'security'                    	=> wp_create_nonce( 'map_js_shield_callback' ),
+	        'force_js_learning_mode'      	=> $force_js_learning_mode,
+	        'scanner_compatibility_mode'  	=> $the_settings['scanner_compatibility_mode'],
+	        'cookie_process_delayed_mode'	=> intval( $cookie_process_delayed_mode ),
+	        'gtm_gateway_detection_disabled'=> ( isset( $the_settings['disable_gtm_gateway_detection'] ) && $the_settings['disable_gtm_gateway_detection'] ) ? 1 : 0,
+	        'advanced_api_url'            	=> function_exists( 'map_call_advanced_get_api_url' ) ? map_call_advanced_get_api_url() : '',
 	    );
 
 	    if( !$skip_json_cache )
@@ -2348,6 +2398,13 @@ final class MyAgilePrivacyFrontend {
 	                $is_necessary = 'not-necessary';
 	            }
 
+	            if( in_array( $the_post_api_key, array( 'youtube', 'vimeo' ), true ) &&
+	                isset( $the_settings['video_privacy_mode'] ) &&
+	                $the_settings['video_privacy_mode'] == 'block' )
+	            {
+	                $is_necessary = 'not-necessary';
+	            }
+
 	            $_map_js_dependencies = ( isset( $value['post_meta']["_map_js_dependencies"][0] ) ) ? $value['post_meta']["_map_js_dependencies"][0] : '';
 	            $_map_js_dependencies_array = json_decode( $_map_js_dependencies, true );
 
@@ -2511,12 +2568,20 @@ final class MyAgilePrivacyFrontend {
 	    }
 
 	    $map_lang_code_4char = MyAgilePrivacy::getCurrentLang4Char();
-	    $map_lang_code = MAP_SUPPORTED_LANGUAGES[ $map_lang_code_4char ][ '2char' ];
+	    $map_lang_code = MyAgilePrivacy::normalizeLocaleTo2Char( $map_lang_code_4char );
 
 	    $cookie_reset_timestamp = ( isset( $the_settings['cookie_reset_timestamp'] ) ) ? $the_settings['cookie_reset_timestamp'] : null;
-	    $video_advanced_privacy = ( isset( $the_settings['video_advanced_privacy'] ) ) ? intval( $the_settings['video_advanced_privacy'] ) : 0;
+	    $video_privacy_mode = ( isset( $the_settings['video_privacy_mode'] ) ) ? $the_settings['video_privacy_mode'] : 'anonymous';
 	    $enforce_youtube_privacy = ( isset( $the_settings['enforce_youtube_privacy'] ) ) ? intval( $the_settings['enforce_youtube_privacy'] ) : 0;
 	    $send_ga4_event_on_consent_change = ( isset( $the_settings['send_ga4_event_on_consent_change'] ) ) ? intval( $the_settings['send_ga4_event_on_consent_change'] ) : 0;
+
+	    // the GA4 consent event is not emitted here
+	    if( ! ( function_exists( 'map_is_advanced_active' ) && map_is_advanced_active() ) )
+	    {
+	        $send_ga4_event_on_consent_change = 0;
+	    }
+
+	    $map_stats_config = function_exists( 'map_call_advanced_get_stats_config' ) ? map_call_advanced_get_stats_config() : array( 'enabled' => false, 'variant' => 'default' );
 
 	    $enforce_youtube_privacy_v2 = 0;
 
@@ -2535,16 +2600,6 @@ final class MyAgilePrivacyFrontend {
 	        $rconfig['allow_js_fast_callback'] )
 	    {
 	        $allow_js_fast_callback = 1;
-	    }
-
-	    if( $allow_js_fast_callback )
-	    {
-	    	$is_nginx = MyAgilePrivacy::is_nginx();
-
-	    	if( $is_nginx === true )
-	    	{
-	    		$allow_js_fast_callback = 0;
-	    	}
 	    }
 
 		if( $allow_js_fast_callback &&
@@ -2660,7 +2715,7 @@ final class MyAgilePrivacyFrontend {
 	                    isset( $rconfig['prevent_preconnect_prefetch'] ) &&
 	                    $rconfig['prevent_preconnect_prefetch'] == 1 ) )
 	                {
-	                    $head_script .= '<link rel="preconnect" href="'.$base_ref.'" crossorigin />'.PHP_EOL.'<link rel="dns-prefetch" href="'.$base_ref.'" />'.PHP_EOL;
+	                    $head_script .= '<link rel="preconnect" href="'.esc_url( $base_ref ).'" crossorigin />'.PHP_EOL.'<link rel="dns-prefetch" href="'.esc_url( $base_ref ).'" />'.PHP_EOL;
 	                }
 
 	                if( isset( $rconfig ) &&
@@ -2679,15 +2734,12 @@ final class MyAgilePrivacyFrontend {
 	                {
 	                    $script_filename = 'cookie-shield.js';
 
-	                    if( $local_file_exists )
+	                    if( $manifest_assoc &&
+	                        isset( $manifest_assoc['files'][ $script_filename ] ) &&
+	                        $manifest_assoc['files'][ $script_filename ]
+	                    )
 	                    {
-	                        if( $manifest_assoc &&
-	                            isset( $manifest_assoc['files'][ $script_filename ] ) &&
-	                            $manifest_assoc['files'][ $script_filename ]
-	                        )
-	                        {
-	                            $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
-	                        }
+	                        $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
 	                    }
 
 	                    $the_script = $base_ref.$script_filename;
@@ -2735,15 +2787,12 @@ final class MyAgilePrivacyFrontend {
 
 	                $script_filename = 'MyAgilePrivacyIabTCF.js';
 
-	                if( $local_file_exists )
+	                if( $manifest_assoc &&
+	                    isset( $manifest_assoc['files'][ $script_filename ] ) &&
+	                    $manifest_assoc['files'][ $script_filename ]
+	                )
 	                {
-	                    if( $manifest_assoc &&
-	                        isset( $manifest_assoc['files'][ $script_filename ] ) &&
-	                        $manifest_assoc['files'][ $script_filename ]
-	                    )
-	                    {
-	                        $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
-	                    }
+	                    $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
 	                }
 
 	                $the_script = $base_ref.$script_filename;
@@ -2797,6 +2846,58 @@ final class MyAgilePrivacyFrontend {
 	    	$iab_vendor_count = MAP_IAB_VENDOR_COUNT;
 	    }
 
+	    //compute geo values injected into the cached HTML config
+	    $geo_enabled      = false;
+	    $geo_sede_strong  = false;
+	    $geo_force_optout = array();
+
+	    if( function_exists( 'map_geo_enabled' ) && map_geo_enabled() )
+	    {
+	    	$geo_enabled = true;
+
+	    	$geo_available_countries = MyAgilePrivacy::get_option( MAP_PLUGIN_COUNTRIES, array() );
+	    	$geo_gdpr_like_list = ( is_array( $geo_available_countries ) && isset( $geo_available_countries['gdpr_like_list'] ) && is_array( $geo_available_countries['gdpr_like_list'] ) )
+	    		? $geo_available_countries['gdpr_like_list']
+	    		: array();
+
+	    	$geo_base_location = isset( $the_settings['site_and_policy_settings']['base_location'] )
+	    		? strtolower( (string) $the_settings['site_and_policy_settings']['base_location'] )
+	    		: '';
+
+	    	if( '' !== $geo_base_location && in_array( $geo_base_location, $geo_gdpr_like_list, true ) )
+	    	{
+	    		$geo_sede_strong = true;
+	    	}
+
+	    	$geo_force_optout_raw = isset( $the_settings['site_and_policy_settings']['geo_force_optout'] )
+	    		? $the_settings['site_and_policy_settings']['geo_force_optout']
+	    		: array();
+
+	    	if( is_array( $geo_force_optout_raw ) )
+	    	{
+	    		$geo_force_optout = $geo_force_optout_raw;
+	    	}
+
+	    	// Skip when the outcome cannot change.
+	    	if( $geo_sede_strong )
+	    	{
+	    		$geo_has_forced_optout = false;
+	    		foreach( $geo_force_optout as $geo_optout_flag )
+	    		{
+	    			if( $geo_optout_flag )
+	    			{
+	    				$geo_has_forced_optout = true;
+	    				break;
+	    			}
+	    		}
+
+	    		if( ! $geo_has_forced_optout )
+	    		{
+	    			$geo_enabled = false;
+	    		}
+	    	}
+	    }
+
 	    $map_full_config = array(
 	        'config_origin'                                             => 'myagileprivacy_native',
 	        'mapx_ga4'                                                  => $mapx_ga4,
@@ -2812,13 +2913,15 @@ final class MyAgilePrivacyFrontend {
 	        'cookie_api_key_not_to_block'                               => null,
 	        'enforce_youtube_privacy'                                   => $enforce_youtube_privacy,
 	        'enforce_youtube_privacy_v2'                                => $enforce_youtube_privacy_v2,
-	        'video_advanced_privacy'                                    => $video_advanced_privacy,
+	        'video_advanced_privacy'                                    => 1,
+	        'video_privacy_mode'                                        => $video_privacy_mode,
 	        'manifest_assoc'                                            => $manifest_assoc_public,
 	        'js_shield_url'                                             => $js_shield_url,
 	        'main_frontend_js'                                          => $main_frontend_js,
 	        'frontend_css'                                              => $frontend_css,
 	        'load_iab_tcf'                                              => false,
 	        'iab_tcf_script_url'                                        => null,
+	        'iab_enable_advertiser_consent_mode'                        => null,
 	        'enable_microsoft_cmode'                                    => null,
 	        'cmode_microsoft_default_consent_obj'                       => null,
 	        'enable_clarity_cmode'                                      => null,
@@ -2832,7 +2935,12 @@ final class MyAgilePrivacyFrontend {
 	        'shield_added_pattern'                                      => $shield_added_pattern,
 	        'early_gcmode'                                              => $early_gcmode,
 	        'frontend_regulation'                                       => $frontend_regulation,
+	        'geo_enabled'                                               => $geo_enabled,
+	        'geo_sede_strong'                                           => $geo_sede_strong,
+	        'geo_force_optout'                                          => $geo_force_optout,
 	        'send_ga4_event_on_consent_change'                          => $send_ga4_event_on_consent_change,
+	        'stats_enabled'                                             => $map_stats_config['enabled'],
+	        'banner_variant_id'                                         => $map_stats_config['variant'],
 	        'allow_js_fast_callback'                                    => $allow_js_fast_callback,
 	        'cookie_domain'                                    			=> $cookie_domain,
 	        'iab_vendor_count'											=> $iab_vendor_count,
@@ -2842,6 +2950,7 @@ final class MyAgilePrivacyFrontend {
 	    {
 	        $map_full_config['load_iab_tcf'] = true;
 	        $map_full_config['iab_tcf_script_url'] = $iab_tcf_script_url;
+	        $map_full_config['iab_enable_advertiser_consent_mode'] = isset( $the_settings['iab_enable_advertiser_consent_mode'] ) ? (bool) $the_settings['iab_enable_advertiser_consent_mode'] : true;
 
 	        if( !empty( $cookie_domain ) )
 	        {
@@ -2849,9 +2958,8 @@ final class MyAgilePrivacyFrontend {
 	            $parsed      = parse_url( $plugin_url );
 	            if( is_array( $parsed ) )
 	            {
-	                $scheme      = isset( $parsed['scheme'] ) ? $parsed['scheme'] : 'https';
 	                $path        = isset( $parsed['path'] )   ? $parsed['path']   : '/';
-	                $bridge_base = $scheme . '://' . $cookie_domain . $path;
+	                $bridge_base = '//' . $cookie_domain . $path;
 	                $map_full_config['iab_bridge_url'] = $bridge_base . 'api/iab-bridge.php';
 	            }
 	        }
@@ -2993,13 +3101,27 @@ final class MyAgilePrivacyFrontend {
 
 	    $start_config_script = '<script class="map_advanced_shield" type="text/javascript" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'>'.PHP_EOL.$base_config_script.PHP_EOL.'</script>'.PHP_EOL;
 
+	    // Load the advanced JS bundle when available.
+	    $advanced_bundle_tag = '';
+	    if( function_exists( 'map_is_advanced_active' ) && map_is_advanced_active() &&
+	        function_exists( 'map_call_advanced_get_bundle_url' ) )
+	    {
+	    	$bundle_url = map_call_advanced_get_bundle_url();
+	    	if( '' !== $bundle_url )
+	    	{
+	    		$advanced_bundle_tag = '<script class="map_advanced_shield map_advanced_bundle" type="text/javascript" src="'.esc_url( $bundle_url.$version_param ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+
+	    		$blocks['enqueue'][] = $bundle_url;
+	    	}
+	    }
+
 	    if( $block_mode )
 	    {
 	        return $blocks;
 	    }
 	    else
 	    {
-	        return $start_config_script.$head_script;
+	        return $start_config_script.$advanced_bundle_tag.$head_script;
 	    }
 	}
 
@@ -3032,7 +3154,7 @@ final class MyAgilePrivacyFrontend {
 			$js_cookie_shield_detected_keys = array();
 		}
 
-		if( isset( $_POST['detectableKeys'] ) )
+		if( isset( $_POST['detectableKeys'] ) && is_string( $_POST['detectableKeys'] ) )
 		{
 			$detectableKeys = explode( ',', $_POST['detectableKeys'] );
 
@@ -3046,7 +3168,7 @@ final class MyAgilePrivacyFrontend {
 			}
 		}
 
-		if( isset( $_POST['detectedKeys'] ) )
+		if( isset( $_POST['detectedKeys'] ) && is_string( $_POST['detectedKeys'] ) )
 		{
 			$detectedKeys = explode( ',', $_POST['detectedKeys'] );
 
@@ -3187,6 +3309,52 @@ final class MyAgilePrivacyFrontend {
 	}
 
 	/**
+	 * Loading-priority detection report callback.
+	 * admin-ajax fallback for the api/api.php detection endpoint.
+	 */
+	public function map_report_gtm_gateway_callback()
+	{
+		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
+		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
+
+		if( empty( $expected ) || ! hash_equals( $expected, $map_token ) )
+		{
+			wp_send_json( array( 'success' => false ) );
+		}
+
+		$the_settings = MyAgilePrivacy::get_settings();
+
+		if( isset( $the_settings['disable_gtm_gateway_detection'] ) &&
+			$the_settings['disable_gtm_gateway_detection'] )
+		{
+			wp_send_json( array( 'success' => false ) );
+		}
+
+		$now  = time();
+		$data = MyAgilePrivacy::get_option( MAP_PLUGIN_GTM_GATEWAY_DETECTED, array() );
+
+		if( ! is_array( $data ) )
+		{
+			$data = array();
+		}
+
+		// Rate-limit repeated writes.
+		if( isset( $data['last_detected'] ) &&
+			( $now - intval( $data['last_detected'] ) ) < HOUR_IN_SECONDS )
+		{
+			wp_send_json( array( 'success' => true, 'throttled' => true ) );
+		}
+
+		$data['first_detected'] = isset( $data['first_detected'] ) ? intval( $data['first_detected'] ) : $now;
+		$data['last_detected']  = $now;
+		$data['count']          = isset( $data['count'] ) ? intval( $data['count'] ) + 1 : 1;
+
+		MyAgilePrivacy::update_option( MAP_PLUGIN_GTM_GATEWAY_DETECTED, $data );
+
+		wp_send_json( array( 'success' => true ) );
+	}
+
+	/**
 	 * Missing cookie shield callback function
 	 *
 	 */
@@ -3240,6 +3408,12 @@ final class MyAgilePrivacyFrontend {
 					if( $missing_api_support == 1 )
 					{
 						$now             = time();
+
+						// skip redundant write.
+						$lockout_active = ( !empty( $the_settings['missing_api_support'] ) &&
+							isset( $the_settings['missing_api_support_timestamp'] ) &&
+							( $now - intval( $the_settings['missing_api_support_timestamp'] ) ) < ( 7 * 24 * 60 * 60 ) );
+
 						$window_duration = defined( 'HOUR_IN_SECONDS' ) ? HOUR_IN_SECONDS : 3600;
 						$threshold       = 5;
 
@@ -3257,7 +3431,7 @@ final class MyAgilePrivacyFrontend {
 
 						if( $count >= $threshold )
 						{
-							// threshold reached: activate the lockout flag and reset the counter
+							// set the flag and reset the counter
 							$the_settings['missing_api_support']                       = true;
 							$the_settings['missing_api_support_timestamp']             = $now;
 							$the_settings['missing_api_support_failures_count']        = 0;
@@ -3270,7 +3444,16 @@ final class MyAgilePrivacyFrontend {
 							$the_settings['missing_api_support_failures_window_start'] = $window_start;
 						}
 
-						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+						if( ! $lockout_active )
+						{
+							MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+
+							// invalidate the cached head script
+							if( $count >= $threshold )
+							{
+								MyAgilePrivacy::flush_json_cache( 'head_script_' );
+							}
+						}
 					}
 
 				}
@@ -3375,6 +3558,8 @@ final class MyAgilePrivacyFrontend {
 	}
 
 
+
+
 	/**
 	 * map_callback
 	 * @access   public
@@ -3389,6 +3574,22 @@ final class MyAgilePrivacyFrontend {
 
 		//init config
 		$parse_config = $this->scan_config;
+
+		$map_video_block_mode = isset( $this->saved_settings['video_privacy_mode'] ) && $this->saved_settings['video_privacy_mode'] == 'block';
+
+		if( $map_video_block_mode && isset( $parse_config['iframe_src_block'] ) && is_array( $parse_config['iframe_src_block'] ) )
+		{
+			foreach( $parse_config['iframe_src_block'] as $map_video_entry )
+			{
+				if( isset( $map_video_entry['key'] ) && $map_video_entry['key'] === 'youtube' && !empty( $map_video_entry['src'] ) )
+				{
+					$map_video_entry['src'] = 'www.youtube-nocookie.com/embed/';
+					$parse_config['iframe_src_block'][] = $map_video_entry;
+					break;
+				}
+			}
+		}
+
 		$scan_output = $parse_config;
 
 		if( $this->saved_settings['scanner_compatibility_mode'] )
@@ -3442,10 +3643,10 @@ final class MyAgilePrivacyFrontend {
 
 							}, ARRAY_FILTER_USE_BOTH );
 
-							if( $found )
+							if( !empty( $found ) )
 							{
-								$action = array_values( $found )[0];
-								$return_key = array_keys( $found )[0];
+								$action = reset( $found );
+								$return_key = key( $found );
 
 								if( isset( $action ) )
 								{
@@ -3547,10 +3748,10 @@ final class MyAgilePrivacyFrontend {
 
 							}, ARRAY_FILTER_USE_BOTH );
 
-							if( $found )
+							if( !empty( $found ) )
 							{
-								$action = array_values( $found )[0];
-								$return_key = array_keys( $found )[0];
+								$action = reset( $found );
+								$return_key = key( $found );
 
 								if( isset( $action ) )
 								{
@@ -3696,10 +3897,10 @@ final class MyAgilePrivacyFrontend {
 						}, ARRAY_FILTER_USE_BOTH );
 					}
 
-					if( $found )
+					if( !empty( $found ) )
 					{
-						$action = array_values( $found )[0];
-						$return_key = array_keys( $found )[0];
+						$action = reset( $found );
+						$return_key = key( $found );
 
 						if( isset( $action ) )
 						{
@@ -3714,6 +3915,16 @@ final class MyAgilePrivacyFrontend {
 							$detected_key = $action['key'];
 
 							$action_active = $action['active'];
+
+							if( $map_video_block_mode &&
+								in_array( $detected_key, array( 'youtube', 'vimeo' ), true ) &&
+								empty( $action['map_key_not_blockable'] ) )
+							{
+								$action['to_fix'] = 0;
+								$action['to_block'] = 1;
+								$action['show_inline_notify'] = 1;
+								$action['on_block_add_classes'] = trim( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'on_block_add_classes', '' ).' map_video_block' );
+							}
 
 							$no_action = false;
 
@@ -3765,6 +3976,11 @@ final class MyAgilePrivacyFrontend {
 										$v->class = $v->class.' '.$action['on_block_add_classes'];
 									}
 
+									if( $detected_key === 'google_maps' )
+									{
+										$v->class = $v->class.' map_maps_block';
+									}
+
 									$v->unblocked_src = $the_src;
 									$v->src = '';
 									$v->setAttribute( 'data-cookie-api-key', $detected_key );
@@ -3794,16 +4010,19 @@ final class MyAgilePrivacyFrontend {
 										$v->class = $v->class.' '.'map_script_fixed';
 										$v->original_src = $the_src;
 
-										if( strpos( $v->original_src, '?' ) !== false )
+										if( strpos( $the_src, '?' ) !== false )
 										{
-											$v->src = $src.'&'.$action['to_append_param'];
+											$v->src = $the_src.'&'.$action['to_append_param'];
 										}
 										else
 										{
-											$v->src = $src.'?'.$action['to_append_param'];
+											$v->src = $the_src.'?'.$action['to_append_param'];
 										}
 
-										$v->src = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $the_src );
+										if( !empty( $action['to_fix_search'] ) && !empty( $action['to_fix_replace'] ) )
+										{
+											$v->src = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $v->src );
+										}
 									}
 
 									$scan_output['iframe_src_block'][ $return_key ]['fixed'] = 1;
@@ -3846,10 +4065,10 @@ final class MyAgilePrivacyFrontend {
 
 						}, ARRAY_FILTER_USE_BOTH );
 
-						if( $found )
+						if( !empty( $found ) )
 						{
-							$action = array_values( $found )[0];
-							$return_key = array_keys( $found )[0];
+							$action = reset( $found );
+							$return_key = key( $found );
 
 							if( isset( $action ) )
 							{
@@ -3949,10 +4168,10 @@ final class MyAgilePrivacyFrontend {
 
 						}, ARRAY_FILTER_USE_BOTH );
 
-						if( $found )
+						if( !empty( $found ) )
 						{
-							$action = array_values( $found )[0];
-							$return_key = array_keys( $found )[0];
+							$action = reset( $found );
+							$return_key = key( $found );
 
 							if( isset( $action ) )
 							{
@@ -4155,10 +4374,16 @@ final class MyAgilePrivacyFrontend {
 					}, ARRAY_FILTER_USE_BOTH );
 
 
-					if( $found || $found_alt )
+					// fallback to the srcset match when the src attribute did not match
+					if( empty( $found ) && !empty( $found_alt ) )
 					{
-						$action = array_values( $found )[0];
-						$return_key = array_keys( $found )[0];
+						$found = $found_alt;
+					}
+
+					if( !empty( $found ) )
+					{
+						$action = reset( $found );
+						$return_key = key( $found );
 
 						if( isset( $action ) )
 						{
@@ -4324,8 +4549,6 @@ final class MyAgilePrivacyFrontend {
 
 		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 		$js_cookie_shield_detected_keys = array_unique( array_filter( $js_cookie_shield_detected_keys ) );
-
-		//if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $js_cookie_shield_detected_keys );
 
 		if( $this->scan_done || count( $js_cookie_shield_detected_keys ) > 0 )
 		{

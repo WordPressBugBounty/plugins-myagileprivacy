@@ -40,26 +40,12 @@
 		$the_settings['cookie_banner_horizontal_position'] = 'Center';
 		$the_settings['cookie_banner_size'] = 'sizeBoxed';
 	}
-
-	//iab and cmode check
-	$cmode_enabled = isset( $the_settings['enable_cmode_v2'] ) ? $the_settings['enable_cmode_v2'] : false;
-	$bypass_cmode_enable = isset( $the_settings['bypass_cmode_enable'] ) ? $the_settings['bypass_cmode_enable'] : false;
-	$hide_cmode_alert = true;
-
-	if( isset( $the_settings['pa'] ) &&
-		$the_settings['pa'] == 1 &&
-		!$cmode_enabled &&
-		!$bypass_cmode_enable )
-	{
-		$hide_cmode_alert = false;
-	}
 ?>
 
 <script type="text/javascript">
 	var map_settings_success_text = '<?php echo wp_kses_post( __( 'Settings updated.', 'MAP_txt' ) ); ?>';
 	var map_settings_warning_text ='<?php echo wp_kses_post( __( 'Settings saved successfully, but some mandatory data is missing. Please check the required fields', 'MAP_txt' ) ); ?>';
 	var map_settings_error_message_text = '<?php echo wp_kses_post( __( 'Unable to update Settings.', 'MAP_txt' ) ); ?>';
-	var unsaved_settings_text = '<?php echo wp_kses_post( __( 'Warning! Unsaved changes. Are you sure you want to leave?', 'MAP_txt' ) ); ?>';
 </script>
 
 
@@ -88,46 +74,6 @@ endif;
 
 <div class="wrap genericOptionsWrapper" id="my_agile_privacy_backend">
 
-	<div class="iab_cmode_alert alert alert-warning <?php if( $hide_cmode_alert ){ echo 'd-none'; } ?>">
-		<?php echo wp_kses_post( __( '<strong>Attention: You have not enabled Google Consent Mode v2.</strong>', 'MAP_txt' ) ); ?>
-		<br>
-		<?php echo wp_kses_post( __( 'This may cause issues when using tools within the Google ecosystem, such as Google Analytics, Google Tag Manager, Google Ads, or other tools. Enable Consent Mode v2 if you intend to use these tools, in compliance with regulations.', 'MAP_txt' ) ); ?>
-	</div>
-
-	<div id="mapx_banner" class="d-none">
-		<?php
-
-			$locale = MyAgilePrivacy::get_locale();
-
-			if( isset( $the_settings['pa'] ) &&
-				$the_settings['pa'] == 1 )
-			{
-				if( $locale && $locale == 'it_IT' )
-				{
-					echo '<a href="https://www.myagilepixel.com/?utm_source=referral&utm_medium=plugin-map-pro&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'/img/banner-pixel-it.png" ></a>';
-				}
-				else
-				{
-					echo '<a href="https://www.myagilepixel.com/?utm_source=referral&utm_medium=plugin-map-basic&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'/img/banner-pixel-en.png" ></a>';
-				}
-			}
-			else
-			{
-				if( $locale && $locale == 'it_IT' )
-				{
-					echo '<a href="https://www.myagilepixel.com/?utm_source=referral&utm_medium=plugin-map-pro&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'/img/banner-pixel-it.png" ></a>';
-				}
-				else
-				{
-					echo '<a href="https://www.myagilepixel.com/?utm_source=referral&utm_mediumplugin-map-basic&utm_campaign=backend" target="blank"><img class="img-fluid" src="'.esc_attr( plugin_dir_url( __DIR__  ) ).'/img/banner-pixel-en.png" ></a>';
-				}
-			}
-		?>
-
-
-	</div>
-
-
 	<?php
 	if( $wasm_environment ):
 	?>
@@ -150,7 +96,15 @@ endif;
 		?>
 
 		<div class="container-fluid mt-5">
-			<ul class="nav nav-pills mb-4" role="tablist">
+
+			<div class="mb-3">
+				<button type="button" class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
+				<span class="map_wait text-muted">
+					<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+				</span>
+			</div>
+
+			<ul class="nav nav-pills" role="tablist">
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link active position-relative" data-bs-toggle="pill" data-bs-target="#main_settings" type="button" role="tab">
@@ -206,14 +160,6 @@ endif;
 				</li>
 			</ul>
 
-			<div class="mb-3">
-				<button class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
-				<span class="map_wait text-muted">
-					<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
-				</span>
-			</div>
-
-
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="main_settings" role="tabpanel">
 					<?php include 'inc/inc.cookie_banner_tab.php'; ?>
@@ -245,7 +191,7 @@ endif;
 
 			</div> <!-- /.tab-content -->
 
-			<div class="row">
+			<div class="row mt-4">
 				<div class="col-12">
 					<input type="submit" name="update_admin_settings_form" value="<?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?>" class="button-agile btn-md" id="map-save-button" />
 					<span class="map_wait text-muted">

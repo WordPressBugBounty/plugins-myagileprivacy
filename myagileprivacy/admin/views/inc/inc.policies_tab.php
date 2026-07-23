@@ -10,6 +10,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 <div class="row">
 	<div class="col-sm-8">
 
+
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-cookie-bite"></i>
@@ -83,6 +84,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Link an external URL or pick a WordPress page of this site containing the policy.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -176,11 +181,17 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						</div>
 					</div>
 
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Adds the policy link directly to the first layer of the cookie banner.', 'MAP_txt' ) ); ?>
+					</div>
+
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
 
+			<?php map_render_help_fox( 'options_guide', 'policies' ); ?>
 		</div> <!-- consistent-box -->
+
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
@@ -260,6 +271,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Link an external URL or pick a WordPress page of this site containing the policy.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -355,10 +370,15 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						</div>
 					</div>
 
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Adds the policy link directly to the first layer of the cookie banner.', 'MAP_txt' ) ); ?>
+					</div>
+
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
 
+			<?php map_render_help_fox( 'options_guide', 'policies' ); ?>
 		</div> <!-- consistent-box -->
 
 
@@ -366,6 +386,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			if( !( isset( $rconfig ) && isset( $rconfig['keep_v1_policies'] ) && $rconfig['keep_v1_policies'] ) ):
 		?>
+
 
 
 			<div class="consistent-box">
@@ -412,6 +433,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 				</div>
 
+			<?php map_render_help_fox( 'policy_assistant' ); ?>
 			</div>
 
 		<?php

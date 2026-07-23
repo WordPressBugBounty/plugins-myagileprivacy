@@ -50,6 +50,11 @@ final class MyAgilePrivacyPoliciesHelper
 		// Prevent timeouts on large sites
 		@set_time_limit(0);
 
+		if( function_exists( "wp_raise_memory_limit" ) )
+		{
+			wp_raise_memory_limit("admin");
+		}
+
 		$defaults = array(
 			"post_type"        => array("page"),
 			"post_status"      => array("publish"),
@@ -142,6 +147,9 @@ final class MyAgilePrivacyPoliciesHelper
 				if($found) {
 					$ids[] = (int) $post_id;
 				}
+
+				wp_cache_delete( $post_id, "post_meta" );
+				wp_cache_delete( $post_id, "posts" );
 			}
 
 			wp_reset_postdata();

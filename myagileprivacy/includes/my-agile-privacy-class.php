@@ -36,6 +36,9 @@ final class MyAgilePrivacy {
 	//stored user options
 	private static $stored_options = array();
 
+	// guard flag used during programmatic post updates
+	public static $doing_internal_write = false;
+
 	/**
 	 * Core functionality of the plugin.
 	 *
@@ -54,6 +57,26 @@ final class MyAgilePrivacy {
 		$this->load_classes_and_dependencies();
 		$this->admin_hooks();
 		$this->frontend_hooks();
+		$this->boot_advanced();
+	}
+
+	/**
+	 * Boots the optional integration layer, gating each concern to the correct request context. No-op when the integration constant is absent or false.
+	 */
+	private function boot_advanced()
+	{
+		if ( !defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) || ! MAP_ENABLE_ADVANCED_INTEGRATION ) { return; }
+		if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) )
+		{
+			new MAP_Update_Checker();
+		}
+
+		if ( is_admin() )
+		{
+			MAP_Admin_Notice_Manager::instance();
+		}
+
+		do_action( 'map_base_loaded' );
 	}
 
 	/**
@@ -67,6 +90,14 @@ final class MyAgilePrivacy {
 		{
 			self::update_option( MAP_PLUGIN_ACTIVATION_DATE, time() );
 		}
+
+		if( false === self::get_option( MAP_PLUGIN_SETTINGS_FIELD, false ) )
+		{
+			add_option( MAP_PLUGIN_SETTINGS_FIELD, array( 'video_privacy_mode' => 'block' ) );
+			wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+		}
+
+		self::map_maybe_register_capabilities();
 	}
 
 	/**
@@ -81,14 +112,147 @@ final class MyAgilePrivacy {
 		if( defined( 'MAP_NOTICE_LAST_SHOW_TIME' ) && self::get_option( MAP_NOTICE_LAST_SHOW_TIME, null ) ) delete_option( MAP_NOTICE_LAST_SHOW_TIME );
 	}
 
-	//f. for check and reset do not ask license code
+	/**
+	 * Capability registry for plugin areas.
+	 */
+	public static function map_capability_registry()
+	{
+		return array(
+			'options'	=>	'myagileprivacy_edit_options',
+		);
+	}
+
+	/**
+	 * Resolves the capability for a given plugin area.
+	 */
+	public static function get_capability( $area )
+	{
+		static $cache = array();
+		static $resolving = array();
+
+		if( isset( $cache[ $area ] ) )
+		{
+			return $cache[ $area ];
+		}
+
+		$map = self::map_capability_registry();
+
+		$default = isset( $map[ $area ] ) ? $map[ $area ] : 'manage_options';
+
+		if( !empty( $resolving[ $area ] ) )
+		{
+			return $default;
+		}
+
+		$resolving[ $area ] = true;
+
+		$cap = apply_filters( 'map_' . $area . '_capability', $default, $area );
+
+		if( !is_string( $cap ) || !preg_match( '/^[A-Za-z0-9_]+$/', $cap ) )
+		{
+			$cap = $default;
+		}
+
+		$resolving[ $area ] = false;
+
+		if( did_action( 'init' ) )
+		{
+			$cache[ $area ] = $cap;
+		}
+
+		return $cap;
+	}
+
+	/**
+	 * Whether the current user can manage the plugin areas.
+	 */
+	public static function map_can_edit()
+	{
+		return current_user_can( self::get_capability( 'options' ) );
+	}
+
+	/**
+	 * Grants area capabilities to users holding manage_options.
+	 */
+	public static function map_bridge_admin_capability( $allcaps, $caps, $args )
+	{
+		if( empty( $allcaps['manage_options'] ) )
+		{
+			return $allcaps;
+		}
+
+		foreach( array_keys( self::map_capability_registry() ) as $area )
+		{
+			$cap = self::get_capability( $area );
+
+			if( in_array( $cap, $caps, true ) )
+			{
+				$allcaps[ $cap ] = true;
+			}
+		}
+
+		return $allcaps;
+	}
+
+	/**
+	 * Adds area capabilities to the administrator role.
+	 */
+	public static function map_register_capabilities()
+	{
+		$role = get_role( 'administrator' );
+
+		if( !$role )
+		{
+			return false;
+		}
+
+		foreach( array_keys( self::map_capability_registry() ) as $area )
+		{
+			$cap = self::get_capability( $area );
+
+			if( !$role->has_cap( $cap ) )
+			{
+				$role->add_cap( $cap );
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Registers area capabilities when the resolved set changes.
+	 */
+	public static function map_maybe_register_capabilities()
+	{
+		$caps = array();
+
+		foreach( array_keys( self::map_capability_registry() ) as $area )
+		{
+			$caps[] = self::get_capability( $area );
+		}
+
+		sort( $caps );
+
+		$signature = implode( ',', $caps );
+
+		if( self::get_option( MAP_PLUGIN_CAPS_REGISTERED, '' ) === $signature )
+		{
+			return;
+		}
+
+		if( self::map_register_capabilities() )
+		{
+			self::update_option( MAP_PLUGIN_CAPS_REGISTERED, $signature );
+		}
+	}
+
+	// resets the flag once its timeout has elapsed
 	public static function checkDoNotAskLicenseCode()
 	{
 		$the_settings = MyAgilePrivacy::get_settings();
 
 		$now = time();
 
-		//don't ask license code part
 		if(
 			isset( $the_settings['dont_ask_license_code'] ) &&
 			$the_settings['dont_ask_license_code'] &&
@@ -299,6 +463,8 @@ final class MyAgilePrivacy {
 		add_action( 'wp_ajax_map_check_consent_mode_status', array( $plugin_frontend, 'map_check_consent_mode_status_callback' ) );
 		add_action( 'wp_ajax_nopriv_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 		add_action( 'wp_ajax_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
+		add_action( 'wp_ajax_nopriv_map_report_gtm_gateway', array( $plugin_frontend, 'map_report_gtm_gateway_callback' ) );
+		add_action( 'wp_ajax_map_report_gtm_gateway', array( $plugin_frontend, 'map_report_gtm_gateway_callback' ) );
 
 		if( isset( $the_settings['pa'] ) &&
 			$the_settings['pa'] == 1 )
@@ -414,6 +580,9 @@ final class MyAgilePrivacy {
 		/* admin callback actions */
 		add_action( 'wp_ajax_check_license_status', array( $plugin_admin, 'check_license_status' ) );
 
+		//capability mapping
+		add_filter( 'user_has_cap', array( 'MyAgilePrivacy', 'map_bridge_admin_capability' ), 10, 3 );
+		add_filter( 'wp_insert_post_data', array( $plugin_admin, 'map_lock_policy_status' ), 10, 2 );
 
 		if( !is_admin() )
 		{
@@ -437,6 +606,7 @@ final class MyAgilePrivacy {
 
 		//admin init && metabox
 		add_action( 'admin_init', array( $plugin_admin, 'admin_init_and_add_meta_box' ) );
+		add_action( 'admin_init', array( 'MyAgilePrivacy', 'map_maybe_register_capabilities' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_COOKIES, array( $plugin_admin, 'save_custom_metabox_cookies' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_POLICY, array( $plugin_admin, 'save_custom_metabox_policies' ) );
 
@@ -540,6 +710,8 @@ final class MyAgilePrivacy {
 
 		add_action( 'admin_footer', array( $plugin_admin, 'admin_auto_enable_cookie' ) );
 		add_action( 'admin_footer', array( $plugin_admin, 'admin_clear_logfile' ) );
+		add_action( 'admin_footer', array( $plugin_admin, 'map_reverse_pixel_cookies_footer' ) );
+		add_action( 'deactivated_plugin', array( $plugin_admin, 'map_on_pixel_deactivated' ), 10, 1 );
 
 		if( defined( 'POLYLANG_FILE' ) &&
 			function_exists( 'pll_default_language' ) &&
@@ -590,7 +762,7 @@ final class MyAgilePrivacy {
 	}
 
 	/**
-	 * Get rconfig settings.
+	 * Returns the stored configuration array.
 	 */
 	public static function get_rconfig()
 	{
@@ -720,6 +892,8 @@ final class MyAgilePrivacy {
 	            case 'enable_clarity_cmode':
 	            case 'enable_cmode_v2':
 	            case 'enable_cmode_url_passthrough':
+	            case 'iab_enable_advertiser_consent_mode':
+	            case 'disable_gtm_gateway_detection':
 	            case 'cmode_v2_forced_off_ga4_advanced':
 	            case 'bypass_cmode_enable':
 	            case 'cmode_v2_js_on_error':
@@ -729,6 +903,7 @@ final class MyAgilePrivacy {
 	            case 'add_personal_policy_to_first_layer':
 	            case 'dont_ask_license_code':
 	            case 'send_ga4_event_on_consent_change':
+	            case 'stats_enabled':
 	            case 'missing_api_support':
 	                $logic = 'bool';
 	                break;
@@ -817,6 +992,10 @@ final class MyAgilePrivacy {
 	                $logic = 'raw';
 	                break;
 
+	            case 'video_privacy_mode':
+	                $logic = 'video_privacy_mode';
+	                break;
+
 	            // default
 	            default:
 	                $logic = 'text';
@@ -879,6 +1058,10 @@ final class MyAgilePrivacy {
 
 	        case 'raw':
 	            $ret = $value;
+	            break;
+
+	        case 'video_privacy_mode':
+	            $ret = ( $value === 'block' ) ? 'block' : 'anonymous';
 	            break;
 
 	        case 'text':
@@ -945,7 +1128,7 @@ final class MyAgilePrivacy {
 	        }
 
 	        if( ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
-	            ( isset($_GET['rest_route'] ) && strpos( $_GET['rest_route'], '/', 0 ) === 0) )
+	            ( isset($_GET['rest_route'] ) && is_string( $_GET['rest_route'] ) && strpos( $_GET['rest_route'], '/', 0 ) === 0) )
 	        {
 	            return 'true';
 	        }
@@ -1103,8 +1286,11 @@ final class MyAgilePrivacy {
 	    {
 	        $url_skip_regexp = $rconfig['url_skip_regexp'];
 
+	        if( !is_array( $url_skip_regexp ) ) { $url_skip_regexp = array(); }
+
 	        foreach( $url_skip_regexp as $regexp )
 	        {
+	            if( !is_string( $regexp ) || empty( $regexp ) ) { continue; }
 	            if( ( $current_href && preg_match( $regexp, $current_href ) ) ||
 	                ( $alt_current_href && preg_match( $regexp, $alt_current_href ) ) )
 	            {
@@ -1171,6 +1357,51 @@ final class MyAgilePrivacy {
 
 
 	/**
+	 * Whitelist of settings keys that can be exported and imported.
+	 *
+	 * Explicit allow-list: only genuine, portable user-configuration keys are listed below; anything not listed is intentionally non-portable.
+	 */
+	public static function get_portable_settings_keys()
+	{
+		return array(
+			// Banner / UI
+			'is_on', 'is_bottom', 'cookie_banner_vertical_position', 'cookie_banner_horizontal_position',
+			'cookie_banner_size', 'cookie_banner_shadow', 'cookie_banner_animation', 'floating_banner',
+			'elements_border_radius', 'heading_background_color', 'heading_text_color', 'close_icon_color',
+			'title_is_on', 'bar_heading_text', 'background', 'text', 'text_size', 'text_lineheight',
+			'show_buttons_icons', 'button_accept_link_color', 'button_accept_button_color',
+			'button_reject_link_color', 'button_reject_button_color', 'button_customize_link_color',
+			'button_customize_button_color', 'accept_button_animation_delay', 'accept_button_animation_repeat',
+			'accept_button_animation_effect', 'map_inline_notify_color', 'map_inline_notify_background',
+			'with_css_effects', 'consent_widget_style', 'disable_logo', 'custom_css', 'notify_div_id',
+			'notify_position_horizontal', 'showagain_div_id', 'showagain_tab', 'wrap_shortcodes',
+			'layer_1_button_order',
+			// Policy (URLs / flags, not page IDs)
+			'cookie_policy_link', 'is_cookie_policy_url', 'cookie_policy_url', 'is_personal_data_policy_url',
+			'personal_data_policy_url', 'add_cookie_policy_to_first_layer', 'add_personal_policy_to_first_layer',
+			// Privacy features
+			'blocked_content_notify', 'blocked_content_notify_auto_shutdown',
+			'blocked_content_notify_auto_shutdown_time', 'video_privacy_mode', 'maps_block', 'captcha_block',
+			'enforce_youtube_privacy', 'show_ntf_bar_on_not_yet_consent_choice', 'forced_legacy_mode', 'is_dm',
+			// Consent Mode / GTM
+			'enable_iab_tcf', 'iab_enable_advertiser_consent_mode', 'enable_microsoft_cmode',
+			'microsoft_consent_ad_storage', 'enable_clarity_cmode', 'clarity_consent_ad_storage',
+			'clarity_consent_analytics_storage', 'bypass_cmode_enable', 'enable_cmode_v2',
+			'enable_cmode_url_passthrough', 'disable_gtm_gateway_detection', 'cmode_v2_implementation_type',
+			'cmode_v2_gtag_ad_storage', 'cmode_v2_gtag_ad_user_data', 'cmode_v2_gtag_ad_personalization',
+			'cmode_v2_gtag_analytics_storage', 'cmode_v2_forced_off_ga4_advanced',
+			// Scanner / i18n / update / misc
+			'scanner_compatibility_mode', 'scanner_hook_type', 'scanner_start_hook_prio', 'scanner_end_hook_prio',
+			'enable_language_fallback', 'language_fallback_locale', 'enable_metadata_sync', 'forced_auto_update',
+			'website_name', 'alt_accepted_all_cookie_name', 'alt_accepted_something_cookie_name',
+			'fixed_translations_encoded',
+			// Policy Assistant (nested; inner prefix-whitelist applied on import)
+			'site_and_policy_settings',
+		);
+	}
+
+
+	/**
 	 * Returns default settings
 	 * @access   public
 	 */
@@ -1197,6 +1428,10 @@ final class MyAgilePrivacy {
 			'customer_area_colorado'						=>	false,
 			'customer_area_connecticut'						=>	false,
 			'customer_area_delaware'						=>	false,
+			'customer_area_indiana'							=>	false,
+			'customer_area_iowa'							=>	false,
+			'customer_area_kentucky'						=>	false,
+			'customer_area_maryland'						=>	false,
 			'customer_area_minnesota'						=>	false,
 			'customer_area_montana'							=>	false,
 			'customer_area_nebraska'						=>	false,
@@ -1204,10 +1439,14 @@ final class MyAgilePrivacy {
 			'customer_area_new_hampshire'					=>	false,
 			'customer_area_new_jersey'						=>	false,
 			'customer_area_oregon'							=>	false,
+			'customer_area_rhode_island'					=>	false,
 			'customer_area_tennessee'						=>	false,
 			'customer_area_texas'							=>	false,
 			'customer_area_utah'							=>	false,
 			'customer_area_virginia'						=>	false,
+
+			// per-country override map (ISO alpha-2 lowercase => bool)
+			'geo_force_optout'								=>	array(),
 
 
 			'regulation_gdpr_like'							=>	false,
@@ -1218,6 +1457,10 @@ final class MyAgilePrivacy {
 			'regulation_cpa'								=>	false,
 			'regulation_ctdpa'								=>	false,
 			'regulation_dpdpa'								=>	false,
+			'regulation_incdpa'								=>	false,
+			'regulation_icdpa'								=>	false,
+			'regulation_kcdpa'								=>	false,
+			'regulation_modpa'								=>	false,
 			'regulation_mcdpa'								=>	false,
 			'regulation_mtcdpa'								=>	false,
 			'regulation_ndpa'								=>	false,
@@ -1225,6 +1468,7 @@ final class MyAgilePrivacy {
 			'regulation_nhpa'								=>	false,
 			'regulation_njdpa'								=>	false,
 			'regulation_ocpa'								=>	false,
+			'regulation_ridtppa'							=>	false,
 			'regulation_tipa'								=>	false,
 			'regulation_tdpsa'								=>	false,
 			'regulation_ucpa'								=>	false,
@@ -1254,6 +1498,8 @@ final class MyAgilePrivacy {
 			'site_features_reviews_collect'					=>	false,
 			'site_features_minors_data'						=>	false,
 			'site_features_sensitive_data'					=>	false,
+			'site_features_social_login'					=>	false,
+			'site_features_advertising'						=>	false,
 			'outside_adequate_suppliers'					=>	false,
 
 
@@ -1294,8 +1540,8 @@ final class MyAgilePrivacy {
 			'button_reject_button_color' 				=> 	'#3d3d3d',
 			'button_customize_link_color' 				=> 	'#ffffff',
 			'button_customize_button_color' 			=> 	'#3d3d3d',
-			'map_inline_notify_color'					=>	'#444444',
-			'map_inline_notify_background'				=>	'#FFF3CD',
+			'map_inline_notify_color'					=>	'#324962',
+			'map_inline_notify_background'				=>	'#d1e7ff',
 			'website_name'								=>	'',
 			'license_code'								=>	'',
 			'license_user_status'						=>	'Demo License',
@@ -1330,7 +1576,7 @@ final class MyAgilePrivacy {
 			'blocked_content_notify'					=>	false,
 			'blocked_content_notify_auto_shutdown'		=>	true,
 			'blocked_content_notify_auto_shutdown_time'	=>	3000,
-			'video_advanced_privacy'					=>	true,
+			'video_privacy_mode'						=>	'anonymous',
 			'maps_block'								=>	true,
 			'captcha_block'								=>	true,
 			'parse_config'								=>	null,
@@ -1365,6 +1611,8 @@ final class MyAgilePrivacy {
 			'bypass_cmode_enable'						=> 	false,
 			'enable_cmode_v2'							=>	false,
 			'enable_cmode_url_passthrough'				=> 	false,
+			'iab_enable_advertiser_consent_mode'		=>	true,
+			'disable_gtm_gateway_detection'				=>	false,
 			'cmode_v2_implementation_type'				=> 	'native',
 			'cmode_v2_gtag_ad_storage'					=> 	'denied',
 			'cmode_v2_gtag_ad_user_data'				=> 	'denied',
@@ -1390,6 +1638,8 @@ final class MyAgilePrivacy {
 			'add_personal_policy_to_first_layer'		=>	true,
 
 			'send_ga4_event_on_consent_change'			=>	false,
+
+			'stats_enabled'								=>	false,
 
 			'missing_api_support'						=> 	false,
 			'missing_api_support_timestamp'				=> 	null,
@@ -1625,6 +1875,8 @@ final class MyAgilePrivacy {
 			'notify_position_horizontal'				=> 	$the_settings['notify_position_horizontal'],
 			'showagain_div_id'							=> 	$the_settings['showagain_div_id'],
 			'blocked_content_text'						=>	esc_html( $the_translations[ $current_lang ]['blocked_content'] ).'.',
+			'blocked_video_text'						=>	( isset( $the_translations[ $current_lang ]['blocked_video'] ) ) ? esc_html( $the_translations[ $current_lang ]['blocked_video'] ).'.' : esc_html( $the_translations[ $current_lang ]['blocked_content'] ).'.',
+			'blocked_maps_text'							=>	( isset( $the_translations[ $current_lang ]['blocked_maps'] ) ) ? esc_html( $the_translations[ $current_lang ]['blocked_maps'] ).'.' : esc_html( $the_translations[ $current_lang ]['blocked_content'] ).'.',
 			'inline_notify_color'						=>	$the_settings['map_inline_notify_color'],
 			'inline_notify_background'					=>	$the_settings['map_inline_notify_background'],
 			'blocked_content_notify_auto_shutdown_time'	=>	$the_settings['blocked_content_notify_auto_shutdown_time'],
@@ -1672,7 +1924,7 @@ final class MyAgilePrivacy {
 	}
 
 	/**
-	 * Makes a call to the WP License Manager API.
+	 * Sends a POST request to the remote API endpoint.
 	 *
 	 * @param $params   array   The parameters for the API call
 	 * @return          array   The API response
@@ -1691,7 +1943,7 @@ final class MyAgilePrivacy {
 
 		// Set up arguments for POST request
 		$args = array(
-			'sslverify' =>	false,
+			'sslverify' =>	!( defined( 'MAP_API_SKIP_SSL_VERIFY' ) && MAP_API_SKIP_SSL_VERIFY ),
 			'headers' 	=>	array(
 				'Referer' 	=> $site_url,
 			),
@@ -1704,49 +1956,23 @@ final class MyAgilePrivacy {
 
 		if( is_wp_error( $response ) || !( $http_code == '200' || $http_code == '429' ) )
 		{
-			//let's try http
-			$http_response = wp_remote_post( str_replace( 'https://','http://', $url ), $args );
-			$http_response_code = wp_remote_retrieve_response_code( $http_response );
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $response );
 
-			if( is_wp_error( $http_response ) || !( $http_response_code == '200' || $http_response_code == '429' ) )
+			$error_code = null;
+			$error_message = null;
+
+			if( isset( $response->errors ) && is_array( $response->errors ) && !empty( $response->errors ) )
 			{
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $http_response );
-
-				$error_code = null;
-				$error_message = null;
-
-				if( isset( $response->errors ) && is_array( $response->errors ) && !empty( $response->errors ) )
-				{
-					reset( $response->errors );
-					$error_code = key( $response->errors );
-					$error_message = $response->errors[ $error_code ][0];
-				}
-
-				$error_code_http = null;
-				$error_message_http = null;
-
-				if( isset( $http_response->errors ) && is_array( $http_response->errors ) && !empty( $http_response->errors ) )
-				{
-					reset( $http_response->errors );
-					$error_code_http = key( $http_response->errors );
-					$error_message_http = $http_response->errors[ $error_code_http ][0];
-				}
-
-				$result = array(
-					'internal_error_message'	=>	"$error_code -> $error_message , $error_code_http -> $error_message_http ( $http_code/ $http_response_code )",
-				);
-
-				return $result;
-			}
-			else
-			{
-				$response_body = wp_remote_retrieve_body( $http_response );
-				$result = json_decode( $response_body, true );
-
-				return $result;
+				reset( $response->errors );
+				$error_code = key( $response->errors );
+				$error_message = $response->errors[ $error_code ][0];
 			}
 
-			return false;
+			$result = array(
+				'internal_error_message'	=>	"$error_code -> $error_message ( $http_code )",
+			);
+
+			return $result;
 		}
 
 		$response_body = wp_remote_retrieve_body( $response );
@@ -1814,6 +2040,13 @@ final class MyAgilePrivacy {
 	public static function download_remote_file( $remote_filename, $local_filename, $version_number=null, $alt_local_filename=null )
 	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "download_remote_file call with param remote_filename=$remote_filename, local_filename=$local_filename, version_number=$version_number, alt_local_filename=$alt_local_filename" );
+
+		$allowed_extensions = array( 'js', 'css', 'json' );
+
+		if( !in_array( strtolower( pathinfo( $local_filename, PATHINFO_EXTENSION ) ), $allowed_extensions, true ) )
+		{
+			return false;
+		}
 
 		$directory = MyAgilePrivacy::get_base_directory_for_cache();
 
@@ -1936,7 +2169,7 @@ final class MyAgilePrivacy {
 			copy( $tmp_file, $local_alt_filename_fullpath );
 		}
 
-		wp_delete_file( $tmp_file );
+		if( file_exists( $tmp_file ) ) { wp_delete_file( $tmp_file ); }
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'download_remote_file -> remote file downloaded to '.$local_filename_fullpath . ' from '.$remote_filename );
 
@@ -1977,7 +2210,7 @@ final class MyAgilePrivacy {
 				} else {
 					$this_filepath = $directory . DIRECTORY_SEPARATOR . $object;
 
-					wp_delete_file( $this_filepath );
+					if( file_exists( $this_filepath ) ) { wp_delete_file( $this_filepath ); }
 				}
 			}
 		}
@@ -2139,13 +2372,13 @@ final class MyAgilePrivacy {
 	 *
 	 * @return int Number of files successfully invalidated.
 	 */
-	public static function flush_json_cache()
+	public static function flush_json_cache( $prefix = '' )
 	{
 	    $dir = MyAgilePrivacy::get_json_cache_directory();
 	    if( !$dir || !is_dir( $dir ) ) return 0;
 
 	    $invalidated = 0;
-	    $files = glob( $dir . '*.json' );
+	    $files = glob( $dir . $prefix . '*.json' );
 
 	    if( !is_array( $files ) ) return 0;
 
@@ -2245,7 +2478,13 @@ final class MyAgilePrivacy {
 			'REMOTE_ADDR',
 			'PROXY_REMOTE_ADDR',
 			'SSL_CLIENT_CERT',
-			'SSL_SERVER_CERT'
+			'SSL_SERVER_CERT',
+			'PHP_AUTH_USER',
+			'PHP_AUTH_PW',
+			'PHP_AUTH_DIGEST',
+			'HTTP_AUTHORIZATION',
+			'HTTP_PROXY_AUTHORIZATION',
+			'REDIRECT_HTTP_AUTHORIZATION'
 		);
 
 		foreach( $_SERVER as $k => $v )
@@ -2367,7 +2606,7 @@ final class MyAgilePrivacy {
 
 		$is_pa            = isset( $the_settings['pa'] ) && $the_settings['pa'] == 1;
 
-		$dont_ask_license = isset( $the_settings['dont_ask_license_code'] ) && $the_settings['dont_ask_license_code'];
+		$dont_ask_license = isset( $the_settings['dont_ask_license_code'] ) && $the_settings['dont_ask_license_code'] && !$is_pa;
 		$has_license_code = isset( $the_settings['license_code'] ) && $the_settings['license_code'] !== '';
 
 		$enable_cmode     = isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'];
@@ -2381,7 +2620,7 @@ final class MyAgilePrivacy {
 
 		$license_ok          = $is_pa && $has_license_code;
 		$consent_mode_ok     = $is_pa && $enable_cmode;
-		$consent_status_skip = ($the_settingscan_is_learning || $the_settingscan_is_turned_off) || $bypass_cmode;
+		$consent_status_skip = $the_settingscan_is_learning || $the_settingscan_is_turned_off;
 		$consent_status_ok   = $is_pa
 			&& ( $the_settingscan_mode === 'config_finished' || $the_settingscan_mode === 'learning_mode' )
 			&& ( $enable_cmode || $bypass_cmode );
@@ -2868,13 +3107,18 @@ final class MyAgilePrivacy {
 			$current_lang = $the_settings['default_locale'];
 		}
 
+		//always return a canonical 4char key (fallback en_US) so every downstream
+		//the_translations lookup and JS config stays safe
+		$current_lang_normalized = self::normalizeLocaleTo4Char( $current_lang );
+		$current_lang = $current_lang_normalized ? $current_lang_normalized : 'en_US';
+
 		return $current_lang;
 	}
 
 	//f for translating 2 to 4 char lang code
 	public static function translate2charTo4CharLangCode( $lang = 'en' )
 	{
-		foreach( MAP_SUPPORTED_LANGUAGES as $lang_key => $lang_value )
+		foreach( MyAgilePrivacy::get_supported_languages() as $lang_key => $lang_value )
 		{
 			if( $lang_value['2char'] == $lang )
 			{
@@ -2885,6 +3129,133 @@ final class MyAgilePrivacy {
 		return null;;
 	}
 
+	//f for normalizing any locale string to a supported canonical 4char key (or null)
+	public static function normalizeLocaleTo4Char( $locale )
+	{
+		if( !is_string( $locale ) || $locale === '' )
+		{
+			return null;
+		}
+
+		//local copy: isset() is not allowed on a function-call array offset under PHP 5.6
+		$supported = MyAgilePrivacy::get_supported_languages();
+
+		// (a) exact match as a canonical key (de_DE, en_US, el, fi, hr, uk...)
+		if( isset( $supported[ $locale ] ) )
+		{
+			return $locale;
+		}
+
+		// (b) strip _formal / _informal suffix and retry exact match (de_DE_formal -> de_DE)
+		$stripped = preg_replace( '/_(formal|informal)$/', '', $locale );
+		if( $stripped !== $locale && isset( $supported[ $stripped ] ) )
+		{
+			return $stripped;
+		}
+
+		// (c) language part before the first "_" or "-" matched against the 2char codes
+		$cut = strcspn( $stripped, '_-' );
+		$prefix = substr( $stripped, 0, $cut );
+		$by_prefix = self::translate2charTo4CharLangCode( $prefix );
+		if( $by_prefix )
+		{
+			return $by_prefix;
+		}
+
+		// (d) first 2 chars matched against the 2char codes (safety net)
+		$by_two = self::translate2charTo4CharLangCode( substr( $stripped, 0, 2 ) );
+		if( $by_two )
+		{
+			return $by_two;
+		}
+
+		// (e) nothing matched
+		return null;
+	}
+
+	//f for normalizing any locale string to a supported 2char code (or null)
+	public static function normalizeLocaleTo2Char( $locale )
+	{
+		$four = self::normalizeLocaleTo4Char( $locale );
+
+		if( !$four )
+		{
+			return null;
+		}
+
+		$supported = MyAgilePrivacy::get_supported_languages();
+		return $supported[ $four ][ '2char' ];
+	}
+
+	//f for resolving a country iso2 code to its display name for the given locale
+	public static function localize_country_name( $iso2, $locale )
+	{
+		static $localized_countries = null;
+		static $available_countries = null;
+
+		if( !is_string( $iso2 ) || $iso2 === '' )
+		{
+			return '';
+		}
+
+		$iso2 = strtolower( $iso2 );
+
+		if( null === $localized_countries )
+		{
+			$localized_countries = self::get_option( MAP_PLUGIN_LOCALIZED_COUNTRIES, array() );
+
+			if( !is_array( $localized_countries ) )
+			{
+				$localized_countries = array();
+			}
+		}
+
+		$lang_2_char = self::normalizeLocaleTo2Char( $locale );
+
+		if( !$lang_2_char )
+		{
+			$lang_2_char = 'en';
+		}
+
+		if( isset( $localized_countries[ $lang_2_char ][ $iso2 ] ) &&
+			is_string( $localized_countries[ $lang_2_char ][ $iso2 ] ) &&
+			$localized_countries[ $lang_2_char ][ $iso2 ] !== '' )
+		{
+			return $localized_countries[ $lang_2_char ][ $iso2 ];
+		}
+
+		if( isset( $localized_countries[ 'en' ][ $iso2 ] ) &&
+			is_string( $localized_countries[ 'en' ][ $iso2 ] ) &&
+			$localized_countries[ 'en' ][ $iso2 ] !== '' )
+		{
+			return $localized_countries[ 'en' ][ $iso2 ];
+		}
+
+		if( null === $available_countries )
+		{
+			$available_countries = self::get_option( MAP_PLUGIN_COUNTRIES, array() );
+
+			if( !is_array( $available_countries ) )
+			{
+				$available_countries = array();
+			}
+		}
+
+		if( isset( $available_countries[ 'not_adequate' ][ $iso2 ] ) &&
+			is_string( $available_countries[ 'not_adequate' ][ $iso2 ] ) )
+		{
+			return $available_countries[ 'not_adequate' ][ $iso2 ];
+		}
+
+		if( isset( $available_countries[ 'all_supported_countries' ][ $iso2 ] ) &&
+			is_string( $available_countries[ 'all_supported_countries' ][ $iso2 ] ) )
+		{
+			return $available_countries[ 'all_supported_countries' ][ $iso2 ];
+		}
+
+		return '';
+	}
+
 	//f for returning current and supported languages
 	public static function getCurrentAndSupportedLanguages()
 	{
@@ -2893,7 +3264,7 @@ final class MyAgilePrivacy {
 
 		$the_settings = self::get_settings();
 
-		$MAP_SUPPORTED_LANGUAGES = MAP_SUPPORTED_LANGUAGES;
+		$MAP_SUPPORTED_LANGUAGES = MyAgilePrivacy::get_supported_languages();
 
 		$return_data = array(
 			'with_multilang'				=>	false,
@@ -3051,8 +3422,8 @@ final class MyAgilePrivacy {
 			}
 
 			$return_data['language_list_codes'] = $language_list_codes;
-			$return_data['current_language'] = MAP_SUPPORTED_LANGUAGES[ $current_language ][ '2char' ];
-			$return_data['multilang_default_lang'] = MAP_SUPPORTED_LANGUAGES[ $multilang_default_lang ][ '2char' ];
+			$return_data['current_language'] = self::normalizeLocaleTo2Char( $current_language );
+			$return_data['multilang_default_lang'] = self::normalizeLocaleTo2Char( $multilang_default_lang );
 		}
 
 		//Weglot
@@ -3083,8 +3454,8 @@ final class MyAgilePrivacy {
 			$current_language = function_exists( 'weglot_get_current_language' ) ? weglot_get_current_language() : get_locale();
 
 			$return_data['language_list_codes'] = $language_list_codes;
-			$return_data['current_language'] = $current_language;
-			$return_data['multilang_default_lang'] = $multilang_default_lang;
+			$return_data['current_language'] = self::normalizeLocaleTo2Char( $current_language );
+			$return_data['multilang_default_lang'] = self::normalizeLocaleTo2Char( $multilang_default_lang );
 		}
 
 
@@ -3106,7 +3477,7 @@ final class MyAgilePrivacy {
 		{
 
 			$website_l_allowed = array(
-				MAP_SUPPORTED_LANGUAGES[ $the_settings['default_locale'] ][ '2char' ]
+			 self::normalizeLocaleTo2Char( $the_settings['default_locale'] )
 			);
 
 			//check $return_data['current_language']
@@ -3129,7 +3500,7 @@ final class MyAgilePrivacy {
 				isset( $the_settings['language_fallback_locale'] ) &&
 				$the_settings['language_fallback_locale'] )
 			{
-				$website_l_allowed[] = MAP_SUPPORTED_LANGUAGES[ $the_settings['language_fallback_locale'] ][ '2char' ];
+				$website_l_allowed[] = self::normalizeLocaleTo2Char( $the_settings['language_fallback_locale'] );
 			}
 
 			$website_l_allowed = array_unique( $website_l_allowed );
@@ -3164,6 +3535,69 @@ final class MyAgilePrivacy {
 		return $return_data;
 	}
 
+	// Strips ONLY the not-selected regulation-family blocks (map_<regulation>_text + aggregates)
+	// from a raw policy source, leaving tokens and every other conditional block intact.
+	// Uses the same booleans/regex as the compile; the removed blocks match the preview. Idempotent.
+	public static function internalMAPStripUnselectedRegulations( $text )
+	{
+		if( ! is_string( $text ) || $text === '' )
+		{
+			return $text;
+		}
+
+		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
+		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
+		$regulationList = $MyAgilePrivacyRegulationHelper->getRegulationList();
+
+		if( ! is_array( $templateConfig ) )
+		{
+			return $text;
+		}
+
+		$keys_to_check = array();
+
+		if( is_array( $regulationList ) )
+		{
+			foreach( $regulationList as $regulation )
+			{
+				$keys_to_check[] = 'map_'.$regulation.'_text';
+			}
+		}
+
+		$keys_to_check[] = 'map_any_gdpr_like_text';
+		$keys_to_check[] = 'map_any_gdpr_like_text_off';
+		$keys_to_check[] = 'map_any_usa_like_text';
+		$keys_to_check[] = 'map_any_usa_text';
+
+		foreach( $keys_to_check as $key )
+		{
+			if( ! isset( $templateConfig[ $key ] ) || $templateConfig[ $key ] )
+			{
+				continue;
+			}
+
+			$patterns = array(
+				'#(<p class="'.$key.'">).*?(</p>)#s',
+				'#(<span class="'.$key.'">).*?(</span>)#s',
+				'#(<ul class="'.$key.'">).*?(</ul>)#s',
+				'#(<li class="'.$key.'">).*?(</li>)#s',
+				'#(<strong class="'.$key.'">).*?(</strong>)#s',
+			);
+
+			foreach( $patterns as $pattern )
+			{
+				$replaced = preg_replace( $pattern, '', $text );
+
+				if( null !== $replaced )
+				{
+					$text = $replaced;
+				}
+			}
+		}
+
+		return $text;
+	}
+
 	//f. for text cleanup & compile
 	public static function internalMAPCleanupAndCompilePolicy( $text, $the_translations, $current_lang, $caller, $cookie_list_html )
 	{
@@ -3171,7 +3605,7 @@ final class MyAgilePrivacy {
 		$rconfig = MyAgilePrivacy::get_rconfig();
 		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
 		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
-		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig();
+		$templateConfig = $MyAgilePrivacyRegulationHelper->getTemplateConfig( $current_lang );
 		$regulationList = $MyAgilePrivacyRegulationHelper->getRegulationList();
 		$availableCountries = $MyAgilePrivacyRegulationHelper->getAvailableCountries();
 
@@ -3183,16 +3617,9 @@ final class MyAgilePrivacy {
 		{
 			$the_url = '#';
 
-			if( defined( 'MAP_EXPIRED_CALLBACK_URL') && MAP_EXPIRED_CALLBACK_URL )
+			if( defined( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT' ) )
 			{
-				$the_key = 'default';
-
-				if( $current_lang== 'it_IT' )
-				{
-					$the_key = $current_lang;
-				}
-
-				$the_url = MAP_EXPIRED_CALLBACK_URL[ $the_key ];
+				$the_url = ( $current_lang === 'it_IT' ) ? MAP_EXPIRED_CALLBACK_URL_IT : MAP_EXPIRED_CALLBACK_URL_DEFAULT;
 			}
 
 
@@ -3283,6 +3710,7 @@ final class MyAgilePrivacy {
 			$text = preg_replace( '#(<span class="map_marketing_consent">).*?(</span>)#s', '' , $text );
 			$text = preg_replace( '#(<ul class="map_marketing_consent">).*?(</ul>)#s', '' , $text );
 			$text = preg_replace( '#(<li class="map_marketing_consent">).*?(</li>)#s', '' , $text );
+			$text = preg_replace( '#(<strong class="map_marketing_consent">).*?(</strong>)#s', '' , $text );
 		}
 
 		if( $remove_dpo_text )
@@ -3291,6 +3719,7 @@ final class MyAgilePrivacy {
 			$text = preg_replace( '#(<span class="map_dpo_text">).*?(</span>)#s', '' , $text );
 			$text = preg_replace( '#(<ul class="map_dpo_text">).*?(</ul>)#s', '' , $text );
 			$text = preg_replace( '#(<li class="map_dpo_text">).*?(</li>)#s', '' , $text );
+			$text = preg_replace( '#(<strong class="map_dpo_text">).*?(</strong>)#s', '' , $text );
 		}
 
 		if( $remove_dpo_other_text )
@@ -3299,6 +3728,7 @@ final class MyAgilePrivacy {
 			$text = preg_replace( '#(<span class="map_dpo_other_text">).*?(</span>)#s', '' , $text );
 			$text = preg_replace( '#(<ul class="map_dpo_other_text">).*?(</ul>)#s', '' , $text );
 			$text = preg_replace( '#(<li class="map_dpo_other_text">).*?(</li>)#s', '' , $text );
+			$text = preg_replace( '#(<strong class="map_dpo_other_text">).*?(</strong>)#s', '' , $text );
 		}
 		else
 		{
@@ -3356,6 +3786,7 @@ final class MyAgilePrivacy {
 					$text = preg_replace( '#(<span class="'.$key.'">).*?(</span>)#s', $empty_text , $text );
 					$text = preg_replace( '#(<ul class="'.$key.'">).*?(</ul>)#s', $empty_text , $text );
 					$text = preg_replace( '#(<li class="'.$key.'">).*?(</li>)#s', $empty_text , $text );
+					$text = preg_replace( '#(<strong class="'.$key.'">).*?(</strong>)#s', $empty_text , $text );
 
 					$unset_list[] = $key;
 				}
@@ -3380,6 +3811,7 @@ final class MyAgilePrivacy {
 				$text = preg_replace( '#(<span class="'.$key.'">).*?(</span>)#s', $empty_text , $text );
 				$text = preg_replace( '#(<ul class="'.$key.'">).*?(</ul>)#s', $empty_text , $text );
 				$text = preg_replace( '#(<li class="'.$key.'">).*?(</li>)#s', $empty_text , $text );
+				$text = preg_replace( '#(<strong class="'.$key.'">).*?(</strong>)#s', $empty_text , $text );
 
 				$unset_list[] = $key;
 			}
@@ -3406,6 +3838,7 @@ final class MyAgilePrivacy {
 						$text = preg_replace( '#(<span class="'.$templateConfigKey.'">).*?(</span>)#s', $empty_text , $text );
 						$text = preg_replace( '#(<ul class="'.$templateConfigKey.'">).*?(</ul>)#s', $empty_text , $text );
 						$text = preg_replace( '#(<li class="'.$templateConfigKey.'">).*?(</li>)#s', $empty_text , $text );
+						$text = preg_replace( '#(<strong class="'.$templateConfigKey.'">).*?(</strong>)#s', $empty_text , $text );
 
 						$unset_list[] = $templateConfigKey;
 					}
@@ -3803,6 +4236,45 @@ final class MyAgilePrivacy {
 		return 	$locale;
 	}
 
+	//f. for getting supported languages
+	public static function get_supported_languages()
+	{
+		return array(
+			'en_US'	=>	array( 'label' => 'English',           'en_label' => 'English',      '2char' => 'en' ),
+			'it_IT'	=>	array( 'label' => 'Italiano',          'en_label' => 'Italian',      '2char' => 'it' ),
+			'fr_FR'	=>	array( 'label' => 'Français',          'en_label' => 'French',       '2char' => 'fr' ),
+			'de_DE'	=>	array( 'label' => 'Deutsch',           'en_label' => 'German',       '2char' => 'de' ),
+			'es_ES'	=>	array( 'label' => 'Español',           'en_label' => 'Spanish',      '2char' => 'es' ),
+			'pt_PT'	=>	array( 'label' => 'Português',         'en_label' => 'Portuguese',   '2char' => 'pt' ),
+			'nl_NL'	=>	array( 'label' => 'Nederlands',        'en_label' => 'Dutch',        '2char' => 'nl' ),
+			'pl_PL'	=>	array( 'label' => 'Polski',            'en_label' => 'Polish',       '2char' => 'pl' ),
+			'el'	=>	array( 'label' => 'Elliniká',          'en_label' => 'Greek',        '2char' => 'el' ),
+			'hu_HU'	=>	array( 'label' => 'Magyar',            'en_label' => 'Hungarian',    '2char' => 'hu' ),
+			'nb_NO'	=>	array( 'label' => 'Norsk',             'en_label' => 'Norwegian',    '2char' => 'no' ),
+			'sv_SE'	=>	array( 'label' => 'Svenska',           'en_label' => 'Swedish',      '2char' => 'sv' ),
+			'ru_RU'	=>	array( 'label' => 'Русский',           'en_label' => 'Russian',      '2char' => 'ru' ),
+			'fi'	=>	array( 'label' => 'Suomi',             'en_label' => 'Finnish',      '2char' => 'fi' ),
+			'da_DK'	=>	array( 'label' => 'Dansk',             'en_label' => 'Danish',       '2char' => 'da' ),
+			'tr_TR'	=>	array( 'label' => 'Türkçe',            'en_label' => 'Turkish',      '2char' => 'tr' ),
+			'cs_CZ'	=>	array( 'label' => 'Čeština',           'en_label' => 'Czech',        '2char' => 'cs' ),
+			'ro_RO'	=>	array( 'label' => 'Română',            'en_label' => 'Romanian',     '2char' => 'ro' ),
+			'sk_SK'	=>	array( 'label' => 'Slovenčina',        'en_label' => 'Slovak',       '2char' => 'sk' ),
+			'sl_SI'	=>	array( 'label' => 'Slovenščina',       'en_label' => 'Slovenian',    '2char' => 'sl' ),
+			'hr'	=>	array( 'label' => 'Hrvatski',          'en_label' => 'Croatian',     '2char' => 'hr' ),
+			'lt_LT'	=>	array( 'label' => 'Lietuvių',          'en_label' => 'Lithuanian',   '2char' => 'lt' ),
+			'lv_LV'	=>	array( 'label' => 'Latviešu',          'en_label' => 'Latvian',      '2char' => 'lv' ),
+			'sq_AL'	=>	array( 'label' => 'Shqip',             'en_label' => 'Albanian',     '2char' => 'sq' ),
+			'az'	=>	array( 'label' => 'Azərbaycan dili',   'en_label' => 'Azerbaijani',  '2char' => 'az' ),
+			'bs_BA'	=>	array( 'label' => 'Bosanski',          'en_label' => 'Bosnian',      '2char' => 'bs' ),
+			'bg_BG'	=>	array( 'label' => 'Български',         'en_label' => 'Bulgarian',    '2char' => 'bg' ),
+			'ca'	=>	array( 'label' => 'Català',            'en_label' => 'Catalan',      '2char' => 'ca' ),
+			'et'	=>	array( 'label' => 'Eesti',             'en_label' => 'Estonian',     '2char' => 'et' ),
+			'mk_MK'	=>	array( 'label' => 'Македонски',        'en_label' => 'Macedonian',   '2char' => 'mk' ),
+			'sr_RS'	=>	array( 'label' => 'Српски',            'en_label' => 'Serbian',      '2char' => 'sr' ),
+			'uk'	=>	array( 'label' => 'Українська',        'en_label' => 'Ukrainian',    '2char' => 'uk' ),
+		);
+	}
+
 	/**
 	 * Returns the plugin URL, normalized to the current site scheme.
 	 *
@@ -3820,6 +4292,22 @@ final class MyAgilePrivacy {
 	    $plugin_url  = set_url_scheme( plugin_dir_url( $file ),         $scheme );
 
 	    return str_replace( $network_url, $site_url, $plugin_url );
+	}
+
+	/**
+	 * Returns a protocol-relative URL to a plugin endpoint.
+	 *
+	 * The scheme is inherited from the page by the browser, so the request
+	 * stays same-scheme regardless of is_ssl()/home/siteurl or reverse proxies.
+	 *
+	 * @param string $file     Absolute path to the plugin file (__FILE__).
+	 * @param string $sub_path Path appended to the plugin URL, e.g. 'api/api.php'.
+	 * @return string Protocol-relative URL, e.g. //host/wp-content/.../api.php
+	 */
+	public static function get_api_endpoint_url( $file, $sub_path )
+	{
+	    $url = plugin_dir_url( $file ) . $sub_path;
+	    return preg_replace( '#^https?:#', '', $url );
 	}
 
 	/**

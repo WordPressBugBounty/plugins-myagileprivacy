@@ -59,6 +59,7 @@ $etag  = sprintf( '"%x-%x"', $mtime, $size );
 header( 'Access-Control-Allow-Origin: *' );
 header( 'Vary: Origin' );
 header( 'Content-Type: application/json; charset=utf-8' );
+header( 'X-Content-Type-Options: nosniff' );
 header( 'ETag: ' . $etag );
 header( 'Cache-Control: public, max-age=3600' );
 

@@ -8,16 +8,9 @@
 
 	$the_url = '#';
 
-	if( defined( 'MAP_EXPIRED_CALLBACK_URL') && MAP_EXPIRED_CALLBACK_URL )
+	if( defined( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT' ) )
 	{
-		$the_key = 'default';
-
-		if( $locale == 'it_IT' )
-		{
-			$the_key = $locale;
-		}
-
-		$the_url = MAP_EXPIRED_CALLBACK_URL[ $the_key ];
+		$the_url = ( $locale === 'it_IT' ) ? MAP_EXPIRED_CALLBACK_URL_IT : MAP_EXPIRED_CALLBACK_URL_DEFAULT;
 	}
 ?>
 <div class="agile-notice" id="map_expired_banner">
@@ -50,7 +43,7 @@
 	border: none;
 	padding: 3em 4em 1.5em 4em;
 	margin: 50px 20px 30px 2px;
-	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+	box-shadow: 0 1px 3px rgba(16, 24, 40, .10), 0 1px 2px rgba(16, 24, 40, .06);
 }
 .agile-notice .content-wrapper {
 	display: flex;

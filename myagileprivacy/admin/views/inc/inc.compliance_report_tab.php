@@ -81,7 +81,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 	<div class="col-sm-4">
 		<?php
-			$tab = 'advanced';
+			$tab = 'compliance';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

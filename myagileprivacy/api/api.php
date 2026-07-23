@@ -29,10 +29,11 @@ global $wpdb;
 require_once dirname( __FILE__ ) . '/../includes/my-agile-privacy-defines.php';
 
 header( 'Content-Type: application/json' );
+header( 'X-Content-Type-Options: nosniff' );
+header( 'Access-Control-Allow-Origin: *' );
 
 // ============================================================
-// DEBUG MODE
-// Set to true to enable ping/pong response with received data
+// Diagnostic echo mode.
 // ============================================================
 
 $map_api_debug = false;
@@ -42,6 +43,7 @@ $map_api_debug = false;
 // ============================================================
 
 $map_options_table = $wpdb->base_prefix . 'options';
+$map_api_blog_id   = 0;
 
 if( is_multisite() )
 {
@@ -55,6 +57,7 @@ if( is_multisite() )
 	if( $blog && intval( $blog->blog_id ) > 1 )
 	{
 		$map_options_table = $wpdb->base_prefix . intval( $blog->blog_id ) . '_options';
+		$map_api_blog_id   = intval( $blog->blog_id );
 	}
 }
 
@@ -111,7 +114,7 @@ function map_api_get_option( $option_name, $default = false )
  */
 function map_api_update_option( $option_name, $new_value )
 {
-	global $wpdb, $map_options_table;
+	global $wpdb, $map_options_table, $map_api_blog_id;
 
 	if( empty( $option_name ) )
 	{
@@ -150,6 +153,27 @@ function map_api_update_option( $option_name, $new_value )
 
 	wp_cache_delete( $option_name, 'map_api_options' );
 
+	// Invalidate the native option cache so later reads are not stale; switch
+	// object-cache context per blog on multisite.
+	if( function_exists( 'wp_cache_delete' ) )
+	{
+		$map_api_switched = false;
+
+		if( !empty( $map_api_blog_id ) && function_exists( 'wp_cache_switch_to_blog' ) )
+		{
+			wp_cache_switch_to_blog( $map_api_blog_id );
+			$map_api_switched = true;
+		}
+
+		wp_cache_delete( $option_name, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		if( $map_api_switched )
+		{
+			wp_cache_switch_to_blog( get_current_blog_id() );
+		}
+	}
+
 	return $result !== false;
 }
 
@@ -186,10 +210,9 @@ if( !function_exists( 'hash_equals' ) )
 }
 
 /**
- * Verifies the request by validating an HMAC-SHA256 token derived from AUTH_KEY and AUTH_SALT.
- * The token is stable per installation (no expiry) for compatibility with full-page cache.
+ * Validates the request token.
  *
- * @return bool  True if the provided map_api_token matches the expected HMAC, false otherwise.
+ * @return bool
  */
 function map_api_check_token()
 {
@@ -201,7 +224,7 @@ function map_api_check_token()
 	$token    = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 	$expected = hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT );
 
-	return !empty( $token ) && hash_equals( $expected, $token );
+	return !empty( $token ) && is_string( $token ) && hash_equals( $expected, $token );
 }
 
 // ============================================================
@@ -221,6 +244,10 @@ switch ( $action )
 {
 	case 'map_diagnostic_data':
 		map_diagnostic_data();
+		break;
+
+	case 'map_report_gtm_gateway':
+		map_api_report_gtm_gateway();
 		break;
 
 	default:
@@ -290,12 +317,12 @@ function map_diagnostic_data()
 		exit;
 	}
 
-	// this endpoint just answered: clear any leftover lockout state
+	// Reset API-support state on success.
 	map_api_clear_missing_api_support_state( $the_settings );
 
 	$success = true;
 
-	// 1. Detected Keys (learning mode only)
+	// 1. Detected Keys
 	if( $send_detected_keys )
 	{
 		$success = map_api_internal_save_detected_keys( $the_settings, $detectable_keys_raw, $detected_keys_raw );
@@ -311,16 +338,61 @@ function map_diagnostic_data()
 	exit;
 }
 
+/**
+ * Records a Tag Gateway loading-priority detection reported by the frontend.
+ * Requests are validated by the shared token.
+ */
+function map_api_report_gtm_gateway()
+{
+	if( !map_api_check_token() ) {
+		http_response_code( 403 );
+		echo json_encode( array( 'success' => false, 'message' => 'Invalid token' ) );
+		exit;
+	}
+
+	$the_settings = map_api_get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
+
+	if( is_array( $the_settings ) && !empty( $the_settings['disable_gtm_gateway_detection'] ) ) {
+		echo json_encode( array( 'success' => false ) );
+		exit;
+	}
+
+	$now  = time();
+	$data = map_api_get_option( MAP_PLUGIN_GTM_GATEWAY_DETECTED, array() );
+
+	if( !is_array( $data ) ) {
+		$data = array();
+	}
+
+	// Rate-limit repeated writes.
+	if( isset( $data['last_detected'] ) && ( $now - intval( $data['last_detected'] ) ) < 3600 ) {
+		echo json_encode( array( 'success' => true, 'throttled' => true ) );
+		exit;
+	}
+
+	$data['first_detected'] = isset( $data['first_detected'] ) ? intval( $data['first_detected'] ) : $now;
+	$data['last_detected']  = $now;
+	$data['count']          = isset( $data['count'] ) ? intval( $data['count'] ) + 1 : 1;
+
+	map_api_update_option( MAP_PLUGIN_GTM_GATEWAY_DETECTED, $data );
+
+	// Keep the standard WP options cache coherent for the full-WP notice reader
+	// (this lightweight endpoint only clears its own private cache group).
+	if( function_exists( 'wp_cache_delete' ) ) {
+		wp_cache_delete( 'alloptions', 'options' );
+		wp_cache_delete( MAP_PLUGIN_GTM_GATEWAY_DETECTED, 'options' );
+	}
+
+	echo json_encode( array( 'success' => true ) );
+	exit;
+}
+
 // ============================================================
 // LOGIC HELPERS
 // ============================================================
 
 /**
- * Merges the JS-detected cookie keys with the ones already stored in the DB,
- * deduplicates the result, saves the updated list, and auto-publishes any
- * cookie posts whose API key matches one of the detected keys.
- * Replaces the original internal_save_detected_keys() method, using direct
- * DB queries instead of WP_Query and wp_update_post (not available with SHORTINIT).
+ * Merges detected cookie keys with stored keys, dedups, saves, and auto-publishes matching cookie posts.
  *
  * @param array  $the_settings       Current plugin settings.
  * @param string $detectable_keys_raw Comma-separated list of detectable keys from JS.
@@ -383,10 +455,7 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 }
 
 /**
- * Finds all cookie posts (MAP_POST_TYPE_COOKIES) whose _map_api_key meta value
- * matches one of the provided keys, publishes them, and sets the _map_auto_detected
- * meta to 1. Uses direct DB queries for compatibility with SHORTINIT.
- * Also clears post-related transient cache after updating.
+ * Publishes cookie posts whose api key matches and flags them auto-detected.
  *
  * @param array $keys  List of API keys to match against cookie posts.
  */
@@ -543,10 +612,7 @@ function map_api_save_consent_mode_status( &$the_settings, $is_consent_valid, $e
 }
 
 /**
- * Clears the missing_api_support lockout flag and the failure counters.
- * Called whenever map_diagnostic_data runs successfully, since the endpoint
- * answering proves it is reachable.
- * Idempotent: skips the DB write if all four keys are already cleared.
+ * Resets the API-support state after a successful call; no-op when already clear.
  *
  * @param array $the_settings  Current plugin settings, passed by reference.
  */

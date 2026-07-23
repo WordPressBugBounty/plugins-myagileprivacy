@@ -15,6 +15,10 @@ if( $locale && $locale == 'it_IT' )
 	$buyLink = 'https://www.myagileprivacy.com/';
 }
 
+$map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 );
+
+$map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper' && ( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ) && !$map_lc_hide_local );
+
 ?>
 
 
@@ -46,7 +50,7 @@ if( $locale && $locale == 'it_IT' )
 
 <?php endif; ?>
 
-<div class="license_code_extra_wrapper displayNone">
+<div class="license_code_extra_wrapper <?php if( $map_dont_ask_block && $the_settings['dont_ask_license_code'] ) echo 'displayNone'; ?>">
 
 	<div class="license_code_wrapper <?php if( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 ) echo 'd-none'; ?>">
 
@@ -58,12 +62,22 @@ if( $locale && $locale == 'it_IT' )
 
 			<div class="col-sm-7">
 
+				<?php $map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 ); ?>
 				<input
 					type="text"
 					class="form-control"
 					id="license_code_field"
 					name="license_code_field"
-					value="<?php echo esc_attr( stripslashes( $the_settings['license_code'] ) ); ?>" />
+					<?php if( $map_lc_hide_local ) echo 'disabled'; ?>
+					value="<?php echo $map_lc_hide_local ? '' : esc_attr( stripslashes( $the_settings['license_code'] ) ); ?>" />
+
+				<?php if( isset( $caller ) && $caller === 'dashboardOptionsWrapper' ) : ?>
+
+					<div class="map-license-save-wrapper displayNone mt-2">
+						<button type="button" class="button-agile btn-md" id="map-license-save"><?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?></button>
+					</div>
+
+				<?php endif; ?>
 
 				<div class="form-text">
 					<?php
@@ -80,7 +94,7 @@ if( $locale && $locale == 'it_IT' )
 						echo wp_kses_post( __( "Would you like to verify the status of your subscription, download invoices, or carry out other administrative tasks?", 'MAP_txt' ) );
 					?><br>
 
-					<a href="https://areaprivata.myagileprivacy.com/" target="blank"><?php echo wp_kses_post( __( "Click here to access your user area.", 'MAP_txt' ) ); ?></a>
+					<a href="<?php echo esc_url( MAP_Helpdesk_Links::get( 'private_area_app' ) ); ?>" target="_blank" rel="noopener"><?php echo wp_kses_post( __( "Click here to access your user area.", 'MAP_txt' ) ); ?></a>
 
 					<?php
 						endif;
@@ -152,11 +166,11 @@ if( $locale && $locale == 'it_IT' )
 					<br>
 
 					<span class="d-block lc_owner_website_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) ) echo 'd-none'; ?>">
-						<?php echo wp_kses_post( __( 'Reseller Website:', 'MAP_txt' ) ); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_attr( $rconfig['lc_owner_website'] ).'">'.$rconfig['lc_owner_website'].'</a>'; ?></span>
+						<?php echo wp_kses_post( __( 'Reseller Website:', 'MAP_txt' ) ); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_url( $rconfig['lc_owner_website'] ).'">'.esc_html( $rconfig['lc_owner_website'] ).'</a>'; ?></span>
 					</span>
 
 					<span class="d-block lc_owner_email_wrapper  <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) ) echo 'd-none'; ?>">
-						<?php echo wp_kses_post( __( 'Reseller Mail:', 'MAP_txt' ) ); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) echo  '<a href="mailto:'.esc_attr( $rconfig['lc_owner_email'] ).'">'.$rconfig['lc_owner_email'].'</a>'; ?></span>
+						<?php echo wp_kses_post( __( 'Reseller Mail:', 'MAP_txt' ) ); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) echo  '<a href="'.esc_attr( 'mailto:'.sanitize_email( $rconfig['lc_owner_email'] ) ).'">'.esc_html( $rconfig['lc_owner_email'] ).'</a>'; ?></span>
 					</span>
 				</div>
 
@@ -170,7 +184,7 @@ if( $locale && $locale == 'it_IT' )
 </div>
 
 
-<div class="<?php if( ( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 ) || $caller == 'genericOptionsWrapper' ) echo 'displayNone'; ?>">
+<?php if( $map_dont_ask_block ) : ?>
 
 	<div class="row mb-4">
 
@@ -182,7 +196,7 @@ if( $locale && $locale == 'it_IT' )
 			<div class="styled_radio d-inline-flex">
 				<div class="round d-flex me-4">
 
-					<input type="hidden" name="dont_ask_license_code_field" value="false" id="enable_cmode_v2_field_no">
+					<input type="hidden" name="dont_ask_license_code_field" value="false">
 
 					<input
 						name="dont_ask_license_code_field"
@@ -200,10 +214,14 @@ if( $locale && $locale == 'it_IT' )
 				</div>
 			</div> <!-- ./ styled_radio -->
 
+			<div class="form-text">
+				<?php echo wp_kses_post( __( 'Hides the license key field. You can enter a key at any time by unchecking this option.', 'MAP_txt' ) ); ?>
+			</div>
+
 		</div> <!-- /.col-sm-6 -->
 	</div> <!-- row -->
 
-	<div class="row mb-4 license_code_extra_wrapper_reverse displayNone">
+	<div class="row mb-4 license_code_extra_wrapper_reverse <?php if( !$the_settings['dont_ask_license_code'] ) echo 'displayNone'; ?>">
 
 		<div class="col-sm-5"></div>
 
@@ -216,7 +234,7 @@ if( $locale && $locale == 'it_IT' )
 	</div>
 
 
-</div>
+<?php endif; ?>
 
 
 <?php if( $caller == 'genericOptionsWrapper') : ?>

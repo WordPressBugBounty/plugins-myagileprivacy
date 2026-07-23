@@ -2,6 +2,28 @@
 	/* --bs-danger-rgb:120,53,1 !important; */
 }
 
+/*bof design tokens*/
+/* Scoped on the plugin wrappers (never :root: that would leak into all of wp-admin).
+   Inherited by every plugin surface, including CPT metaboxes and intro bubbles. */
+#my_agile_privacy_backend,
+#_my_agile_privacy_backend,
+.my_agile_privacy_backend_inline,
+#MAP_editModal {   /* the edit-text modal is rendered outside the wrapper by Bootstrap */
+	--map-navy: #2C2C68;  --map-navy-dark: #232355;   /* primary + hover/active */
+	--map-accent: #F95722;  --map-accent-soft: #fdeee7;  /* brand orange: accent only */
+	--map-danger: #dc2626;  --map-danger-dark: #b21d1d;
+	--map-text: #1d2327;  --map-text-muted: #646970;
+	--map-border: #dee2e6;  --map-bg-subtle: #f6f7f7;  --map-surface: #fff;
+	--map-radius-sm: 4px;  --map-radius-md: 8px;  --map-radius-lg: 12px;
+	--map-shadow-sm: 0 1px 2px rgba(16,24,40,.06);
+	--map-shadow-md: 0 1px 3px rgba(16,24,40,.10), 0 1px 2px rgba(16,24,40,.06);
+	--map-shadow-lg: 0 4px 16px rgba(16,24,40,.10);
+	--map-transition: 150ms ease;
+	--map-focus-ring: 0 0 0 1px #fff, 0 0 0 3px var(--map-navy);   /* WP-core style, navy */
+	--map-btn-font: 15px;  --map-btn-lh: 2.4;  --map-btn-min-h: 36px;  --map-btn-pad-x: 16px;   /* button sizing - tweak here */
+}
+/*eof design tokens*/
+
 body {
 	background: #F0F0F1 !important;
 }
@@ -46,13 +68,270 @@ body {
 }
 
 
-#my_agile_privacy_backend .nav-link {
-	color: #525252;
+/*bof boxed folder tabs*/
+/* Folder-style boxed tabs. Markup keeps Bootstrap .nav-pills and
+   data-bs-toggle="pill" untouched (admin JS depends on .nav-pills):
+   the restyle is CSS-only. Horizontal strips = settings page + backup
+   sub-tabs; vertical variant = translations language nav. The CPT
+   metabox .nav-tabs have their own rules further down and are excluded. */
+/* WP-core admin tones on purpose (#c3c4c7 border, #dcdcde idle tab,
+   #50575e idle text): the folder metaphor reads native, not templated. */
+#my_agile_privacy_backend .nav-pills:not(.flex-column) {
+	border-bottom: 1px solid #c3c4c7;
+	gap: 6px;
 }
-#my_agile_privacy_backend .nav-link.active {
-	background-color: #F93F02;
-	color: #fff;
+/* wp-admin common.css sets "li, dd { margin-bottom: 6px }" on every admin li:
+   that gap would detach the tabs from the panel edge. */
+#my_agile_privacy_backend .nav-pills:not(.flex-column) .nav-item {
+	margin-bottom: 0;
 }
+#my_agile_privacy_backend .nav-pills:not(.flex-column) .nav-link {
+	border: 1px solid #c3c4c7;
+	border-radius: var(--map-radius-sm) var(--map-radius-sm) 0 0;
+	margin-bottom: -1px;
+	color: #50575e;
+	background: #dcdcde;
+	transition: color var(--map-transition), background-color var(--map-transition), border-color var(--map-transition);
+}
+#my_agile_privacy_backend .nav-pills:not(.flex-column) .nav-link:hover {
+	color: var(--map-text);
+	background-color: #d0d1d4;
+}
+#my_agile_privacy_backend .nav-pills:not(.flex-column) .nav-link.active {
+	background-color: var(--map-surface);
+	border-color: #c3c4c7 #c3c4c7 var(--map-surface);
+	color: var(--map-navy);
+	font-weight: 600;
+}
+/* vertical language nav (translations) stays a vertical list */
+#my_agile_privacy_backend .nav-pills.flex-column .nav-link {
+	border: 1px solid transparent;
+	border-radius: var(--map-radius-sm);
+	color: var(--map-text-muted);
+	text-align: left;
+	transition: color var(--map-transition), background-color var(--map-transition), border-color var(--map-transition);
+}
+#my_agile_privacy_backend .nav-pills.flex-column .nav-link:hover {
+	color: var(--map-text);
+	background-color: var(--map-bg-subtle);
+}
+#my_agile_privacy_backend .nav-pills.flex-column .nav-link.active {
+	background-color: var(--map-surface);
+	border-color: #c3c4c7;
+	color: var(--map-navy);
+	font-weight: 600;
+}
+#my_agile_privacy_backend .nav-pills .nav-link:focus-visible {
+	outline: none;
+	box-shadow: var(--map-focus-ring);
+}
+/*eof boxed folder tabs*/
+
+/*bof settings single surface*/
+/* Privacy Settings only (.genericOptionsWrapper): the active tab opens into
+   ONE white bordered panel, folder-style. The old white cards inside become
+   flat sections introduced by an icon+title header with a hairline
+   (GitHub-settings pattern): sections stay scannable through the header,
+   the accent icon and asymmetric spacing - no boxes in boxes, no grays.
+   Every other page keeps its cards. */
+#my_agile_privacy_backend.genericOptionsWrapper .nav-pills:not(.flex-column),
+#my_agile_privacy_backend.backupRestoreWrapper .nav-pills:not(.flex-column) {
+	border-bottom: none;
+}
+#my_agile_privacy_backend.genericOptionsWrapper .nav-pills:not(.flex-column) .nav-link,
+#my_agile_privacy_backend.backupRestoreWrapper .nav-pills:not(.flex-column) .nav-link {
+	position: relative;
+	z-index: 1;
+}
+#my_agile_privacy_backend.genericOptionsWrapper .tab-content,
+#my_agile_privacy_backend.backupRestoreWrapper .tab-content {
+	position: relative;   /* anchor for the panel-level help fox */
+	background: var(--map-surface);
+	border: 1px solid #c3c4c7;
+	border-radius: 0 0 var(--map-radius-sm) var(--map-radius-sm);
+	padding: 20px 28px 4px;
+}
+#my_agile_privacy_backend.genericOptionsWrapper .tab-content .consistent-box {
+	background: var(--map-bg-subtle);   /* light gray: sections readable as blocks again */
+	border: 0;
+	border-radius: var(--map-radius-md);
+	box-shadow: none;
+	padding: 20px 22px;
+	margin: 0 0 24px;
+}
+#my_agile_privacy_backend.genericOptionsWrapper .tab-content .consistent-box > h4 {
+	font-size: 16px;
+	color: var(--map-text);
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--map-border);
+}
+#my_agile_privacy_backend.genericOptionsWrapper .tab-content .consistent-box > h4 > i {
+	color: var(--map-accent);
+	margin-right: 6px;
+}
+/*eof settings single surface*/
+
+/*bof backup & restore step sections*/
+/* The STEP cards inside the Backup & Restore box become flat sections,
+   the same language as the settings surface: header + hairline, no boxes
+   in boxes. Bootstrap .card had no inner padding here (no card-body), so
+   text used to touch the border. Class names stay, .map-step-card is a
+   style hook only. */
+#my_agile_privacy_backend .map-step-card {
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	padding: 0;
+	margin: 0 0 36px;
+}
+#my_agile_privacy_backend .map-step-card h4 {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--map-navy);
+	padding-bottom: 8px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid var(--map-border);
+}
+#my_agile_privacy_backend .map-step-card form {
+	margin-top: 14px;
+}
+#my_agile_privacy_backend .map-step-card input[type="file"] {
+	padding: 6px 0;
+}
+/*eof backup & restore step sections*/
+
+/*bof translations layout*/
+/* Language flags: rule replaces the old per-item inline style. */
+#my_agile_privacy_backend .map-lang-flag {
+	width: 16px;
+	height: auto;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+/* Vertical folder layout: the language list sits flush against the
+   panel (no Bootstrap gutter between the two columns), the active item
+   melts into it - its right border switched off, like the horizontal
+   tabs do with the panel top border. */
+#my_agile_privacy_backend.translationsWrapper .map-translations-layout {
+	--bs-gutter-x: 0;
+}
+/* Language list: sticky in its column, scrolls when taller than the
+   viewport (32px admin bar + breathing room). Tiny padding so the
+   focus ring is not clipped by overflow. */
+#my_agile_privacy_backend.translationsWrapper .nav-pills.flex-column {
+	position: sticky;
+	top: 46px;
+	max-height: calc(100vh - 62px);
+	overflow-y: auto;
+	padding: 0 0 2px 2px;   /* no top padding: first item flush with the panel top edge */
+	gap: 8px;
+}
+/* Same body/border language as the horizontal WP-core tabs: idle items
+   have substance, the active one melts into the panel. Explicit
+   background/color here: this block loses the specificity tie with the
+   generic vertical rules otherwise. */
+#my_agile_privacy_backend.translationsWrapper .nav-pills.flex-column .nav-link {
+	border-radius: var(--map-radius-sm);
+	text-align: left;
+	padding: 14px 16px;
+	background: #dcdcde;
+	border: 1px solid #c3c4c7;
+	color: #50575e;
+}
+#my_agile_privacy_backend.translationsWrapper .nav-pills.flex-column .nav-link:hover {
+	background: #d0d1d4;
+	color: var(--map-text);
+}
+/* Continuity trick: the item cannot overflow its own scrolling list
+   (overflow-y would clip it), so the PANEL slides 1px under the list
+   instead and the active item paints over its border. */
+#my_agile_privacy_backend.translationsWrapper .nav-pills.flex-column .nav-link.active {
+	position: relative;
+	z-index: 1;
+	background: var(--map-surface);
+	color: var(--map-navy);
+	border-color: #c3c4c7;
+	border-right-color: var(--map-surface);
+}
+/* Per-language panel = white surface next to the list (banner preview
+   styles live in preview.css and are untouched). */
+#my_agile_privacy_backend.translationsWrapper .tab-content {
+	background: var(--map-surface);
+	border: 1px solid #c3c4c7;
+	border-radius: 0 var(--map-radius-sm) var(--map-radius-sm) var(--map-radius-sm);
+	padding: 20px 24px;
+	margin-left: -1px;
+}
+/*eof translations layout*/
+
+/*bof dashboard accordion alignment*/
+/* Accordion blocks share the section language: soft border, token radius,
+   subtle body surface. Status colors on the headers stay semantic. */
+/* Third-party admin CSS can inject generic ".accordion .accordion-header"
+   rules (e.g. the WPML mini-app inline styles: 40px padding, fixed height,
+   its own arrow as background-image). Reset the hijacked properties so our
+   Bootstrap accordions stay intact whatever else is active. */
+#my_agile_privacy_backend .accordion {
+	border-top: 0;
+}
+#my_agile_privacy_backend .accordion-header {
+	height: auto;
+	line-height: inherit;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	box-shadow: none;
+	background-image: none;
+	list-style: none;
+}
+#my_agile_privacy_backend .accordion-item {
+	border: 1px solid var(--map-border);
+	border-radius: var(--map-radius-md);
+	overflow: hidden;
+}
+#my_agile_privacy_backend .accordion-item + .accordion-item {
+	margin-top: 8px;
+}
+#my_agile_privacy_backend .accordion-body .alert-secondary {
+	background: var(--map-bg-subtle);
+	border: 0;
+	border-radius: var(--map-radius-sm);
+}
+/* Boxes nested in the accordion bodies (license fields, cookie shield)
+   read as light gray sections, same as the settings panel blocks. */
+#my_agile_privacy_backend .accordion-body .consistent-box {
+	background: var(--map-bg-subtle);
+	border: 0;
+	border-radius: var(--map-radius-md);
+	box-shadow: none;
+	padding: 20px 22px;
+	margin: 0 0 24px;
+}
+/*eof dashboard accordion alignment*/
+
+/*bof sidebar partner badges*/
+/* Replaces the per-link inline styles on the certification logos. */
+#my_agile_privacy_backend .map-partner-badge {
+	margin-left: 15px;
+	margin-right: 15px;
+	cursor: pointer;
+}
+#my_agile_privacy_backend .map-partner-badge img {
+	height: 60px;
+	cursor: pointer;
+}
+/*eof sidebar partner badges*/
+
+/*bof page headings*/
+/* Direct page titles ("My Agile Privacy®: X") share one typographic voice.
+   Child selector on purpose: inner content h2 are untouched. */
+#my_agile_privacy_backend > h2 {
+	font-size: 22px;
+	font-weight: 600;
+	color: var(--map-text);
+	margin: 4px 0 20px;
+}
+/*eof page headings*/
 
 #my_agile_privacy_backend .alert-light {
 	background-color: #e1f1f5;
@@ -65,72 +344,162 @@ body {
 	font-size: 1rem !important;
 }
 
+/*bof plugin buttons - WordPress-core sizing, plugin palette */
+/* Primary = navy solid, secondary = light navy outline (WP-core style).
+   Sizing mirrors WP-core buttons (like the agile-notice review box).
+   #MAP_editModal is folded into the Bootstrap selectors below because
+   Bootstrap reparents that modal outside the wrapper. */
 #my_agile_privacy_backend .button-agile,
 .my_agile_privacy_backend_inline .button-agile {
-	color: #f6f7f7;
-	border-color: #2C2C68;
-	background: #2C2C68;
+	color: #fff;
+	border-color: var(--map-navy);
+	background: var(--map-navy);
 	vertical-align: top;
 	appearance: none;
-	border-radius: 3px;
+	border-radius: var(--map-radius-sm);
 	border-style: solid;
 	border-width: 1px;
 	box-sizing: border-box;
 	cursor: pointer;
 	display: inline-block;
-	font-size: 13px;
-	line-height: 2.15385;
+	font-size: var(--map-btn-font);
+	line-height: var(--map-btn-lh);
 	margin: 0;
-	min-height: 30px;
-	padding: 0 10px;
+	min-height: var(--map-btn-min-h);
+	padding: 0 var(--map-btn-pad-x);
 	text-decoration: none;
 	white-space: nowrap;
-	transition: all 300ms;
-	-webkit-transition: all 300ms;
-	-moz-transition: all 300ms;
-	-ms-transition: all 300ms;
-	-o-transition: all 300ms;
+	transition: color var(--map-transition), background-color var(--map-transition), border-color var(--map-transition), box-shadow var(--map-transition);
 }
 #my_agile_privacy_backend .button-agile:hover,
 .my_agile_privacy_backend_inline .button-agile:hover {
-	color: #2C2C68;
-	background: #f6f7f7;
+	color: #fff;
+	border-color: var(--map-navy-dark);
+	background: var(--map-navy-dark);
+}
+#my_agile_privacy_backend .button-agile:focus-visible,
+.my_agile_privacy_backend_inline .button-agile:focus-visible {
+	outline: none;
+	box-shadow: var(--map-focus-ring);
 }
 
 #my_agile_privacy_backend .button-agile-outline,
 .my_agile_privacy_backend_inline .button-agile-outline {
+	color: var(--map-navy);
+	border-color: var(--map-navy);
+	background: var(--map-bg-subtle);
 	vertical-align: top;
 	appearance: none;
-	border-radius: 3px;
+	border-radius: var(--map-radius-sm);
 	border-style: solid;
 	border-width: 1px;
 	box-sizing: border-box;
 	cursor: pointer;
 	display: inline-block;
-	font-size: 13px;
-	line-height: 2.15385;
+	font-size: var(--map-btn-font);
+	line-height: var(--map-btn-lh);
 	margin: 0;
-	min-height: 30px;
-	padding: 0 10px;
+	min-height: var(--map-btn-min-h);
+	padding: 0 var(--map-btn-pad-x);
 	text-decoration: none;
 	white-space: nowrap;
-	transition: all 300ms;
-	-webkit-transition: all 300ms;
-	-moz-transition: all 300ms;
-	-ms-transition: all 300ms;
-	-o-transition: all 300ms;
-
-	color: #2C2C68;
-	border-color: #2C2C68;
-	background: none;
+	transition: color var(--map-transition), background-color var(--map-transition), border-color var(--map-transition), box-shadow var(--map-transition);
 }
-
 #my_agile_privacy_backend .button-agile-outline:hover,
 .my_agile_privacy_backend_inline .button-agile-outline:hover {
-	color: #f6f7f7;
-	border-color: #2C2C68;
-	background: #2C2C68;
+	color: var(--map-navy-dark);
+	border-color: var(--map-navy-dark);
+	background: #f0f0f1;
 }
+#my_agile_privacy_backend .button-agile-outline:focus-visible,
+.my_agile_privacy_backend_inline .button-agile-outline:focus-visible {
+	outline: none;
+	box-shadow: var(--map-focus-ring);
+}
+
+/* Bootstrap 5.1.3 buttons realigned to the same WP-core sizing and palette.
+   #MAP_editModal folded in (reparented outside the wrapper). No --bs-btn-* in
+   5.1.3, states set directly. Class names untouched (JS toggles .active). */
+#my_agile_privacy_backend .btn,
+#MAP_editModal .btn {
+	font-size: var(--map-btn-font);
+	line-height: var(--map-btn-lh);
+	min-height: var(--map-btn-min-h);
+	padding: 0 var(--map-btn-pad-x);
+	border-radius: var(--map-radius-sm);
+}
+#my_agile_privacy_backend .btn-primary,
+#MAP_editModal .btn-primary {
+	color: #fff;
+	background-color: var(--map-navy);
+	border-color: var(--map-navy);
+}
+#my_agile_privacy_backend a.btn-primary:hover,
+#my_agile_privacy_backend .btn-primary:hover,
+#my_agile_privacy_backend .btn-primary:focus,
+#my_agile_privacy_backend .btn-primary:active,
+#my_agile_privacy_backend .btn-primary.active,
+#MAP_editModal .btn-primary:hover,
+#MAP_editModal .btn-primary:focus,
+#MAP_editModal .btn-primary:active {
+	color: #fff;
+	background-color: var(--map-navy-dark);
+	border-color: var(--map-navy-dark);
+	box-shadow: none;
+}
+#my_agile_privacy_backend .btn-secondary,
+#MAP_editModal .btn-secondary {
+	color: var(--map-navy);
+	background-color: var(--map-bg-subtle);
+	border-color: var(--map-navy);
+}
+#my_agile_privacy_backend .btn-secondary:hover,
+#my_agile_privacy_backend .btn-secondary:focus,
+#my_agile_privacy_backend .btn-secondary:active,
+#my_agile_privacy_backend .btn-secondary.active,
+#MAP_editModal .btn-secondary:hover,
+#MAP_editModal .btn-secondary:focus,
+#MAP_editModal .btn-secondary:active {
+	color: var(--map-navy-dark);
+	background-color: #f0f0f1;
+	border-color: var(--map-navy-dark);
+	box-shadow: none;
+}
+#my_agile_privacy_backend .btn-outline-primary {
+	color: var(--map-navy);
+	background-color: var(--map-bg-subtle);
+	border-color: var(--map-navy);
+}
+#my_agile_privacy_backend .btn-outline-primary:hover,
+#my_agile_privacy_backend .btn-outline-primary:active,
+#my_agile_privacy_backend .btn-outline-primary.active {
+	color: #fff;
+	background-color: var(--map-navy);
+	border-color: var(--map-navy);
+	box-shadow: none;
+}
+#my_agile_privacy_backend .btn-danger {
+	background-color: var(--map-danger);
+	border-color: var(--map-danger);
+}
+#my_agile_privacy_backend .btn-danger:hover,
+#my_agile_privacy_backend .btn-danger:focus,
+#my_agile_privacy_backend .btn-danger:active {
+	background-color: var(--map-danger-dark);
+	border-color: var(--map-danger-dark);
+	box-shadow: none;
+}
+#my_agile_privacy_backend .btn-primary:focus-visible,
+#my_agile_privacy_backend .btn-secondary:focus-visible,
+#my_agile_privacy_backend .btn-outline-primary:focus-visible,
+#my_agile_privacy_backend .btn-success:focus-visible,
+#my_agile_privacy_backend .btn-danger:focus-visible,
+#MAP_editModal .btn-primary:focus-visible,
+#MAP_editModal .btn-secondary:focus-visible {
+	outline: none;
+	box-shadow: var(--map-focus-ring);
+}
+/*eof plugin buttons*/
 
 
 #my_agile_privacy_backend .map_wait {
@@ -173,18 +542,135 @@ body {
 }
 
 #my_agile_privacy_backend .consistent-box {
-	padding: 20px 15px;
+	position: relative;   /* anchor for the corner help fox */
+	padding: 24px;
 	margin-bottom: 30px;
-	background: #fff;
-	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+	background: var(--map-surface);
+	border: 1px solid var(--map-border);
+	border-radius: var(--map-radius-lg);
+	box-shadow: var(--map-shadow-sm);
 }
+
+/*bof help fox (experimental alternative help link)*/
+/* Small fox on the bottom-right corner of a box, slightly overflowing it.
+   Hover (or keyboard focus) opens a speech bubble linking to the guide.
+   First viewport entry (.is-seen via IntersectionObserver): starts small
+   and grayscale, pops bigger and colored, settles mid-size. */
+/* Inside gated boxes (forbiddenArea*) the fox is inert like the rest of the
+   content: it inherits pointer-events: none (no hover, no click) and its
+   viewport-entry animation is suppressed. */
+#my_agile_privacy_backend .forbiddenArea .map-help-fox.is-seen .map-help-fox-img,
+#my_agile_privacy_backend .forbiddenAreaIAB .map-help-fox.is-seen .map-help-fox-img {
+	animation: none;
+}
+#my_agile_privacy_backend .map-help-fox {
+	position: absolute;
+	right: -10px;
+	bottom: -8px;
+	width: 48px;
+	display: block;
+	text-decoration: none;
+	cursor: help;
+	transform-origin: bottom right;
+	transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+	z-index: 2;
+}
+#my_agile_privacy_backend .map-help-fox:hover {
+	transform: scale(1.08);
+}
+/* Pointer interaction leaves no ring: the core admin box-shadow on a:focus
+   would frame the silhouette. Keyboard focus keeps the standard ring. */
+#my_agile_privacy_backend .map-help-fox:focus {
+	outline: none;
+	box-shadow: none;
+}
+#my_agile_privacy_backend .map-help-fox:focus-visible {
+	outline: none;
+	box-shadow: var(--map-focus-ring);
+	border-radius: var(--map-radius-sm);
+}
+/* Resting state: small, grayscale, soft drop-shadow (follows the PNG
+   silhouette, not the box). Color comes back on hover only. */
+#my_agile_privacy_backend .map-help-fox-img {
+	display: block;
+	width: 100%;
+	height: auto;
+	filter: grayscale(1) drop-shadow(0 2px 5px rgba(16, 24, 40, .28));
+	transform: scale(.72);
+	transform-origin: bottom right;
+	transition: filter .35s cubic-bezier(.22, 1, .36, 1);
+}
+/* First viewport entry: pops bigger and colored, settles mid-size, then
+   fades back to grayscale. No fill-mode: the element lands on the rule
+   state below (scale 1, grayscale), so the hover filter keeps working. */
+#my_agile_privacy_backend .map-help-fox.is-seen .map-help-fox-img {
+	transform: scale(1);
+	animation: map-fox-pop 1.4s cubic-bezier(.22, 1, .36, 1);
+}
+#my_agile_privacy_backend .map-help-fox:hover .map-help-fox-img,
+#my_agile_privacy_backend .map-help-fox:focus-visible .map-help-fox-img {
+	filter: grayscale(0) drop-shadow(0 3px 7px rgba(16, 24, 40, .32));
+}
+@keyframes map-fox-pop {
+	0%   { transform: scale(.72); filter: grayscale(1) drop-shadow(0 2px 5px rgba(16, 24, 40, .28)); }
+	40%  { transform: scale(1.16); filter: grayscale(0) drop-shadow(0 4px 9px rgba(16, 24, 40, .32)); }
+	75%  { transform: scale(1); filter: grayscale(0) drop-shadow(0 2px 5px rgba(16, 24, 40, .28)); }
+	100% { transform: scale(1); filter: grayscale(1) drop-shadow(0 2px 5px rgba(16, 24, 40, .28)); }
+}
+#my_agile_privacy_backend .map-help-fox-bubble {
+	position: absolute;
+	bottom: calc(100% + 10px);
+	right: 55%;
+	background: var(--map-surface);
+	color: var(--map-text);
+	border: 1px solid var(--map-border);
+	border-radius: var(--map-radius-md);
+	box-shadow: var(--map-shadow-md);
+	padding: 8px 12px;
+	font-size: 12px;
+	line-height: 1.4;
+	white-space: nowrap;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(4px);
+	transition: opacity var(--map-transition), transform var(--map-transition), visibility var(--map-transition);
+	pointer-events: none;
+	z-index: 3;
+}
+#my_agile_privacy_backend .map-help-fox-bubble::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	right: 16px;
+	border: 6px solid transparent;
+	border-top-color: var(--map-surface);
+}
+#my_agile_privacy_backend .map-help-fox:hover .map-help-fox-bubble,
+#my_agile_privacy_backend .map-help-fox:focus-visible .map-help-fox-bubble {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+	#my_agile_privacy_backend .map-help-fox-img,
+	#my_agile_privacy_backend .map-help-fox.is-seen .map-help-fox-img {
+		animation: none;
+		transform: scale(1);
+	}
+	#my_agile_privacy_backend .map-help-fox,
+	#my_agile_privacy_backend .map-help-fox-img,
+	#my_agile_privacy_backend .map-help-fox-bubble {
+		transition: none;
+	}
+}
+/*eof help fox*/
 
 #my_agile_privacy_backend #sidebar .consistent-box {
 	font-size: .8rem;
 }
 
 #my_agile_privacy_backend .consistent-box h5 {
-	color: #F93F02;
+	color: var(--map-accent);
 }
 
 #my_agile_privacy_backend .consistent-box ul {
@@ -501,11 +987,7 @@ body {
 	padding-inline: 5px;
 	background: #FFF3CD;
 	color: #7b5e04;
-	border-radius: 10px;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	-ms-border-radius: 10px;
-	-o-border-radius: 10px;
+	border-radius: var(--map-radius-md);
 }
 
 /* code editor */
@@ -532,11 +1014,7 @@ body {
 	top: 0;
 	left: 0;
 	resize: none;
-	border-radius: 8px;
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	-ms-border-radius: 8px;
-	-o-border-radius: 8px;
+	border-radius: var(--map-radius-md);
 }
 
 #my_agile_privacy_backend .code-viewer code {
@@ -564,16 +1042,17 @@ body {
 }
 
 #my_agile_privacy_backend.helpdeskWrapper .orange-icon {
-	color: #F95722 !important;
+	color: var(--map-accent) !important;
 }
 
+/* legacy class name, renders as secondary outline (navy) */
 #my_agile_privacy_backend.helpdeskWrapper .btn-outline-orange {
-	border-color: #F95722;
-	color: #F95722;
+	border-color: var(--map-navy);
+	color: var(--map-navy);
 }
 
 #my_agile_privacy_backend.helpdeskWrapper .btn-outline-orange:hover {
-	background-color: #f95722;
+	background-color: var(--map-navy);
 	color: #fff;
 }
 
@@ -595,17 +1074,17 @@ body {
 }
 
 .my_agile_privacy_backend_inline .map-custom-card {
-	border: 1px solid #dee2e6;
-	border-radius: 0.25rem;
-	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	border: 1px solid var(--map-border);
+	border-radius: var(--map-radius-md);
+	box-shadow: var(--map-shadow-md);
 	margin: 1rem 0;
 }
 .my_agile_privacy_backend_inline .map-custom-card-header {
 	background-color: #f8f9fa;
-	border-bottom: 1px solid #dee2e6;
+	border-bottom: 1px solid var(--map-border);
 	padding: 0.75rem 1.25rem;
-	border-top-left-radius: 0.25rem;
-	border-top-right-radius: 0.25rem;
+	border-top-left-radius: var(--map-radius-md);
+	border-top-right-radius: var(--map-radius-md);
 }
 .my_agile_privacy_backend_inline .map-custom-card-body {
 	padding: 1.25rem;
@@ -695,7 +1174,7 @@ body {
 
 #my_agile_privacy_backend .consistent-alert-container .alert {
 	min-height: 200px;
-	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+	box-shadow: var(--map-shadow-md);
 }
 
 #my_agile_privacy_backend .alert.consistent-alert {
@@ -704,7 +1183,7 @@ body {
 }
 
 #my_agile_privacy_backend .alert.consistent-alert .alert-heading i {
-	color: #F95722;
+	color: var(--map-accent);
 }
 
 #my_agile_privacy_backend .consistent-alert-container .data-text-left {
@@ -732,33 +1211,39 @@ body {
 	font-size: 1.3rem !important;
 }
 
-#my_agile_privacy_backend.dashboardOptionsWrapper .button-agile {
-	border-color: #ca3b0b;
-	background: #F95722;
-}
-#my_agile_privacy_backend.dashboardOptionsWrapper .button-agile:hover {
-	color: #fff;
-}
+/* .dashboardOptionsWrapper .button-agile: dashboard save uses the navy primary like every other page */
 
 
 /* REDEFINE BOOTSTRAP COLORS */
-:root {
+/* Scoped to the plugin wrappers (plus the reparented edit modal) so the
+   softened palette never bleeds into other plugins' admin UI rendered on
+   the same screens. The pre-existing !important flags are kept as-is. */
+#my_agile_privacy_backend,
+#_my_agile_privacy_backend,
+.my_agile_privacy_backend_inline,
+#MAP_editModal {
 	--bs-success-rgb:242, 255, 234 !important;
 	--bs-danger-rgb:255, 234, 234 !important;
 }
-.alert-success {
+#my_agile_privacy_backend .alert-success,
+#_my_agile_privacy_backend .alert-success,
+.my_agile_privacy_backend_inline .alert-success {
 	color:#0f5132 !important;
 	background-color:#f2ffea !important;
 	border-color:#badbcc !important;
 }
 
-.alert-warning {
+#my_agile_privacy_backend .alert-warning,
+#_my_agile_privacy_backend .alert-warning,
+.my_agile_privacy_backend_inline .alert-warning {
 	color: #664d03 !important;
 	background-color: #fff3cd !important;
 	border-color: #ffecb5 !important;
 }
 
-.alert-danger {
+#my_agile_privacy_backend .alert-danger,
+#_my_agile_privacy_backend .alert-danger,
+.my_agile_privacy_backend_inline .alert-danger {
 	color:#842029 !important;
 	background-color:#ffeaea !important;
 	border-color:#f5c2c7 !important;
@@ -829,7 +1314,7 @@ body {
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .step-indicator.active {
-	color: #F93F08 !important;
+	color: var(--map-accent) !important;
 	font-weight: bold;
 }
 
@@ -838,7 +1323,7 @@ body {
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .progress-bar {
-	background: #F93F08;
+	background: var(--map-accent);
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .is-invalid {
@@ -857,15 +1342,15 @@ body {
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .map-sensitive-data-examples {
 	background: #f1f1f1 !important;
 	padding: 20px 20px 20px 40px !important;
-	border-radius: 12px;
+	border-radius: var(--map-radius-lg);
 }
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .whats-next {
 	height: 100%;
-	border-radius: 20px;
+	border-radius: var(--map-radius-lg);
 	background: #fafafa;
 	padding: 20px;
-	box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-	border: 1px solid #f2f2f2;
+	box-shadow: var(--map-shadow-md);
+	border: 1px solid var(--map-border);
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .whats-next h5 {
@@ -874,7 +1359,7 @@ body {
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .whats-next h5.alt_bg{
-	color: #F93F02 !important;
+	color: var(--map-accent) !important;
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .whats-next ul {
@@ -887,7 +1372,7 @@ body {
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .completion-step .success-confirmation {
-	border-radius: 20px;
+	border-radius: var(--map-radius-lg);
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .completion-step .success-confirmation i,
@@ -900,17 +1385,17 @@ body {
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card {
 	background-color: #f8f9fa00;
 	border: 1px solid #e6e9ef;
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	box-shadow: var(--map-shadow-sm);
 	transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
 	overflow: hidden;
-	border-radius: 20px;
+	border-radius: var(--map-radius-lg);
 	margin-top: 0 !important;
 	margin-bottom: 20px !important;
 }
 
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card:hover {
 	background-color: #eef2f7;
-	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+	box-shadow: var(--map-shadow-md);
 }
 /* Cursor pointer for clickable policy cards */
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card[data-clickable="true"] {
@@ -922,7 +1407,7 @@ body {
 #my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card.is-selected {
 	background: #eefff2;
 	border: 1px solid #c2e5ca;
-	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+	box-shadow: var(--map-shadow-md);
 }
 
 
@@ -970,6 +1455,30 @@ body {
 	#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card { transition: none; }
 }
 
+/* geolocalization behaviour section — ported from prototipo-localizzazione.html, namespaced */
+#my_agile_privacy_backend .mapgeo-section { margin: 20px 0 8px; }
+#my_agile_privacy_backend .mapgeo-notice { border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.5; margin:18px 0; }
+#my_agile_privacy_backend .mapgeo-notice-info { background:#dbeafe; color:#1e40af; }
+#my_agile_privacy_backend .mapgeo-notice-neutral { background:#f3f4f6; color:#4b5563; }
+#my_agile_privacy_backend .mapgeo-cards-head { font-size:13px; font-weight:600; color:#111827; margin-bottom:10px; }
+#my_agile_privacy_backend .mapgeo-cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; }
+#my_agile_privacy_backend .mapgeo-card { position:relative; overflow:hidden; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px; }
+#my_agile_privacy_backend .mapgeo-card-default { position:relative; overflow:hidden; background:#f9fafb; border:1px dashed #d1d5db; border-radius:10px; padding:14px 16px; }
+#my_agile_privacy_backend .mapgeo-flag { position:absolute; top:-8px; right:-8px; max-width:40px; opacity:.55; pointer-events:none; }
+#my_agile_privacy_backend .mapgeo-card-title { font-size:14px; font-weight:600; color:#1d2327; margin-bottom:11px; padding-right:48px; }
+#my_agile_privacy_backend .mapgeo-badge { display:inline-block; font-size:12px; padding:3px 9px; border-radius:6px; white-space:nowrap; }
+#my_agile_privacy_backend .mapgeo-badge-block { background:#E1F5EE; color:#0F6E56; }
+#my_agile_privacy_backend .mapgeo-badge-noblock { background:#FAEEDA; color:#854F0B; }
+#my_agile_privacy_backend .mapgeo-note { font-size:13px; line-height:1.5; color:#3c434a; margin-top:11px; }
+#my_agile_privacy_backend .mapgeo-note-warn { color:#b91c1c; }
+#my_agile_privacy_backend .mapgeo-note-soft { color:#787c82; }
+#my_agile_privacy_backend .mapgeo-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#3c434a; margin-bottom:11px; }
+#my_agile_privacy_backend .mapgeo-sw { position:relative; width:32px; height:18px; display:inline-block; flex:none; }
+#my_agile_privacy_backend .mapgeo-sw input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
+#my_agile_privacy_backend .mapgeo-sw .mapgeo-kn { position:absolute; inset:0; background:#d1d5db; border-radius:9px; transition:background .15s; }
+#my_agile_privacy_backend .mapgeo-sw .mapgeo-kn:before { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:transform .15s; }
+#my_agile_privacy_backend .mapgeo-sw input:checked + .mapgeo-kn { background:#d97706; }
+#my_agile_privacy_backend .mapgeo-sw input:checked + .mapgeo-kn:before { transform: translateX(14px); }
 
 /* eof site and policy settings wizard */
 
@@ -992,14 +1501,6 @@ body {
 	line-height:1;
 }
 
-#my_agile_privacy_backend .wizard-card-avatar {
-	border-radius: 50%;
-	max-width: 100px;
-	position: absolute;
-	bottom: -20px; right: -20px;
-	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-}
-
 .map_infobox {
 	margin-top: 20px;
 	position: relative !important;
@@ -1008,7 +1509,7 @@ body {
 	line-height: 1.6rem !important;
 	border: 1px solid #b6d4fe !important;
 	background-color: #ECECF1 !important;
-	border-radius: 40px !important;
+	border-radius: 16px !important;
 	corner-shape: squircle;
 }
 
@@ -1106,4 +1607,90 @@ body {
 	list-style: disc;
 }
 
+/* Backup & Restore sub-tabs: covered by the boxed folder tabs block near
+   the top of this file (legacy pill rules). */
+
 /*eof policy backend style*/
+/* --- helpdesk ghost help links (map-help-link) ---
+   Book icon = online guide (info-circle stays reserved for inline tooltips).
+   Icon + always-visible label; section-level links sit right outside their box.
+   Double scope: the intro speech bubbles on the CPT list/edit screens live
+   under #_my_agile_privacy_backend (leading underscore), not the usual id. */
+#my_agile_privacy_backend .map-help-link,
+#_my_agile_privacy_backend .map-help-link {
+	font-size: 12px;
+	color: #8a6d60;
+	text-decoration: none;
+	cursor: help;
+	border-bottom: 1px dashed transparent;
+	transition: color .15s ease, border-bottom-color .15s ease;
+}
+#my_agile_privacy_backend .map-help-link:hover,
+#my_agile_privacy_backend .map-help-link:focus-visible,
+#_my_agile_privacy_backend .map-help-link:hover,
+#_my_agile_privacy_backend .map-help-link:focus-visible {
+	color: var(--map-accent);
+	border-bottom-color: var(--map-accent);
+}
+#my_agile_privacy_backend .map-help-link > i:first-child,
+#_my_agile_privacy_backend .map-help-link > i:first-child {
+	color: var(--map-accent);
+	margin-right: 4px;
+}
+#my_agile_privacy_backend .map-help-link .map-help-ext,
+#_my_agile_privacy_backend .map-help-link .map-help-ext {
+	font-size: 10px;
+	opacity: .65;
+	margin-left: 3px;
+}
+/* inline variant: link living inside a field label keeps label size */
+#my_agile_privacy_backend label .map-help-link,
+#my_agile_privacy_backend .form-text .map-help-link,
+#_my_agile_privacy_backend label .map-help-link,
+#_my_agile_privacy_backend .form-text .map-help-link {
+	font-size: inherit;
+}
+/* section-level link sitting right above its box */
+#my_agile_privacy_backend p.map-help-section,
+#_my_agile_privacy_backend p.map-help-section {
+	margin: 0 0 6px 2px;
+}
+/* separator between two side-by-side help links */
+#my_agile_privacy_backend .map-help-sep,
+#_my_agile_privacy_backend .map-help-sep {
+	color: #c9b8b0;
+	margin: 0 8px;
+	font-size: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+	#my_agile_privacy_backend .map-help-link,
+	#_my_agile_privacy_backend .map-help-link {
+		transition: none;
+	}
+}
+
+/* ── Consent statistics dashboard ( scoped to the base admin shell ) ────────── */
+#my_agile_privacy_backend .map-stats-controls { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:0 0 18px; }
+#my_agile_privacy_backend .map-seg { display:inline-flex; border:1px solid #ccd0d4; border-radius:6px; overflow:hidden; }
+#my_agile_privacy_backend .map-seg button { background:#fff; border:0; border-left:1px solid #ccd0d4; padding:6px 14px; cursor:pointer; font-size:13px; color:#1d2327; }
+#my_agile_privacy_backend .map-seg button:first-child { border-left:0; }
+#my_agile_privacy_backend .map-seg button.active { background:#2271b1; color:#fff; }
+#my_agile_privacy_backend #map-stats-variant { padding:6px 10px; border:1px solid #ccd0d4; border-radius:6px; background:#fff; }
+#my_agile_privacy_backend .map-stats-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:0 0 18px; }
+#my_agile_privacy_backend .map-kpi { background:#fff; border:2px solid #e0e0e2; border-radius:12px; padding:16px; position:relative; }
+#my_agile_privacy_backend .map-kpi-lab { display:flex; align-items:center; gap:6px; font-size:12px; color:#646970; text-transform:uppercase; letter-spacing:.03em; }
+#my_agile_privacy_backend .map-kpi-dot { width:10px; height:10px; border-radius:2px; flex:0 0 auto; }
+#my_agile_privacy_backend .map-metric-dot { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:middle; }
+#my_agile_privacy_backend .map-kpi-val { font-size:32px; font-weight:600; line-height:1.1; margin-top:6px; font-variant-numeric:tabular-nums; color:#1d2327; }
+#my_agile_privacy_backend .map-kpi-delta { font-size:12px; margin-top:6px; color:#646970; }
+#my_agile_privacy_backend .map-kpi-delta.up { color:#16a34a; }
+#my_agile_privacy_backend .map-kpi-delta.down { color:#d63638; }
+#my_agile_privacy_backend .map-kpi-desc { font-size:12px; color:#646970; margin-top:8px; line-height:1.4; }
+#my_agile_privacy_backend .map-kpi-cap { position:absolute; top:12px; right:12px; font-size:10px; background:#fcf0e6; color:#8a4b00; padding:2px 6px; border-radius:8px; }
+#my_agile_privacy_backend .map-stats-chartwrap { position:relative; height:300px; margin:0 0 8px; }
+#my_agile_privacy_backend .map-stats-geo { margin:12px 0 0; }
+#my_agile_privacy_backend .map-stats-geonote { margin:0; font-size:13px; line-height:1.5; color:#646970; }
+#my_agile_privacy_backend .map-stats-empty { padding:24px; text-align:center; color:#646970; }
+#my_agile_privacy_backend #map-stats-save { margin-top:8px; }
+@media (max-width:600px) { #my_agile_privacy_backend .map-stats-kpis { grid-template-columns:1fr 1fr; } }
+

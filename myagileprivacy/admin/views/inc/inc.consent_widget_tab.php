@@ -97,7 +97,44 @@ $locale = MyAgilePrivacy::get_locale();
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+			<div class="map_acm_wrapper displayNone">
+			<div class="row mb-4">
+				<label for="iab_enable_advertiser_consent_mode_field" class="col-sm-5 col-form-label">
+					<?php echo wp_kses_post( __( 'Advertiser Consent Mode', 'MAP_txt' ) ); ?>
+				</label>
+
+				<div class="col-sm-7">
+					<div class="styled_radio d-inline-flex">
+						<div class="round d-flex me-4">
+
+							<input type="hidden" name="iab_enable_advertiser_consent_mode_field" value="false" id="iab_enable_advertiser_consent_mode_field_no">
+
+							<input
+								name="iab_enable_advertiser_consent_mode_field"
+								type="checkbox"
+								value="true"
+								id="iab_enable_advertiser_consent_mode_field"
+								<?php checked( $the_settings['iab_enable_advertiser_consent_mode'], true ); ?>>
+
+							<label for="iab_enable_advertiser_consent_mode_field" class="me-2 label-checkbox"></label>
+
+							<label for="iab_enable_advertiser_consent_mode_field">
+								<?php echo wp_kses_post( __( 'Enable', 'MAP_txt' ) ); ?>
+							</label>
+						</div>
+					</div> <!-- ./ styled_radio -->
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Communicates to advertising vendors (including Google) that this site uses Google Consent Mode v2 alongside IAB TCF. Recommended setting: enabled.', 'MAP_txt' ) ); ?>
+					</div>
+
+				</div> <!-- /.col-sm-7 -->
+			</div> <!-- row -->
+			</div> <!-- .map_acm_wrapper -->
+
+			<?php map_render_help_fox( 'iab' ); ?>
 		</div>
+
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
@@ -263,6 +300,10 @@ $locale = MyAgilePrivacy::get_locale();
 							</div>
 
 						</div> <!-- ./ styled_radio -->
+
+						<div class="form-text">
+							<?php echo wp_kses_post( __( 'Choose whether the floating widget displays the text, the logo, or both.', 'MAP_txt' ) ); ?>
+						</div>
 					</div> <!-- /.col-sm-7 -->
 				</div> <!-- row -->
 
@@ -314,6 +355,10 @@ $locale = MyAgilePrivacy::get_locale();
 
 								</div>
 							</div> <!-- ./ styled_radio -->
+
+							<div class="form-text">
+								<?php echo wp_kses_post( __( 'Adds a link to the Cookie Policy inside the widget.', 'MAP_txt' ) ); ?>
+							</div>
 						</div> <!-- /.col-sm-6 -->
 					</div> <!-- row -->
 
@@ -321,7 +366,9 @@ $locale = MyAgilePrivacy::get_locale();
 
 			</div>
 
+			<?php map_render_help_fox( 'customize_banner', 'revisit-widget' ); ?>
 		</div> <!-- consistent-box -->
+
 
 
 		<div class="consistent-box">
@@ -363,13 +410,14 @@ $locale = MyAgilePrivacy::get_locale();
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+			<?php map_render_help_fox( 'options_guide', 'consent' ); ?>
 		</div> <!-- consistent-box -->
 
 	</div> <!-- /.col-sm-8 -->
 
 	<div class="col-sm-4">
 		<?php
-			$tab = null;
+			$tab = 'consent_widget';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

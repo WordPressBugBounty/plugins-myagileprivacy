@@ -142,6 +142,10 @@ $caller = 'dashboardOptionsWrapper';
 					<div class="mt-4">
 						<div class="row g-1">
 
+							<p class="map-help-section">
+								<?php map_render_helpdesk_link( 'install', __( 'Online Help: how to install My Agile Privacy®', 'MAP_txt' ) ); ?>
+							</p>
+
 							<div class="consistent-box">
 								<div class="row mt-3 mb-4">
 									<div class="col-12">
@@ -151,7 +155,7 @@ $caller = 'dashboardOptionsWrapper';
 									</div>
 								</div>
 								<div class="mb-3">
-									<button class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
+									<button type="button" class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 									<span class="map_wait text-muted">
 										<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 									</span>
@@ -260,6 +264,10 @@ $caller = 'dashboardOptionsWrapper';
 														?>
 													</p>
 												</div>
+
+												<?php include 'fields.consent_mode_tab.php'; ?>
+
+
 												<div class="bg-light p-2 mb-3">
 													<div class="styled_radio d-inline-flex">
 														<div class="round d-flex me-4">
@@ -280,7 +288,7 @@ $caller = 'dashboardOptionsWrapper';
 													</div>
 												</div>
 
-												<?php include 'fields.consent_mode_tab.php'; ?>
+
 
 
 											</div>
@@ -348,10 +356,8 @@ $caller = 'dashboardOptionsWrapper';
 			<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>../img/fox-laptop-thumbs-up.png" class="img-fluid" alt="">
 
 			<?php
-				$admin_lang = MyAgilePrivacy::get_locale();
-
 				$helpdesk_href = admin_url( 'edit.php?post_type=my-agile-privacy-c&page=my-agile-privacy-c_helpdesk' );
-				$contact_href = ( $admin_lang == 'it_IT' ) ? 'https://www.myagileprivacy.com/contattaci/' : 'https://www.myagileprivacy.com/en/contact-us/';
+				$contact_href = MAP_Helpdesk_Links::get( 'contact' );
 			?>
 
 			<div class="text-center mt-4">

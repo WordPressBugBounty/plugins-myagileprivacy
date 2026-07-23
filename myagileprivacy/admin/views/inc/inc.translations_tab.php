@@ -7,46 +7,32 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 ?>
 
-<div class="row mb-3">
-	<div class="col-12">
+<div class="map-hero">
+	<div class="map-avatar">
+		<img src="<?php echo esc_url( plugins_url( 'admin/img/fox-profile.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="">
+	</div>
 
-		<div class="mb-3">
-
-			<?php
-				echo wp_kses_post( __( "From this interface, you can edit the texts of the cookie banner. To find out which texts can be modified, use the mouse and hover over the text: if it is editable, it will be highlighted in yellow. Click on the text to edit it.", 'MAP_txt' ) );
-			?>
-
-			<br>
-
-			<?php
-				echo wp_kses_post( __( "Remember to save to apply the changes made.", 'MAP_txt' ) );
-			?>
-
+	<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
+		<?php echo wp_kses_post( __( "From this interface, you can edit the texts of the cookie banner. To find out which texts can be modified, use the mouse and hover over the text: if it is editable, it will be highlighted in yellow. Click on the text to edit it.", 'MAP_txt' ) ); ?><br>
+		<?php echo wp_kses_post( __( "Remember to save to apply the changes made.", 'MAP_txt' ) ); ?><br><br>
+		<strong>
+			<?php echo wp_kses_post( __( "Warning: Modify the banner texts only under the supervision of your privacy consultant.", 'MAP_txt' ) ); ?><br>
+			<?php echo wp_kses_post( __( "Altering the content without supervision could invalidate your website's compliance.", 'MAP_txt' ) ); ?>
+		</strong>
+		<div class="mt-2">
+			<?php map_render_helpdesk_link( 'customize_banner', __( 'Online Help: customize texts and translations', 'MAP_txt' ), true, 'texts' ); ?>
+			<span class="map-help-sep" aria-hidden="true">&middot;</span>
+			<?php map_render_helpdesk_link( 'multilanguage', __( 'Online Help: multilingual websites configuration', 'MAP_txt' ), true, 'texts-translations' ); ?>
 		</div>
-
-		<div class="alert alert-warning" role="alert">
-
-			<?php
-				echo wp_kses_post( __( "Warning: Modify the banner texts only under the supervision of your privacy consultant.", 'MAP_txt' ) );
-			?>
-
-			<br>
-
-			<?php
-				echo wp_kses_post( __( "Altering the content without supervision could invalidate your website's compliance.", 'MAP_txt' ) );
-			?>
-
-		</div>
-
 	</div>
 </div>
 
 <span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
 	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
-<div class="row  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
+<div class="row map-translations-layout <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea d-none';} ?>">
 	<div class="col-sm-2">
-		<div class="nav flex-column nav-pills me-3" id="map-translations-tab" role="tablist"
+		<div class="nav flex-column nav-pills" id="map-translations-tab" role="tablist"
 			aria-orientation="vertical">
 
 			<?php
@@ -62,7 +48,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					$label = $lang_data['en_label'].' - '.$lang_data['label'];
 			?>
 
-					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><img src="<?php echo esc_url( plugins_url( 'admin/img/flags/' . $lang_data['2char'] . '.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="<?php echo esc_attr( $label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;"><?php echo esc_html( $label ); ?></button>
+					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><img src="<?php echo esc_url( plugins_url( 'admin/img/flags/' . $lang_data['2char'] . '.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="<?php echo esc_attr( $label ); ?>" class="map-lang-flag"><?php echo esc_html( $label ); ?></button>
 
 			<?php
 					$lang_count++;
@@ -96,6 +82,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_notify_message_nocookie" name="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_nocookie]"
 							value="<?php echo esc_attr( $the_translations[$lang_code]['notify_message_nocookie'] ); ?>">
+
+						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_cmode_v2_first_layer_notice" name="translations[<?php echo esc_attr( $lang_code ); ?>][cmode_v2_first_layer_notice]"
+							value="<?php echo esc_attr( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ); ?>">
 
 						<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_layer2_nocookie" name="translations[<?php echo esc_attr( $lang_code ); ?>][layer2_nocookie]"
 							value="<?php echo esc_attr( $the_translations[$lang_code]['layer2_nocookie'] ); ?>">
@@ -179,7 +168,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<p>
 							<?php echo wp_kses_post( __( "Do you want to revert to the default content?", 'MAP_txt' ) ); ?> <a role="button" class="reset_lang_values"><?php echo wp_kses_post( __( "Click here to reset the current language", 'MAP_txt' ) ); ?></a><br>
-							<?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?>
+							<?php echo wp_kses_post( sprintf( __( 'You can change the active languages on your plan from the %1$sPrivate Area%2$s, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.', 'MAP_txt' ), '<strong><a href="' . esc_url( MAP_Helpdesk_Links::get( 'private_area_app' ) ) . '" target="_blank" rel="noopener">', '</a></strong>' ) ); ?>
 						</p>
 
 
@@ -211,7 +200,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 												<span
 												role="button" tabindex="0"
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
-												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span>
+												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span><?php if( !$iab_tcf_context && isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'] && !empty( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ) ): ?> <span
+												role="button" tabindex="0"
+												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][cmode_v2_first_layer_notice]"
+												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ); ?></span><?php endif; ?>
 
 
 											<?php endif; ?>

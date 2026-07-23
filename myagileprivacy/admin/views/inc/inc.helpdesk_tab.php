@@ -5,66 +5,34 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	exit('Not allowed.');
 }
 
-$locale = MyAgilePrivacy::get_locale();
+// All URLs are locale-resolved by the central helper (see MAP_Helpdesk_Links).
+$installa_map_url = MAP_Helpdesk_Links::get( 'install' );
+$cookie_shied_url = MAP_Helpdesk_Links::get( 'cookie_shield' );
+$moduli_norma_url = MAP_Helpdesk_Links::get( 'contact_forms' );
 
-$installa_map_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-install-myagileprivacy-on-your-website/';
-$cookie_shied_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-automatically-detect-and-block-cookies-with-cookie-shield/';
-$moduli_norma_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-bring-contact-forms-into-gdpr-compliance/';
+$cache_wprocket_url = MAP_Helpdesk_Links::get( 'cache_wprocket' );
+$cache_siteground_url = MAP_Helpdesk_Links::get( 'cache_siteground' );
+$cache_optimizepress_url = MAP_Helpdesk_Links::get( 'cache_optimizepress' );
+$cache_w3totalcache_url = MAP_Helpdesk_Links::get( 'cache_w3tc' );
+$cache_speedycache_url = MAP_Helpdesk_Links::get( 'cache_speedycache' );
+$cache_litespeed_url = MAP_Helpdesk_Links::get( 'cache_litespeed' );
+$cache_generic_url = MAP_Helpdesk_Links::get( 'cache_generic' );
 
-$cache_wprocket_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-wp-rocket-with-my-agile-privacy/';
-$cache_siteground_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-siteground-optimizer-with-my-agile-privacy/';
-$cache_optimizepress_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-optimize-press-with-my-agile-privacy/';
-$cache_w3totalcache_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-w3-total-cache-with-my-agile-privacy/';
-$cache_speedycache_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-speedy-cache-with-my-agile-privacy/';
-$cache_litespeed_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-litespeed-cache-with-my-agile-privacy/';
-$cache_generic_url = 'https://www.myagileprivacy.com/en/helpdesk/do-you-use-another-cache-plugin/';
+$scheda_tecnica_url = MAP_Helpdesk_Links::get( 'technical_sheet' );
+$sito_multilingue_url = MAP_Helpdesk_Links::get( 'multilanguage' );
 
-$scheda_tecnica_url = 'https://www.myagileprivacy.com/en/technical-sheet/';
-$sito_multilingue_url = 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-my-agile-privacy-for-multi-language-websites/';
+$sito_area_faq_url = MAP_Helpdesk_Links::get( 'post_install_faq' );
+$sito_area_privata_url = MAP_Helpdesk_Links::get( 'private_area_guide' );
 
-$sito_area_faq_url = 'https://www.myagileprivacy.com/en/helpdesk/post-installation-frequently-asked-questions/';
-$sito_area_privata_url = 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-private-area/';
+$personalizzazione_cookie_banner = MAP_Helpdesk_Links::get( 'customize_banner' );
 
-$personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/en/helpdesk/how-to-customise-the-my-agile-privacy-cookie-banner/';
+$consent_mode_v2 = MAP_Helpdesk_Links::get( 'consent_mode_v2' );
 
-$consent_mode_v2 = 'https://www.myagileprivacy.com/en/supporting-consent-mode-v2-what-it-is-and-how-to-implement-it-gdpr-compliant-with-my-agile-privacy/';
+$cmode_uet = MAP_Helpdesk_Links::get( 'microsoft_cmode' );
+$cmode_clarity = MAP_Helpdesk_Links::get( 'clarity_cmode' );
+$gtg_url = MAP_Helpdesk_Links::get( 'gtg' );
 
-$cmode_uet = 'https://www.myagileprivacy.com/en/how-to-implement-microsoft-consent-mode-with-my-agile-privacy/';
-$cmode_clarity = 'https://www.myagileprivacy.com/en/how-to-implement-clarity-consent-mode-with-my-agile-privacy/';
-
-$policy_customization = 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-my-agile-privacy-policy-assistant/';
-
-
-//per lang helpdesk defs
-if( $locale && $locale == 'it_IT' )
-{
-	$installa_map_url = 'https://www.myagileprivacy.com/helpdesk/come-installare-myagileprivacy-sul-tuo-sito-web/';
-	$cookie_shied_url = 'https://www.myagileprivacy.com/helpdesk/come-rilevare-e-bloccare-i-cookie-automaticamente-con-il-cookie-shield/';
-	$moduli_norma_url = 'https://www.myagileprivacy.com/helpdesk/come-mettere-a-norma-gdpr-i-moduli-di-contatto/';
-
-	$cache_wprocket_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-wp-rocket-con-my-agile-privacy/';
-	$cache_siteground_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-siteground-optimizer-con-my-agile-privacy/';
-	$cache_optimizepress_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-optimize-press-con-my-agile-privacy/';
-	$cache_w3totalcache_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-w3-total-cache-con-my-agile-privacy/';
-	$cache_speedycache_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-speedy-cache-con-my-agile-privacy/';
-	$cache_litespeed_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-litespeed-cache-con-my-agile-privacy/';
-	$cache_generic_url = 'https://www.myagileprivacy.com/helpdesk/utilizzi-un-altro-plugin-di-cache/';
-
-	$scheda_tecnica_url = 'https://www.myagileprivacy.com/scheda-e-informazioni-tecniche-myagileprivacy/';
-	$sito_multilingue_url = 'https://www.myagileprivacy.com/helpdesk/come-configurare-my-agile-privacy-per-siti-web-multi-lingue/';
-
-	$sito_area_faq_url = 'https://www.myagileprivacy.com/helpdesk/domande-frequenti-post-installazione/';
-	$sito_area_privata_url = 'https://www.myagileprivacy.com/helpdesk/guida-allutilizzo-dellarea-privata/';
-
-	$personalizzazione_cookie_banner = 'https://www.myagileprivacy.com/helpdesk/come-personalizzare-il-cookie-banner-di-my-agile-privacy/';
-
-	$consent_mode_v2 = 'https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy/';
-
-	$cmode_uet = 'https://www.myagileprivacy.com/come-implementare-microsoft-consent-mode-con-my-agile-privacy/';
-	$cmode_clarity = 'https://www.myagileprivacy.com/come-implementare-clarity-consent-mode-con-my-agile-privacy/';
-
-	$policy_customization = 'https://www.myagileprivacy.com/helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/';
-}
+$policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 ?>
 
 <div class="row">
@@ -128,6 +96,15 @@ if( $locale && $locale == 'it_IT' )
 						<br>
 
 						<a target="_blank" href="<?php echo esc_attr( $cmode_clarity ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Clarity Consent Mode on your website', 'MAP_txt' ) ); ?></a>
+					</p>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'Google Tag Gateway (GTG)', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_attr( $gtg_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Google Tag Gateway - integration guide', 'MAP_txt' ) ); ?></a>
 					</p>
 
 
@@ -213,10 +190,8 @@ if( $locale && $locale == 'it_IT' )
 		<img src="<?php echo esc_attr( plugin_dir_url( __DIR__ ) ); ?>../img/fox-helpdesk.png" class="img-fluid" alt="">
 
 		<?php
-			$admin_lang = MyAgilePrivacy::get_locale();
-
-			$helpdesk_href = ( $admin_lang == 'it_IT' ) ? 'https://www.myagileprivacy.com/helpdesk/' : 'https://www.myagileprivacy.com/en/helpdesk/';
-			$contact_href = ( $admin_lang == 'it_IT' ) ? 'https://www.myagileprivacy.com/contattaci/' : 'https://www.myagileprivacy.com/en/contact-us/';
+			$helpdesk_href = MAP_Helpdesk_Links::get( 'helpdesk_index' );
+			$contact_href = MAP_Helpdesk_Links::get( 'contact' );
 		?>
 
 		<div class="text-center mt-4">

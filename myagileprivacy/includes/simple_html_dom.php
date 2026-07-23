@@ -1393,7 +1393,7 @@ final class agile_simple_html_dom_node
 
 }
 
-class agile_simple_html_dom
+final class agile_simple_html_dom
 {
 	public $root = null;
 	public $nodes = array();

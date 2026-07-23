@@ -18,6 +18,7 @@ if( isset( $the_settings['pa'] ) &&
 
 ?>
 
+
 <span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] ){echo 'd-none';} ?>">
 	<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 </span>
@@ -66,18 +67,8 @@ if( isset( $the_settings['pa'] ) &&
 							<?php checked( $the_settings['enable_clarity_cmode'], true ); ?>>
 
 						<label for="enable_clarity_cmode_field" class="me-2 label-checkbox"></label>
-						<?php
-
-							$clarity_cmode_link = 'https://www.myagileprivacy.com/en/how-to-implement-clarity-consent-mode-with-my-agile-privacy';
-
-							if( $locale && $locale == 'it_IT' )
-							{
-								$clarity_cmode_link = 'https://www.myagileprivacy.com/come-implementare-clarity-consent-mode-con-my-agile-privacy';
-							}
-						?>
-
 						<label for="enable_clarity_cmode_field">
-							<?php echo sprintf(__('Enable Clarity Consent Mode - %1$sOnline Help%2$s', 'MAP_txt'), '<a href="' . esc_attr( $clarity_cmode_link ) . '" target="_blank">', '</a>'); ?>
+							<?php echo esc_html__( 'Enable Clarity Consent Mode', 'MAP_txt' ); ?>
 						</label>
 					</div>
 				</div> <!-- ./ styled_radio -->
@@ -217,4 +208,6 @@ if( isset( $the_settings['pa'] ) &&
 		</div>
 
 	</div>
+
+	<?php map_render_help_fox( 'clarity_cmode' ); ?>
 </div>

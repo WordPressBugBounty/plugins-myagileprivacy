@@ -6,7 +6,7 @@
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0015",
+	'js_internal_version' 				: "3.0016",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -43,6 +43,14 @@ var MAP_SYS = {
 	'some_positive_consent_given'		: false,
 	'early_gcmode'						: false,
 	'frontend_regulation'				: null,
+	'geo_enabled'						: false,
+	'geo_sede_strong'					: false,
+	'geo_force_optout'					: {},
+	'geo_resolved'						: false,  // true once country+native are known
+	'geo_country'						: null,    // ISO alpha-2 lowercase
+	'geo_native'						: null,    // 'block' | 'noblock'
+	'geo_eff_type'						: 'block', // effective regime after effType logic
+	'geo_bar_deferred'					: false,   // true while toggleBar is waiting for geo resolution
 	'send_ga4_event_on_consent_change'	: null,
 	'allow_js_fast_callback'			: null,
 	'cookie_domain'						: null,
@@ -120,6 +128,8 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 	MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
 
+var MAP_SVG_VIDEO = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M4 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4zm6 3.5 6 3.5-6 3.5v-7z'/></svg>";
+var MAP_SVG_MAPS = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path d='M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z'/></svg>";
 
 if( typeof MAP_Cookie === 'undefined' )
 {
@@ -163,7 +173,7 @@ if( typeof MAP_Cookie === 'undefined' )
 					var expires = "; expires=" + date.toGMTString();
 				} else
 					var expires = "";
-				document.cookie = name + "=" + value + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
+				document.cookie = name + "=" + ( "" + value ).replace( /[;\r\n]/g, "" ) + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
 				if( this._cookie_cache ) delete this._cookie_cache[name];
 			}
 			catch( e )
@@ -179,7 +189,7 @@ if( typeof MAP_Cookie === 'undefined' )
 			}
 			try {
 				var expires = "; expires=" + GMTString;
-				document.cookie = name + "=" + value + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
+				document.cookie = name + "=" + ( "" + value ).replace( /[;\r\n]/g, "" ) + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
 				if( this._cookie_cache ) delete this._cookie_cache[name];
 			}
 			catch( e )
@@ -330,6 +340,26 @@ var MAP =
 				MAP_SYS.enforce_youtube_privacy_v2 = map_full_config.enforce_youtube_privacy_v2;
 			}
 
+			//copy geo config from map_full_config into MAP_SYS
+			if( typeof map_full_config !== 'undefined' && map_full_config.geo_enabled )
+			{
+				MAP_SYS.geo_enabled     = true;
+				MAP_SYS.geo_sede_strong = !! map_full_config.geo_sede_strong;
+				MAP_SYS.geo_force_optout = ( map_full_config.geo_force_optout && typeof map_full_config.geo_force_optout === 'object' )
+					? map_full_config.geo_force_optout
+					: {};
+				MapLogger.log( 'MAP-GEO', 'config copied into MAP_SYS', {
+					geo_enabled     : MAP_SYS.geo_enabled,
+					geo_sede_strong : MAP_SYS.geo_sede_strong,
+					geo_force_optout: MAP_SYS.geo_force_optout
+				} );
+				MAP.mapGeoInit();
+			}
+			else
+			{
+				MapLogger.log( 'MAP-GEO', 'geo disabled in config (map_full_config.geo_enabled falsy) — skipping geo init' );
+			}
+
 			if( typeof CookieShield !== 'undefined' &&
 				CookieShield
 			)
@@ -360,7 +390,9 @@ var MAP =
 			{
 				MAP_ACCEPTED_ALL_COOKIE_NAME = MAP_ACCEPTED_ALL_COOKIE_NAME + MAP_POSTFIX;
 				MAP_ACCEPTED_SOMETHING_COOKIE_NAME = MAP_ACCEPTED_SOMETHING_COOKIE_NAME + MAP_POSTFIX;
-
+				MAP_CONSENT_STATUS = MAP_CONSENT_STATUS + MAP_POSTFIX;
+				MAP_MICROSOFT_CONSENT_STATUS = MAP_MICROSOFT_CONSENT_STATUS + MAP_POSTFIX;
+				MAP_CLARITY_CONSENT_STATUS = MAP_CLARITY_CONSENT_STATUS + MAP_POSTFIX;
 				MAP_USER_UUID = MAP_USER_UUID + MAP_POSTFIX;
 				MAP_LAST_CONSENT_MODIFY_DATE = MAP_LAST_CONSENT_MODIFY_DATE + MAP_POSTFIX;
 			}
@@ -428,6 +460,10 @@ var MAP =
 
 			window.addEventListener( 'resize', function() {
 				that.optimizeMobile();
+			});
+
+			document.body.addEventListener( 'MAP_SHIELD_CONTENT_BLOCKED', function() {
+				that.createInlineNotify();
 			});
 
 			this.setupIabTCF();
@@ -1018,7 +1054,14 @@ var MAP =
 					var newConsent = {};
 					newConsent[key] = value;
 
-					gtag( 'consent', 'update', newConsent );
+					if( typeof gtag === 'function' )
+					{
+						gtag( 'consent', 'update', newConsent );
+					}
+					else
+					{
+						MapLogger.warn( MAP_SYS.maplog + 'consent update LOST: gtag unavailable', newConsent );
+					}
 
 					//Dispatch events
 					that.dispatchConsentEvents( 'myagileprivacy_gcmode_consent_', key + '_status', value );
@@ -1083,7 +1126,14 @@ var MAP =
 			{
 				if( MAP_SYS?.cmode_v2_implementation_type === 'native' )
 				{
-					gtag( 'consent', 'update', newConsent );
+					if( typeof gtag === 'function' )
+					{
+						gtag( 'consent', 'update', newConsent );
+					}
+					else
+					{
+						MapLogger.warn( MAP_SYS.maplog + 'consent update LOST: gtag unavailable', newConsent );
+					}
 				}
 
 				if( MAP_SYS?.cmode_v2_implementation_type === 'gtm' )
@@ -1383,7 +1433,14 @@ var MAP =
 					MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
 
 					try {
-						gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
+						if( typeof gtag === 'function' )
+						{
+							gtag( 'consent', 'default', { ...MAP_SYS.starting_gconsent } );
+						}
+						else
+						{
+							MapLogger.warn( MAP_SYS.maplog + 'consent default LOST: gtag unavailable', MAP_SYS.starting_gconsent );
+						}
 					}
 					catch( error )
 					{
@@ -1719,7 +1776,9 @@ var MAP =
 		);
 			}
 
-			return null;
+			return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, function( c ) {
+				return ( c ^ Math.random() * 16 >> c / 4 ).toString( 16 );
+			});
 		}
 		catch( error )
 		{
@@ -1737,7 +1796,31 @@ var MAP =
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function toggleBar' );
 
-			if( !MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
+			// -defer the show/hide decision until the geo zone is
+			// resolved (first visit, before the async endpoint returns). The
+			// .showConsent listeners below are still bound, so the manage-consent
+			// widget works regardless. mapGeoApply() re-invokes toggleBar() once
+			// resolved. Sites without geo are unaffected.
+			var geoDefer = ( MAP_SYS.geo_enabled && ! MAP_SYS.geo_resolved );
+			if( geoDefer )
+			{
+				MAP_SYS.geo_bar_deferred = true;
+				MapLogger.log( 'MAP-GEO', 'toggleBar: deferred show/hide until geo resolved (listeners still bound)' );
+			}
+
+			// no-block zone hides the banner; GPC keeps it visible.
+			var geoNoBlock = ( MAP_SYS.geo_enabled && MAP_SYS.geo_resolved && MAP_SYS.geo_eff_type === 'noblock' );
+
+			if( geoNoBlock && typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true )
+			{
+				geoNoBlock = false;
+				MapLogger.log( 'MAP-GEO', 'toggleBar: GPC active in no-block zone → banner shown for explicit choice' );
+			}
+
+			if( ! geoDefer )
+			{
+			if( ! geoNoBlock &&
+				!MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
 				!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME )
 				)
 			{
@@ -1782,8 +1865,12 @@ var MAP =
 			{
 				that.hideBar();
 			}
+			} // end if( ! geoDefer )
 
 			this.showagain_elm.querySelectorAll( '.showConsent' ).forEach( function( $this ) {
+				// Bind once per node (toggleBar may run multiple times: defer + finalize).
+				if( $this.getAttribute( 'data-map-sc-bound' ) === '1' ) { return; }
+				$this.setAttribute( 'data-map-sc-bound', '1' );
 				$this.addEventListener( 'click', function( e ) {
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered showConsent' );
 
@@ -2099,7 +2186,7 @@ var MAP =
 
 			});
 
-			var $show_inline_notify = document.querySelectorAll( '.iframe_src_blocked.map_show_inline_notify' );
+			var $show_inline_notify = document.querySelectorAll( '.iframe_src_blocked.map_show_inline_notify:not(._is_activated):not(.map_inline_notify_done)' );
 
 			$show_inline_notify.forEach( function( $this ) {
 
@@ -2107,10 +2194,17 @@ var MAP =
 
 				var width = $this.offsetWidth;
 
+				var is_absolute = false;
+
+				try {
+					is_absolute = ( window.getComputedStyle( $this ).position === 'absolute' );
+				}
+				catch( e ) {}
+
 				var api_key = $this.getAttribute( 'data-cookie-api-key' );
 
 				var the_friendly_name = '';
-				var friendly_name = $this.getAttribute( 'data-friendly-name' );
+				var friendly_name = $this.getAttribute( 'data-friendly_name' );
 
 				if( friendly_name )
 				{
@@ -2118,8 +2212,47 @@ var MAP =
 				}
 
 				$this.style.display = 'none';
+				$this.classList.add( 'map_inline_notify_done' );
 
-				var html = "<div class='map_inline_notify showConsentAgain' data-cookie-api-key='"+api_key+"'>"+that.settings.blocked_content_text+"<br>"+the_friendly_name+"</div>";
+				var kind = $this.classList.contains( 'map_video_block' ) ? 'video'
+						 : $this.classList.contains( 'map_maps_block' ) ? 'maps' : '';
+
+				var html;
+
+				if( kind === 'video' )
+				{
+					//legacy video placeholder, kept for reference:
+					//html = "<div class='map_inline_notify map_inline_notify_video showConsentAgain' data-cookie-api-key='"+api_key+"'>"+MAP_SVG_VIDEO+"<span class='map_inline_notify_text'>"+that.settings.blocked_content_text+"</span></div>";
+
+					//dedicated video text available, switch back if needed:
+					//var video_text = that.settings.blocked_video_text || that.settings.blocked_content_text;
+					var video_text = that.settings.blocked_content_text;
+
+					html = "<div class='map_inline_notify map_inline_notify_video map_video_placeholder showConsentAgain' data-cookie-api-key='"+api_key+"'>"
+						+ "<span class='map_video_play' aria-hidden='true'></span>"
+						+ "<span class='map_inline_notify_text'>"+video_text+"</span>"
+						+ "<span class='map_video_controls' aria-hidden='true'><span class='map_video_controls_play'></span><span class='map_video_controls_bar'><span class='map_video_controls_dot'></span></span><span class='map_video_controls_full'></span></span>"
+						+ "</div>";
+				}
+				else if( kind === 'maps' )
+				{
+					//legacy maps placeholder, kept for reference:
+					//html = "<div class='map_inline_notify map_inline_notify_maps showConsentAgain' data-cookie-api-key='"+api_key+"'>"+MAP_SVG_MAPS+"<span class='map_inline_notify_text'>"+that.settings.blocked_content_text+"</span></div>";
+
+					//dedicated maps text available, switch back if needed:
+					//var maps_text = that.settings.blocked_maps_text || that.settings.blocked_content_text;
+					var maps_text = that.settings.blocked_content_text;
+
+					html = "<div class='map_inline_notify map_inline_notify_maps map_maps_placeholder showConsentAgain' data-cookie-api-key='"+api_key+"'>"
+						+ "<span class='map_maps_pin' aria-hidden='true'></span>"
+						+ "<span class='map_inline_notify_text'>"+maps_text+"</span>"
+						+ "<span class='map_maps_controls' aria-hidden='true'><span class='map_maps_controls_zoom_in'></span><span class='map_maps_controls_zoom_out'></span></span>"
+						+ "</div>";
+				}
+				else
+				{
+					html = "<div class='map_inline_notify showConsentAgain' data-cookie-api-key='"+api_key+"'>"+that.settings.blocked_content_text+"<br>"+the_friendly_name+"</div>";
+				}
 
 				//temp div for inject via vanilla js
 				var tempDiv = document.createElement( 'div' );
@@ -2128,14 +2261,34 @@ var MAP =
 				var $injected = tempDiv.firstChild;
 				$this.parentNode.insertBefore( $injected, $this.nextSibling );
 
-				if( height > 0 )
+				if( is_absolute )
 				{
-					$injected.style.height = height + 'px';
+					$injected.style.position = 'absolute';
+					$injected.style.top = '0';
+					$injected.style.left = '0';
+					$injected.style.width = '100%';
+					$injected.style.height = '100%';
 				}
-
-				if( width > 0 )
+				else
 				{
-					$injected.style.width = width + 'px';
+					//fluid sizing: match the replaced embed, never exceed it,
+					//shrink with the container below that size and keep the
+					//original proportions via aspect-ratio
+					$injected.style.width = '100%';
+
+					if( width > 0 )
+					{
+						$injected.style.maxWidth = width + 'px';
+					}
+
+					if( width > 0 && height > 0 )
+					{
+						$injected.style.aspectRatio = width + ' / ' + height;
+					}
+					else if( height > 0 )
+					{
+						$injected.style.height = height + 'px';
+					}
 				}
 
 				if( that.settings.inline_notify_color )
@@ -2767,7 +2920,7 @@ var MAP =
 
 			if( typeof map_ajax !== 'undefined' &&
 				typeof map_ajax.cookie_process_delayed_mode !== 'undefined' &&
-				map_ajax.cookie_process_delayed_mode == 1
+				map_ajax.cookie_process_delayed_mode === 1
 				)
 			{
 				//wait for page load
@@ -2931,9 +3084,9 @@ var MAP =
 
 				var animation = acceptButton.getAttribute( 'data-animation-effect' );
 
-				var delay = parseInt(acceptButton.getAttribute( 'data-animation-delay') ) * 1000;
+				var delay = parseInt(acceptButton.getAttribute( 'data-animation-delay'), 10 ) * 1000;
 
-				var repeat = parseInt(acceptButton.getAttribute( 'data-animation-repeat' ) );
+				var repeat = parseInt(acceptButton.getAttribute( 'data-animation-repeat' ), 10 );
 
 				var all_animation_classes = ['animate__animated', animation] ;
 
@@ -3780,7 +3933,7 @@ var MAP =
 
 				var accepted_all = false;
 
-				if( ( MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) && MAP_Cookie.read( cookieName ) == '1' ) )
+				if( ( MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) && MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) == '1' ) )
 				{
 					accepted_all = true;
 				}
@@ -4422,7 +4575,7 @@ var MAP =
 									if( iab_category === 'googleVendors' ) updateHtml = true;
 
 									window.MAPIABTCF_doSetUserInteraction();
-									window.MAPIABTCF_updateConsent( iab_category, parseInt( iab_key ), true, true, updateHtml );
+									window.MAPIABTCF_updateConsent( iab_category, parseInt( iab_key, 10 ),true, true, updateHtml );
 
 									that.updateSomeConsentGivenStatus();
 								}
@@ -4447,7 +4600,7 @@ var MAP =
 									if( iab_category === 'googleVendors' ) updateHtml = true;
 
 									window.MAPIABTCF_doSetUserInteraction();
-									window.MAPIABTCF_updateConsent( iab_category, parseInt( iab_key ), false, true, updateHtml );
+									window.MAPIABTCF_updateConsent( iab_category, parseInt( iab_key, 10 ),false, true, updateHtml );
 
 									that.updateSomeConsentGivenStatus();
 								}
@@ -4543,23 +4696,53 @@ var MAP =
 		}
 	},
 
-	showNotificationBar: function( message = null, success = null )
+	notice_i18n: {
+		en: { prefix: "[MyAgilePrivacy admin-only notification]", close: "Close",
+			detected: "The Cookie Shield has detected the following cookies so far: %s.",
+			none: "The Cookie Shield has not detected any cookies.",
+			off: "Cookie Shield is turned off. Enable it in order to block cookies." },
+		it: { prefix: "[MyAgilePrivacy notifica solo per l'amministratore]", close: "Chiudi",
+			detected: "Il Cookie Shield ha rilevato finora i seguenti cookie: %s.",
+			none: "Il Cookie Shield non ha rilevato alcun cookie.",
+			off: "Il Cookie Shield è disattivato. Attivalo per bloccare i cookie." },
+		fr: { prefix: "[MyAgilePrivacy notification réservée à l'administrateur]", close: "Fermer",
+			detected: "Le Cookie Shield a détecté jusqu'à présent les cookies suivants : %s.",
+			none: "Le Cookie Shield n'a détecté aucun cookie.",
+			off: "Le Cookie Shield est désactivé. Activez-le pour bloquer les cookies." },
+		de: { prefix: "[MyAgilePrivacy Hinweis nur für Administratoren]", close: "Schließen",
+			detected: "Der Cookie Shield hat bisher die folgenden Cookies erkannt: %s.",
+			none: "Der Cookie Shield hat keine Cookies erkannt.",
+			off: "Der Cookie Shield ist deaktiviert. Aktivieren Sie ihn, um Cookies zu blockieren." },
+		es: { prefix: "[MyAgilePrivacy aviso solo para el administrador]", close: "Cerrar",
+			detected: "El Cookie Shield ha detectado hasta ahora las siguientes cookies: %s.",
+			none: "El Cookie Shield no ha detectado ninguna cookie.",
+			off: "El Cookie Shield está desactivado. Actívelo para bloquear las cookies." }
+	},
+
+	// Localized admin-notice text with English fallback.
+	noticeText: function( key )
+	{
+		var lang = ( document.documentElement.getAttribute( 'lang' ) || 'en' ).toLowerCase().slice( 0, 2 );
+		var table = this.notice_i18n[ lang ] || this.notice_i18n.en;
+		return table[ key ] || this.notice_i18n.en[ key ] || '';
+	},
+
+	// A message passed with a slot name owns its own line: a later call with the
+	// same slot rewrites that line instead of adding another one, so re-running
+	// the check updates the text rather than repeating it. Without a slot the
+	// message is appended, which is what one-off events need.
+	showNotificationBar: function( message = null, success = null, slot = null )
 	{
 		try {
 
 			var body = document.querySelector( 'body' );
 			var bar = document.querySelector( '#mapx_notification_bar' );
 
-			var prev_message = "<span class='mapx_close_notification_bar'>Close</span>";
-
-			if( bar )
-			{
-				prev_message = bar.innerHTML + "<br>";
-			}
-			else
+			if( !bar )
 			{
 				bar = document.createElement( 'div' );
 				bar.setAttribute( 'id','mapx_notification_bar' );
+				bar.innerHTML = "<span class='mapx_close_notification_bar'>" + this.noticeText( 'close' ) + "</span>";
 				body.append( bar );
 
 
@@ -4573,7 +4756,11 @@ var MAP =
 				}, false);
 			}
 
-			var final_message = prev_message + '<b>[MyAgilePrivacy admin-only notification]</b> ' + message;
+			var safe_message  = String( message || '' )
+				.replace( /&/g, '&amp;' )
+				.replace( /</g, '&lt;' )
+				.replace( />/g, '&gt;' );
+			var final_message = '<b>' + this.noticeText( 'prefix' ) + '</b> ' + safe_message;
 
 			if( success == 1 )
 			{
@@ -4585,12 +4772,21 @@ var MAP =
 				final_message = final_message + '&nbsp;<span class="mapx_proxification_success_false">ERROR!</span>';
 			}
 
-			if( success == null )
+			var line = slot ? bar.querySelector( '[data-map-notice="' + slot + '"]' ) : null;
+
+			if( !line )
 			{
-				final_message = final_message;
+				line = document.createElement( 'div' );
+
+				if( slot )
+				{
+					line.setAttribute( 'data-map-notice', slot );
+				}
+
+				bar.append( line );
 			}
 
-			bar.innerHTML = final_message;
+			line.innerHTML = final_message;
 
 		}
 		catch( error )
@@ -4627,22 +4823,36 @@ var MAP =
 						});
 					}
 
+					// Include names from the current page load.
+					if( typeof CookieShield !== 'undefined' && CookieShield &&
+						typeof CookieShield.getDetectedFriendlyNames !== 'undefined' )
+					{
+						CookieShield.getDetectedFriendlyNames().forEach( function( v ) {
+							if( v ) { this_blocked_friendly_name.push( v?.desc ? v.desc : v ); }
+						});
+					}
+
 					const this_blocked_friendly_name_unique = this_blocked_friendly_name.filter((v, i, a) => a.indexOf(v) === i);
 
 					if( this_blocked_friendly_name_unique.length )
 					{
-						this.showNotificationBar( 'The Cookie Shield has detected the following cookies so far: ' +this_blocked_friendly_name_unique.join( ', ' ) + '.', null );
+						// Decode HTML entities in names (e.g. titles stored as "&#8211;");
+						// showNotificationBar re-escapes any real markup so this stays safe.
+						var name_decoder = document.createElement( 'textarea' );
+						name_decoder.innerHTML = this_blocked_friendly_name_unique.join( ', ' );
+
+						this.showNotificationBar( this.noticeText( 'detected' ).replace( '%s', name_decoder.value ), null, 'admin' );
 					}
 					else
 					{
-						this.showNotificationBar( 'The Cookie Shield has not detected any cookies.', null );
+						this.showNotificationBar( this.noticeText( 'none' ), null, 'admin' );
 					}
 				}
 
 				if( !!MAP?.settings.scan_mode &&
 					MAP.settings.scan_mode == 'turned_off' )
 				{
-					this.showNotificationBar( 'Cookie Shield is turned off. Enable it in order to block cookies.', null );
+					this.showNotificationBar( this.noticeText( 'off' ), null, 'admin' );
 				}
 			}
 
@@ -5208,7 +5418,7 @@ var MAP =
 	            return Promise.reject( 'missing map_ajax' );
 	        }
 
-	        // --- 1. DETECTED KEYS (only learning mode) ---
+	        // --- 1. Keys ---
 	        var detectableKeys_to_send = null;
 	        var detectedKeys_to_send   = null;
 	        var send_detected_keys     = 0;
@@ -5217,7 +5427,7 @@ var MAP =
 	            MAP.settings &&
 	            (
 	                ( MAP.settings.scan_mode && MAP.settings.scan_mode == 'learning_mode' ) ||
-	                ( map_ajax.force_js_learning_mode == 1 )
+	                ( map_ajax.force_js_learning_mode === 1 )
 	            )
 	        )
 	        {
@@ -5528,6 +5738,289 @@ var MAP =
 				slider.classList.remove( 'map-slider-on' );
 			}
 		}
+	},
+
+	// entry point called after geo config is copied into MAP_SYS
+
+	/**
+	 * Geo init: reads the geo cookie or resolves it, then applies the regime.
+	 */
+	mapGeoInit: function()
+	{
+		var that = this;
+
+		try
+		{
+			MapLogger.log( 'MAP-GEO', 'mapGeoInit: start' );
+
+			if( ! MAP_SYS.geo_enabled ) { MapLogger.log( 'MAP-GEO', 'mapGeoInit: geo_enabled=false → abort' ); return; }
+
+			// optional geo re-resolution path.
+			var testParam = that.mapGeoTestParam();
+			if( testParam )
+			{
+				MapLogger.log( 'MAP-GEO', 'mapGeoInit: test override = ' + testParam + ' → bypass cookie, force resolve' );
+				that.mapGeoResolve();
+				return;
+			}
+
+			var cookieVal = MAP_Cookie.read( 'map_geo' );
+
+			if( cookieVal )
+			{
+				var parsed = null;
+				try { parsed = JSON.parse( cookieVal ); } catch(e) {}
+
+				if( parsed && parsed.country && parsed.native )
+				{
+					MAP_SYS.geo_country  = parsed.country;
+					MAP_SYS.geo_native   = parsed.native;
+					MAP_SYS.geo_resolved = true;
+					MapLogger.log( 'MAP-GEO', 'mapGeoInit: cookie present → use it', parsed );
+					that.mapGeoApply();
+					return;
+				}
+				MapLogger.log( 'MAP-GEO', 'mapGeoInit: cookie present but invalid → resolve via endpoint', cookieVal );
+			}
+			else
+			{
+				MapLogger.log( 'MAP-GEO', 'mapGeoInit: no cookie → resolve via endpoint' );
+			}
+
+			// No valid cookie: resolve.
+			that.mapGeoResolve();
+		}
+		catch( error ) { MapLogger.log( 'MAP-GEO', 'mapGeoInit: ERROR', error ); console.error( error ); }
+	},
+
+	/**
+	 * Returns the optional country override query parameter (uppercased), or '' when absent.
+	 */
+	mapGeoTestParam: function()
+	{
+		try {
+			var m = window.location.search.match( /[?&]map_geo_test=([a-zA-Z]{2})\b/ );
+			return m ? m[1].toUpperCase() : '';
+		} catch( e ) { return ''; }
+	},
+
+	/**
+	 * Applies the default regime and finalizes the banner.
+	 */
+	mapGeoFailClosed: function()
+	{
+		MAP_SYS.geo_country  = 'unknown';
+		MAP_SYS.geo_native   = 'block';
+		MAP_SYS.geo_eff_type = 'block';
+		MAP_SYS.geo_resolved = true;
+		MapLogger.log( 'MAP-GEO', 'mapGeoFailClosed: geo resolution failed → block (opt-in)' );
+
+		if( MAP_SYS.geo_bar_deferred )
+		{
+			MAP_SYS.geo_bar_deferred = false;
+			MapLogger.log( 'MAP-GEO', 'mapGeoFailClosed: finalizing deferred banner (toggleBar → block)' );
+			this.toggleBar();
+		}
+	},
+
+	mapGeoResolve: function()
+	{
+		var that = this;
+
+		if( ! ( typeof map_ajax !== 'undefined' && map_ajax && map_ajax.advanced_api_url && map_ajax.api_token ) )
+		{
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: missing map_ajax config (advanced_api_url/api_token) → fail-closed (block)' );
+			that.mapGeoFailClosed();
+			return;
+		}
+
+		var test     = that.mapGeoTestParam();
+		var testQs   = test ? ( 'map_geo_test=' + encodeURIComponent( test ) ) : '';
+		var apiUrl   = test ? ( map_ajax.advanced_api_url + ( map_ajax.advanced_api_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.advanced_api_url;
+
+		MapLogger.log( 'MAP-GEO', 'mapGeoResolve: calling advanced-api.php', { url: apiUrl, test: test || '(none)' } );
+
+		var payload = new URLSearchParams( {
+			action        : 'map_resolve_geo',
+			map_api_token : map_ajax.api_token
+		} );
+
+		fetch( apiUrl, {
+			method  : 'POST',
+			headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body    : payload
+		} )
+		.then( function( resp ) {
+			if( ! resp.ok ) { throw new Error( 'advanced-api.php ' + resp.status ); }
+			return resp.json();
+		} )
+		.then( function( data ) {
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php OK', data );
+			that.mapGeoHandleResult( data );
+		} )
+		.catch( function( err ) {
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php failed → fallback wp-ajax', String( err ) );
+
+			// Secondary request.
+			if( ! map_ajax.ajax_url ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: no ajax_url → fail-closed (block)' ); that.mapGeoFailClosed(); return; }
+
+			var ajaxUrl = test ? ( map_ajax.ajax_url + ( map_ajax.ajax_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.ajax_url;
+
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: calling wp-ajax', { url: ajaxUrl, test: test || '(none)' } );
+
+			fetch( ajaxUrl, {
+				method  : 'POST',
+				headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body    : new URLSearchParams( {
+					action        : 'map_advanced_resolve_geo',
+					map_api_token : map_ajax.api_token
+				} )
+			} )
+			.then( function( resp ) { return resp.json(); } )
+			.then( function( data ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax OK', data ); that.mapGeoHandleResult( data ); } )
+			.catch( function( err2 ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax failed → fail-closed (block)', String( err2 ) ); that.mapGeoFailClosed(); } );
+		} );
+	},
+
+	/**
+	 * Processes the endpoint response, writes the cookie, and applies the regime.
+	 *
+	 * @param {Object} data  { country: string, native: 'block'|'noblock' }
+	 */
+	mapGeoHandleResult: function( data )
+	{
+		try
+		{
+			if( ! data || ! data.country || ! data.native )
+			{
+				MapLogger.log( 'MAP-GEO', 'mapGeoHandleResult: invalid result → fail-closed (block, no cookie)', data );
+				this.mapGeoFailClosed();
+				return;
+			}
+
+			MAP_SYS.geo_country  = data.country;
+			MAP_SYS.geo_native   = data.native;
+			MAP_SYS.geo_resolved = true;
+
+			// Write the geo cookie.
+			MAP_Cookie.set( 'map_geo', JSON.stringify( { country: data.country, native: data.native } ), 7 );
+			MapLogger.log( 'MAP-GEO', 'mapGeoHandleResult: cookie map_geo written', { country: data.country, native: data.native } );
+
+			this.mapGeoApply();
+		}
+		catch( error ) { MapLogger.log( 'MAP-GEO', 'mapGeoHandleResult: ERROR', error ); console.error( error ); }
+	},
+
+	/**
+	 * Computes effType and, when no-block, sets implicit consent + unblocks scripts.
+	 * GPC and pre-existing opt-out take absolute precedence.
+	 */
+	mapGeoApply: function()
+	{
+		try
+		{
+			if( ! MAP_SYS.geo_resolved ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: not resolved yet → abort' ); return; }
+
+			MAP_SYS.geo_eff_type = this.mapGeoEffType( MAP_SYS.geo_country, MAP_SYS.geo_native );
+
+			MapLogger.log( 'MAP-GEO', 'mapGeoApply', {
+				country     : MAP_SYS.geo_country,
+				native      : MAP_SYS.geo_native,
+				sede_strong : MAP_SYS.geo_sede_strong,
+				force_optout: MAP_SYS.geo_force_optout,
+				effType     : MAP_SYS.geo_eff_type
+			} );
+
+			if( MAP_SYS.geo_eff_type === 'noblock' )
+			{
+				// Absolute precedence: respect pre-existing opt-out or GPC signal.
+				if( MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '-1' )
+				{
+					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block but pre-existing opt-out (-1) → respect, no unblock' );
+				}
+				else if( typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true )
+				{
+					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block but GPC active → respect opt-out, no unblock' );
+				}
+				else if( MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '1' )
+				{
+					// Already in implicit-consent state (return visit) — nothing to do;
+					// the UI/consent were set on the first visit.
+					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block, implicit consent already set (return visit) → no action' );
+				}
+				else
+				{
+					// opt-out zone: apply implicit accept-all via existing flow.
+					var accepted = false;
+					try {
+						if( this.accept_button && typeof this.accept_button.click === 'function' )
+						{
+							MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block → implicit accept-all (triggering Accept button flow: granular consent + gtag update + unblock)' );
+							this.accept_button.click();
+							accepted = true;
+							// accept_close() (run by the button) already finalized banner + widget.
+							MAP_SYS.geo_bar_deferred = false;
+						}
+					}
+					catch( e ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: accept button flow failed → fallback', e ); }
+
+					if( ! accepted )
+					{
+						// Fallback: minimal implicit consent (no granular UI sync).
+						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
+						this.saveGoogleConsentStatusToCookie( {
+							ad_storage          : 'granted',
+							ad_user_data        : 'granted',
+							ad_personalization  : 'granted',
+							analytics_storage   : 'granted'
+						} );
+						this.updateGoogleConsentbyObj( {
+							ad_storage          : 'granted',
+							ad_user_data        : 'granted',
+							ad_personalization  : 'granted',
+							analytics_storage   : 'granted'
+						}, false );
+						MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block → implicit consent set (fallback minimal), unblocking scripts' );
+						this.tryToUnblockScripts( true, null );
+					}
+				}
+			}
+			else
+			{
+				MapLogger.log( 'MAP-GEO', 'mapGeoApply: effType=block → prior blocking stays' );
+			}
+
+			// Finalize the banner now that the geo zone is known. Only when toggleBar()
+			// deferred during init (first visit) and the accept flow above did not already
+			// handle it. On return visits the cookie is read synchronously before
+			// toggleBar(), so init handles it and no re-call is needed.
+			if( MAP_SYS.geo_bar_deferred )
+			{
+				MAP_SYS.geo_bar_deferred = false;
+				MapLogger.log( 'MAP-GEO', 'mapGeoApply: finalizing deferred banner (toggleBar)' );
+				this.toggleBar();
+			}
+		}
+		catch( error ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: ERROR', error ); console.error( error ); }
+	},
+
+	/**
+	 * Derives the effective consent regime from the resolved geo data.
+	 *
+	 * @param {string} country  ISO alpha-2 lowercase
+	 * @param {string} native   'block' | 'noblock'
+	 * @returns {string}  'block' | 'noblock'
+	 */
+	mapGeoEffType: function( country, native )
+	{
+		var result;
+		if( native === 'block' ) { result = 'block'; }
+		else if( ! MAP_SYS.geo_sede_strong ) { result = 'noblock'; }
+		else if( MAP_SYS.geo_force_optout && MAP_SYS.geo_force_optout[ country ] ) { result = 'noblock'; }
+		else { result = 'block'; }
+		MapLogger.log( 'MAP-GEO', 'mapGeoEffType(' + country + ', ' + native + ') → ' + result +
+			' [sede_strong=' + MAP_SYS.geo_sede_strong + ', forced=' + !!( MAP_SYS.geo_force_optout && MAP_SYS.geo_force_optout[ country ] ) + ']' );
+		return result;
 	}
 }
 
@@ -5630,7 +6123,7 @@ function map_on_document_load_event()
 			                        MAP?.settings?.scan_mode == 'learning_mode'
 			                    ) ||
 			                    (
-			                        map_ajax?.force_js_learning_mode == 1
+			                        map_ajax?.force_js_learning_mode === 1
 			                    )
 			                )
 			                {
@@ -5651,7 +6144,7 @@ function map_on_document_load_event()
 					 MAP?.settings?.scan_mode == 'learning_mode'
 					) ||
 					(
-						map_ajax?.force_js_learning_mode == 1
+						map_ajax?.force_js_learning_mode === 1
 					)
 				)
 				{
@@ -5662,7 +6155,7 @@ function map_on_document_load_event()
 					MAP.checkJsShield( false );
 					MAP.checkConsentModeStatus();
 
-					// probe api.php silently: if it answers, the lockout is cleared server-side
+					// availability check of the API endpoint.
 					MAP.sendDiagnosticData( true ).catch( function() { /* silent */ } );
 				}, 800 );
 			}
@@ -5687,6 +6180,9 @@ function map_on_document_load_event()
 				}
 			}
 		}
+
+		// Re-evaluate the admin notice once everything has loaded.
+		MAP.administratorNotices();
 	}
 	catch( error )
 	{
@@ -5832,20 +6328,16 @@ if( typeof MAP !== 'undefined' && typeof MAP.setupClarityConsentMode !== 'undefi
 }
 
 
-//GTM consent listener retry — if GTM executed its template before MAP was ready
-//(race condition between GTM and the async loader), callInWindow('MAP.googleTagManagerConsentListener')
-//silently fails and no listener is registered. This retry polls until MAP is available and
-//registers a bridge listener that forwards consent updates to GTM via native gtag,
-//since updateConsentState is a GTM sandbox API and is not accessible from outside.
+//GTM consent listener retry
 if( typeof map_full_config !== 'undefined' &&
 	map_full_config?.enable_cmode_v2 &&
 	map_full_config?.cmode_v2_implementation_type === 'gtm' )
 {
 	(function() {
 
-		var _retryCount = 0;
-		var _maxRetry   = 10;
-		var _interval   = 200;
+		var _retryCount   = 0;
+		var _maxRetry     = 5;
+		var _baseInterval = 200;
 
 		var _retry = function() {
 
@@ -5864,7 +6356,7 @@ if( typeof map_full_config !== 'undefined' &&
 				if( typeof MAP !== 'undefined' &&
 					typeof MAP.googleTagManagerConsentListener === 'function' )
 				{
-					// Register a bridge listener: forwards consent object to GTM via native gtag
+					// Register a listener.
 					MAP.googleTagManagerConsentListener( function( consent ) {
 						if( typeof gtag === 'function' )
 						{
@@ -5872,8 +6364,7 @@ if( typeof map_full_config !== 'undefined' &&
 						}
 					});
 
-					// Also propagate current consent from cookie immediately,
-					// since the GTM template already ran and missed the update
+					// Also propagate current consent from cookie immediately.
 					if( typeof MAP.exportGoogleConsentObjectFromCookie === 'function' )
 					{
 						var _initialConsent = MAP.exportGoogleConsentObjectFromCookie();
@@ -5887,12 +6378,16 @@ if( typeof map_full_config !== 'undefined' &&
 					return;
 				}
 
-				// MAP not ready yet — try again after interval
-				setTimeout( _retry, _interval );
+				// MAP not ready yet — retry later.
+				setTimeout( _retry, _baseInterval * Math.pow( 2, _retryCount - 1 ) );
 				return;
 			}
 
 			// Listener already present — no action needed
+			if( _listeners.length > 1 )
+			{
+				MapLogger.debug( MAP_SYS.maplog + 'GTM consent listener retry: ' + _listeners.length + ' listeners registered (bridge + GTM template?) — consent updates may appear duplicated in dataLayer' );
+			}
 			MapLogger.debug( MAP_SYS.maplog + 'GTM consent listener retry: listener already present, skipping' );
 		};
 
@@ -5900,3 +6395,42 @@ if( typeof map_full_config !== 'undefined' &&
 
 	})();
 }
+
+// loading-priority report.
+document.addEventListener( 'DOMContentLoaded', function () {
+	try {
+		if( window.map_gtm_pre_shield_detected !== true ) { return; }
+		if( typeof map_ajax === 'undefined' || ! map_ajax || ! map_ajax.api_token ) { return; }
+
+		var learning = ( typeof map_cookiebar_settings !== 'undefined' && map_cookiebar_settings && map_cookiebar_settings.scan_mode === 'learning_mode' ) ||
+		               ( map_ajax.force_js_learning_mode === 1 );
+		if( ! learning ) { return; }
+
+		if( map_ajax.gtm_gateway_detection_disabled === 1 ) { return; }
+		if( typeof MAP_Cookie === 'undefined' ) { return; }
+		if( MAP_Cookie.read( 'map_gtm_gw_reported' ) === '1' ) { return; }
+		MAP_Cookie.set( 'map_gtm_gw_reported', '1', 0.5 );
+
+		var body = 'action=map_report_gtm_gateway&map_api_token=' + encodeURIComponent( map_ajax.api_token );
+
+		var primary = function () {
+			if( ! map_ajax.api_url ) { return Promise.reject(); }
+			return fetch( map_ajax.api_url, {
+				method  : 'POST',
+				headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body    : body
+			} ).then( function ( resp ) {
+				if( ! resp.ok ) { throw new Error( 'api ' + resp.status ); }
+			} );
+		};
+
+		primary().catch( function () {
+			if( ! map_ajax.ajax_url ) { return; }
+			fetch( map_ajax.ajax_url, {
+				method  : 'POST',
+				headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body    : body
+			} ).catch( function () {} );
+		} );
+	} catch ( e ) {}
+} );

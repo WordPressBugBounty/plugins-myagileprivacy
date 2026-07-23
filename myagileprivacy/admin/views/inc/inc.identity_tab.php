@@ -12,6 +12,7 @@ $caller = 'genericOptionsWrapper';
 <div class="row">
 	<div class="col-sm-8">
 
+
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-address-card"></i>
@@ -26,11 +27,13 @@ $caller = 'genericOptionsWrapper';
 
 			<?php include 'fields.identity_tab.php'; ?>
 
+			<?php map_render_help_fox( 'policy_assistant', 'identity' ); ?>
 		</div> <!-- consistent-box -->
 
 		<span class="translate-middle-y forbiddenWarning badge rounded-pill bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
+
 
 		<div class="consistent-box <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea';} ?>">
 
@@ -74,6 +77,10 @@ $caller = 'genericOptionsWrapper';
 
 						</div>
 					</div> <!-- ./ styled_radio -->
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'If enabled, the DPO contact details are added to your policies.', 'MAP_txt' ) ); ?>
+					</div>
 				</div> <!-- /.col-sm-6 -->
 
 			</div> <!-- row -->
@@ -114,6 +121,10 @@ $caller = 'genericOptionsWrapper';
 						id="dpo_name_field"
 						name="site_and_policy_settings[dpo_name]"
 						value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_name'] ) ); ?>" />
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Name of the person or company acting as DPO', 'MAP_txt' ) ); ?>.
+					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
@@ -132,11 +143,16 @@ $caller = 'genericOptionsWrapper';
 						id="dpo_address_field"
 						name="site_and_policy_settings[dpo_address]"
 						value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_address'] ) ); ?>" />
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Address of the DPO. Leave it blank, if not applicable', 'MAP_txt' ) ); ?>.
+					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
 
 
+			<?php map_render_help_fox( 'policy_assistant', 'dpo' ); ?>
 		</div> <!-- consistent-box -->
 	</div> <!-- /.col-sm-8 -->
 

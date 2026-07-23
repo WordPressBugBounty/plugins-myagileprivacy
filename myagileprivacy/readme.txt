@@ -4,17 +4,17 @@ Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
 Tested up to: 7.0
-Stable tag: 3.3.5
+Stable tag: 3.3.6
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 **Effortlessly set up cookie notices and privacy policies**.
-Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 14 more.
+Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 19 more.
 
 == Description ==
 
-**My Agile Privacy®** provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, and VCDPA.
+**My Agile Privacy®** provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, and VCDPA.
 My Agile Privacy® is available in **Albanian, Azerbaijani, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Macedonian, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swedish, Turkish and Ukrainian**.  It supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
 [youtube https://youtu.be/l7960ISPTBw]
@@ -30,7 +30,7 @@ My Agile Privacy® is available in **Albanian, Azerbaijani, Bosnian, Bulgarian, 
 
 - 🚀 Cookie consent and personal data consent management
 
-- ⚡️ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, MCDPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, TIPA, TDPSA, UCPA, VCDPA
+- ⚡️ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, VCDPA
 
 - ⭐ IAB TCF 2.3 support
 
@@ -126,6 +126,21 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.3.6
+* Support for five additional US state privacy laws: Indiana, Iowa, Kentucky, Maryland and Rhode Island
+* Revised policy texts, with editorial updates and corrections for greater clarity and accuracy
+* New Video privacy mode: choose between anonymizing YouTube and Vimeo embeds or blocking them with a notice
+* Redesigned placeholders for blocked videos and maps, matching your banner colours
+* New Policy Assistant options for social login and advertising/marketing partners
+* New Google Tag Gateway detection, warning you when tags load before the consent system
+* Better notice functionality
+* New contextual Online Help system with a guide link on every settings box
+* Redesigned admin interface
+* New dedicated "myagileprivacy_edit_options" capability, automatically granted to anyone who can manage site options
+* Better internal caching mechanism for plugin options, including multisite installations
+* Reduced memory usage during activation and synchronization
+* Improved compatibility with page builders and with caching and optimization plugins
 
 = 3.3.5
 * Better internal caching mechanism

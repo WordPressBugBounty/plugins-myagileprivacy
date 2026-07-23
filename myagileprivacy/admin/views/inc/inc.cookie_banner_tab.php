@@ -12,6 +12,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 <div class="row" id="cookie_banner_options_container">
 	<div class="col-sm-8">
 
+
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-browser"></i>
@@ -123,6 +124,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						</select>
 
 					</div>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Layout of the cookie banner. With the Big or Boxed sizes you can also choose the horizontal position.', 'MAP_txt' ) ); ?>
+					</div>
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -142,6 +147,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<option value="Center" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Center' ); ?>><?php esc_attr_e('Center', 'MAP_txt' ); ?></option>
 						<option value="Bottom" <?php selected( $the_settings['cookie_banner_vertical_position'], 'Bottom' ); ?>><?php esc_attr_e('Bottom', 'MAP_txt' ); ?></option>
 					</select>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Vertical placement of the banner. Center displays it as an overlay in the middle of the screen.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
@@ -165,6 +174,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<option value="Right" <?php selected( $the_settings['cookie_banner_horizontal_position'], 'Right' ); ?>><?php esc_attr_e('Right', 'MAP_txt' ); ?></option>
 						</select>
 
+						<div class="form-text">
+							<?php echo wp_kses_post( __( 'Available when the banner size is Big or Boxed.', 'MAP_txt' ) ); ?>
+						</div>
+
 					</div> <!-- col-sm-7 -->
 				</div> <!-- row -->
 
@@ -187,6 +200,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<option value="0" <?php selected( $the_settings['floating_banner'], 0 ); ?>><?php esc_attr_e('No', 'MAP_txt' ); ?></option>
 						<option value="1" <?php selected( $the_settings['floating_banner'], 1 ); ?>><?php esc_attr_e('Yes', 'MAP_txt' ); ?></option>
 					</select>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'When enabled, the banner floats detached from the page edges instead of sticking to them.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -256,6 +273,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<option value="slide" <?php selected( $the_settings['cookie_banner_animation'], 'slide' ); ?>><?php esc_attr_e('Slide', 'MAP_txt' ); ?></option>
 						<option value="fade" <?php selected( $the_settings['cookie_banner_animation'], 'fade' ); ?>><?php esc_attr_e('Fade', 'MAP_txt' ); ?></option>
 					</select>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Entrance animation used when the banner appears.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
@@ -437,6 +458,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 					</select>
 
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Display order of the consent buttons in the banner.', 'MAP_txt' ) ); ?>
+					</div>
+
 				</div> <!-- col-sm-7 -->
 			</div> <!-- row -->
 
@@ -575,7 +600,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						?>
 						<div class="form-text">
 							<?php
-								echo wp_kses_post( __( "Select the text color of the cookie banner", 'MAP_txt' ) );
+								echo wp_kses_post( __( "Select the background color of the cookie banner heading", 'MAP_txt' ) );
 							?>.
 						</div>
 					</div> <!-- /.col-sm-6 -->
@@ -591,7 +616,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						?>
 						<div class="form-text">
 							<?php
-								echo wp_kses_post( __( "Select the text color of the cookie banner", 'MAP_txt' ) );
+								echo wp_kses_post( __( "Select the text color of the cookie banner heading", 'MAP_txt' ) );
 							?>.
 						</div>
 					</div> <!-- /.col-sm-6 -->
@@ -619,13 +644,19 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 
 
+			<?php map_render_help_fox( 'customize_banner' ); ?>
 		</div> <!-- consistent-box -->
+
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-browser"></i>
 				<?php echo wp_kses_post( __( 'Buttons Customization', 'MAP_txt' ) ); ?>
 			</h4>
+
+			<div class="form-text mb-3">
+				<?php echo wp_kses_post( __( 'Set text and background colors for each consent button. Button texts are editable from the Texts and Translations section.', 'MAP_txt' ) ); ?>
+			</div>
 
 			<div id="map_buttons_background_alert" class="alert alert-warning d-none" role="alert">
 				<p>
@@ -727,6 +758,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<?php endif; ?>
 						</div>
 					</div> <!-- ./ styled_radio -->
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Show a small icon inside each consent button.', 'MAP_txt' ) ); ?>
+					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
@@ -852,7 +887,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</div>
 			</div><!-- /.card -->
 
+			<?php map_render_help_fox( 'customize_banner', 'appearance' ); ?>
 		</div> <!-- consistent-box -->
+
 
 
 		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
@@ -891,6 +928,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<?php echo wp_kses_post( __( 'Enable Notification Bar', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
+					</div>
+
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Shows a bar on the site listing the content blocked on the current page until consent is given.', 'MAP_txt' ) ); ?>
 					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -984,7 +1025,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</div> <!-- row -->
 
 
+			<?php map_render_help_fox( 'customize_banner', 'warning-messages' ); ?>
 		</div> <!-- consistent-box -->
+
 
 
 		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
@@ -1029,6 +1072,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
 
+			<?php map_render_help_fox( 'customize_banner', 'warning-messages' ); ?>
 		</div> <!-- consistent-box -->
 
 

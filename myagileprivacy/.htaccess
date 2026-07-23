@@ -35,7 +35,6 @@
 <IfModule mod_headers.c>
     SetEnvIf Request_URI "/local-cache/my-agile-privacy/(json/)?[^/]+\.json$" MAP_CORS_OK=1
     SetEnvIf Request_URI "/wp-content/plugins/myagileprivacy/.+\.svg$" MAP_CORS_OK=1
-    SetEnvIf Request_URI "/wp-content/plugins/myagileprivacy/api/api.php$" MAP_CORS_OK=1
     Header set   Access-Control-Allow-Origin "*"      env=MAP_CORS_OK
     Header merge Vary                        "Origin" env=MAP_CORS_OK
 </IfModule>

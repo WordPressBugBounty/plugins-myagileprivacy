@@ -25,6 +25,13 @@ final class MyAgilePrivacyRegulationHelper {
 	//stored countries
 	private static $available_countries = array();
 
+	//EEA member states: 27 EU plus Iceland, Liechtenstein and Norway
+	private static $eea_country_codes = array(
+		'at', 'be', 'bg', 'hr', 'cy', 'cz', 'dk', 'ee', 'fi', 'fr', 'de', 'gr', 'hu', 'ie',
+		'it', 'lv', 'lt', 'lu', 'mt', 'nl', 'pl', 'pt', 'ro', 'sk', 'si', 'es', 'se',
+		'is', 'li', 'no',
+	);
+
 	//stored regulations
 	private static $available_regulations = array(
 		'gdpr' 			=>	array(
@@ -67,11 +74,30 @@ final class MyAgilePrivacyRegulationHelper {
 								'regulation'	=>	'ctdpa',
 								'human_name'	=>	'CTDPA (Connecticut)',
 							),
-
 		'dpdpa'			=>	array(
 								'area' 			=> 	'delaware',
 								'regulation'	=>	'dpdpa',
 								'human_name'	=>	'DPDPA (Delaware)',
+							),
+		'incdpa'		=>	array(
+								'area' 			=> 	'indiana',
+								'regulation'	=>	'incdpa',
+								'human_name'	=>	'INCDPA (Indiana)',
+							),
+		'icdpa'			=>	array(
+								'area' 			=> 	'iowa',
+								'regulation'	=>	'icdpa',
+								'human_name'	=>	'ICDPA (Iowa)',
+							),
+		'kcdpa'			=>	array(
+								'area' 			=> 	'kentucky',
+								'regulation'	=>	'kcdpa',
+								'human_name'	=>	'KCDPA (Kentucky)',
+							),
+		'modpa'			=>	array(
+								'area' 			=> 	'maryland',
+								'regulation'	=>	'modpa',
+								'human_name'	=>	'MODPA (Maryland)',
 							),
 		'mcdpa'			=>	array(
 								'area' 			=> 	'minnesota',
@@ -108,6 +134,11 @@ final class MyAgilePrivacyRegulationHelper {
 								'regulation'	=>	'ocpa',
 								'human_name'	=>	'OCPA (Oregon)',
 							),
+		'ridtppa'		=>	array(
+								'area' 			=> 	'rhode_island',
+								'regulation'	=>	'ridtppa',
+								'human_name'	=>	'RIDTPPA (Rhode Island)',
+							),
 		'tipa'			=>	array(
 								'area' 			=> 	'tennessee',
 								'regulation'	=>	'tipa',
@@ -143,6 +174,10 @@ final class MyAgilePrivacyRegulationHelper {
 		'colorado',
 		'connecticut',
 		'delaware',
+		'indiana',
+		'iowa',
+		'kentucky',
+		'maryland',
 		'minnesota',
 		'montana',
 		'nebraska',
@@ -150,6 +185,7 @@ final class MyAgilePrivacyRegulationHelper {
 		'new_hampshire',
 		'new_jersey',
 		'oregon',
+		'rhode_island',
 		'tennessee',
 		'texas',
 		'utah',
@@ -212,7 +248,6 @@ final class MyAgilePrivacyRegulationHelper {
 		{
 			$regulation_config['usa_sub_list'] = self::$available_countries['usa_sub_list'];
 		}
-
 
 		return $regulation_config;
 	}
@@ -361,9 +396,55 @@ final class MyAgilePrivacyRegulationHelper {
 		return $selected_regulations;
 	}
 
-	//f. for getting template config
-	public function getTemplateConfig()
+	//f. for collecting the country codes of published cookies
+	private static function get_published_cookie_country_codes()
 	{
+		static $codes_cache = null;
+
+		if( null !== $codes_cache )
+		{
+			return $codes_cache;
+		}
+
+		global $wpdb;
+
+		$codes_cache = array();
+
+		$results = $wpdb->get_col( $wpdb->prepare(
+			"SELECT DISTINCT pm.meta_value
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				WHERE pm.meta_key = %s
+				AND p.post_type = %s
+				AND p.post_status = 'publish'",
+			'_map_country_code',
+			MAP_POST_TYPE_COOKIES
+		) );
+
+		if( is_array( $results ) )
+		{
+			foreach( $results as $this_code )
+			{
+				$this_code = strtolower( trim( $this_code ) );
+
+				if( $this_code )
+				{
+					$codes_cache[] = $this_code;
+				}
+			}
+		}
+
+		return $codes_cache;
+	}
+
+	//f. for getting template config
+	public function getTemplateConfig( $the_template_lang = null )
+	{
+		if( !$the_template_lang )
+		{
+			$the_template_lang = MyAgilePrivacy::getCurrentLang4Char();
+		}
+
 		$selected_regulations = self::getRegulationsSelected( false );
 
 		$pa = ( isset( self::$the_settings['pa'] ) && self::$the_settings['pa'] == 1 );
@@ -441,6 +522,10 @@ final class MyAgilePrivacyRegulationHelper {
 		$map_cpa_text = ( $pa && in_array( 'cpa', $selected_regulations ) ) ? true : false;
 		$map_ctdpa_text = ( $pa && in_array( 'ctdpa', $selected_regulations ) ) ? true : false;
 		$map_dpdpa_text = ( $pa && in_array( 'dpdpa', $selected_regulations ) ) ? true : false;
+		$map_incdpa_text = ( $pa && in_array( 'incdpa', $selected_regulations ) ) ? true : false;
+		$map_icdpa_text = ( $pa && in_array( 'icdpa', $selected_regulations ) ) ? true : false;
+		$map_kcdpa_text = ( $pa && in_array( 'kcdpa', $selected_regulations ) ) ? true : false;
+		$map_modpa_text = ( $pa && in_array( 'modpa', $selected_regulations ) ) ? true : false;
 		$map_mcdpa_text = ( $pa && in_array( 'mcdpa', $selected_regulations ) ) ? true : false;
 		$map_mtcdpa_text = ( $pa && in_array( 'mtcdpa', $selected_regulations ) ) ? true : false;
 		$map_ndpa_text = ( $pa && in_array( 'ndpa', $selected_regulations ) ) ? true : false;
@@ -448,6 +533,7 @@ final class MyAgilePrivacyRegulationHelper {
 		$map_nhpa_text = ( $pa && in_array( 'nhpa', $selected_regulations ) ) ? true : false;
 		$map_njdpa_text = ( $pa && in_array( 'njdpa', $selected_regulations ) ) ? true : false;
 		$map_ocpa_text = ( $pa && in_array( 'ocpa', $selected_regulations ) ) ? true : false;
+		$map_ridtppa_text = ( $pa && in_array( 'ridtppa', $selected_regulations ) ) ? true : false;
 		$map_tipa_text = ( $pa && in_array( 'tipa', $selected_regulations ) ) ? true : false;
 		$map_tdpsa_text = ( $pa && in_array( 'tdpsa', $selected_regulations ) ) ? true : false;
 
@@ -466,12 +552,18 @@ final class MyAgilePrivacyRegulationHelper {
 			$map_any_gdpr_like_text = true;
 		}
 
+		$map_any_gdpr_like_text_off = ( !$map_any_gdpr_like_text ) ? true : false;
+
 		$map_any_usa_text = false;
 		if(
 			$map_ccpa_text ||
 			$map_cpa_text ||
 			$map_ctdpa_text ||
 			$map_dpdpa_text ||
+			$map_incdpa_text ||
+			$map_icdpa_text ||
+			$map_kcdpa_text ||
+			$map_modpa_text ||
 			$map_mcdpa_text ||
 			$map_mtcdpa_text ||
 			$map_ndpa_text ||
@@ -479,6 +571,7 @@ final class MyAgilePrivacyRegulationHelper {
 			$map_nhpa_text ||
 			$map_njdpa_text ||
 			$map_ocpa_text ||
+			$map_ridtppa_text ||
 			$map_tipa_text ||
 			$map_tdpsa_text ||
 			$map_ucpa_text ||
@@ -538,6 +631,16 @@ final class MyAgilePrivacyRegulationHelper {
         						isset( self::$site_and_policy_settings['site_features_sensitive_data'] ) &&
         						self::$site_and_policy_settings['site_features_sensitive_data']
         					);
+        $map_using_social_login = (
+        						$pa &&
+        						isset( self::$site_and_policy_settings['site_features_social_login'] ) &&
+        						self::$site_and_policy_settings['site_features_social_login']
+        					);
+        $map_using_advertising = (
+        						$pa &&
+        						isset( self::$site_and_policy_settings['site_features_advertising'] ) &&
+        						self::$site_and_policy_settings['site_features_advertising']
+        					);
 
 		$map_https = (
 						isset( self::$site_and_policy_settings['protection_system_https'] ) &&
@@ -577,31 +680,85 @@ final class MyAgilePrivacyRegulationHelper {
 			$map_any_security_measure = true;
 		}
 
-		$map_transferring_data_to_other_unapproved_countries = false;
-		$map_transferring_data_to_other_unapproved_countries_list = "";
-		$map_transferring_data_to_other_unapproved_countries_array = array();
-
-		if( $pa &&
-			isset( self::$site_and_policy_settings['outside_adequate_suppliers'] ) &&
-			self::$site_and_policy_settings['outside_adequate_suppliers'] &&
-			is_array( self::$available_countries ) &&
-			isset( self::$available_countries['not_adequate'] )
-		)
+		// True if at least one published cookie is not "necessary" (blockable), matching the banner
+		// (necessary only when _map_is_necessary === 'necessary'). Cached once per request; the cookie
+		// CPT is translate=0 so the count is language-stable.
+		static $map_any_not_necessary_cookies_cache = null;
+		if( null === $map_any_not_necessary_cookies_cache )
 		{
-			foreach( self::$available_countries['not_adequate'] as $k => $v )
+			$map_any_not_necessary_cookies_query = new WP_Query( array(
+				'post_type' => MAP_POST_TYPE_COOKIES,
+				'post_status' => 'publish',
+				'posts_per_page' => 1,
+				'fields' => 'ids',
+				'no_found_rows' => true,
+				'meta_query' => array(
+					'relation' => 'OR',
+					array( 'key' => '_map_is_necessary', 'value' => 'necessary', 'compare' => '!=' ),
+					array( 'key' => '_map_is_necessary', 'compare' => 'NOT EXISTS' ),
+				),
+			) );
+			$map_any_not_necessary_cookies_cache = ( ! empty( $map_any_not_necessary_cookies_query->posts ) );
+		}
+		$map_any_not_necessary_cookies = $map_any_not_necessary_cookies_cache;
+		$map_any_not_necessary_cookies_off = ( ! $map_any_not_necessary_cookies );
+
+		$map_transferring_data_to_other_countries = false;
+		$map_transferring_data_to_other_countries_list = "";
+		$map_transferring_data_to_other_countries_iso2 = array();
+
+		if( $pa )
+		{
+			// Manually selected countries
+			if( isset( self::$site_and_policy_settings['outside_adequate_suppliers'] ) &&
+				self::$site_and_policy_settings['outside_adequate_suppliers'] &&
+				is_array( self::$available_countries ) &&
+				isset( self::$available_countries['not_adequate'] )
+			)
 			{
-				if( isset( self::$site_and_policy_settings['outside_country_'.$k] ) &&
-					self::$site_and_policy_settings['outside_country_'.$k]
-				)
+				foreach( self::$available_countries['not_adequate'] as $k => $v )
 				{
-					$map_transferring_data_to_other_unapproved_countries_array[] = $v;
+					if( isset( self::$site_and_policy_settings['outside_country_'.$k] ) &&
+						self::$site_and_policy_settings['outside_country_'.$k]
+					)
+					{
+						$map_transferring_data_to_other_countries_iso2[ $k ] = true;
+					}
 				}
 			}
 
-			if( count( $map_transferring_data_to_other_unapproved_countries_array ) > 0 )
+			// Countries derived from published cookies. The list names the
+			// countries reached outside the EEA, so EEA members are skipped:
+			// a vendor established there is not a transfer to a third country.
+			foreach( self::get_published_cookie_country_codes() as $k )
 			{
-				$map_transferring_data_to_other_unapproved_countries = true;
-				$map_transferring_data_to_other_unapproved_countries_list = implode( ',', $map_transferring_data_to_other_unapproved_countries_array );
+				if( in_array( $k, self::$eea_country_codes, true ) )
+				{
+					continue;
+				}
+
+				$map_transferring_data_to_other_countries_iso2[ $k ] = true;
+			}
+
+			$map_transferring_data_to_resolved_names = array();
+
+			foreach( array_keys( $map_transferring_data_to_other_countries_iso2 ) as $k )
+			{
+				$this_country_name = MyAgilePrivacy::localize_country_name( $k, $the_template_lang );
+
+				if( $this_country_name )
+				{
+					$map_transferring_data_to_resolved_names[ $this_country_name ] = true;
+				}
+			}
+
+			if( count( $map_transferring_data_to_resolved_names ) > 0 )
+			{
+				$map_transferring_data_to_resolved_names = array_keys( $map_transferring_data_to_resolved_names );
+				sort( $map_transferring_data_to_resolved_names );
+
+				$map_transferring_data_to_other_countries = true;
+				$map_transferring_data_to_other_countries_list = implode( ', ', $map_transferring_data_to_resolved_names );
 			}
 		}
 
@@ -706,6 +863,10 @@ final class MyAgilePrivacyRegulationHelper {
 			'map_cpa_text'							=>	$map_cpa_text,
 			'map_ctdpa_text'						=>	$map_ctdpa_text,
 			'map_dpdpa_text'						=>	$map_dpdpa_text,
+			'map_incdpa_text'						=>	$map_incdpa_text,
+			'map_icdpa_text'						=>	$map_icdpa_text,
+			'map_kcdpa_text'						=>	$map_kcdpa_text,
+			'map_modpa_text'						=>	$map_modpa_text,
 			'map_mcdpa_text' 						=>	$map_mcdpa_text,
 			'map_mtcdpa_text'						=>	$map_mtcdpa_text,
 			'map_ndpa_text' 						=>	$map_ndpa_text,
@@ -713,12 +874,14 @@ final class MyAgilePrivacyRegulationHelper {
 			'map_nhpa_text' 						=>	$map_nhpa_text,
 			'map_njdpa_text' 						=>	$map_njdpa_text,
 			'map_ocpa_text' 						=>	$map_ocpa_text,
+			'map_ridtppa_text'						=>	$map_ridtppa_text,
 			'map_tipa_text' 						=>	$map_tipa_text,
 			'map_tdpsa_text' 						=>	$map_tdpsa_text,
 			'map_vcdpa_text'						=>	$map_vcdpa_text,
 			'map_ucpa_text'							=>	$map_ucpa_text,
 
 			'map_any_gdpr_like_text'				=>	$map_any_gdpr_like_text,
+			'map_any_gdpr_like_text_off'			=>	$map_any_gdpr_like_text_off,
 			'map_any_usa_like_text'					=>	$map_any_usa_like_text,
 			'map_any_usa_text'						=>	$map_any_usa_text,
 
@@ -731,6 +894,8 @@ final class MyAgilePrivacyRegulationHelper {
             'map_using_minors_data'					=>	$map_using_minors_data,
             'map_using_minors_data_off'				=>	$map_using_minors_data_off,
             'map_sensitive_data' 					=>	$map_sensitive_data,
+            'map_using_social_login'				=>	$map_using_social_login,
+            'map_using_advertising'					=>	$map_using_advertising,
 
 			'map_https'								=>	$map_https,
 			'map_log_control'						=>	$map_log_control,
@@ -739,9 +904,11 @@ final class MyAgilePrivacyRegulationHelper {
 			'map_system_access_limited'				=>	$map_system_access_limited,
 
             'map_any_security_measure'				=>	$map_any_security_measure,
+            'map_any_not_necessary_cookies'			=>	$map_any_not_necessary_cookies,
+            'map_any_not_necessary_cookies_off'		=>	$map_any_not_necessary_cookies_off,
 
-            'map_transferring_data_to'				=> 	$map_transferring_data_to_other_unapproved_countries,
-            'shortcode_transferring_data_to'		=>	$map_transferring_data_to_other_unapproved_countries_list,
+            'map_transferring_data_to'				=> 	$map_transferring_data_to_other_countries,
+            'shortcode_transferring_data_to'		=>	$map_transferring_data_to_other_countries_list,
 
 
             'map_last_policy_revision_date'			=>	$last_policy_revision_date,

@@ -12,6 +12,7 @@ $caller = 'genericOptionsWrapper';
 <div class="row">
 	<div class="col-sm-8">
 
+
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-regular fa-key"></i>
@@ -20,12 +21,13 @@ $caller = 'genericOptionsWrapper';
 
 			<?php include 'fields.license_tab.php'; ?>
 
+			<?php map_render_help_fox( 'private_area_guide', 'sommario-della-licenza' ); ?>
 		</div> <!-- consistent-box -->
 	</div> <!-- /.col-sm-8 -->
 
 	<div class="col-sm-4">
 		<?php
-			$tab = null;
+			$tab = 'license';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

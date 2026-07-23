@@ -349,16 +349,9 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 				{
 					$the_url = '#';
 
-					if( defined( 'MAP_EXPIRED_CALLBACK_URL') && MAP_EXPIRED_CALLBACK_URL )
+					if( defined( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT' ) )
 					{
-						$the_key = 'default';
-
-						if( $this->current_lang == 'it_IT' )
-						{
-							$the_key = $this->current_lang;
-						}
-
-						$the_url = MAP_EXPIRED_CALLBACK_URL[ $the_key ];
+						$the_url = ( $this->current_lang === 'it_IT' ) ? MAP_EXPIRED_CALLBACK_URL_IT : MAP_EXPIRED_CALLBACK_URL_DEFAULT;
 					}
 
 					return
@@ -452,6 +445,15 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			        $allowed_paragraph_split         = true;
 			        $map_notification_container_flex = 'map_flex';
 			    }
+			}
+
+			if( !$iab_tcf_context &&
+				isset( $s['enable_cmode_v2'] ) && $s['enable_cmode_v2'] &&
+				!( isset( $s['bypass_cmode_enable'] ) && $s['bypass_cmode_enable'] ) &&
+				!empty( $t['cmode_v2_first_layer_notice'] )
+			)
+			{
+				$notify_message_text .= ' ' . $t['cmode_v2_first_layer_notice'];
 			}
 
 			$notify_message = do_shortcode( stripslashes( esc_html( $notify_message_text.'[myagileprivacy_extra_info]' ) ) );

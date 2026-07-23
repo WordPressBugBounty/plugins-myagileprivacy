@@ -13,13 +13,7 @@ if( isset( $the_settings['pa'] ) &&
 	$the_settings['pa'] == 1
 )
 {
-	$first_class = 'd-none';
 	$second_class = '';
-
-	if( $caller != 'genericOptionsWrapper' )
-	{
-		$wrap_early_content = true;
-	}
 }
 
 ?>
@@ -31,6 +25,7 @@ if( isset( $the_settings['pa'] ) &&
 
 <?php endif; ?>
 
+
 		<span class="translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] ){echo 'd-none';} ?>">
 			<small><?php echo wp_kses_post( __( 'Premium Feature', 'MAP_txt' ) ); ?></small>
 		</span>
@@ -39,6 +34,18 @@ if( isset( $the_settings['pa'] ) &&
 				<i class="fa-brands fa-google"></i>
 				<?php echo wp_kses_post( __( 'Google Consent Mode v2', 'MAP_txt' ) ); ?>
 			</h4>
+
+			<div class="row mb-1 <?php echo esc_attr( $first_class );?>">
+
+				<div class="col-sm-12">
+
+					<p>
+						<?php echo wp_kses_post( __( "This feature allows you to implement Google's Consent Mode v2.", 'MAP_txt' ) ); ?>
+
+						<?php echo wp_kses_post( __( "Without this feature, you might not be able to properly use Google's ecosystem products such as Google Adsense, Google Ads, Google Analytics, Google Tag Manager, and other tools.", 'MAP_txt' ) ); ?>
+					</p>
+				</div>
+			</div>
 
 			<?php if( $caller == 'genericOptionsWrapper') : ?>
 
@@ -69,23 +76,15 @@ if( isset( $the_settings['pa'] ) &&
 							</div>
 						</div> <!-- ./ styled_radio -->
 
+						<div class="form-text">
+							<?php echo wp_kses_post( __( 'Hides the Consent Mode options and stops the related reminders. Enable only if the site uses no Google service (Analytics, Ads, Maps, reCAPTCHA...).', 'MAP_txt' ) ); ?>
+						</div>
+
 					</div> <!-- /.col-sm-6 -->
 				</div> <!-- row -->
 
 
 			<?php endif; ?>
-
-			<div class="row mb-1 <?php echo esc_attr( $first_class );?>">
-
-				<div class="col-sm-12">
-
-					<p>
-						<?php echo wp_kses_post( __( "This feature allows you to implement Google's Consent Mode v2.", 'MAP_txt' ) ); ?>
-
-						<?php echo wp_kses_post( __( "Without this feature, you might not be able to properly use Google's ecosystem products such as Google Adsense, Google Ads, Google Analytics, Google Tag Manager, and other tools.", 'MAP_txt' ) ); ?>
-					</p>
-				</div>
-			</div>
 
 			<?php if( !$wrap_early_content ) : ?>
 
@@ -117,18 +116,8 @@ if( isset( $the_settings['pa'] ) &&
 										<?php checked( $the_settings['enable_cmode_v2'], true ); ?>>
 
 									<label for="enable_cmode_v2_field" class="me-2 label-checkbox"></label>
-									<?php
-
-										$cmode_link = 'https://www.myagileprivacy.com/en/supporting-consent-mode-v2-what-it-is-and-how-to-implement-it-gdpr-compliant-with-my-agile-privacy/';
-
-										if( $locale && $locale == 'it_IT' )
-										{
-											$cmode_link = 'https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy';
-										}
-									?>
-
 									<label for="enable_cmode_v2_field">
-										<?php echo sprintf(__('Enable Google Consent Mode v2 - %1$sOnline Help%2$s', 'MAP_txt'), '<a href="' . esc_attr( $cmode_link ) . '" target="_blank">', '</a>'); ?>
+										<?php echo esc_html__( 'Enable Google Consent Mode v2', 'MAP_txt' ); ?>
 									</label>
 								</div>
 							</div> <!-- ./ styled_radio -->
@@ -185,6 +174,10 @@ if( isset( $the_settings['pa'] ) &&
 
 									?>
 								</select>
+
+								<div class="form-text">
+									<?php echo wp_kses_post( __( 'Choose "via My Agile Privacy®" if Google tags are installed directly on the site; choose "via Google Tag Manager" if they are managed inside a GTM container.', 'MAP_txt' ) ); ?>
+								</div>
 
 							</div> <!-- col -->
 						</div> <!-- /row-->
@@ -516,7 +509,7 @@ if( isset( $the_settings['pa'] ) &&
 									<strong><?php echo wp_kses_post( __( 'Configuration via Google Tag Manager', 'MAP_txt' ) ); ?></strong>
 									<p class="mt-3">
 										<?php
-											echo sprintf(__( 'You can save the settings and continue the configuration on Google Tag Manager.<br>You can follow the setup steps in the guide we have created. %1$sClick here%2$s to go to the guide.', 'MAP_txt' ),'<a href="https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy" target="_blank">','</a>');
+											echo sprintf(__( 'You can save the settings and continue the configuration on Google Tag Manager.<br>You can follow the setup steps in the guide we have created. %1$sClick here%2$s to go to the guide.', 'MAP_txt' ),'<a href="' . esc_url( MAP_Helpdesk_Links::get( 'consent_mode_v2', 'gtm-implementation' ) ) . '" class="map-help-link" target="_blank" rel="noopener">','</a>');
 
 										?>
 									</p>
@@ -529,16 +522,60 @@ if( isset( $the_settings['pa'] ) &&
 
 				</div>
 
-			<?php if( $caller == 'genericOptionsWrapper') : ?>
+			<?php if( !$wrap_early_content ) : ?>
 
 				</div>
 
 			<?php endif; ?>
 
+			<?php
+				//Tag Gateway option (shown when relevant).
+				$gtm_gateway_data = MyAgilePrivacy::get_option( MAP_PLUGIN_GTM_GATEWAY_DETECTED, array() );
+			?>
+			<?php if( is_array( $gtm_gateway_data ) && !empty( $gtm_gateway_data ) ) : ?>
+
+				<div class="row mb-4 mt-4">
+					<label for="disable_gtm_gateway_detection_field" class="col-sm-5 col-form-label">
+						<?php echo wp_kses_post( __( 'Google Tag Gateway detection', 'MAP_txt' ) ); ?>
+					</label>
+
+					<div class="col-sm-7">
+						<div class="styled_radio d-inline-flex">
+							<div class="round d-flex me-4">
+
+								<input type="hidden" name="disable_gtm_gateway_detection_field" value="false" id="disable_gtm_gateway_detection_field_no">
+
+								<input
+									name="disable_gtm_gateway_detection_field"
+									type="checkbox"
+									value="true"
+									id="disable_gtm_gateway_detection_field"
+									<?php checked( $the_settings['disable_gtm_gateway_detection'], true ); ?>>
+
+								<label for="disable_gtm_gateway_detection_field" class="me-2 label-checkbox"></label>
+
+								<label for="disable_gtm_gateway_detection_field">
+									<?php echo wp_kses_post( __( 'Disable detection and notifications', 'MAP_txt' ) ); ?>
+								</label>
+							</div>
+						</div> <!-- ./ styled_radio -->
+
+						<div class="form-text">
+							<?php echo wp_kses_post( __( 'My Agile Privacy detected that Google Tag Manager loads before the consent management system on this site. Enable this option only if you are aware of this setup and want to stop the related warnings.', 'MAP_txt' ) ); ?>
+							<?php map_render_helpdesk_link( 'gtg' ); ?>
+						</div>
+
+					</div> <!-- /.col-sm-7 -->
+				</div> <!-- row -->
+
+			<?php endif; ?>
+
+			<?php map_render_help_fox( 'consent_mode_v2' ); ?>
+
 		</div> <!-- consistent-box -->
 
 
-<?php if( $caller != 'genericOptionsWrapper') : ?>
+<?php if( $wrap_early_content ) : ?>
 
 	</div>
 

@@ -10,12 +10,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 <div class="row">
 	<div class="col-sm-8">
 
+
 		<div class="consistent-box">
 			<h4 class="mb-4">
 				<i class="fa-solid fa-sliders-up"></i>
 				<?php echo wp_kses_post( __( 'Advanced Settings', 'MAP_txt' ) ); ?>
 			</h4>
-
 
 			<div class="row mb-4">
 				<label for="forced_auto_update_field" class="col-sm-5 col-form-label">
@@ -44,6 +44,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						</div>
 					</div> <!-- ./ styled_radio -->
 
+					<div class="form-text">
+						<?php echo wp_kses_post( __( 'Recommended: keeps the plugin aligned with regulatory and technical updates.', 'MAP_txt' ) ); ?>
+					</div>
 
 				</div>
 			</div> <!-- row -->
@@ -143,7 +146,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						?>
 					</select>
 					
-					<p class="mt-2 lh-sm"><em><?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?></em></p>
+					<p class="mt-2 lh-sm"><em><?php echo wp_kses_post( sprintf( __( 'You can change the active languages on your plan from the %1$sPrivate Area%2$s, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.', 'MAP_txt' ), '<strong><a href="' . esc_url( MAP_Helpdesk_Links::get( 'private_area_app' ) ) . '" target="_blank" rel="noopener">', '</a></strong>' ) ); ?></em></p>
 				
 
 				</div> <!-- /.col-sm-7 -->
@@ -181,6 +184,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div> <!-- ./ styled_radio -->
 					<div class="form-text">
 						<?php  echo wp_kses_post( __( 'By modifying this setting, you will change the default display language for texts and notifications in the event of an unsupported language.', 'MAP_txt' ) ); ?>
+						<?php map_render_helpdesk_link( 'multilanguage', null, true, 'fallback-language' ); ?>
 					</div>
 
 				</div>
@@ -237,7 +241,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						?>
 					</select>
 
-					<p class="mt-2 lh-sm"><em><?php _e('You can change the active languages on your plan from the <strong><a href="https://privatearea.myagileprivacy.com/" target="_blank">Private Area</a></strong>, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.','MAP_txt'); ?></em></p>
+					<p class="mt-2 lh-sm"><em><?php echo wp_kses_post( sprintf( __( 'You can change the active languages on your plan from the %1$sPrivate Area%2$s, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>.', 'MAP_txt' ), '<strong><a href="' . esc_url( MAP_Helpdesk_Links::get( 'private_area_app' ) ) . '" target="_blank" rel="noopener">', '</a></strong>' ) ); ?></em></p>
 
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -259,6 +263,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 					<div class="form-text">
 						<?php  echo wp_kses_post( __( 'Enter your custom css', 'MAP_txt' ) ); ?>.
+						<?php map_render_helpdesk_link( 'customize_banner', null, true, 'custom-css' ); ?>
 					</div>
 				</div> <!-- /.col-sm-6 -->
 			</div> <!-- row -->
@@ -332,40 +337,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</div> <!-- row -->
 
 
-			<!-- send_ga4_event_on_consent_change checkbox -->
-			<div class="row mb-4 displayNone">
-				<label for="send_ga4_event_on_consent_change_field" class="col-sm-5 col-form-label">
-					<?php  echo wp_kses_post( __( 'Send Google Analytics 4 events on consent changes', 'MAP_txt' ) ); ?>
-				</label>
-
-				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
-						<div class="round d-flex me-4">
-
-							<input type="hidden" name="send_ga4_event_on_consent_change_field" value="false" id="send_ga4_event_on_consent_change_field_no">
-
-							<input
-								name="send_ga4_event_on_consent_change_field"
-								type="checkbox"
-								value="true"
-								id="send_ga4_event_on_consent_change_field"
-								<?php checked( $the_settings['send_ga4_event_on_consent_change'], true ); ?>>
-
-							<label for="send_ga4_event_on_consent_change_field" class="me-2 label-checkbox"></label>
-
-							<label for="send_ga4_event_on_consent_change_field">
-								<?php echo wp_kses_post( __( 'Yes, send GA4 events when the user interacts with the Cookie Banner', 'MAP_txt' ) ); ?>
-							</label>
-						</div>
-					</div> <!-- ./ styled_radio -->
-					<div class="form-text">
-						<?php  echo wp_kses_post( __( 'Requires Google Analytics 4 installation', 'MAP_txt' ) ); ?>.
-					</div>
-
-				</div> <!-- /.col-sm-6 -->
-
-
-			</div> <!-- row -->
+			<!-- send_ga4_event_on_consent_change moved to the Consent Statistics premium panel -->
 
 
 
@@ -402,6 +374,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</div> <!-- row -->
 
 
+			<?php map_render_help_fox( 'options_guide', 'advanced' ); ?>
 		</div> <!-- consistent-box -->
 	</div> <!-- /.col-sm-8 -->
 

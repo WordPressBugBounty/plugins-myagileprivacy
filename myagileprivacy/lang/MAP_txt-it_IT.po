@@ -55,16 +55,16 @@ msgid "(e.g., union enrollment, payroll dues/withholdings)"
 msgstr "(es. iscrizione a un sindacato, trattenute in busta paga)"
 
 #: admin/views/policy_assistant_html.php:742
-msgid "-Finally, select the regulations to adopt based on the system’s suggestions"
-msgstr "-Seleziona infine le normative da adottare in funzione di quanto suggerito dal sistema"
+msgid "-Where available, the system also shows how the banner will behave for each geographic area: verify and customize if needed"
+msgstr "-Dove disponibile, il sistema mostra anche come il banner si comporterà per ogni area geografica: verifica e personalizza se necessario"
 
 #: admin/views/policy_assistant_html.php:741
-msgid "-If you operate globally, include your users’ countries"
-msgstr "-Se operi globalmente, includi i paesi dei tuoi utenti"
+msgid "-Read the information for each regulation and select those that apply to your case"
+msgstr "-Leggi le informazioni per ogni regolamento e seleziona quelli che si applicano al tuo caso"
 
 #: admin/views/policy_assistant_html.php:740
-msgid "-Select all relevant jurisdictions"
-msgstr "-Seleziona tutte le giurisdizioni pertinenti"
+msgid "-Indicate where your business is established and select the geographic areas of your visitors"
+msgstr "-Indica dove è stabilita la tua attività e seleziona le aree geografiche dei tuoi visitatori"
 
 #: admin/my-agile-privacy-admin.php:2826
 msgid "<b>Allowed without notification</b>: represents a Cookie that you do not wish to block, and you want to prevent it from appearing in the list of cookies. This setting is intended for advanced users and should be used with caution."
@@ -244,8 +244,8 @@ msgid "annual gross revenues exceeding USD 25 million (in the preceding calendar
 msgstr "ricavi annui lordi superiori a 25 milioni di USD (nell’anno solare precedente); oppure"
 
 #: admin/views/policy_assistant_html.php:1460
-msgid "annual gross revenues of at least USD 25 million; and"
-msgstr "ricavi annui lordi di almeno 25 milioni di USD; e"
+msgid "annual gross revenues of more than USD 25 million; and"
+msgstr "ricavi annui lordi superiori a 25 milioni di USD; e"
 
 #: admin/views/policy_assistant_html.php:308
 msgid "Any European Union country"
@@ -264,24 +264,24 @@ msgid "Applies to for-profit businesses that do business in California, collect 
 msgstr "Si applica alle imprese a scopo di lucro che fanno affari in California, raccolgono o fanno raccogliere dati personali di residenti californiani e determinano le finalità e i mezzi del trattamento, quando soddisfano almeno una di queste condizioni:"
 
 #: admin/views/policy_assistant_html.php:1255
-msgid "Applies to operators of websites/online services that do business in Nevada, collect personal information from Nevada consumers, and sell that information."
-msgstr "Si applica agli operatori di siti web/servizi online che fanno affari in Nevada, raccolgono informazioni personali di consumatori del Nevada e vendono tali informazioni."
+msgid "Applies to operators of commercial websites or online services that collect and maintain certain personal information (covered information) from consumers residing in Nevada and have a commercial connection with Nevada."
+msgstr "Si applica agli operatori di siti web o servizi online commerciali che raccolgono e conservano determinate informazioni personali (covered information) di consumatori residenti in Nevada e hanno un collegamento commerciale con il Nevada."
 
 #: admin/views/policy_assistant_html.php:1659
 msgid "Applies to private individuals and federal bodies that process personal data of natural persons (cantonal authorities are governed by cantonal law)."
 msgstr "Si applica ai privati e agli organi della Confederazione che trattano dati personali di persone fisiche (le autorità cantonali sono disciplinate dal diritto cantonale)."
 
 #: admin/views/policy_assistant_html.php:1702
-msgid "Applies to private‑sector organizations that, in the course of commercial activities, collect, use, or disclose personal information in Canada (including interprovincial or international transfers). "
-msgstr "Si applica alle organizzazioni del settore privato che, nel corso di attività commerciali, raccolgono, usano o comunicano dati personali in Canada (inclusi i trasferimenti interprovinciali o internazionali)."
+msgid "Applies to private-sector organizations that, in the course of commercial activities, collect, use, or disclose personal information in Canada, except where a provincial law deemed substantially similar applies (for example in Québec, Alberta, and British Columbia) to wholly intra-provincial activities."
+msgstr "Si applica alle organizzazioni del settore privato che, nel corso di attività commerciali, raccolgono, usano o comunicano dati personali in Canada, salvo i casi in cui trovi applicazione una legge provinciale ritenuta sostanzialmente simile (ad esempio in Québec, Alberta e British Columbia) per le attività interamente intra-provinciali."
 
 #: admin/views/policy_assistant_html.php:949
 msgid "Applies to those who do business in Colorado or intentionally target products/services to Colorado residents and, during a calendar year, meet at least one of these thresholds:"
 msgstr "Si applica a chi fa affari in Colorado o rivolge intenzionalmente prodotti/servizi a residenti in Colorado e, nel corso di un anno solare, soddisfa almeno una di queste soglie:"
 
 #: admin/views/policy_assistant_html.php:999
-msgid "Applies to those who do business in Connecticut or target products/services to Connecticut residents and, in the preceding calendar year, meet at least one of these thresholds:"
-msgstr "Si applica a chi fa affari in Connecticut o rivolge prodotti/servizi a residenti in Connecticut e, nell’anno solare precedente, soddisfa almeno una di queste soglie:"
+msgid "Applies to those who do business in Connecticut or target products/services to Connecticut residents and, in the preceding calendar year, meet at least one of these conditions:"
+msgstr "Si applica a chi fa affari in Connecticut o rivolge prodotti/servizi a residenti in Connecticut e, nell'anno solare precedente, soddisfa almeno una di queste condizioni:"
 
 #: admin/views/policy_assistant_html.php:1050
 msgid "Applies to those who do business in Delaware or target products/services to Delaware residents and, in the previous calendar year:"
@@ -292,8 +292,8 @@ msgid "Applies to those who do business in Minnesota or target products/services
 msgstr "Si applica a chi fa affari in Minnesota o rivolge prodotti/servizi a residenti in Minnesota e, nel corso di un anno solare:"
 
 #: admin/views/policy_assistant_html.php:1152
-msgid "Applies to those who do business in Montana or target products/services to Montana residents and, during a calendar year:"
-msgstr "Si applica a chi fa affari in Montana o rivolge prodotti/servizi a residenti in Montana e, nel corso di un anno solare:"
+msgid "Applies to those who do business in Montana or intentionally target products/services to Montana residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in Montana o rivolge prodotti/servizi rivolti intenzionalmente a residenti in Montana e, nel corso di un anno solare:"
 
 #: admin/views/policy_assistant_html.php:1204
 msgid "Applies to those who do business in Nebraska or target products/services to Nebraska residents and process or sell personal data."
@@ -304,8 +304,8 @@ msgid "Applies to those who do business in New Hampshire or target products/serv
 msgstr "Si applica a chi fa affari in New Hampshire o rivolge prodotti/servizi a residenti in New Hampshire e, nell’anno solare precedente:"
 
 #: admin/views/policy_assistant_html.php:1354
-msgid "Applies to those who do business in New Jersey or target products/services to New Jersey residents and, in the previous calendar year:"
-msgstr "Si applica a chi fa affari in New Jersey o rivolge prodotti/servizi a residenti in New Jersey e, nell’anno solare precedente:"
+msgid "Applies to those who do business in New Jersey or target products/services to New Jersey residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in New Jersey o rivolge prodotti/servizi a residenti in New Jersey e, nel corso di un anno solare:"
 
 #: admin/views/policy_assistant_html.php:1405
 msgid "Applies to those who do business in Oregon or target products/services to Oregon residents and, during a calendar year:"
@@ -499,7 +499,7 @@ msgstr ""
 
 #: admin/views/policy_assistant_html.php:678
 msgid "Canada"
-msgstr ""
+msgstr "Canada"
 
 #: admin/views/inc/inc.translations_tab.php:472
 msgid "Cancel"
@@ -687,7 +687,7 @@ msgid "Contact forms"
 msgstr "Moduli di contatto"
 
 #: admin/views/inc/inc.helpdesk_tab.php:224
-#: admin/views/inc/inc.dashboard_tab.php:359
+#: admin/views/inc/inc.dashboard_tab.php:146
 msgid "Contact us"
 msgstr "Contattaci"
 
@@ -700,8 +700,8 @@ msgid "Continuing will result in the loss of all customizations for this languag
 msgstr "Proseguendo tutte le personalizzazioni per questa lingua verranno perse. Sicuro di voler procedere?"
 
 #: admin/views/policy_assistant_html.php:1310
-msgid "control or process the personal data of at least 10,000 consumers and derive at least 25% of gross revenue from the sale of personal data."
-msgstr "controlla o tratta i dati personali di almeno 10.000 consumatori e ricava almeno il 25% dei ricavi lordi dalla vendita di dati personali."
+msgid "control or process the personal data of at least 10,000 consumers and derive more than 25% of gross revenue from the sale of personal data."
+msgstr "controlla o tratta i dati personali di almeno 10.000 consumatori e ricava oltre il 25% dei ricavi lordi dalla vendita di dati personali."
 
 #: admin/views/policy_assistant_html.php:1057
 msgid "control or process the personal data of at least 10,000 consumers and derive more than 20% of gross revenue from the sale of personal data."
@@ -714,8 +714,8 @@ msgid "control or process the personal data of at least 100,000 consumers (exclu
 msgstr "controlla o tratta i dati personali di almeno 100.000 consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
 
 #: admin/views/policy_assistant_html.php:1003
-msgid "control or process the personal data of at least 100,000 consumers (excluding personal data processed solely to complete a payment transaction); or"
-msgstr "controlla o tratta i dati personali di almeno 100.000 consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
+msgid "control or process the personal data of at least 35,000 consumers (excluding personal data processed solely to complete a payment transaction); or"
+msgstr "controlla o tratta i dati personali di almeno 35.000 consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
 
 #: admin/views/policy_assistant_html.php:953
 #: admin/views/policy_assistant_html.php:1608
@@ -733,8 +733,8 @@ msgid "control or process the personal data of at least 25,000 consumers and der
 msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori e ricava oltre il 25% dei ricavi lordi dalla vendita di dati personali."
 
 #: admin/views/policy_assistant_html.php:1006
-msgid "control or process the personal data of at least 25,000 consumers and derive over 25% of gross revenue from the sale of personal data."
-msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori e ricava oltre il 25% dei ricavi lordi dalla vendita di dati personali."
+msgid "process sensitive personal data of consumers (excluding data processed solely to complete a payment transaction); or"
+msgstr "tratta dati personali sensibili di consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
 
 #: admin/views/policy_assistant_html.php:1611
 msgid "control or process the personal data of at least 25,000 consumers and derive over 50% of gross revenue from the sale of personal data."
@@ -750,8 +750,8 @@ msgid "control or process the personal data of at least 35,000 consumers (exclud
 msgstr "controlla o tratta i dati personali di almeno 35.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure"
 
 #: admin/views/policy_assistant_html.php:1156
-msgid "control or process the personal data of at least 50,000 consumers (excluding data processed solely to complete a payment); or"
-msgstr "controlla o tratta i dati personali di almeno 50.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure"
+msgid "control or process the personal data of at least 25,000 consumers (excluding data processed solely to complete a payment transaction); or"
+msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
 
 #: admin/views/inc/fields.consent_mode_tab.php:360
 msgid "Controls whether personalized advertising (for example, remarketing) can be enabled."
@@ -1023,8 +1023,8 @@ msgid "during a calendar year, control or process the personal data of at least 
 msgstr "nel corso di un anno solare, controlla o tratta i dati personali di almeno 100.000 consumatori; oppure controlla o tratta i dati personali di almeno 25.000 consumatori e ricava oltre il 50% dei ricavi lordi dalla vendita di dati personali."
 
 #: admin/views/policy_assistant_html.php:1463
-msgid "during a calendar year, control or process the personal data of at least 175,000 consumers (excluding data processed solely to complete a payment); or control or process the personal data of at least 25,000 consumers and derive at least 50% of gross revenue from the sale of personal data."
-msgstr "nel corso di un anno solare, controlla o tratta i dati personali di almeno 175.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure controlla o tratta i dati personali di almeno 25.000 consumatori e ricava almeno il 50% dei ricavi lordi dalla vendita di dati personali."
+msgid "during a calendar year, control or process the personal data of at least 175,000 consumers (excluding data processed solely to complete a payment); or control or process the personal data of at least 25,000 consumers and derive more than 50% of gross revenue from the sale of personal data."
+msgstr "nel corso di un anno solare, controlla o tratta i dati personali di almeno 175.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure controlla o tratta i dati personali di almeno 25.000 consumatori e ricava oltre il 50% dei ricavi lordi dalla vendita di dati personali."
 
 #: frontend/my-agile-privacy-frontend.php:1140
 msgid "Edit Cookie"
@@ -1277,7 +1277,7 @@ msgstr "Vai alle FAQ"
 msgid "Go to the guide related to the private area."
 msgstr "Vai alle guida relativa all'area privata"
 
-#: admin/views/inc/inc.dashboard_tab.php:359
+#: admin/views/inc/inc.dashboard_tab.php:146
 msgid "Go to the Helpdesk"
 msgstr "Vai all'Help Desk"
 
@@ -1567,8 +1567,8 @@ msgid "It also applies if the processing takes place abroad when it has effects 
 msgstr "Si applica anche se il trattamento avviene all’estero quando produce effetti in Svizzera, ad esempio perché offri beni o servizi a persone in Svizzera o ne monitori il comportamento."
 
 #: admin/views/policy_assistant_html.php:1705
-msgid "It also applies to employers that are federal works, undertakings or businesses with respect to the personal information of their employees."
-msgstr "Si applica inoltre ai datori di lavoro che sono imprese di competenza federale (federal works, undertakings or businesses) per i dati personali dei loro dipendenti."
+msgid "It applies in any case to interprovincial or international transfers of personal information and to employers that are federal works, undertakings or businesses with respect to the personal information of their employees."
+msgstr "Si applica in ogni caso ai trasferimenti interprovinciali o internazionali di dati personali e ai datori di lavoro che sono imprese di competenza federale (federal works, undertakings or businesses) per i dati personali dei loro dipendenti."
 
 #: admin/views/inc/inc.consent_widget_tab.php:66
 msgid "It is highly recommended to enable the IAB TCF if you use ad channel banners such as Google Adsense, Ad Manager, AdMob, or similar platforms on your website."
@@ -1911,7 +1911,7 @@ msgid "Only in my country"
 msgstr "Solo nel mio paese"
 
 #: admin/views/inc/inc.helpdesk_tab.php:224
-#: admin/views/inc/inc.dashboard_tab.php:359
+#: admin/views/inc/inc.dashboard_tab.php:146
 msgid "or"
 msgstr "oppure"
 
@@ -2496,7 +2496,7 @@ msgstr "Parlaci delle tue informazioni."
 
 #: admin/views/policy_assistant_html.php:140
 msgid "Tell us about your location and target audience."
-msgstr ""
+msgstr "Dicci dove è localizzata la tua attività e chi sono i tuoi visitatori."
 
 #: admin/views/inc/fields.cookieshield_tab.php:317
 msgid "Template Redirect / Shutdown"
@@ -2576,8 +2576,8 @@ msgid "The Policy Assistant is not available on this installation. Contact us fo
 msgstr "L'Assistente Policy non è disponibile su questa installazione. Contattaci per assistenza."
 
 #: admin/views/policy_assistant_html.php:724
-msgid "The privacy and cookie regulations that apply to your site depend on where your company is established and where the users you target are located."
-msgstr "Le normative privacy e cookie che si applicano al tuo sito dipendono da dove è stabilita la tua azienda e da dove si trovano gli utenti a cui ti rivolgi."
+msgid "The privacy and cookie regulations that apply to your site depend on where your company is established and where your visitors are located."
+msgstr "Le normative privacy e cookie che si applicano al tuo sito dipendono da dove è stabilita la tua azienda e da dove si trovano i tuoi visitatori."
 
 #: admin/views/policy_assistant_html.php:1759
 msgid "the processing concerns data of individuals located in Brazil; or"
@@ -2725,7 +2725,7 @@ msgstr "Regno Unito"
 
 #: admin/views/policy_assistant_html.php:338
 msgid "United States"
-msgstr ""
+msgstr "Stati Uniti"
 
 #: admin/views/translations_html.php:34 admin/views/translations_html.php:47
 #: admin/views/admin_page_html.php:210 admin/views/admin_page_html.php:250
@@ -2944,8 +2944,8 @@ msgid "Winter Sky"
 msgstr "Cielo d'inverno"
 
 #: admin/views/policy_assistant_html.php:91
-msgid "With this tool, you can improve your site’s compliance by configuring options related to the site, your information, and your specific methods for processing your users’ data. Changes made here are reflected in the Cookie Policy and Privacy Policy."
-msgstr "Con questo strumento puoi migliorare la conformità del tuo sito configurando le opzioni relative al sito, alle tue informazioni e ai metodi specifici con cui tratti i dati dei tuoi utenti. Le modifiche effettuate qui si riflettono nella Cookie Policy e nella Privacy Policy."
+msgid "With this tool, you can improve your site’s compliance by configuring options related to the site, your information, and your specific methods for processing your users’ data. Changes made here are reflected in the Cookie Policy, the Privacy Policy, and the preventive Cookie blocking behavior."
+msgstr "Con questo strumento puoi migliorare la conformità del tuo sito configurando le opzioni relative al sito, alle tue informazioni e ai metodi specifici con cui tratti i dati dei tuoi utenti. Le modifiche effettuate qui si riflettono nella Cookie Policy, nella Privacy Policy e nel comportamento del blocco preventivo dei Cookie."
 
 #: admin/views/inc/fields.cookieshield_tab.php:39
 msgid "Without this feature, <b>you might not be compliant with the GDPR regulations.</b> "
@@ -3035,7 +3035,7 @@ msgstr "Si, mostra il link alla policy nel banner"
 
 #: admin/views/policy_assistant_html.php:802
 msgid "you are established in the EU/EEA and the processing is carried out in the context of the activities of your establishment, regardless of where the processing takes place or where the data subjects are located; or"
-msgstr "sei stabilito nell’UE/SEE e il trattamento è svolto nel contesto delle attività del tuo stabile organizzazione, a prescindere da dove avviene il trattamento o da dove si trovano gli interessati; oppure"
+msgstr "sei stabilito nell’UE/SEE e il trattamento è svolto nel contesto delle attività del tuo stabilimento, a prescindere da dove avviene il trattamento o da dove si trovano gli interessati; oppure"
 
 #: admin/views/policy_assistant_html.php:848
 msgid "you are established in the United Kingdom and the processing is carried out in the context of the activities of your establishment, regardless of where the processing takes place or where the data subjects are located; or"
@@ -3163,3 +3163,558 @@ msgstr "Le tue informative sulla Privacy sono già aggiornate."
 #: admin/views/inc/inc.cookie_banner_tab.php:1056
 msgid "Your website preview"
 msgstr "L'anteprima del tuo sito Web"
+
+msgid "Depending on your company location and the selected countries, the Cookie Banner may appear differently. The summary below shows the specific behavior. \"Other countries\" shows the behavior for visitors not in the list."
+msgstr "A seconda della localizzazione della tua sede e ai paesi selezionati, il Cookie Banner può mostrarsi diversamente. Il riepilogo qui sotto mostra il comportamento specifico. \"Altri paesi\" mostra il comportamento per chi non rientra nell'elenco."
+
+msgid "European Union"
+msgstr "Unione europea"
+
+msgid "Preventive blocking applied globally."
+msgstr "Blocco preventivo applicato globalmente."
+
+msgid "Applies to EU visitors only, via targeting. Cookies blocked until consent."
+msgstr "Si applica ai soli visitatori UE, via targeting. Cookie bloccati fino al consenso."
+
+msgid "Same behavior as the EU for visitors from the United Kingdom."
+msgstr "Stesso comportamento dell'UE per i visitatori dal Regno Unito."
+
+msgid "Scripts loaded by default for US residents. No preventive blocking applied and any browser signals (GPP) are respected."
+msgstr "Script caricati di default per i residenti USA. Nessun blocco preventivo applicato e rispetto degli eventuali segnali del browser (GPP)."
+
+msgid "Treated as a GDPR-like area: preventive blocking applied."
+msgstr "Trattata come area simile al GDPR: blocco preventivo applicato."
+
+msgid "Consent required."
+msgstr "Consenso richiesto."
+
+msgid "Same behavior as the EU for visitors from Brazil."
+msgstr "Stesso comportamento dell'UE per i visitatori dal Brasile."
+
+msgid "⚠️ You have chosen to disable preventive blocking at your own risk: the GDPR still applies to these visitors. Any browser signal (GPP) will still be respected."
+msgstr "⚠️ Hai scelto di disapplicare il blocco preventivo a tuo rischio: il GDPR si applica comunque a questi visitatori. Verrà comunque rispettato l'eventuale segnale del browser (GPP)."
+
+msgid "Preventive blocking applied."
+msgstr "Blocco preventivo applicato."
+
+msgid "Preventive blocking applies to all countries not in the list."
+msgstr "Per tutti i paesi non in elenco si applica il blocco preventivo."
+
+msgid "For identified countries not subject to GDPR/UK, scripts load normally."
+msgstr "Per i paesi identificati e non soggetti a GDPR/UK gli script si caricano normalmente."
+
+msgid "For visitors whose location cannot be resolved (unknown IP, unidentified VPN/proxy), preventive blocking is applied as a safety measure."
+msgstr "Per i visitatori non risolvibili (IP ignoto, VPN/proxy non identificato) viene comunque applicato il blocco preventivo come misura di sicurezza."
+
+msgid "preventive blocking"
+msgstr "blocco preventivo dei cookie"
+
+msgid "no preventive blocking"
+msgstr "nessun blocco preventivo"
+
+msgid "Force disable preventive blocking"
+msgstr "Forza esclusione blocco preventivo"
+
+msgid "Other countries"
+msgstr "Altri paesi"
+
+msgid "Geolocation active:"
+msgstr "Geolocalizzazione attiva:"
+
+msgid "preventive blocking will be applied in the Geographic Areas as shown below."
+msgstr "il blocco preventivo verrà applicato nelle Aree Geografiche come riportato di seguito."
+
+msgid "Uniform behavior: preventive blocking for all visitors."
+msgstr "Comportamento uniforme: blocco preventivo per tutti i visitatori."
+
+msgid "Uniform behavior: no preventive blocking."
+msgstr "Comportamento uniforme: nessun blocco preventivo."
+
+msgid "Here are the regulations relevant to your company location and the geographic distribution of your visitors. Read the information below and select the regulations that apply to your case: your legal documents will be customized accordingly."
+msgstr "Ecco le normative pertinenti rispetto alla tua sede e alla localizzazione dei tuoi visitatori. Leggi le informazioni sotto riportate e scegli i regolamenti che si applicano al tuo caso: i documenti legali verranno personalizzati di conseguenza."
+
+msgid "Invalid download URL."
+msgstr "URL di download non valido."
+
+msgid "Installation failed."
+msgstr "Installazione non riuscita."
+
+msgid "Advanced plugin installed and activated."
+msgstr "Plugin Advanced installato e attivato."
+
+msgid "Advanced features for My Agile Privacy® including geolocation-based banner behavior and premium tools."
+msgstr "Funzionalità avanzate per My Agile Privacy®, incluso il comportamento del banner basato sulla geolocalizzazione e strumenti premium."
+
+msgid "Advanced features are not authorized for this license."
+msgstr "Le funzionalità avanzate non sono autorizzate per questa licenza."
+
+msgid "Download URL is not available."
+msgstr "L'URL di download non è disponibile."
+
+msgid "Remote version is not available."
+msgstr "La versione remota non è disponibile."
+
+msgid "Advanced plugin activated."
+msgstr "Plugin Advanced attivato."
+
+msgid "Advanced plugin is already up to date."
+msgstr "Il plugin Advanced è già aggiornato."
+
+msgid "Automatic installation is not available. Please download and install manually."
+msgstr "L'installazione automatica non è disponibile. Scarica e installa manualmente."
+
+msgid "My Agile Privacy® base plugin (v%1$s) is older than the Advanced plugin (v%2$s). Please update the base plugin to restore full functionality."
+msgstr "Il plugin base My Agile Privacy® (v%1$s) è più vecchio del plugin Advanced (v%2$s). Aggiorna il plugin base per ripristinare la piena funzionalità."
+
+msgid "Unknown error."
+msgstr "Errore sconosciuto."
+
+msgid "My Agile Privacy® Advanced could not be installed automatically: %s. A new attempt will be made in 24 hours."
+msgstr "Non è stato possibile installare automaticamente My Agile Privacy® Advanced: %s. Un nuovo tentativo verrà effettuato tra 24 ore."
+
+msgid "My Agile Privacy® Advanced is available but cannot be installed automatically due to filesystem restrictions."
+msgstr "My Agile Privacy® Advanced è disponibile ma non può essere installato automaticamente a causa di restrizioni del filesystem."
+
+msgid "Download manually"
+msgstr "Scarica manualmente"
+
+msgid "Dismiss this notice."
+msgstr "Ignora questo avviso."
+
+msgid "Google Tag Gateway detection"
+msgstr "Rilevamento Google Tag Gateway"
+
+msgid "Disable detection and notifications"
+msgstr "Disattiva il rilevamento e le notifiche"
+
+msgid "My Agile Privacy detected that Google Tag Manager loads before the consent management system on this site. Enable this option only if you are aware of this setup and want to stop the related warnings."
+msgstr "My Agile Privacy ha rilevato che Google Tag Manager viene caricato prima del sistema di gestione del consenso su questo sito. Attiva questa opzione solo se sei consapevole di questa configurazione e vuoi interrompere i relativi avvisi."
+
+msgid "My Agile Privacy has detected a loading priority issue."
+msgstr "My Agile Privacy ha rilevato un problema di priorità di caricamento."
+
+msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
+msgstr "Google Tag Manager viene eseguito prima del sistema di gestione del consenso (configurazione tipica di Google Tag Gateway o di iniezioni a livello CDN). In questa situazione i tag Google partono senza ricevere lo stato di consenso predefinito e il blocco preventivo potrebbe non essere applicato."
+
+msgid "See the instructions to fix this"
+msgstr "Consulta le istruzioni per risolvere"
+
+msgid "Enable"
+msgstr "Abilita"
+
+msgid "Communicates to advertising vendors (including Google) that this site uses Google Consent Mode v2 alongside IAB TCF. Recommended setting: enabled."
+msgstr "Comunica ai vendor pubblicitari (incluso Google) che questo sito utilizza Google Consent Mode v2 insieme a IAB TCF. Impostazione consigliata: attivo."
+
+msgid "Advertiser Consent Mode"
+msgstr "Advertiser Consent Mode"
+
+msgid "Plugin Options"
+msgstr "Opzioni del plugin"
+
+msgid "Export and import the plugin configuration."
+msgstr "Esporta e importa la configurazione del plugin."
+
+msgid "Download a JSON file with your plugin options."
+msgstr "Scarica un file JSON con le opzioni del plugin."
+
+msgid "Export Options"
+msgstr "Esporta opzioni"
+
+msgid "Restore options from a previously exported file."
+msgstr "Ripristina le opzioni da un file esportato in precedenza."
+
+msgid "Import Options"
+msgstr "Importa opzioni"
+
+msgid "Options backup & restore is a feature not available for your license."
+msgstr "Il backup e ripristino delle opzioni è una funzione non disponibile per la tua licenza."
+
+msgid "Options imported successfully."
+msgstr "Opzioni importate correttamente."
+
+msgid "The uploaded file is not a valid options backup."
+msgstr "Il file caricato non è un backup di opzioni valido."
+
+msgid "Options import failed: invalid or unreadable file."
+msgstr "Importazione opzioni fallita: file non valido o illeggibile."
+
+msgid "The options backup file is corrupted and cannot be imported."
+msgstr "Il file di backup delle opzioni è corrotto e non può essere importato."
+
+msgid "Cookies"
+msgstr "Cookies"
+
+msgid "My Agile Privacy® requires the My Agile Privacy® Advanced Features plugin to be installed and activated."
+msgstr "My Agile Privacy® richiede che il plugin My Agile Privacy® Advanced Features sia installato e attivo."
+
+msgid "Google Tag Gateway (GTG)"
+msgstr ""
+
+msgid "Google Tag Gateway - integration guide"
+msgstr "Google Tag Gateway - guida all'integrazione"
+
+#: admin/views/policy_assistant_html.php
+msgid "Social login"
+msgstr "Login social"
+
+#: admin/views/policy_assistant_html.php
+msgid "Advertising and marketing partners"
+msgstr "Pubblicità e partner di marketing"
+
+#: admin/views/policy_assistant_html.php
+msgid "Enable if the site allows sign-in or registration via social accounts."
+msgstr "Attiva se il sito consente l'accesso o la registrazione tramite account social."
+
+#: admin/views/policy_assistant_html.php
+msgid "Enable if the site runs advertising and/or shares data with commercial or affiliate partners for marketing or advertising purposes."
+msgstr "Attiva se il sito svolge attività pubblicitarie e/o condivide dati con partner commerciali o affiliati per finalità di marketing o pubblicità."
+
+msgid "control or process the personal data of at least 15,000 consumers and derive more than 25% of gross revenue from the sale of personal data."
+msgstr "controlla o tratta i dati personali di almeno 15.000 consumatori e ricava oltre il 25% dei ricavi lordi dalla vendita di dati personali."
+
+msgid "control or process the personal data of at least 25,000 consumers and derive revenue, or receive a discount on the price of goods or services, from the sale of personal data (no minimum revenue percentage is required)."
+msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori e ricava entrate, oppure riceve uno sconto sul prezzo di beni o servizi, dalla vendita di dati personali (non è richiesta alcuna percentuale minima di ricavi)."
+
+msgid "control or process the personal data of at least 25,000 consumers and derive 25% or more of annual gross revenue from the sale of personal data."
+msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori e ricava il 25% o più dei ricavi lordi annui dalla vendita di dati personali."
+
+msgid "No numerical thresholds. The law provides, among other things, disclosure obligations and an opt-out right with respect to the sale of such information, according to the specific and narrow definition of «sale» set out in the statute."
+msgstr "Non sono previste soglie numeriche. La legge prevede, tra l'altro, obblighi di informativa e un diritto di opt-out rispetto alla vendita di tali informazioni, secondo la definizione specifica e ristretta di «sale» prevista dalla normativa."
+
+msgid "offer for sale personal data of consumers in the course of its business."
+msgstr "offre in vendita dati personali di consumatori nell'esercizio della propria attività."
+
+msgid "For the processing of sensitive data and the sale of personal data, no numerical thresholds apply."
+msgstr "Per il trattamento di dati sensibili e per la vendita di dati personali non sono previste soglie numeriche."
+
+msgid "Entities that fall within the small business definition (SBA - Small Business Administration) are excluded from the law but may not sell sensitive personal data without the consent of the consumer."
+msgstr "I soggetti che rientrano nella definizione di small business (SBA - Small Business Administration) sono esclusi dalla legge, ma non possono vendere dati personali sensibili senza il consenso del consumatore."
+
+msgid "Applies to those who do business in Indiana or target products/services to Indiana residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in Indiana o rivolge prodotti/servizi a residenti in Indiana e, nel corso di un anno solare:"
+
+msgid "Applies to those who do business in Iowa or target products/services to Iowa residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in Iowa o rivolge prodotti/servizi a residenti in Iowa e, nel corso di un anno solare:"
+
+msgid "Applies to those who do business in Kentucky or target products/services to Kentucky residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in Kentucky o rivolge prodotti/servizi a residenti in Kentucky e, nel corso di un anno solare:"
+
+msgid "Applies to those who do business in Maryland or target products/services to Maryland residents and, in the previous calendar year:"
+msgstr "Si applica a chi fa affari in Maryland o rivolge prodotti/servizi a residenti in Maryland e, nell'anno solare precedente:"
+
+msgid "Applies to those who do business in Rhode Island or target products/services to Rhode Island residents and, in the previous calendar year:"
+msgstr "Si applica a chi fa affari in Rhode Island o rivolge prodotti/servizi a residenti in Rhode Island e, nell'anno solare precedente:"
+
+msgid "The notice transparency obligations also apply, without numerical thresholds, to commercial websites and online service providers that collect, store, and sell personally identifiable information of customers residing in Rhode Island."
+msgstr "Gli obblighi di trasparenza dell'informativa si applicano inoltre, senza soglie numeriche, ai siti web commerciali e ai fornitori di servizi online che raccolgono, conservano e vendono informazioni personali identificabili di clienti residenti in Rhode Island."
+
+msgid "Unlike most state laws, it also applies to non-profit organizations, subject to limited exceptions. The law also prohibits the sale of sensitive personal data, regardless of consent."
+msgstr "A differenza della maggior parte delle leggi statali, si applica anche alle organizzazioni non profit, salvo limitate eccezioni. La legge vieta inoltre la vendita di dati personali sensibili, a prescindere dal consenso."
+
+msgid "INCDPA (Indiana Consumer Data Protection Act)"
+msgstr ""
+
+msgid "ICDPA (Iowa Consumer Data Protection Act)"
+msgstr ""
+
+msgid "KCDPA (Kentucky Consumer Data Protection Act)"
+msgstr ""
+
+msgid "MODPA (Maryland Online Data Privacy Act)"
+msgstr ""
+
+msgid "RIDTPPA (Rhode Island Data Transparency and Privacy Protection Act)"
+msgstr ""
+
+#: admin/views/policy_assistant_html.php:1460
+msgid "annual gross revenues of at least USD 25 million; and"
+msgstr "ricavi annui lordi di almeno 25 milioni di USD; e"
+
+#: admin/views/policy_assistant_html.php:1255
+msgid "Applies to operators of websites/online services that do business in Nevada, collect personal information from Nevada consumers, and sell that information."
+msgstr "Si applica agli operatori di siti web/servizi online che fanno affari in Nevada, raccolgono informazioni personali di consumatori del Nevada e vendono tali informazioni."
+
+#: admin/views/policy_assistant_html.php:1702
+msgid "Applies to private‑sector organizations that, in the course of commercial activities, collect, use, or disclose personal information in Canada (including interprovincial or international transfers). "
+msgstr "Si applica alle organizzazioni del settore privato che, nel corso di attività commerciali, raccolgono, usano o comunicano dati personali in Canada (inclusi i trasferimenti interprovinciali o internazionali)."
+
+#: admin/views/policy_assistant_html.php:999
+msgid "Applies to those who do business in Connecticut or target products/services to Connecticut residents and, in the preceding calendar year, meet at least one of these thresholds:"
+msgstr "Si applica a chi fa affari in Connecticut o rivolge prodotti/servizi a residenti in Connecticut e, nell’anno solare precedente, soddisfa almeno una di queste soglie:"
+
+#: admin/views/policy_assistant_html.php:1152
+msgid "Applies to those who do business in Montana or target products/services to Montana residents and, during a calendar year:"
+msgstr "Si applica a chi fa affari in Montana o rivolge prodotti/servizi a residenti in Montana e, nel corso di un anno solare:"
+
+#: admin/views/policy_assistant_html.php:1354
+msgid "Applies to those who do business in New Jersey or target products/services to New Jersey residents and, in the previous calendar year:"
+msgstr "Si applica a chi fa affari in New Jersey o rivolge prodotti/servizi a residenti in New Jersey e, nell’anno solare precedente:"
+
+#: admin/views/policy_assistant_html.php:1310
+msgid "control or process the personal data of at least 10,000 consumers and derive at least 25% of gross revenue from the sale of personal data."
+msgstr "controlla o tratta i dati personali di almeno 10.000 consumatori e ricava almeno il 25% dei ricavi lordi dalla vendita di dati personali."
+
+#: admin/views/policy_assistant_html.php:1003
+msgid "control or process the personal data of at least 100,000 consumers (excluding personal data processed solely to complete a payment transaction); or"
+msgstr "controlla o tratta i dati personali di almeno 100.000 consumatori (escludendo i dati trattati esclusivamente per completare una transazione di pagamento); oppure"
+
+#: admin/views/policy_assistant_html.php:1006
+msgid "control or process the personal data of at least 25,000 consumers and derive over 25% of gross revenue from the sale of personal data."
+msgstr "controlla o tratta i dati personali di almeno 25.000 consumatori e ricava oltre il 25% dei ricavi lordi dalla vendita di dati personali."
+
+#: admin/views/policy_assistant_html.php:1156
+msgid "control or process the personal data of at least 50,000 consumers (excluding data processed solely to complete a payment); or"
+msgstr "controlla o tratta i dati personali di almeno 50.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure"
+
+#: admin/views/policy_assistant_html.php:1463
+msgid "during a calendar year, control or process the personal data of at least 175,000 consumers (excluding data processed solely to complete a payment); or control or process the personal data of at least 25,000 consumers and derive at least 50% of gross revenue from the sale of personal data."
+msgstr "nel corso di un anno solare, controlla o tratta i dati personali di almeno 175.000 consumatori (escludendo i dati trattati esclusivamente per completare un pagamento); oppure controlla o tratta i dati personali di almeno 25.000 consumatori e ricava almeno il 50% dei ricavi lordi dalla vendita di dati personali."
+
+#: admin/views/policy_assistant_html.php:1705
+msgid "It also applies to employers that are federal works, undertakings or businesses with respect to the personal information of their employees."
+msgstr "Si applica inoltre ai datori di lavoro che sono imprese di competenza federale (federal works, undertakings or businesses) per i dati personali dei loro dipendenti."
+
+#: admin/views/inc/inc.identity_tab.php:153
+msgid "Address of the DPO. Leave it blank, if not applicable"
+msgstr "Indirizzo del DPO. Lascia vuoto se non applicabile"
+
+#: admin/views/inc/inc.consent_widget_tab.php:367
+msgid "Adds a link to the Cookie Policy inside the widget."
+msgstr "Aggiunge un link alla Cookie Policy all'interno del widget."
+
+#: admin/views/inc/inc.policies_tab.php:188
+#: admin/views/inc/inc.policies_tab.php:379
+msgid "Adds the policy link directly to the first layer of the cookie banner."
+msgstr "Aggiunge il link alla policy direttamente nel primo layer del banner dei cookie."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:181
+msgid "Available when the banner size is Big or Boxed."
+msgstr "Disponibile quando la dimensione del banner è Big o Boxed."
+
+#: admin/views/inc/fields.consent_mode_tab.php:188
+msgid "Choose \"via My Agile Privacy®\" if Google tags are installed directly on the site; choose \"via Google Tag Manager\" if they are managed inside a GTM container."
+msgstr "Scegli \"via My Agile Privacy®\" se i tag Google sono installati direttamente sul sito; scegli \"via Google Tag Manager\" se sono gestiti all'interno di un contenitore GTM."
+
+#: admin/views/inc/inc.consent_widget_tab.php:312
+msgid "Choose whether the floating widget displays the text, the logo, or both."
+msgstr "Scegli se il widget flottante mostra il testo, il logo o entrambi."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:465
+msgid "Display order of the consent buttons in the banner."
+msgstr "Ordine di visualizzazione dei pulsanti di consenso nel banner."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:281
+msgid "Entrance animation used when the banner appears."
+msgstr "Animazione di ingresso utilizzata alla comparsa del banner."
+
+#: admin/views/inc/fields.consent_mode_tab.php:77
+msgid "Hides the Consent Mode options and stops the related reminders. Enable only if the site uses no Google service (Analytics, Ads, Maps, reCAPTCHA...)."
+msgstr "Nasconde le opzioni della Consent Mode e interrompe i relativi promemoria. Attiva solo se il sito non utilizza alcun servizio Google (Analytics, Ads, Maps, reCAPTCHA...)."
+
+#: admin/views/inc/fields.license_tab.php:204
+msgid "Hides the license key field. You can enter a key at any time by unchecking this option."
+msgstr "Nasconde il campo della chiave di licenza. Puoi inserire una chiave in qualsiasi momento deselezionando questa opzione."
+
+#: admin/views/inc/inc.identity_tab.php:87
+msgid "If enabled, the DPO contact details are added to your policies."
+msgstr "Se attivata, i recapiti del DPO vengono aggiunti alle tue policy."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:132
+msgid "Layout of the cookie banner. With the Big or Boxed sizes you can also choose the horizontal position."
+msgstr "Layout del banner dei cookie. Con le dimensioni Big o Boxed puoi scegliere anche la posizione orizzontale."
+
+#: admin/views/inc/fields.cookieshield_tab.php:132
+msgid "Learning Mode detects cookies while you browse the site without blocking; Live Mode enforces the preventive blocking. Set Live once the scan is complete."
+msgstr "La Modalità Learning rileva i cookie mentre navighi il sito senza bloccare; la Modalità Live applica il blocco preventivo. Imposta Live una volta completata la scansione."
+
+#: admin/views/inc/inc.policies_tab.php:92
+#: admin/views/inc/inc.policies_tab.php:281
+msgid "Link an external URL or pick a WordPress page of this site containing the policy."
+msgstr "Collega un URL esterno oppure scegli una pagina WordPress di questo sito contenente la policy."
+
+#: admin/views/inc/inc.identity_tab.php:131
+msgid "Name of the person or company acting as DPO"
+msgstr "Nome della persona o dell'azienda che svolge il ruolo di DPO"
+
+#: includes/my-agile-privacy-helpdesk-links.php:230
+#: includes/my-agile-privacy-helpdesk-links.php:241
+msgid "Online Help"
+msgstr "Guida Online"
+
+#: admin/views/inc/inc.identity_tab.php:16
+#: admin/views/inc/inc.identity_tab.php:40
+msgid "Online Help: Data Controller and DPO details"
+msgstr "Guida Online: dati del titolare del trattamento e del DPO"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:653
+msgid "Online Help: buttons and colors customization"
+msgstr "Guida Online: personalizzazione di pulsanti e colori"
+
+#: admin/views/inc/inc.consent_widget_tab.php:55
+#: admin/views/inc/inc.consent_widget_tab.php:380
+msgid "Online Help: consent options (IAB TCF, consent reset)"
+msgstr "Guida Online: opzioni di consenso (IAB TCF, reimpostazione consensi)"
+
+#: admin/views/inc/inc.translations_tab.php:14
+msgid "Online Help: customize texts and translations"
+msgstr "Guida Online: personalizza testi e traduzioni"
+
+#: admin/views/inc/inc.license_tab.php:16
+msgid "Online Help: guide to the private area"
+msgstr "Guida Online: utilizzo dell'area privata"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:16
+msgid "Online Help: how to customize the cookie banner"
+msgstr "Guida Online: come personalizzare il banner dei cookie"
+
+#: admin/views/inc/inc.consent_widget_tab.php:143
+msgid "Online Help: how to customize the revisit consent widget"
+msgstr "Guida Online: come personalizzare il widget di rivisitazione del consenso"
+
+#: admin/views/inc/inc.policies_tab.php:396
+msgid "Online Help: how to customize your Privacy Policies"
+msgstr "Guida Online: come personalizzare le tue Privacy Policy"
+
+#: admin/views/inc/fields.cookieshield_tab.php:26
+#: admin/views/inc/fields.cookieshield_tab.php:55
+msgid "Online Help: how to detect and block cookies with Cookie Shield"
+msgstr "Guida Online: come rilevare e bloccare i cookie con il Cookie Shield"
+
+#: admin/views/inc/fields.clarity_consent_mode_tab.php:22
+msgid "Online Help: how to implement Clarity Consent Mode"
+msgstr "Guida Online: come implementare la Consent Mode di Clarity"
+
+#: admin/views/inc/fields.consent_mode_tab.php:35
+msgid "Online Help: how to implement Google Consent Mode v2"
+msgstr "Guida Online: come implementare la Google Consent Mode v2"
+
+#: admin/views/inc/fields.microsoft_consent_mode_tab.php:22
+msgid "Online Help: how to implement Microsoft UET Consent Mode"
+msgstr "Guida Online: come implementare la UET Consent Mode di Microsoft"
+
+#: admin/views/inc/inc.policies_tab.php:14
+#: admin/views/inc/inc.policies_tab.php:198
+msgid "Online Help: how to set up your Policy pages"
+msgstr "Guida Online: come impostare le pagine delle Policy"
+
+#: admin/views/inc/inc.translations_tab.php:16
+msgid "Online Help: multilingual websites configuration"
+msgstr "Guida Online: configurazione dei siti multilingua"
+
+#: admin/views/inc/inc.advanced_tab.php:14
+msgid "Online Help: the advanced settings explained"
+msgstr "Guida Online: le impostazioni avanzate spiegate"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:899
+#: admin/views/inc/inc.cookie_banner_tab.php:1039
+msgid "Online Help: warning messages for non-accepted cookies"
+msgstr "Guida Online: messaggi di avviso per i cookie non accettati"
+
+#: admin/views/inc/fields.cookieshield_tab.php:74
+#, php-format
+msgid "Please note: The Shield is regularly updated to detect as many cookies and third-party software as possible. However, it may not identify all the content that must be detected and blocked according to the regulations in your country. If you have any questions, please don't hesitate to %1$scontact us%2$s."
+msgstr "Nota bene: lo Shield viene aggiornato regolarmente per rilevare il maggior numero possibile di cookie e software di terze parti. Tuttavia, potrebbe non identificare tutti i contenuti che devono essere rilevati e bloccati secondo le normative del tuo Paese. Per qualsiasi domanda, non esitare a %1$scontattarci%2$s."
+
+#: admin/views/inc/inc.advanced_tab.php:51
+msgid "Recommended: keeps the plugin aligned with regulatory and technical updates."
+msgstr "Consigliato: mantiene il plugin allineato agli aggiornamenti normativi e tecnici."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:606
+msgid "Select the background color of the cookie banner heading"
+msgstr "Seleziona il colore di sfondo dell'intestazione del banner dei cookie"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:622
+msgid "Select the text color of the cookie banner heading"
+msgstr "Seleziona il colore del testo dell'intestazione del banner dei cookie"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:663
+msgid "Set text and background colors for each consent button. Button texts are editable from the Texts and Translations section."
+msgstr "Imposta i colori del testo e dello sfondo per ciascun pulsante di consenso. I testi dei pulsanti sono modificabili dalla sezione Testi e Traduzioni."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:768
+msgid "Show a small icon inside each consent button."
+msgstr "Mostra una piccola icona all'interno di ciascun pulsante di consenso."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:941
+msgid "Shows a bar on the site listing the content blocked on the current page until consent is given."
+msgstr "Mostra sul sito una barra che elenca i contenuti bloccati nella pagina corrente finché non viene espresso il consenso."
+
+#: admin/views/inc/inc.cookie_banner_tab.php:155
+msgid "Vertical placement of the banner. Center displays it as an overlay in the middle of the screen."
+msgstr "Posizionamento verticale del banner. Center lo mostra in sovraimpressione al centro dello schermo."
+
+#: admin/views/backup_restore_html.php:15
+msgid "Warning: this will delete your entire Cookie configuration. Make sure you have exported it first (STEP 1). Do you want to proceed?"
+msgstr "Attenzione: questa operazione eliminerà l'intera configurazione dei Cookie. Assicurati di averla prima esportata (STEP 1). Vuoi procedere?"
+
+#: admin/views/inc/inc.cookie_banner_tab.php:208
+msgid "When enabled, the banner floats detached from the page edges instead of sticking to them."
+msgstr "Se attivato, il banner fluttua staccato dai bordi della pagina invece di aderirvi."
+
+#: admin/views/inc/inc.advanced_tab.php:152
+#: admin/views/inc/inc.advanced_tab.php:247
+#: admin/views/inc/inc.translations_tab.php:191
+#, php-format
+msgid "You can change the active languages on your plan from the %1$sPrivate Area%2$s, under the <strong>My Subscription</strong> section, by clicking on <strong>Customize Languages</strong>."
+msgstr "Puoi modificare le lingue attive sul tuo piano dall'%1$sArea Privata%2$s, nella sezione <strong>My Subscription</strong>, cliccando su <strong>Customize Languages</strong>."
+
+#: admin/views/inc/fields.cookieshield_tab.php:216
+msgid "Video privacy mode"
+msgstr "Modalità privacy dei video"
+
+#: admin/views/inc/fields.cookieshield_tab.php:228
+msgid "Anonymize video embeds"
+msgstr "Anonimizza l'embed dei video"
+
+#: admin/views/inc/fields.cookieshield_tab.php:230
+msgid "Block with notice"
+msgstr "Blocco con avviso"
+
+#: admin/views/inc/fields.cookieshield_tab.php:260
+msgid "Choose how YouTube and Vimeo embeds are handled before consent: anonymized embedding, or full block with a notice that reopens the consent banner. When blocking is not possible, anonymized embedding is applied"
+msgstr "Scegli come gestire gli embed di YouTube e Vimeo prima del consenso: incorporamento anonimizzato, oppure blocco totale con un avviso che riapre il banner del consenso. Quando il blocco non è possibile, viene applicato l'incorporamento anonimizzato"
+
+#: admin/my-agile-privacy-admin.php:4220
+#: admin/my-agile-privacy-admin.php:4921
+msgid "Managed setting via Privacy Settings ▸ Cookie Shield ▸ Video privacy mode"
+msgstr "Impostazione gestita tramite Impostazioni ▸ Cookie Shield ▸ Modalità privacy dei video"
+#: admin/views/inc/inc.dashboard_tab.php:146
+msgid "Online Help: how to install My Agile Privacy®"
+msgstr "Guida Online: come installare My Agile Privacy®"
+
+#: admin/views/inc/inc.backup_restore_tab.php:14
+msgid "Online Help: backup and restore your configuration"
+msgstr "Guida Online: backup e ripristino della configurazione"
+
+#: admin/my-agile-privacy-admin.php:3117
+msgid "Online Help: guide to the Policy list"
+msgstr "Guida Online: guida alla lista delle Policy"
+
+#: admin/my-agile-privacy-admin.php:3151
+msgid "Online Help: guide to the Cookie list"
+msgstr "Guida Online: guida alla lista dei Cookie"
+
+#: admin/my-agile-privacy-admin.php:5137
+msgid "Online Help: how to edit your Policy"
+msgstr "Guida Online: come modificare la tua Policy"
+
+#: admin/my-agile-privacy-admin.php:5422
+msgid "Online Help: how to configure your Cookie"
+msgstr "Guida Online: come configurare il tuo Cookie"
+
+#: includes/my-agile-privacy-helpdesk-links.php:311
+msgid "Need help? Click me."
+msgstr "Hai bisogno di aiuto? Cliccami."
+
+msgid "Banner behaviour by geographic area"
+msgstr "Comportamento del Banner per area geografica"
+
+msgid "Geolocation provided by <a href=\"https://db-ip.com\" target=\"_blank\" rel=\"noopener noreferrer\">DB-IP.com</a> (CC BY 4.0)."
+msgstr "Geolocalizzazione fornita da <a href=\"https://db-ip.com\" target=\"_blank\" rel=\"noopener noreferrer\">DB-IP.com</a> (CC BY 4.0)."
+
+#: admin/my-agile-privacy-admin.php
+msgid "Consent Statistics"
+msgstr "Statistiche di consenso"
+
+msgid "Consent Statistics is a premium feature. Measure how visitors interact with your cookie banner — interaction, consent and opt-in rates, with no personal data collected. Upgrade your license to unlock it."
+msgstr "Le Statistiche di consenso sono una funzione premium. Misura come i visitatori interagiscono con il tuo banner cookie — tassi di interazione, consenso e opt-in, senza raccogliere alcun dato personale. Aggiorna la licenza per attivarle."

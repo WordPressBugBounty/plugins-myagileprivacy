@@ -283,6 +283,7 @@
 							var $license_code_wrapper = $( '.license_code_wrapper' );
 							var $hide_code_wrapper = $( '.hide_code_wrapper' );
 
+							$license_code_field.prop( 'disabled', false );
 							$license_code_field.val( '' );
 							$license_code_wrapper.removeClass( 'd-none' );
 							$hide_code_wrapper.addClass( 'd-none' );
@@ -367,11 +368,14 @@
 										{
 											$license_code_wrapper.addClass( 'd-none' );
 											$hide_code_wrapper.removeClass( 'd-none' );
-											$lc_owner_description.html( data.lc_owner_description );
+											$lc_owner_description.text( data.lc_owner_description );
 
 											if( data.lc_owner_email )
 											{
-												$lc_owner_email.html( '<a href="mailto:'+ data.lc_owner_email + '" target="blank">' + data.lc_owner_email +'</a>' );
+												var $owner_email_link = $( '<a>' ).attr( 'target', 'blank' ).text( data.lc_owner_email );
+												$owner_email_link.attr( 'href', 'mailto:' + data.lc_owner_email );
+
+												$lc_owner_email.empty().append( $owner_email_link );
 												$lc_owner_email_wrapper.removeClass( 'd-none' );
 											}
 											else
@@ -379,10 +383,12 @@
 												$lc_owner_email_wrapper.addClass( 'd-none' );
 											}
 
-											if( data.lc_owner_email )
+											if( data.lc_owner_website && /^https?:\/\//i.test( data.lc_owner_website ) )
 											{
-												$lc_owner_website.html( '<a href="'+ data.lc_owner_email + '" target="blank">' + data.lc_owner_website +'</a>' );
+												var $owner_website_link = $( '<a>' ).attr( 'target', 'blank' ).text( data.lc_owner_website );
+												$owner_website_link.attr( 'href', data.lc_owner_website );
 
+												$lc_owner_website.empty().append( $owner_website_link );
 												$lc_owner_website_wrapper.removeClass( 'd-none' );
 											}
 											else
@@ -497,6 +503,16 @@
 
 							e.preventDefault();
 							var $this = $( this );
+
+							//destructive action guard: "Clean All Cookie" drops every configured cookie
+							if( $this.find( 'input[name="reset_cookie_settings"]' ).val() == '1' )
+							{
+								if( typeof map_confirm_clean_cookies_text !== 'undefined' && !confirm( map_confirm_clean_cookies_text ) )
+								{
+									return false;
+								}
+							}
+
 							var data = $this.serialize();
 							var url = $this.attr( 'action' );
 
@@ -634,6 +650,58 @@
 									map_pupup_notify.error( map_settings_error_message_text );
 								}
 							});
+						});
+
+						// restore the wizard state persisted before the post-save reload
+						var map_step_match = /^#map-step-([A-Za-z]+)$/.exec( window.location.hash );
+
+						if( map_step_match )
+						{
+							var $map_step_button = $( '[data-bs-target="#collapse' + map_step_match[1] + '"]', $my_agile_privacy_backend ).first();
+
+							if( $map_step_button.length && !$( '#collapse' + map_step_match[1] ).hasClass( 'show' ) )
+							{
+								$map_step_button.trigger( 'click' );
+							}
+						}
+
+						// persist the open step through the reload ( non-element-id token )
+						$( '#map_user_settings_form' ).on( 'submit', function(){
+
+							try{
+
+								var map_open_step = $( '.accordion-collapse.show', $my_agile_privacy_backend ).attr( 'id' );
+
+								if( map_open_step )
+								{
+									window.location.hash = '#map-step-' + map_open_step.replace( 'collapse', '' );
+								}
+							}
+							catch( error )
+							{
+								console.error( error );
+							}
+						});
+
+						/* A pending license code must be submitted before moving on: the wizard
+						   state is computed server-side, so leaving the step would show it stale.
+						   A dedicated button shows up next to the field, and the step headers are
+						   disabled meanwhile: a disabled button emits no click at all, so the
+						   collapse data-api never fires. */
+						var $map_license_save_wrapper = $( '.map-license-save-wrapper', $my_agile_privacy_backend );
+						var $map_step_buttons = $( '#settingsAccordion .accordion-button', $my_agile_privacy_backend );
+
+						$( ':input[name="license_code_field"]', $my_agile_privacy_backend ).on( 'change keyup', function(){
+
+							$map_license_save_wrapper.removeClass( 'displayNone' );
+							$map_step_buttons.prop( 'disabled', true );
+						});
+
+						$( '#map-license-save', $my_agile_privacy_backend ).on( 'click', function(){
+
+							$map_step_buttons.prop( 'disabled', false );
+
+							$( '#map_user_settings_form' ).submit();
 						});
 					}
 
@@ -967,6 +1035,13 @@
 							// Update step indicators
 							$( '.step-indicator', $my_agile_privacy_backend ).removeClass( 'active' );
 							$( '.step-indicator[data-step="' + currentStep + '"]', $my_agile_privacy_backend ).addClass( 'active' );
+
+							// DB-IP attribution: visible only on step 2 (geo tab)
+							var $dbip = $( '#dbip-attribution' );
+							if( $dbip.length ) {
+								if( currentStep === 2 ) { $dbip.removeClass( 'displayNone' ); }
+								else                    { $dbip.addClass( 'displayNone' ); }
+							}
 
 							// Update navigation buttons
 							if( currentStep === 1 )
@@ -1544,8 +1619,10 @@
 						{
 							//console.debug( map_backend_prefix + '.fake-save-button context');
 
-							$save_trigger_buttons.on( 'click', function()
+							$save_trigger_buttons.on( 'click', function( e )
 							{
+								e.preventDefault();
+
 								$( '#map-save-button' ).trigger( 'click' );
 							});
 						}
@@ -1847,8 +1924,7 @@
 						createDynamicFields( '#my_agile_privacy_backend' );
 
 						//bof hash url navigation // tabbed content
-						var url = document.URL;
-						var hash = url.substring(url.indexOf('#'));
+						var hash = window.location.hash;
 
 						$( ".nav-pills" ).find( "li button" ).each( function( key, val ){
 							var $val = $( val );
@@ -2045,5 +2121,178 @@
 			}
 		}
 	}
+
+	// ── Geo cards module (policy assistant, step 2) ───────────────────────────
+	$(function() {
+		if (typeof MAPGEO_DATA === 'undefined') { return; }
+
+		var D         = MAPGEO_DATA;
+		var FLAG_BASE = D.flag_base;
+		var REGIONS   = D.regions;
+		var ORDER     = D.order;
+		var US_STATES = D.us_states;
+		var NOTE      = D.note;
+		var TXT       = D.txt;
+		var FORCED    = D.forced;
+
+		function sedeForte() {
+			var baseEl   = document.getElementById('base_location');
+			var baseLoc  = baseEl ? baseEl.value.toLowerCase() : '';
+			var gdprLike = (typeof regulation_config !== 'undefined' && regulation_config.gdpr_like_list) ? regulation_config.gdpr_like_list : [];
+			return gdprLike.indexOf(baseLoc) !== -1;
+		}
+
+		function isMyCountryMode() {
+			var el = document.getElementById('customer_location');
+			return el && el.value === 'my_country';
+		}
+
+		function baseRegion() {
+			var baseEl   = document.getElementById('base_location');
+			var v        = baseEl ? baseEl.value.toLowerCase() : '';
+			if (!v || v === 'unsupported') { return null; }
+			var explicit = { gb: 'uk', us: 'us', ch: 'ch', ca: 'ca', br: 'br' };
+			if (explicit[v]) { return explicit[v]; }
+			var gdprLike = (typeof regulation_config !== 'undefined' && regulation_config.gdpr_like_list) ? regulation_config.gdpr_like_list : [];
+			return (gdprLike.indexOf(v) !== -1) ? 'ue' : null;
+		}
+
+		function isSelected(k) {
+			if (isMyCountryMode()) { return baseRegion() === k; }
+			if (k === 'us') {
+				var baseEl = document.getElementById('base_location');
+				if (baseEl && baseEl.value.toLowerCase() === 'us') { return true; }
+				for (var i = 0; i < US_STATES.length; i++) {
+					var cb = document.getElementById('customer_area_' + US_STATES[i]);
+					if (cb && cb.checked) { return true; }
+				}
+				return false;
+			}
+			var el = document.getElementById(REGIONS[k].checkbox);
+			return !!(el && el.checked);
+		}
+
+		function canForce(k) { return sedeForte() && REGIONS[k].nat === 'noblock'; }
+
+		function effType(k) {
+			if (REGIONS[k].nat === 'block') { return 'block'; }
+			if (sedeForte()) { return FORCED[k] ? 'noblock' : 'block'; }
+			return 'noblock';
+		}
+
+		function nativeNote(k) {
+			if (k === 'ue') { return sedeForte() ? NOTE.ue_strong : NOTE.ue_light; }
+			return NOTE[k] || '';
+		}
+
+		function esc(s) {
+			var d = document.createElement('div');
+			d.textContent = (s == null ? '' : s);
+			return d.innerHTML;
+		}
+
+		function badge(type) {
+			return type === 'block'
+				? '<span class="mapgeo-badge mapgeo-badge-block">🔒 ' + esc(TXT.badge_block) + '</span>'
+				: '<span class="mapgeo-badge mapgeo-badge-noblock">🔓 ' + esc(TXT.badge_noblock) + '</span>';
+		}
+
+		function render() {
+			var forte = sedeForte();
+			var html  = '';
+
+			ORDER.forEach(function (k) {
+				if (!isSelected(k)) { return; }
+				var eff        = effType(k);
+				var toggleHtml = '';
+				if (canForce(k)) {
+					var ck = FORCED[k] ? ' checked' : '';
+					toggleHtml =
+						'<label class="mapgeo-toggle"><span class="mapgeo-sw">' +
+						'<input type="hidden" name="site_and_policy_settings[geo_force_optout][' + k + ']" value="false">' +
+						'<input type="checkbox" name="site_and_policy_settings[geo_force_optout][' + k + ']" value="true"' + ck + ' data-region="' + k + '" class="mapgeo-force-toggle">' +
+						'<span class="mapgeo-kn"></span></span>' + esc(TXT.toggle) + '</label>';
+				}
+				var noteHtml;
+				if (canForce(k) && eff === 'noblock') {
+					noteHtml = '<div class="mapgeo-note mapgeo-note-warn">' + esc(NOTE.forced_risk) + '</div>';
+				} else if (canForce(k) && eff === 'block') {
+					noteHtml = '<div class="mapgeo-note">' + esc(NOTE.force_off) + '</div>';
+				} else {
+					noteHtml = '<div class="mapgeo-note">' + esc(nativeNote(k)) + '</div>';
+				}
+				var flagHtml = REGIONS[k].flag ? '<img class="mapgeo-flag" src="' + FLAG_BASE + REGIONS[k].flag + '" alt="">' : '';
+				html += '<div class="mapgeo-card">' + flagHtml + '<div class="mapgeo-card-title">' + esc(REGIONS[k].label) + '</div>' + badge(eff) + noteHtml + toggleHtml + '</div>';
+			});
+
+			// "Altri paesi" card — always present.
+			var rowType, rowNote;
+			if (forte) {
+				rowType = 'block';
+				rowNote = '<div class="mapgeo-note">' + esc(NOTE.others_block) + '</div>';
+			} else {
+				rowType = 'noblock';
+				rowNote = '<div class="mapgeo-note">' + esc(NOTE.others_noblock) + '<br><span class="mapgeo-note-soft">' + esc(NOTE.others_noblock_soft) + '</span></div>';
+			}
+			html += '<div class="mapgeo-card-default"><div class="mapgeo-card-title">🌍 ' + esc(TXT.others) + '</div>' + badge(rowType) + rowNote + '</div>';
+
+			// Global notice.
+			var hasBlock = (rowType === 'block'), hasNoBlock = (rowType === 'noblock');
+			ORDER.forEach(function (k) {
+				if (!isSelected(k)) { return; }
+				if (effType(k) === 'block') { hasBlock = true; } else { hasNoBlock = true; }
+			});
+			var noticeHtml;
+			if (hasBlock && hasNoBlock) {
+				noticeHtml = '<div class="mapgeo-notice mapgeo-notice-info"><strong>📍 ' + esc(TXT.notice_mixed_strong) + '</strong> ' + esc(TXT.notice_mixed) + '</div>';
+			} else {
+				noticeHtml = '<div class="mapgeo-notice mapgeo-notice-neutral">✓ ' + esc(hasNoBlock ? TXT.notice_noblock : TXT.notice_block) + '</div>';
+			}
+
+			document.getElementById('mapgeo_notice').innerHTML = noticeHtml;
+			document.getElementById('mapgeo_cards').innerHTML  = html;
+
+			// Re-bind force toggles (re-created on every render).
+			document.querySelectorAll('.mapgeo-force-toggle').forEach(function (cb) {
+				cb.addEventListener('change', function () {
+					FORCED[this.getAttribute('data-region')] = this.checked;
+					render();
+				});
+			});
+		}
+
+		var baseEl    = document.getElementById('base_location');
+		var custLocEl = document.getElementById('customer_location');
+		if (baseEl)    { baseEl.addEventListener('change', render); }
+		if (custLocEl) { custLocEl.addEventListener('change', render); }
+		US_STATES.forEach(function (s) {
+			var cb = document.getElementById('customer_area_' + s);
+			if (cb) { cb.addEventListener('change', render); }
+		});
+		['eu', 'gb', 'ch', 'ca', 'br'].forEach(function (r) {
+			var cb = document.getElementById('customer_area_' + r);
+			if (cb) { cb.addEventListener('change', render); }
+		});
+
+		render();
+	});
+
+	// ── Advertiser Consent Mode toggle visibility ──
+	$(function() {
+		var $iab   = $( '#enable_iab_tcf_field' );
+		var $cmode = $( '#enable_cmode_v2_field' );
+		var $wrap  = $( '.map_acm_wrapper' );
+
+		if ( ! $wrap.length ) { return; }
+
+		function syncAcmVisibility() {
+			var show = $iab.is( ':checked' ) && $cmode.is( ':checked' );
+			$wrap.toggleClass( 'displayNone', ! show );
+		}
+
+		$iab.on( 'change', syncAcmVisibility );
+		$cmode.on( 'change', syncAcmVisibility );
+		syncAcmVisibility();
+	});
 
 })( jQuery );
