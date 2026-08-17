@@ -83,7 +83,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									}
 								?>
 
-								<input type="submit" name="backup_admin_settings_form" value="<?php esc_attr_e('Export Cookie Settings', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
+								<button type="submit" name="backup_admin_settings_form" value="1" class="btn-lg button-agile"><i class="fa-solid fa-download" aria-hidden="true"></i> <?php esc_html_e('Export Cookie Settings', 'MAP_txt' ); ?></button>
 							</form>
 						</div>
 					</div>
@@ -112,7 +112,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								?>
 
 
-								<input type="submit" name="update_admin_settings_form" value="<?php esc_attr_e('Clean All Cookie', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
+								<button type="submit" name="update_admin_settings_form" value="1" class="btn-lg button-agile"><i class="fa-solid fa-trash-can" aria-hidden="true"></i> <?php esc_html_e('Clean All Cookie', 'MAP_txt' ); ?></button>
 							</form>
 						</div>
 					</div>
@@ -144,7 +144,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							</div>
 
 							<div class="col-sm-6">
-								<input type="submit" name="import_admin_settings_form" value="<?php esc_attr_e('Import Cookie Settings', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
+								<button type="submit" name="import_admin_settings_form" value="1" class="btn-lg button-agile"><i class="fa-solid fa-upload" aria-hidden="true"></i> <?php esc_html_e('Import Cookie Settings', 'MAP_txt' ); ?></button>
 							</div>
 						</div>
 					</form>
@@ -176,7 +176,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<form action="admin-post.php" method="post">
 								<input type="hidden" name="action" value="map_export_options_form" />
 								<?php if( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( 'map_export_options' ); } ?>
-								<input type="submit" value="<?php esc_attr_e( 'Export Options', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
+								<button type="submit" class="btn-lg button-agile"><i class="fa-solid fa-download" aria-hidden="true"></i> <?php esc_html_e( 'Export Options', 'MAP_txt' ); ?></button>
 							</form>
 						</div>
 					</div>
@@ -195,7 +195,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<input type="hidden" name="action" value="map_import_options_form" />
 								<?php if( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( 'map_import_options' ); } ?>
 								<input type="file" name="map_options_file" accept="application/json,.json" />
-								<input type="submit" value="<?php esc_attr_e( 'Import Options', 'MAP_txt' ); ?>" class="btn-lg button-agile" />
+								<button type="submit" class="btn-lg button-agile"><i class="fa-solid fa-upload" aria-hidden="true"></i> <?php esc_html_e( 'Import Options', 'MAP_txt' ); ?></button>
 							</form>
 						</div>
 					</div>

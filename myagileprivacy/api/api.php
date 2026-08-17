@@ -284,6 +284,17 @@ function map_diagnostic_data()
 	$cookie_shield_detected = isset( $_POST['cookie_shield_detected'] ) ? intval( $_POST['cookie_shield_detected'] )         : 0;
 	$is_consent_valid       = isset( $_POST['is_consent_valid'] )       ? intval( $_POST['is_consent_valid'] )               : 0;
 	$error_motivation       = isset( $_POST['error_motivation'] )       ? sanitize_text_field( $_POST['error_motivation'] )  : '';
+
+	// Free text reaches the licence server verbatim; keep it bounded. Counted in
+	// characters: cutting on a byte boundary would split a multibyte sequence
+	// and leave text that no longer encodes.
+	$map_api_text_max = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? (int) MAP_PLUGIN_JS_ERROR_TEXT_MAX : 255;
+	$error_motivation = mb_substr( $error_motivation, 0, $map_api_text_max );
+
+	// The value is stored and travels on: drop the characters that could turn it
+	// into markup and keep the message otherwise faithful.
+	$error_motivation = str_replace( array( '<', '>', '"', "'", '&' ), '', $error_motivation );
+
 	$error_code             = isset( $_POST['error_code'] )             ? intval( $_POST['error_code'] )                     : 0;
 	$detectable_keys_raw    = isset( $_POST['detectableKeys'] )         ? sanitize_text_field( $_POST['detectableKeys'] )    : '';
 	$detected_keys_raw      = isset( $_POST['detectedKeys'] )           ? sanitize_text_field( $_POST['detectedKeys'] )      : '';
@@ -317,22 +328,29 @@ function map_diagnostic_data()
 		exit;
 	}
 
-	// Reset API-support state on success.
-	map_api_clear_missing_api_support_state( $the_settings );
-
 	$success = true;
 
+	// Every branch below writes settings, and the reports are only expected while
+	// scanning: outside that state they did not come from our own code.
+	$map_api_scanning = map_api_is_scanning_mode( $the_settings );
+
 	// 1. Detected Keys
-	if( $send_detected_keys )
+	if( $send_detected_keys && $map_api_scanning )
 	{
 		$success = map_api_internal_save_detected_keys( $the_settings, $detectable_keys_raw, $detected_keys_raw );
 	}
 
 	// 2. JS Shield status
-	map_api_save_cookie_shield_status( $the_settings, $cookie_shield_detected );
+	if( $map_api_scanning )
+	{
+		map_api_save_cookie_shield_status( $the_settings, $cookie_shield_detected );
+	}
 
 	// 3. Consent Mode status
-	map_api_save_consent_mode_status( $the_settings, $is_consent_valid, $error_motivation, $error_code );
+	if( $map_api_scanning )
+	{
+		map_api_save_consent_mode_status( $the_settings, $is_consent_valid, $error_motivation, $error_code );
+	}
 
 	echo json_encode( array( 'success' => $success ) );
 	exit;
@@ -351,6 +369,12 @@ function map_api_report_gtm_gateway()
 	}
 
 	$the_settings = map_api_get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
+
+	// The beacon is emitted only while scanning; see map_api_is_scanning_mode().
+	if( !map_api_is_scanning_mode( $the_settings ) ) {
+		echo json_encode( array( 'success' => false ) );
+		exit;
+	}
 
 	if( is_array( $the_settings ) && !empty( $the_settings['disable_gtm_gateway_detection'] ) ) {
 		echo json_encode( array( 'success' => false ) );
@@ -399,6 +423,34 @@ function map_api_report_gtm_gateway()
  * @param string $detected_keys_raw   Comma-separated list of detected keys from JS.
  * @return bool                       Always returns true.
  */
+/**
+ * Whether the site is currently scanning.
+ *
+ * Mirrors the condition the frontend applies before reporting: the same two
+ * sources, combined the same way. Reports that arrive outside this state did
+ * not come from our own code.
+ *
+ * @param array $the_settings
+ * @return bool
+ */
+function map_api_is_scanning_mode( $the_settings )
+{
+	// Same two sources the frontend reads, and nothing more: the licence state
+	// is checked by the callers that depend on it, so adding it here would
+	// reject reports the frontend still considers valid.
+	if( is_array( $the_settings ) &&
+		isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] == 'learning_mode' )
+	{
+		return true;
+	}
+
+	$rconfig = map_api_get_option( MAP_PLUGIN_RCONFIG, array() );
+
+	return ( is_array( $rconfig ) &&
+		isset( $rconfig['force_js_learning_mode'] ) &&
+		$rconfig['force_js_learning_mode'] == 1 );
+}
+
 function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_raw, $detected_keys_raw )
 {
 	// Load existing saved keys
@@ -611,25 +663,3 @@ function map_api_save_consent_mode_status( &$the_settings, $is_consent_valid, $e
 	map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 }
 
-/**
- * Resets the API-support state after a successful call; no-op when already clear.
- *
- * @param array $the_settings  Current plugin settings, passed by reference.
- */
-function map_api_clear_missing_api_support_state( &$the_settings )
-{
-	$needs_clear =
-		! empty( $the_settings['missing_api_support'] ) ||
-		! empty( $the_settings['missing_api_support_timestamp'] ) ||
-		! empty( $the_settings['missing_api_support_failures_count'] ) ||
-		! empty( $the_settings['missing_api_support_failures_window_start'] );
-
-	if( !$needs_clear ) return;
-
-	$the_settings['missing_api_support']                       = false;
-	$the_settings['missing_api_support_timestamp']             = null;
-	$the_settings['missing_api_support_failures_count']        = 0;
-	$the_settings['missing_api_support_failures_window_start'] = 0;
-
-	map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
-}

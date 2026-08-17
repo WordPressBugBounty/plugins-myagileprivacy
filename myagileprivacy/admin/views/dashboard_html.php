@@ -14,7 +14,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 </script>
 
 <div class="wrap dashboardOptionsWrapper" id="my_agile_privacy_backend">
-	<div class="container-fluid mt-5">
+	<h2>My Agile Privacy®: <?php echo wp_kses_post( __( 'Dashboard', 'MAP_txt' ) ); ?></h2>
+
+	<div class="container-fluid">
 			<?php include 'inc/inc.dashboard_tab.php'; ?>
 		</div> <!-- ./container-fluid -->
 	</div>

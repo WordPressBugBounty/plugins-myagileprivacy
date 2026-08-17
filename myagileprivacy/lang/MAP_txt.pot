@@ -1391,7 +1391,19 @@ msgid "Google Tag Gateway detection"
 msgstr ""
 
 #: includes/my-agile-privacy-notices.php:54
-msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
+msgid "Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied."
+msgstr ""
+
+msgid "Generate reconsent widget code"
+msgstr ""
+
+msgid "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do."
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "Copied"
 msgstr ""
 
 #: admin/views/inc/fields.consent_mode_tab.php:245 admin/views/inc/fields.consent_mode_tab.php:308 admin/views/inc/fields.consent_mode_tab.php:369 admin/views/inc/fields.consent_mode_tab.php:429 admin/views/inc/fields.clarity_consent_mode_tab.php:102 admin/views/inc/fields.clarity_consent_mode_tab.php:165 admin/views/inc/fields.microsoft_consent_mode_tab.php:102

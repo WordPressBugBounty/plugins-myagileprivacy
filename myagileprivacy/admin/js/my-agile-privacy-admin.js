@@ -194,6 +194,82 @@
 							}
 						}, 'json' );
 
+						//reconsent widget snippet: reveal, language switch, copy
+						var $map_widget_generator = $( '.map-widget-generator', $my_agile_privacy_backend );
+
+						if( $map_widget_generator.length )
+						{
+							//clipboard api needs a secure context, this covers its absence
+							var map_widget_legacy_copy = function( the_text, on_done )
+							{
+								var el = document.createElement( 'textarea' );
+
+								el.value = the_text;
+								el.setAttribute( 'readonly', '' );
+								el.style.position = 'absolute';
+								el.style.left = '-9999px';
+
+								document.body.appendChild( el );
+								el.select();
+
+								var ok = false;
+
+								try { ok = document.execCommand( 'copy' ); } catch( e ) { ok = false; }
+
+								document.body.removeChild( el );
+
+								if( ok ) { on_done(); }
+							};
+
+							$( '.map-widget-generate-btn', $map_widget_generator ).on( 'click', function(){
+
+								$( '.map-widget-panel', $map_widget_generator ).toggleClass( 'displayNone' );
+							});
+
+							$( '.map-widget-lang-select', $map_widget_generator ).on( 'change', function(){
+
+								var the_lang = $( this ).val();
+
+								$( '.map-widget-snippet', $map_widget_generator ).each(function(){
+
+									$( this ).toggleClass( 'displayNone', $( this ).attr( 'data-map-widget-lang' ) !== the_lang );
+								});
+							});
+
+							$( '.map-widget-copy-btn', $map_widget_generator ).on( 'click', function(){
+
+								var $btn = $( this );
+								var $code = $( '.map-widget-snippet:not(.displayNone) code', $map_widget_generator ).first();
+
+								if( !$code.length ) { return; }
+
+								var the_text = $code.get( 0 ).textContent;
+								var confirm_label = $btn.attr( 'data-map-widget-copied' );
+								var original_label = $btn.text();
+
+								var show_confirm = function()
+								{
+									if( !confirm_label ) { return; }
+
+									$btn.text( confirm_label );
+
+									window.setTimeout(function(){ $btn.text( original_label ); }, 2000 );
+								};
+
+								if( window.navigator && navigator.clipboard && navigator.clipboard.writeText )
+								{
+									navigator.clipboard.writeText( the_text ).then( show_confirm, function(){
+
+										map_widget_legacy_copy( the_text, show_confirm );
+									});
+								}
+								else
+								{
+									map_widget_legacy_copy( the_text, show_confirm );
+								}
+							});
+						}
+
 					}
 
 					if( $my_agile_privacy_backend.hasClass( 'cookieWrapperView' ) )
@@ -2084,41 +2160,106 @@
 		}
 	}
 
+	// Toast notifications. Public interface unchanged: .success() / .error() /
+	// .warning(). Everything else follows the rules a toast has to respect to feel
+	// right — it stacks, it waits while you read it, and it never counts down in a
+	// tab you are not looking at.
 	var map_pupup_notify =
 	{
-		error : function( message )
+		LIFE : 4000,
+
+		error   : function( message ) { this.build( message, 'error',   'fa-xmark' ); },
+		success : function( message ) { this.build( message, 'success', 'fa-check' ); },
+		warning : function( message ) { this.build( message, 'warning', 'fa-exclamation' ); },
+
+		// One strip holds them all, so a second toast stacks under the first
+		// instead of landing on top of it.
+		toaster : function()
 		{
-			var error_element = $( '<div class="map_notify_popup" style="background:#ec2b77; border:solid 1px #ec2b77;">'+message+'</div>' );
-			this.showNotify( error_element );
+			var $t = $( '.map-toaster' );
+			if ( ! $t.length ) { $t = $( '<div class="map-toaster"></div>' ).appendTo( 'body' ); }
+			return $t;
 		},
-		success : function( message )
-		{
-			var success_element = $( '<div class="map_notify_popup" style="background:#049ecc; border:solid 1px #049ecc;">'+message+'</div>' );
-			this.showNotify( success_element );
-		},
-		warning : function( message )
-		{
-			var success_element = $( '<div class="map_notify_popup" style="background:#fff3cd; border:solid 1px #ffecb5; color: #111111;">'+message+'</div>' );
-			this.showNotify( success_element );
-		},
-		showNotify : function( elm )
+
+		build : function( message, kind, icon )
 		{
 			try{
+				var self = this;
+				var elm  = $( '<div class="map_notify_popup is-' + kind + '" role="status" aria-live="polite"></div>' );
 
-				$( 'body' ).append( elm );
-				elm.stop( true, true ).animate( {'opacity':1,'top':'40px'}, 1000 );
+				$( '<span class="map-toast-ico" aria-hidden="true"><i class="fa-solid ' + icon + '"></i></span>' ).appendTo( elm );
+				$( '<span class="map-toast-msg"></span>' ).html( message ).appendTo( elm );
 
-				setTimeout(function(){
-					elm.animate( {'opacity':0,'top':'60px'}, 1000, function(){
-						elm.remove();
-					});
-				}, 2500 );
+				this.toaster().append( elm );
 
+				// Two frames: the browser needs to paint the starting state before it
+				// has anything to transition from.
+				window.requestAnimationFrame( function(){
+					window.requestAnimationFrame( function(){ elm.addClass( 'is-visible' ); } );
+				} );
+
+				self.arm( elm );
 			}
 			catch( error )
 			{
 				console.error( error );
 			}
+		},
+
+		// The countdown pauses while the pointer is on the toast and while the tab
+		// is in the background: coming back to a page should not mean having missed
+		// the message.
+		arm : function( elm )
+		{
+			var self = this, timer = null, left = this.LIFE, startedAt = 0;
+
+			function stop()
+			{
+				if ( timer === null ) { return; }
+				window.clearTimeout( timer );
+				timer = null;
+				left -= ( Date.now() - startedAt );
+			}
+			function start()
+			{
+				if ( timer !== null || left <= 0 ) { return; }
+				startedAt = Date.now();
+				timer = window.setTimeout( function(){ self.dismiss( elm, onHidden ); }, left );
+			}
+			function onHidden()
+			{
+				document.removeEventListener( 'visibilitychange', onVisibility );
+			}
+			function onVisibility()
+			{
+				if ( document.hidden ) { stop(); } else { start(); }
+			}
+
+			document.addEventListener( 'visibilitychange', onVisibility );
+			elm.on( 'mouseenter', stop ).on( 'mouseleave', start );
+			elm.on( 'click', function(){ stop(); self.dismiss( elm, onHidden ); } );
+
+			if ( ! document.hidden ) { start(); }
+		},
+
+		dismiss : function( elm, done )
+		{
+			if ( elm.data( 'leaving' ) ) { return; }
+			elm.data( 'leaving', true ).removeClass( 'is-visible' ).addClass( 'is-leaving' );
+			window.setTimeout( function(){
+				elm.remove();
+				if ( typeof done === 'function' ) { done(); }
+			}, 220 );
+		},
+
+		// Kept for callers that used the old entry point.
+		showNotify : function( elm )
+		{
+			this.toaster().append( elm );
+			window.requestAnimationFrame( function(){
+				window.requestAnimationFrame( function(){ elm.addClass( 'is-visible' ); } );
+			} );
+			this.arm( elm );
 		}
 	}
 

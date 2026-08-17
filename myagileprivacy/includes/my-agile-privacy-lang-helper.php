@@ -29,6 +29,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['blocked_content'] = 'Attenzione: alcune funzionalità di questa pagina potrebbero essere bloccate a seguito delle tue scelte privacy';
 		$default_txt['it_IT']['blocked_video'] = 'Questo video è bloccato a causa delle tue scelte cookie. Clicca qui per rivedere il tuo consenso e abilitare il video';
 		$default_txt['it_IT']['blocked_maps'] = 'Questa mappa è bloccata a causa delle tue scelte cookie. Clicca qui per rivedere il tuo consenso e abilitare la mappa';
+		$default_txt['it_IT']['blocked_element'] = 'Attenzione: le tue scelte cookie non permettono la visualizzazione di questo elemento. Clicca qui per rivedere le tue preferenze.';
 		$default_txt['it_IT']['notify_message_v2'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
 		$default_txt['it_IT']['notify_message_v2_short'] = 'Questo sito utilizza cookie tecnici e di profilazione. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
 		$default_txt['it_IT']['notify_message_nocookie'] = 'Questo sito utilizza cookie tecnici necessari al suo funzionamento. Non utilizziamo cookie di profilazione o di terze parti. Puoi accettare, rifiutare o personalizzare i cookie premendo i pulsanti desiderati. Chiudendo questa informativa continuerai senza accettare.';
@@ -93,6 +94,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['blocked_content'] = 'Warning: some page functionalities could not work due to your privacy choices';
 		$default_txt['en_US']['blocked_video'] = 'This video is blocked due to your cookie choices. Click here to review your consent and enable the video';
 		$default_txt['en_US']['blocked_maps'] = 'This map is blocked due to your cookie choices. Click here to review your consent and enable the map';
+		$default_txt['en_US']['blocked_element'] = 'Warning: your cookie choices do not allow this element to be displayed. Click here to review your preferences.';
 		$default_txt['en_US']['notify_message_v2'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
 		$default_txt['en_US']['notify_message_v2_short'] = 'This site uses technical and profiling cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
 		$default_txt['en_US']['notify_message_nocookie'] = 'This site uses technical cookies necessary for its operation. We do not use profiling or third-party cookies. You can accept, reject, or customize the cookies by clicking the desired buttons. By closing this notice, you will continue without accepting.';
@@ -157,6 +159,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['blocked_content'] = 'Avertissement: certaines fonctionnalités de la page pourraient ne pas fonctionner en raison de vos choix de confidentialité';
 		$default_txt['fr_FR']['blocked_video'] = 'Cette vidéo est bloquée en raison de vos choix en matière de cookies. Cliquez ici pour revoir votre consentement et activer la vidéo';
 		$default_txt['fr_FR']['blocked_maps'] = 'Cette carte est bloquée en raison de vos choix en matière de cookies. Cliquez ici pour revoir votre consentement et activer la carte';
+		$default_txt['fr_FR']['blocked_element'] = 'Avertissement : vos choix en matière de cookies ne permettent pas l\'affichage de cet élément. Cliquez ici pour revoir vos préférences.';
 		$default_txt['fr_FR']['notify_message_v2'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
 		$default_txt['fr_FR']['notify_message_v2_short'] = 'Ce site utilise des cookies techniques et de profilage. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
 		$default_txt['fr_FR']['notify_message_nocookie'] = 'Ce site utilise des cookies techniques nécessaires à son fonctionnement. Nous n\'utilisons pas de cookies de profilage ou de tiers. Vous pouvez accepter, refuser ou personnaliser les cookies en appuyant sur les boutons désirés. En fermant cet avis, vous continuerez sans accepter.';
@@ -221,6 +224,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['blocked_content'] = 'Advertencia: algunas funciones de esta página pueden estar bloqueadas como resultado de sus opciones de privacidad';
 		$default_txt['es_ES']['blocked_video'] = 'Este vídeo está bloqueado debido a sus opciones de cookies. Haga clic aquí para revisar su consentimiento y habilitar el vídeo';
 		$default_txt['es_ES']['blocked_maps'] = 'Este mapa está bloqueado debido a sus opciones de cookies. Haga clic aquí para revisar su consentimiento y habilitar el mapa';
+		$default_txt['es_ES']['blocked_element'] = 'Advertencia: sus opciones de cookies no permiten mostrar este elemento. Haga clic aquí para revisar sus preferencias.';
 		$default_txt['es_ES']['notify_message_v2'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
 		$default_txt['es_ES']['notify_message_v2_short'] = 'Este sitio utiliza cookies técnicas y de perfilado. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
 		$default_txt['es_ES']['notify_message_nocookie'] = 'Este sitio utiliza cookies técnicas necesarias para su funcionamiento. No utilizamos cookies de perfilado ni de terceros. Puedes aceptar, rechazar o personalizar las cookies presionando los botones deseados. Al cerrar este aviso, continuarás sin aceptar.';
@@ -285,6 +289,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['blocked_content'] = 'Warnung: Einige Funktionen dieser Seite können aufgrund Ihrer Datenschutzeinstellungen blockiert werden';
 		$default_txt['de_DE']['blocked_video'] = 'Dieses Video ist aufgrund Ihrer Cookie-Einstellungen blockiert. Klicken Sie hier, um Ihre Einwilligung zu überprüfen und das Video zu aktivieren';
 		$default_txt['de_DE']['blocked_maps'] = 'Diese Karte ist aufgrund Ihrer Cookie-Einstellungen blockiert. Klicken Sie hier, um Ihre Einwilligung zu überprüfen und die Karte zu aktivieren';
+		$default_txt['de_DE']['blocked_element'] = 'Warnung: Aufgrund Ihrer Cookie-Auswahl kann dieses Element nicht angezeigt werden. Klicken Sie hier, um Ihre Einstellungen zu überprüfen.';
 		$default_txt['de_DE']['notify_message_v2'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
 		$default_txt['de_DE']['notify_message_v2_short'] = 'Diese Website verwendet technische und Profilierungs-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
 		$default_txt['de_DE']['notify_message_nocookie'] = 'Diese Website verwendet technische Cookies, die für ihren Betrieb notwendig sind. Wir verwenden keine Profiling- oder Drittanbieter-Cookies. Sie können die Cookies akzeptieren, ablehnen oder anpassen, indem Sie auf die gewünschten Schaltflächen klicken. Wenn Sie diese Mitteilung schließen, setzen Sie die Nutzung ohne Zustimmung fort.';
@@ -349,6 +354,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['blocked_content'] = 'Aviso: algumas funcionalidades da página podem não funcionar devido às suas escolhas de privacidade';
 		$default_txt['pt_PT']['blocked_video'] = 'Este vídeo está bloqueado devido às suas escolhas de cookies. Clique aqui para rever o seu consentimento e ativar o vídeo';
 		$default_txt['pt_PT']['blocked_maps'] = 'Este mapa está bloqueado devido às suas escolhas de cookies. Clique aqui para rever o seu consentimento e ativar o mapa';
+		$default_txt['pt_PT']['blocked_element'] = 'Aviso: as suas escolhas de cookies não permitem a visualização deste elemento. Clique aqui para rever as suas preferências.';
 		$default_txt['pt_PT']['notify_message_v2'] = 'Este site utiliza cookies técnicos e de perfil. Pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, continuará sem aceitar.';
 		$default_txt['pt_PT']['notify_message_v2_short'] = 'Este site utiliza cookies técnicos e de perfil. Pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, continuará sem aceitar.';
 		$default_txt['pt_PT']['notify_message_nocookie'] = 'Este site utiliza cookies técnicos necessários para o seu funcionamento. Não utilizamos cookies de perfil ou de terceiros. Pode aceitar, rejeitar ou personalizar os cookies pressionando os botões desejados. Ao fechar este aviso, continuará sem aceitar.';
@@ -413,6 +419,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['blocked_content'] = 'Waarschuwing: sommige functionaliteiten van de pagina werken mogelijk niet vanwege uw privacykeuzes';
 		$default_txt['nl_NL']['blocked_video'] = 'Deze video is geblokkeerd vanwege uw cookiekeuzes. Klik hier om uw toestemming te herzien en de video in te schakelen';
 		$default_txt['nl_NL']['blocked_maps'] = 'Deze kaart is geblokkeerd vanwege uw cookiekeuzes. Klik hier om uw toestemming te herzien en de kaart in te schakelen';
+		$default_txt['nl_NL']['blocked_element'] = 'Waarschuwing: uw cookiekeuzes staan de weergave van dit element niet toe. Klik hier om uw voorkeuren te herzien.';
 		$default_txt['nl_NL']['notify_message_v2'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
 		$default_txt['nl_NL']['notify_message_v2_short'] = 'Deze site maakt gebruik van technische en profielcookies. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
 		$default_txt['nl_NL']['notify_message_nocookie'] = 'Deze site maakt gebruik van technische cookies die noodzakelijk zijn voor het functioneren ervan. Wij gebruiken geen profileringscookies of cookies van derden. Je kunt de cookies accepteren, weigeren of aanpassen door op de gewenste knoppen te drukken. Door deze melding te sluiten, ga je verder zonder te accepteren.';
@@ -477,6 +484,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['blocked_content'] = 'Uwaga: niektóre funkcje strony mogą nie działać z powodu wybranych przez Ciebie opcji prywatności';
 		$default_txt['pl_PL']['blocked_video'] = 'Ten film jest zablokowany z powodu Twoich wyborów dotyczących plików cookie. Kliknij tutaj, aby przejrzeć swoją zgodę i włączyć film';
 		$default_txt['pl_PL']['blocked_maps'] = 'Ta mapa jest zablokowana z powodu Twoich wyborów dotyczących plików cookie. Kliknij tutaj, aby przejrzeć swoją zgodę i włączyć mapę';
+		$default_txt['pl_PL']['blocked_element'] = 'Uwaga: Twoje wybory dotyczące plików cookie nie pozwalają na wyświetlenie tego elementu. Kliknij tutaj, aby przejrzeć swoje preferencje.';
 		$default_txt['pl_PL']['notify_message_v2'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
 		$default_txt['pl_PL']['notify_message_v2_short'] = 'Ta strona używa plików cookie technicznych i profilujących. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
 		$default_txt['pl_PL']['notify_message_nocookie'] = 'Ta strona używa technicznych plików cookie niezbędnych do jej działania. Nie używamy plików cookie profilujących ani stron trzecich. Możesz zaakceptować, odrzucić lub dostosować pliki cookie, naciskając odpowiednie przyciski. Zamykając tę informację, będziesz kontynuować bez akceptacji.';
@@ -541,6 +549,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['el']['blocked_content'] = 'Προειδοποίηση: ορισμένες λειτουργίες της σελίδας ενδέχεται να μην λειτουργούν λόγω των επιλογών απορρήτου σας';
 		$default_txt['el']['blocked_video'] = 'Αυτό το βίντεο είναι αποκλεισμένο λόγω των επιλογών σας για τα cookies. Κάντε κλικ εδώ για να ελέγξετε τη συγκατάθεσή σας και να ενεργοποιήσετε το βίντεο';
 		$default_txt['el']['blocked_maps'] = 'Αυτός ο χάρτης είναι αποκλεισμένος λόγω των επιλογών σας για τα cookies. Κάντε κλικ εδώ για να ελέγξετε τη συγκατάθεσή σας και να ενεργοποιήσετε τον χάρτη';
+		$default_txt['el']['blocked_element'] = 'Προειδοποίηση: οι επιλογές σας για τα cookies δεν επιτρέπουν την εμφάνιση αυτού του στοιχείου. Κάντε κλικ εδώ για να ελέγξετε τις προτιμήσεις σας.';
 		$default_txt['el']['notify_message_v2'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
 		$default_txt['el']['notify_message_v2_short'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies και cookies εξατομίκευσης. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
 		$default_txt['el']['notify_message_nocookie'] = 'Αυτός ο ιστότοπος χρησιμοποιεί τεχνικά cookies απαραίτητα για τη λειτουργία του. Δεν χρησιμοποιούμε cookies εξατομίκευσης ή τρίτων. Μπορείτε να αποδεχθείτε, να απορρίψετε ή να προσαρμόσετε τα cookies πατώντας τα επιθυμητά κουμπιά. Κλείνοντας αυτήν την ειδοποίηση, θα συνεχίσετε χωρίς να αποδεχθείτε.';
@@ -605,6 +614,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['blocked_content'] = 'Figyelem: az oldal egyes funkciói a választott adatvédelmi beállítások miatt nem működhetnek';
 		$default_txt['hu_HU']['blocked_video'] = 'Ez a videó a cookie-beállításai miatt le van tiltva. Kattintson ide a hozzájárulása felülvizsgálatához és a videó engedélyezéséhez';
 		$default_txt['hu_HU']['blocked_maps'] = 'Ez a térkép a cookie-beállításai miatt le van tiltva. Kattintson ide a hozzájárulása felülvizsgálatához és a térkép engedélyezéséhez';
+		$default_txt['hu_HU']['blocked_element'] = 'Figyelem: a cookie-beállításai nem engedélyezik ennek az elemnek a megjelenítését. Kattintson ide a hozzájárulása felülvizsgálatához.';
 		$default_txt['hu_HU']['notify_message_v2'] = 'Ez a webhely technikai és profilalkotási cookie-kat használ. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
 		$default_txt['hu_HU']['notify_message_v2_short'] = 'Ez a webhely technikai és profilalkotási cookie-kat használ. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
 		$default_txt['hu_HU']['notify_message_nocookie'] = 'Ez a webhely csak a működéséhez szükséges technikai cookie-kat használja. Nem használunk profilalkotási vagy harmadik féltől származó cookie-kat. A kívánt gombokra kattintva elfogadhatja, elutasíthatja vagy testre szabhatja a cookie-kat. A tájékoztató bezárásával elfogadás nélkül folytatja a böngészést.';
@@ -669,6 +679,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['blocked_content'] = 'Advarsel: enkelte funksjoner på siden fungerer kanskje ikke på grunn av dine personvernvalg';
 		$default_txt['nb_NO']['blocked_video'] = 'Denne videoen er blokkert på grunn av dine informasjonskapselvalg. Klikk her for å gjennomgå samtykket ditt og aktivere videoen';
 		$default_txt['nb_NO']['blocked_maps'] = 'Dette kartet er blokkert på grunn av dine informasjonskapselvalg. Klikk her for å gjennomgå samtykket ditt og aktivere kartet';
+		$default_txt['nb_NO']['blocked_element'] = 'Advarsel: dine informasjonskapselvalg tillater ikke at dette elementet vises. Klikk her for å gjennomgå preferansene dine.';
 		$default_txt['nb_NO']['notify_message_v2'] = 'Dette nettstedet bruker tekniske og profileringsinformasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
 		$default_txt['nb_NO']['notify_message_v2_short'] = 'Dette nettstedet bruker tekniske og profileringsinformasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
 		$default_txt['nb_NO']['notify_message_nocookie'] = 'Dette nettstedet bruker tekniske informasjonskapsler som er nødvendige for driften. Vi bruker ikke profilering eller tredjeparts informasjonskapsler. Du kan godta, avslå eller tilpasse informasjonskapslene ved å klikke på de ønskede knappene. Ved å lukke denne meldingen fortsetter du uten å godta.';
@@ -733,6 +744,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['blocked_content'] = 'Varning: vissa sidfunktioner kanske inte fungerar på grund av dina integritetsval';
 		$default_txt['sv_SE']['blocked_video'] = 'Den här videon är blockerad på grund av dina cookieval. Klicka här för att granska ditt samtycke och aktivera videon';
 		$default_txt['sv_SE']['blocked_maps'] = 'Den här kartan är blockerad på grund av dina cookieval. Klicka här för att granska ditt samtycke och aktivera kartan';
+		$default_txt['sv_SE']['blocked_element'] = 'Varning: dina cookieval tillåter inte att detta element visas. Klicka här för att granska dina inställningar.';
 		$default_txt['sv_SE']['notify_message_v2'] = 'Denna webbplats använder tekniska cookies och profileringscookies. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
 		$default_txt['sv_SE']['notify_message_v2_short'] = 'Denna webbplats använder tekniska cookies och profileringscookies. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
 		$default_txt['sv_SE']['notify_message_nocookie'] = 'Denna webbplats använder tekniska cookies som är nödvändiga för dess funktion. Vi använder inga profileringscookies eller cookies från tredje part. Du kan acceptera, neka eller anpassa cookies genom att klicka på önskade knappar. Genom att stänga denna avisering fortsätter du utan att acceptera.';
@@ -797,6 +809,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['blocked_content'] = 'Предупреждение: некоторые функции страницы могут не работать из‑за ваших настроек конфиденциальности';
 		$default_txt['ru_RU']['blocked_video'] = 'Это видео заблокировано из-за ваших настроек файлов cookie. Нажмите здесь, чтобы пересмотреть своё согласие и включить видео';
 		$default_txt['ru_RU']['blocked_maps'] = 'Эта карта заблокирована из-за ваших настроек файлов cookie. Нажмите здесь, чтобы пересмотреть своё согласие и включить карту';
+		$default_txt['ru_RU']['blocked_element'] = 'Предупреждение: ваши настройки файлов cookie не позволяют отобразить этот элемент. Нажмите здесь, чтобы изменить свои предпочтения.';
 		$default_txt['ru_RU']['notify_message_v2'] = 'Этот сайт использует технические файлы cookie и файлы cookie для профилирования. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
 		$default_txt['ru_RU']['notify_message_v2_short'] = 'Этот сайт использует технические файлы cookie и файлы cookie для профилирования. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
 		$default_txt['ru_RU']['notify_message_nocookie'] = 'Этот сайт использует только технические файлы cookie, необходимые для его работы. Мы не используем файлы cookie для профилирования или файлы cookie третьих лиц. Вы можете принять, отклонить или настроить файлы cookie, нажав соответствующие кнопки. Закрыв это уведомление, вы продолжите без принятия.';
@@ -861,6 +874,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['blocked_content'] = 'Varoitus: osa sivun toiminnoista ei välttämättä toimi tietosuojavalintojesi vuoksi';
 		$default_txt['fi']['blocked_video'] = 'Tämä video on estetty evästevalintojesi vuoksi. Napsauta tästä tarkistaaksesi suostumuksesi ja ottaaksesi videon käyttöön';
 		$default_txt['fi']['blocked_maps'] = 'Tämä kartta on estetty evästevalintojesi vuoksi. Napsauta tästä tarkistaaksesi suostumuksesi ja ottaaksesi kartan käyttöön';
+		$default_txt['fi']['blocked_element'] = 'Varoitus: evästevalintasi eivät salli tämän elementin näyttämistä. Napsauta tästä tarkistaaksesi asetuksesi.';
 		$default_txt['fi']['notify_message_v2'] = 'Tämä sivusto käyttää teknisiä ja profilointievästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
 		$default_txt['fi']['notify_message_v2_short'] = 'Tämä sivusto käyttää teknisiä ja profilointievästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
 		$default_txt['fi']['notify_message_nocookie'] = 'Tämä sivusto käyttää vain toimintansa kannalta välttämättömiä teknisiä evästeitä. Emme käytä profilointi- tai kolmannen osapuolen evästeitä. Voit hyväksyä, hylätä tai mukauttaa evästeitä napsauttamalla haluamiasi painikkeita. Sulkemalla tämän ilmoituksen jatkat ilman hyväksyntää.';
@@ -925,6 +939,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['blocked_content'] = 'Advarsel: nogle funktioner på siden fungerer muligvis ikke på grund af dine privatlivsvalg';
 		$default_txt['da_DK']['blocked_video'] = 'Denne video er blokeret på grund af dine cookievalg. Klik her for at gennemgå dit samtykke og aktivere videoen';
 		$default_txt['da_DK']['blocked_maps'] = 'Dette kort er blokeret på grund af dine cookievalg. Klik her for at gennemgå dit samtykke og aktivere kortet';
+		$default_txt['da_DK']['blocked_element'] = 'Advarsel: dine cookievalg tillader ikke, at dette element vises. Klik her for at gennemgå dine præferencer.';
 		$default_txt['da_DK']['notify_message_v2'] = 'Dette websted bruger tekniske cookies og profileringscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
 		$default_txt['da_DK']['notify_message_v2_short'] = 'Dette websted bruger tekniske cookies og profileringscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
 		$default_txt['da_DK']['notify_message_nocookie'] = 'Dette websted bruger tekniske cookies, der er nødvendige for dets funktion. Vi bruger ikke profileringscookies eller tredjepartscookies. Du kan acceptere, afvise eller tilpasse cookies ved at klikke på de ønskede knapper. Ved at lukke denne meddelelse fortsætter du uden at acceptere.';
@@ -990,6 +1005,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['blocked_content'] = 'Uyarı: gizlilik tercihlerinize bağlı olarak sayfanın bazı işlevleri çalışmayabilir';
 		$default_txt['tr_TR']['blocked_video'] = 'Bu video, çerez tercihleriniz nedeniyle engellendi. Onayınızı gözden geçirmek ve videoyu etkinleştirmek için buraya tıklayın';
 		$default_txt['tr_TR']['blocked_maps'] = 'Bu harita, çerez tercihleriniz nedeniyle engellendi. Onayınızı gözden geçirmek ve haritayı etkinleştirmek için buraya tıklayın';
+		$default_txt['tr_TR']['blocked_element'] = 'Uyarı: çerez tercihleriniz bu öğenin görüntülenmesine izin vermiyor. Tercihlerinizi gözden geçirmek için buraya tıklayın.';
 		$default_txt['tr_TR']['notify_message_v2'] = 'Bu site teknik ve profilleme çerezleri kullanır. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
 		$default_txt['tr_TR']['notify_message_v2_short'] = 'Bu site teknik ve profilleme çerezleri kullanır. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
 		$default_txt['tr_TR']['notify_message_nocookie'] = 'Bu site, çalışması için gerekli teknik çerezleri kullanmaktadır. Profilleme veya üçüncü taraf çerezleri kullanmıyoruz. İstediğiniz düğmelere tıklayarak çerezleri kabul edebilir, reddedebilir veya özelleştirebilirsiniz. Bu bildirimi kapatarak kabul etmeden devam edersiniz.';
@@ -1054,6 +1070,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['blocked_content'] = 'Upozornění: některé funkce stránky nemusí fungovat kvůli vašim volbám ochrany soukromí';
 		$default_txt['cs_CZ']['blocked_video'] = 'Toto video je zablokováno kvůli vašim volbám souborů cookie. Kliknutím sem zkontrolujete svůj souhlas a povolíte video';
 		$default_txt['cs_CZ']['blocked_maps'] = 'Tato mapa je zablokována kvůli vašim volbám souborů cookie. Kliknutím sem zkontrolujete svůj souhlas a povolíte mapu';
+		$default_txt['cs_CZ']['blocked_element'] = 'Upozornění: vaše volby souborů cookie neumožňují zobrazení tohoto prvku. Kliknutím sem zkontrolujete své preference.';
 		$default_txt['cs_CZ']['notify_message_v2'] = 'Tento web používá technické soubory cookie a soubory cookie pro profilování. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
 		$default_txt['cs_CZ']['notify_message_v2_short'] = 'Tento web používá technické soubory cookie a soubory cookie pro profilování. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
 		$default_txt['cs_CZ']['notify_message_nocookie'] = 'Tento web používá pouze technické soubory cookie nezbytné pro jeho provoz. Nepoužíváme profilovací soubory cookie ani soubory cookie třetích stran. Soubory cookie můžete přijmout, odmítnout nebo přizpůsobit kliknutím na požadovaná tlačítka. Zavřením tohoto oznámení budete pokračovat bez přijetí.';
@@ -1118,6 +1135,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['blocked_content'] = 'Avertisment: unele funcționalități ale paginii ar putea să nu funcționeze din cauza alegerilor dvs. de confidențialitate';
 		$default_txt['ro_RO']['blocked_video'] = 'Acest videoclip este blocat din cauza alegerilor dvs. privind cookie-urile. Faceți clic aici pentru a vă revizui consimțământul și a activa videoclipul';
 		$default_txt['ro_RO']['blocked_maps'] = 'Această hartă este blocată din cauza alegerilor dvs. privind cookie-urile. Faceți clic aici pentru a vă revizui consimțământul și a activa harta';
+		$default_txt['ro_RO']['blocked_element'] = 'Avertisment: alegerile dvs. privind cookie-urile nu permit afișarea acestui element. Faceți clic aici pentru a vă revizui preferințele.';
 		$default_txt['ro_RO']['notify_message_v2'] = 'Acest site folosește cookie-uri tehnice și cookie-uri de profilare. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
 		$default_txt['ro_RO']['notify_message_v2_short'] = 'Acest site folosește cookie-uri tehnice și cookie-uri de profilare. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
 		$default_txt['ro_RO']['notify_message_nocookie'] = 'Acest site folosește doar cookie-uri tehnice necesare funcționării sale. Nu folosim cookie-uri de profilare sau cookie-uri terțe. Puteți accepta, refuza sau personaliza cookie-urile făcând clic pe butoanele dorite. Închizând această notificare, veți continua fără a accepta.';
@@ -1182,6 +1200,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['blocked_content'] = 'Upozornenie: niektoré funkcie stránky nemusia fungovať z dôvodu vašich nastavení ochrany súkromia';
 		$default_txt['sk_SK']['blocked_video'] = 'Toto video je zablokované z dôvodu vašich volieb súborov cookie. Kliknutím sem skontrolujete svoj súhlas a povolíte video';
 		$default_txt['sk_SK']['blocked_maps'] = 'Táto mapa je zablokovaná z dôvodu vašich volieb súborov cookie. Kliknutím sem skontrolujete svoj súhlas a povolíte mapu';
+		$default_txt['sk_SK']['blocked_element'] = 'Upozornenie: vaše voľby súborov cookie neumožňujú zobrazenie tohto prvku. Kliknutím sem skontrolujete svoje preferencie.';
 		$default_txt['sk_SK']['notify_message_v2'] = 'Táto stránka používa technické súbory cookie a profilovacie súbory cookie. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
 		$default_txt['sk_SK']['notify_message_v2_short'] = 'Táto stránka používa technické súbory cookie a profilovacie súbory cookie. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
 		$default_txt['sk_SK']['notify_message_nocookie'] = 'Táto stránka používa iba technické súbory cookie nevyhnutné pre jej fungovanie. Nepoužívame profilovacie súbory cookie ani súbory cookie tretích strán. Súbory cookie môžete prijať, odmietnuť alebo prispôsobiť kliknutím na požadované tlačidlá. Zavretím tohto oznámenia budete pokračovať bez prijatia.';
@@ -1246,6 +1265,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['blocked_content'] = 'Opozorilo: nekatere funkcionalnosti strani morda ne bodo delovale zaradi vaših izbir zasebnosti';
 		$default_txt['sl_SI']['blocked_video'] = 'Ta videoposnetek je blokiran zaradi vaših izbir piškotkov. Kliknite tukaj, da pregledate svojo privolitev in omogočite videoposnetek';
 		$default_txt['sl_SI']['blocked_maps'] = 'Ta zemljevid je blokiran zaradi vaših izbir piškotkov. Kliknite tukaj, da pregledate svojo privolitev in omogočite zemljevid';
+		$default_txt['sl_SI']['blocked_element'] = 'Opozorilo: vaše izbire piškotkov ne dovoljujejo prikaza tega elementa. Kliknite tukaj, da pregledate svoje nastavitve.';
 		$default_txt['sl_SI']['notify_message_v2'] = 'Ta spletna stran uporablja tehnične piškotke in piškotke za profiliranje. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
 		$default_txt['sl_SI']['notify_message_v2_short'] = 'Ta spletna stran uporablja tehnične piškotke in piškotke za profiliranje. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
 		$default_txt['sl_SI']['notify_message_nocookie'] = 'Ta spletna stran uporablja samo tehnične piškotke, potrebne za njeno delovanje. Ne uporabljamo piškotkov za profiliranje ali piškotkov tretjih oseb. Piškotke lahko sprejmete, zavrnete ali prilagodite s klikom na želene gumbe. Če zaprete to obvestilo, boste nadaljevali brez sprejema.';
@@ -1310,6 +1330,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hr']['blocked_content'] = 'Upozorenje: neke funkcionalnosti stranice možda neće raditi zbog vaših odabira privatnosti';
 		$default_txt['hr']['blocked_video'] = 'Ovaj videozapis je blokiran zbog vaših odabira kolačića. Kliknite ovdje da pregledate svoju privolu i omogućite videozapis';
 		$default_txt['hr']['blocked_maps'] = 'Ova karta je blokirana zbog vaših odabira kolačića. Kliknite ovdje da pregledate svoju privolu i omogućite kartu';
+		$default_txt['hr']['blocked_element'] = 'Upozorenje: vaši odabiri kolačića ne dopuštaju prikaz ovog elementa. Kliknite ovdje da pregledate svoje postavke.';
 		$default_txt['hr']['notify_message_v2'] = 'Ova stranica koristi tehničke kolačiće i kolačiće za profiliranje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
 		$default_txt['hr']['notify_message_v2_short'] = 'Ova stranica koristi tehničke kolačiće i kolačiće za profiliranje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
 		$default_txt['hr']['notify_message_nocookie'] = 'Ova stranica koristi samo tehničke kolačiće potrebne za njeno funkcioniranje. Ne koristimo kolačiće za profiliranje ni kolačiće trećih strana. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene gumbe. Zatvaranjem ove obavijesti nastavljate bez prihvaćanja.';
@@ -1374,6 +1395,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['blocked_content'] = 'Įspėjimas: kai kurios puslapio funkcijos gali neveikti dėl jūsų privatumo pasirinkimų';
 		$default_txt['lt_LT']['blocked_video'] = 'Šis vaizdo įrašas užblokuotas dėl jūsų slapukų pasirinkimų. Spustelėkite čia, kad peržiūrėtumėte savo sutikimą ir įjungtumėte vaizdo įrašą';
 		$default_txt['lt_LT']['blocked_maps'] = 'Šis žemėlapis užblokuotas dėl jūsų slapukų pasirinkimų. Spustelėkite čia, kad peržiūrėtumėte savo sutikimą ir įjungtumėte žemėlapį';
+		$default_txt['lt_LT']['blocked_element'] = 'Įspėjimas: jūsų slapukų pasirinkimai neleidžia parodyti šio elemento. Spustelėkite čia, kad peržiūrėtumėte savo nuostatas.';
 		$default_txt['lt_LT']['notify_message_v2'] = 'Ši svetainė naudoja techninius ir profiliavimo slapukus. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
 		$default_txt['lt_LT']['notify_message_v2_short'] = 'Ši svetainė naudoja techninius ir profiliavimo slapukus. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
 		$default_txt['lt_LT']['notify_message_nocookie'] = 'Ši svetainė naudoja tik techninius slapukus, reikalingus jos veikimui. Nenaudojame profiliavimo ar trečiųjų šalių slapukų. Galite slapukus priimti, atmesti arba pritaikyti spustelėdami norimus mygtukus. Uždarius šį pranešimą, tęsite nepriėmę.';
@@ -1438,6 +1460,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['blocked_content'] = 'Brīdinājums: daļa lapas funkciju var nedarboties jūsu privātuma izvēļu dēļ';
 		$default_txt['lv_LV']['blocked_video'] = 'Šis video ir bloķēts jūsu sīkdatņu izvēles dēļ. Noklikšķiniet šeit, lai pārskatītu savu piekrišanu un iespējotu video';
 		$default_txt['lv_LV']['blocked_maps'] = 'Šī karte ir bloķēta jūsu sīkdatņu izvēles dēļ. Noklikšķiniet šeit, lai pārskatītu savu piekrišanu un iespējotu karti';
+		$default_txt['lv_LV']['blocked_element'] = 'Brīdinājums: jūsu sīkdatņu izvēles neļauj parādīt šo elementu. Noklikšķiniet šeit, lai pārskatītu savas preferences.';
 		$default_txt['lv_LV']['notify_message_v2'] = 'Šī vietne izmanto tehniskās un profilēšanas sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
 		$default_txt['lv_LV']['notify_message_v2_short'] = 'Šī vietne izmanto tehniskās un profilēšanas sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
 		$default_txt['lv_LV']['notify_message_nocookie'] = 'Šī vietne izmanto tikai tās darbībai nepieciešamās tehniskās sīkdatnes. Mēs neizmantojam profilēšanas vai trešo pušu sīkdatnes. Jūs varat pieņemt, noraidīt vai pielāgot sīkdatnes, noklikšķinot uz vēlamajām pogām. Aizverot šo paziņojumu, jūs turpināsiet bez pieņemšanas.';
@@ -1502,6 +1525,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['blocked_content'] = 'Paralajmërim: disa funksionalitete të faqes mund të mos funksionojnë për shkak të zgjedhjeve tuaja të privatësisë';
 		$default_txt['sq_AL']['blocked_video'] = 'Kjo video është bllokuar për shkak të zgjedhjeve tuaja të cookie-ve. Klikoni këtu për të rishikuar pëlqimin tuaj dhe për të aktivizuar videon';
 		$default_txt['sq_AL']['blocked_maps'] = 'Kjo hartë është bllokuar për shkak të zgjedhjeve tuaja të cookie-ve. Klikoni këtu për të rishikuar pëlqimin tuaj dhe për të aktivizuar hartën';
+		$default_txt['sq_AL']['blocked_element'] = 'Paralajmërim: zgjedhjet tuaja të cookie-ve nuk lejojnë shfaqjen e këtij elementi. Klikoni këtu për të rishikuar preferencat tuaja.';
 		$default_txt['sq_AL']['notify_message_v2'] = 'Kjo faqe përdor cookie teknike dhe cookie për profilizim. Mund t’i pranoni, t’i refuzoni ose t’i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
 		$default_txt['sq_AL']['notify_message_v2_short'] = 'Kjo faqe përdor cookie teknike dhe cookie për profilizim. Mund t’i pranoni, t’i refuzoni ose t’i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
 		$default_txt['sq_AL']['notify_message_nocookie'] = 'Kjo faqe përdor vetëm cookie teknike të nevojshme për funksionimin e saj. Ne nuk përdorim cookie profilizimi ose cookie të palëve të treta. Mund t\'i pranoni, t\'i refuzoni ose t\'i personalizoni cookie-t duke klikuar butonat e dëshiruar. Duke e mbyllur këtë njoftim, do të vazhdoni pa pranuar.';
@@ -1567,6 +1591,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['az']['blocked_content'] = 'Xəbərdarlıq: məxfilik seçimlərinizə görə səhifənin bəzi funksiyaları işləməyə bilər';
 		$default_txt['az']['blocked_video'] = 'Bu video kuki seçimlərinizə görə bloklanıb. Razılığınızı nəzərdən keçirmək və videonu aktivləşdirmək üçün buraya klikləyin';
 		$default_txt['az']['blocked_maps'] = 'Bu xəritə kuki seçimlərinizə görə bloklanıb. Razılığınızı nəzərdən keçirmək və xəritəni aktivləşdirmək üçün buraya klikləyin';
+		$default_txt['az']['blocked_element'] = 'Xəbərdarlıq: kuki seçimləriniz bu elementin göstərilməsinə imkan vermir. Tərcihlərinizi nəzərdən keçirmək üçün buraya klikləyin.';
 		$default_txt['az']['notify_message_v2'] = 'Bu sayt texniki və profilləşdirmə kukilərindən istifadə edir. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
 		$default_txt['az']['notify_message_v2_short'] = 'Bu sayt texniki və profilləşdirmə kukilərindən istifadə edir. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
 		$default_txt['az']['notify_message_nocookie'] = 'Bu sayt yalnız fəaliyyəti üçün lazımi texniki kukilərdən istifadə edir. Profilləşdirmə və ya üçüncü tərəf kukilərindən istifadə etmirik. İstədiyiniz düymələrə klikləməklə kukiləri qəbul edə, rədd edə və ya fərdiləşdirə bilərsiniz. Bu bildirişi bağlamaqla, qəbul etmədən davam edəcəksiniz.';
@@ -1631,6 +1656,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['blocked_content'] = 'Upozorenje: neke funkcionalnosti stranice možda neće raditi zbog vaših izbora privatnosti';
 		$default_txt['bs_BA']['blocked_video'] = 'Ovaj video je blokiran zbog vaših odabira kolačića. Kliknite ovdje da pregledate svoju saglasnost i omogućite video';
 		$default_txt['bs_BA']['blocked_maps'] = 'Ova mapa je blokirana zbog vaših odabira kolačića. Kliknite ovdje da pregledate svoju saglasnost i omogućite mapu';
+		$default_txt['bs_BA']['blocked_element'] = 'Upozorenje: vaši odabiri kolačića ne dopuštaju prikaz ovog elementa. Kliknite ovdje da pregledate svoje postavke.';
 		$default_txt['bs_BA']['notify_message_v2'] = 'Ova web stranica koristi tehničke kolačiće i kolačiće za profilisanje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
 		$default_txt['bs_BA']['notify_message_v2_short'] = 'Ova web stranica koristi tehničke kolačiće i kolačiće za profilisanje. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
 		$default_txt['bs_BA']['notify_message_nocookie'] = 'Ova web stranica koristi samo tehničke kolačiće potrebne za njeno funkcioniranje. Ne koristimo kolačiće za profilisanje ni kolačiće trećih strana. Kolačiće možete prihvatiti, odbiti ili prilagoditi klikom na željene dugmiće. Zatvaranjem ove obavijesti nastavljate bez prihvatanja.';
@@ -1695,6 +1721,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['blocked_content'] = 'Предупреждение: някои функционалности на страницата може да не работят поради вашите настройки за поверителност';
 		$default_txt['bg_BG']['blocked_video'] = 'Това видео е блокирано поради вашите избори за бисквитки. Кликнете тук, за да прегледате съгласието си и да активирате видеото';
 		$default_txt['bg_BG']['blocked_maps'] = 'Тази карта е блокирана поради вашите избори за бисквитки. Кликнете тук, за да прегледате съгласието си и да активирате картата';
+		$default_txt['bg_BG']['blocked_element'] = 'Предупреждение: вашите избори за бисквитки не позволяват показването на този елемент. Кликнете тук, за да прегледате предпочитанията си.';
 		$default_txt['bg_BG']['notify_message_v2'] = 'Този сайт използва технически бисквитки и бисквитки за профилиране. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
 		$default_txt['bg_BG']['notify_message_v2_short'] = 'Този сайт използва технически бисквитки и бисквитки за профилиране. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
 		$default_txt['bg_BG']['notify_message_nocookie'] = 'Този сайт използва само технически бисквитки, необходими за функционирането му. Не използваме бисквитки за профилиране или бисквитки на трети страни. Можете да приемете, откажете или персонализирате бисквитките, като натиснете желаните бутони. Затваряйки това съобщение, ще продължите без приемане.';
@@ -1759,6 +1786,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ca']['blocked_content'] = 'Avís: algunes funcionalitats de la pàgina podrien no funcionar a causa de les vostres opcions de privacitat';
 		$default_txt['ca']['blocked_video'] = 'Aquest vídeo està bloquejat a causa de les vostres opcions de galetes. Feu clic aquí per revisar el vostre consentiment i activar el vídeo';
 		$default_txt['ca']['blocked_maps'] = 'Aquest mapa està bloquejat a causa de les vostres opcions de galetes. Feu clic aquí per revisar el vostre consentiment i activar el mapa';
+		$default_txt['ca']['blocked_element'] = 'Avís: les vostres opcions de galetes no permeten mostrar aquest element. Feu clic aquí per revisar les vostres preferències.';
 		$default_txt['ca']['notify_message_v2'] = 'Aquest lloc web utilitza galetes tècniques i galetes de perfilatge. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
 		$default_txt['ca']['notify_message_v2_short'] = 'Aquest lloc web utilitza galetes tècniques i galetes de perfilatge. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
 		$default_txt['ca']['notify_message_nocookie'] = 'Aquest lloc web utilitza només galetes tècniques necessàries per al seu funcionament. No utilitzem galetes de perfilatge ni de tercers. Podeu acceptar, rebutjar o personalitzar les galetes fent clic als botons desitjats. En tancar aquest avís, continuareu sense acceptar.';
@@ -1823,6 +1851,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['blocked_content'] = 'Hoiatus: mõned lehe funktsioonid ei pruugi teie privaatsusvalikute tõttu töötada';
 		$default_txt['et']['blocked_video'] = 'See video on teie küpsisevalikute tõttu blokeeritud. Klõpsake siin, et vaadata üle oma nõusolek ja lubada video';
 		$default_txt['et']['blocked_maps'] = 'See kaart on teie küpsisevalikute tõttu blokeeritud. Klõpsake siin, et vaadata üle oma nõusolek ja lubada kaart';
+		$default_txt['et']['blocked_element'] = 'Hoiatus: teie küpsisevalikud ei luba selle elemendi kuvamist. Klõpsake siin, et vaadata üle oma eelistused.';
 		$default_txt['et']['notify_message_v2'] = 'See veebisait kasutab tehnilisi ja profiilimise küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
 		$default_txt['et']['notify_message_v2_short'] = 'See veebisait kasutab tehnilisi ja profiilimise küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
 		$default_txt['et']['notify_message_nocookie'] = 'See veebisait kasutab ainult selle toimimiseks vajalikke tehnilisi küpsiseid. Me ei kasuta profiilimise ega kolmanda osapoole küpsiseid. Saate küpsised vastu võtta, tagasi lükata või kohandada, klõpsates soovitud nuppudel. Selle teate sulgemisel jätkate ilma nõustumata.';
@@ -1887,6 +1916,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['blocked_content'] = 'Предупредување: некои функционалности на страницата можеби нема да работат поради вашите избори за приватност';
 		$default_txt['mk_MK']['blocked_video'] = 'Ова видео е блокирано поради вашите избори за колачиња. Кликнете тука за да ја прегледате вашата согласност и да го овозможите видеото';
 		$default_txt['mk_MK']['blocked_maps'] = 'Оваа мапа е блокирана поради вашите избори за колачиња. Кликнете тука за да ја прегледате вашата согласност и да ја овозможите мапата';
+		$default_txt['mk_MK']['blocked_element'] = 'Предупредување: вашите избори за колачиња не дозволуваат приказ на овој елемент. Кликнете тука за да ги прегледате вашите преференции.';
 		$default_txt['mk_MK']['notify_message_v2'] = 'Оваа страница користи технички колачиња и колачиња за профилирање. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
 		$default_txt['mk_MK']['notify_message_v2_short'] = 'Оваа страница користи технички колачиња и колачиња за профилирање. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
 		$default_txt['mk_MK']['notify_message_nocookie'] = 'Оваа страница користи само технички колачиња неопходни за нејзиното функционирање. Не користиме колачиња за профилирање ни колачиња на трети страни. Можете да ги прифатите, одбиете или прилагодите колачињата со клик на посакуваните копчиња. Со затворање на ова известување, ќе продолжите без прифаќање.';
@@ -1951,6 +1981,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['blocked_content'] = 'Упозорење: неке функционалности странице можда неће радити због ваших избора приватности';
 		$default_txt['sr_RS']['blocked_video'] = 'Овај видео је блокиран због ваших избора колачића. Кликните овде да прегледате своју сагласност и омогућите видео';
 		$default_txt['sr_RS']['blocked_maps'] = 'Ова мапа је блокирана због ваших избора колачића. Кликните овде да прегледате своју сагласност и омогућите мапу';
+		$default_txt['sr_RS']['blocked_element'] = 'Упозорење: ваши избори колачића не дозвољавају приказ овог елемента. Кликните овде да прегледате своје поставке.';
 		$default_txt['sr_RS']['notify_message_v2'] = 'Овај сајт користи техничке колачиће и колачиће за профилисање. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
 		$default_txt['sr_RS']['notify_message_v2_short'] = 'Овај сајт користи техничке колачиће и колачиће за профилисање. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
 		$default_txt['sr_RS']['notify_message_nocookie'] = 'Овај сајт користи само техничке колачиће неопходне за његово функционисање. Не користимо колачиће за профилисање нити колачиће трећих страна. Можете прихватити, одбити или прилагодити колачиће кликом на жељене дугмад. Затварањем овог обавештења настављате без прихватања.';
@@ -2015,6 +2046,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['uk']['blocked_content'] = 'Попередження: деякі функції сторінки можуть не працювати через ваші налаштування конфіденційності';
 		$default_txt['uk']['blocked_video'] = 'Це відео заблоковано через ваші налаштування файлів cookie. Натисніть тут, щоб переглянути свою згоду та увімкнути відео';
 		$default_txt['uk']['blocked_maps'] = 'Цю карту заблоковано через ваші налаштування файлів cookie. Натисніть тут, щоб переглянути свою згоду та увімкнути карту';
+		$default_txt['uk']['blocked_element'] = 'Попередження: ваші налаштування файлів cookie не дозволяють відобразити цей елемент. Натисніть тут, щоб переглянути свої параметри.';
 		$default_txt['uk']['notify_message_v2'] = 'Цей сайт використовує технічні cookie-файли та cookie-файли для профілювання. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
 		$default_txt['uk']['notify_message_v2_short'] = 'Цей сайт використовує технічні cookie-файли та cookie-файли для профілювання. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';
 		$default_txt['uk']['notify_message_nocookie'] = 'Цей сайт використовує лише технічні cookie-файли, необхідні для його роботи. Ми не використовуємо cookie для профілювання або cookie третіх сторін. Ви можете прийняти, відхилити або налаштувати cookie, натиснувши потрібні кнопки. Закривши це повідомлення, ви продовжите без прийняття.';

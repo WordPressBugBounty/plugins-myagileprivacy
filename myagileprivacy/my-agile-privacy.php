@@ -5,7 +5,7 @@
  * Plugin Name:       My Agile Privacy®
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       My Agile Privacy® - CMP, Cookie Consent & Privacy Tools
- * Version:           3.3.6
+ * Version:           3.3.7
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
@@ -53,15 +53,18 @@ function run_my_agile_privacy() {
 	$plugin  = new MyAgilePrivacy();
 	$rconfig = MyAgilePrivacy::get_rconfig();
 
-    if( isset( $rconfig ) &&
-        isset( $rconfig['verbose_remote_log'] ) &&
-        $rconfig['verbose_remote_log'] )
+    if( !defined( 'MAP_DEBUGGER' ) )
     {
-        define ( 'MAP_DEBUGGER', true );
-    }
-    else
-    {
-        define ( 'MAP_DEBUGGER', false );
+        if( isset( $rconfig ) &&
+            isset( $rconfig['verbose_remote_log'] ) &&
+            $rconfig['verbose_remote_log'] )
+        {
+            define ( 'MAP_DEBUGGER', true );
+        }
+        else
+        {
+            define ( 'MAP_DEBUGGER', false );
+        }
     }
 }
 run_my_agile_privacy();

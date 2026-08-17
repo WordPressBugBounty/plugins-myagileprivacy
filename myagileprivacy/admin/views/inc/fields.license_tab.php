@@ -74,7 +74,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 				<?php if( isset( $caller ) && $caller === 'dashboardOptionsWrapper' ) : ?>
 
 					<div class="map-license-save-wrapper displayNone mt-2">
-						<button type="button" class="button-agile btn-md" id="map-license-save"><?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?></button>
+						<button type="button" class="button-agile btn-md" id="map-license-save"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?></button>
 					</div>
 
 				<?php endif; ?>
@@ -174,7 +174,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 					</span>
 				</div>
 
-				<button class="button-agile-outline btn-md changeLicenseCode <?php if( $caller != 'genericOptionsWrapper' ) echo 'displayNone'; ?>"><?php echo wp_kses_post( __( 'Change license code', 'MAP_txt' ) ); ?></button>
+				<button class="button-agile-outline btn-md changeLicenseCode <?php if( $caller != 'genericOptionsWrapper' ) echo 'displayNone'; ?>"><i class="fa-solid fa-key" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Change license code', 'MAP_txt' ) ); ?></button>
 
 			</div>
 		</div> <!-- row -->
@@ -227,7 +227,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 
 		<div class="col-sm-7">
 
-			<a href="<?php echo esc_attr( $buyLink ); ?>" class="btn btn-primary btn-lg" role="button"><?php echo esc_html__( 'Buy now a license code!', 'MAP_txt' ); ?></a>
+			<a href="<?php echo esc_attr( $buyLink ); ?>" class="button-agile" role="button"><?php echo esc_html__( 'Buy now a license code!', 'MAP_txt' ); ?></a>
 
 		</div>
 

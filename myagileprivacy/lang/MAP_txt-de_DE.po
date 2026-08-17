@@ -3261,8 +3261,20 @@ msgstr "My Agile Privacy hat festgestellt, dass Google Tag Manager auf dieser We
 msgid "My Agile Privacy has detected a loading priority issue."
 msgstr "My Agile Privacy hat ein Problem mit der Ladepriorität festgestellt."
 
-msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
-msgstr "Google Tag Manager wird vor dem Consent-Management-System ausgeführt (eine typische Konfiguration von Google Tag Gateway oder Injektionen auf CDN-Ebene). In dieser Situation starten die Google-Tags, ohne den Standard-Einwilligungsstatus zu erhalten, und die präventive Sperrung wird möglicherweise nicht angewendet."
+msgid "Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied."
+msgstr "Google Tag Manager wurde gestartet, bevor der Standard-Einwilligungsstatus gesetzt wurde, oder hat ihn verspätet erhalten. Mögliche Ursachen sind Google Tag Gateway, Injektionen auf CDN-Ebene oder die Ladereihenfolge der Skripte auf der Seite. In dieser Situation können die Google-Tags ausgelöst werden, bevor die präventive Sperrung angewendet wird."
+
+msgid "Generate reconsent widget code"
+msgstr "Code des Wiedereinwilligungs-Widgets erzeugen"
+
+msgid "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do."
+msgstr "Fügen Sie diesen Code an der Stelle Ihrer Seite ein, an der das blockierte Element erscheint. Der Hinweis wird Besuchern angezeigt, die dieses Cookie nicht akzeptiert haben, und verschwindet von selbst, sobald sie es akzeptieren."
+
+msgid "Copy"
+msgstr "Kopieren"
+
+msgid "Copied"
+msgstr "Kopiert"
 
 msgid "See the instructions to fix this"
 msgstr "Anleitung zur Behebung ansehen"

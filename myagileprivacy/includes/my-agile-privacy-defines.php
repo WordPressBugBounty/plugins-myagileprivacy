@@ -9,7 +9,7 @@
  * @subpackage MyAgilePrivacy/includes
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.3.6' );
+define( 'MAP_PLUGIN_VERSION', '3.3.7' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_USE_MINIFIED_FILES', true );
@@ -52,7 +52,7 @@ define( 'MAP_DB_PATCH_3_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_3_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
 define( 'MAP_SUMMARY_VERSION', '2.0.0' );
 define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
-define( 'MAP_IAB_VENDOR_COUNT', '1725' );
+define( 'MAP_IAB_VENDOR_COUNT', '1730' );
 define( 'MAP_PLUGIN_JUST_UPDATED_TRANSIENT', 'map_just_updated' );
 define( 'MAP_EXPIRED_CALLBACK_URL_IT',      'https://www.myagileprivacy.com/helpdesk/perche-sul-mio-sito-compare-questa-icona/' );
 define( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT', 'https://www.myagileprivacy.com/en/helpdesk/why-is-this-icon-showing-on-my-website/' );
@@ -65,3 +65,18 @@ define( 'MAP_PLUGIN_STATS_TABLE',            'map_stats_daily' );
 define( 'MAP_PLUGIN_STATS_SCHEMA_VERSION',   MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_schema' );
 define( 'MAP_PLUGIN_STATS_LAST_PRUNE',       MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_last_prune' );
 define( 'MAP_PLUGIN_STATS_CELL_CEIL',        1000000000000 );
+define( 'MAP_PLUGIN_STATS_ROW_CAP',          500000 );
+$map_tunables = array(
+	'MAP_PLUGIN_JS_ERROR_TEXT_MAX' => 255,
+	'MAP_RATE_ALLOWANCE'           => 500,
+	'MAP_RATE_EDGE_FACTOR'         => 10,
+	'MAP_RATE_SLOTS'               => 8192,
+);
+foreach( $map_tunables as $map_tunable_name => $map_tunable_value )
+{
+	if( !defined( $map_tunable_name ) )
+	{
+		define( $map_tunable_name, $map_tunable_value );
+	}
+}
+unset( $map_tunables, $map_tunable_name, $map_tunable_value );

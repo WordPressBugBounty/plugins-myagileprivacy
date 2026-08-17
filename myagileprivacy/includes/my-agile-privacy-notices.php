@@ -51,7 +51,7 @@ function map_sync_gtm_gateway_notice() {
     $instructions_url = MAP_Helpdesk_Links::get( 'gtg' );
 
     $message  = '<b>' . esc_html__( 'My Agile Privacy has detected a loading priority issue.', 'MAP_txt' ) . '</b> ';
-    $message .= esc_html__( 'Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied.', 'MAP_txt' );
+    $message .= esc_html__( 'Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied.', 'MAP_txt' );
     $message .= ' <a href="' . esc_url( $instructions_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'See the instructions to fix this', 'MAP_txt' ) . ' &rarr;</a>';
 
     $manager->add( 'map_gtm_gateway_detected', array(

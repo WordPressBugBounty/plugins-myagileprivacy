@@ -1,0 +1,77 @@
+.agile-notice {
+	border-radius: 8px;
+	background: #fff;
+	border: none;
+	padding: 3em 4em 1.5em 4em;
+	margin: 50px 20px 30px 2px;
+	box-shadow: 0 1px 3px rgba(16, 24, 40, .10), 0 1px 2px rgba(16, 24, 40, .06);
+}
+.agile-notice .content-wrapper {
+	display: flex;
+	align-items: center;
+	gap:30px;
+}
+
+.agile-notice .image-container {
+	flex-shrink: 0;
+	margin-right: 20px;
+}
+
+.agile-notice .image-container img {
+	max-width: 90px;
+	height: auto;
+}
+
+.agile-notice .content-container {
+	flex-grow: 1;
+}
+
+.agile-notice h4 {
+	font-size: 20px;
+	margin: 0;
+}
+
+.agile-notice p {
+	font-size: 16px;
+}
+
+.agile-notice .button-primary,
+.agile-notice .button-secondary {
+	font-size: 14px;
+}
+
+@media (max-width: 768px) {
+	.agile-notice {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.agile-notice .image-container {
+		margin-right: 0;
+		margin-bottom: 20px;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.agile-notice .image-container img {
+		max-width: 50%;
+	}
+
+	.agile-notice .content-container {
+		width: 100%;
+	}
+}
+
+.mapn-wrap{display:flex!important;align-items:center!important;gap:12px;padding:0!important;border-left:none!important;background:transparent!important;box-shadow:none!important;margin-bottom:10px;}
+.mapn-fox{flex-shrink:0;}
+.mapn-fox img{width:56px;height:56px;border-radius:50%;display:block;}
+.mapn-card{flex:1;position:relative;padding:10px 36px 10px 14px;background:#f4f8fb;border:1px solid #c5d7e8;border-radius:3px;min-width:0;}
+.mapn-wrap--success .mapn-card{background:#f0faf0;border-color:#7ec87e;}
+.mapn-wrap--warning .mapn-card{background:#fef9e7;border-color:#d4bc47;}
+.mapn-wrap--error   .mapn-card{background:#fdf0f0;border-color:#d6797a;}
+.mapn-msg{margin:0;}
+.mapn-actions{margin-top:8px;}
+.mapn-actions .button+.button{margin-left:6px;}
+.mapn-close{position:absolute;top:8px;right:10px;background:none;border:none;cursor:pointer;color:#787c82;font-size:15px;line-height:1;padding:0;}
+.mapn-close:hover{color:#1d2327;}

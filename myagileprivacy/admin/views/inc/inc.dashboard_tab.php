@@ -13,8 +13,7 @@ $caller = 'dashboardOptionsWrapper';
 	var map_leaveout_text = '<?php echo wp_kses_post( __( 'Warning: you have unsaved changes. If you leave this page, you will lose them. Do you really want to leave?', 'MAP_txt' ) ); ?>';
 </script>
 
-<div class="container-fluid mt-5">
-	<h2 class="mb-4"><?php echo wp_kses_post( __( 'My Agile Privacy® Dashboard', 'MAP_txt' ) ); ?></h2>
+<div class="container-fluid">
 	<div class="row mb-5">
 		<div class="row g-4 consistent-alert-container mt-3">
 			<div class="col-md-3">
@@ -155,7 +154,7 @@ $caller = 'dashboardOptionsWrapper';
 									</div>
 								</div>
 								<div class="mb-3">
-									<button type="button" class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
+									<button type="button" class="fake-save-button button-agile btn-md"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 									<span class="map_wait text-muted">
 										<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 									</span>
@@ -334,7 +333,7 @@ $caller = 'dashboardOptionsWrapper';
 								</div> <!-- accordion -->
 								<div class="row mt-3">
 									<div class="col-12">
-										<input type="submit" name="update_admin_settings_form" value="<?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?>" class="button-agile btn-md" id="map-save-button" />
+										<button type="submit" name="update_admin_settings_form" value="1" class="button-agile btn-md" id="map-save-button"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 										<span class="map_wait text-muted">
 											<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 										</span>

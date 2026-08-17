@@ -72,9 +72,19 @@ final class MAP_Helpdesk_Links
 				'it' => 'https://www.myagileprivacy.com/helpdesk/come-mettere-a-norma-gdpr-i-moduli-di-contatto/',
 				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-make-contact-forms-gdpr-compliant/',
 			),
+			// The Cookie list and the Cookie edit screens.
+			'cookie_management' => array(
+				'it' => 'https://www.myagileprivacy.com/helpdesk/come-gestire-i-cookie-di-my-agile-privacy/',
+				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-manage-my-agile-privacy-cookies/',
+			),
 			'policy_assistant' => array(
 				'it' => 'https://www.myagileprivacy.com/helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/',
 				'en' => 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-my-agile-privacy-policy-assistant/',
+			),
+			// The Policy list and the Policy edit screens.
+			'policy_management' => array(
+				'it' => 'https://www.myagileprivacy.com/helpdesk/come-gestire-le-policy-di-my-agile-privacy/',
+				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-manage-my-agile-privacy-policies/',
 			),
 			'multilanguage' => array(
 				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-my-agile-privacy-per-siti-web-multi-lingue/',
@@ -280,14 +290,15 @@ if( !function_exists( 'map_render_help_fox' ) )
 
 		$url = MAP_Helpdesk_Links::get( $key, $anchor );
 		$img = plugins_url( 'admin/img/fox-profile.png', MAP_PLUGIN_FILENAME );
-		$label = esc_html__( 'Need help? Click me.', 'MAP_txt' );
+		// Raw source string, escaped per context below (attribute vs text node).
+		$label = __( 'Need help? Click me.', 'MAP_txt' );
 
 		// Placeholder guides resolve to '#': render as a same-page stub
 		// (no new tab) until the real URL lands in the map.
 		$is_external = ( 0 === strpos( $url, 'http' ) );
 
 		$html = '<a href="' . esc_url( $url ) . '" class="map-help-fox"' . ( $is_external ? ' target="_blank" rel="noopener"' : '' ) . ' aria-label="' . esc_attr( $label ) . '">'
-			. '<span class="map-help-fox-bubble">' . $label . '</span>'
+			. '<span class="map-help-fox-bubble">' . esc_html( $label ) . '</span>'
 			. '<img class="map-help-fox-img" src="' . esc_url( $img ) . '" alt="">'
 			. '</a>';
 

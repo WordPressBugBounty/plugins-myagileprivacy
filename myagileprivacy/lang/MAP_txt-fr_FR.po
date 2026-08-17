@@ -3261,8 +3261,20 @@ msgstr "My Agile Privacy a détecté que Google Tag Manager se charge avant le s
 msgid "My Agile Privacy has detected a loading priority issue."
 msgstr "My Agile Privacy a détecté un problème de priorité de chargement."
 
-msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
-msgstr "Google Tag Manager s'exécute avant le système de gestion du consentement (une configuration typique de Google Tag Gateway ou d'injections au niveau du CDN). Dans cette situation, les balises Google démarrent sans recevoir l'état de consentement par défaut et le blocage préventif peut ne pas être appliqué."
+msgid "Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied."
+msgstr "Google Tag Manager a démarré avant que l'état de consentement par défaut ne soit défini, ou l'a reçu tardivement. Les causes possibles sont Google Tag Gateway, des injections au niveau du CDN ou l'ordre de chargement des scripts sur la page. Dans cette situation, les balises Google peuvent se déclencher avant que le blocage préventif ne soit appliqué."
+
+msgid "Generate reconsent widget code"
+msgstr "Générer le code du widget de reconsentement"
+
+msgid "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do."
+msgstr "Collez ce code dans votre page, à l'endroit où apparaît l'élément bloqué. L'avis est affiché aux visiteurs qui n'ont pas accepté ce cookie et disparaît de lui-même dès qu'ils l'acceptent."
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copied"
+msgstr "Copié"
 
 msgid "See the instructions to fix this"
 msgstr "Consultez les instructions pour résoudre le problème"

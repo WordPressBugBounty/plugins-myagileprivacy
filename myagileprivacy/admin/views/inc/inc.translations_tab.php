@@ -461,8 +461,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	  <div class="modal-body">
 	  </div>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo wp_kses_post( __( "Cancel", 'MAP_txt' ) ); ?></button>
-		<button type="button" class="btn btn-primary" id="saveChanges"><?php echo wp_kses_post( __( "Modify text", 'MAP_txt' ) ); ?></button>
+		<button type="button" class="button-agile-outline" data-bs-dismiss="modal"><?php echo wp_kses_post( __( "Cancel", 'MAP_txt' ) ); ?></button>
+		<button type="button" class="button-agile" id="saveChanges"><?php echo wp_kses_post( __( "Modify text", 'MAP_txt' ) ); ?></button>
 	  </div>
 	</div>
   </div>

@@ -3293,8 +3293,20 @@ msgstr "My Agile Privacy ha rilevato che Google Tag Manager viene caricato prima
 msgid "My Agile Privacy has detected a loading priority issue."
 msgstr "My Agile Privacy ha rilevato un problema di priorità di caricamento."
 
-msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
-msgstr "Google Tag Manager viene eseguito prima del sistema di gestione del consenso (configurazione tipica di Google Tag Gateway o di iniezioni a livello CDN). In questa situazione i tag Google partono senza ricevere lo stato di consenso predefinito e il blocco preventivo potrebbe non essere applicato."
+msgid "Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied."
+msgstr "Google Tag Manager si è avviato prima che lo stato di consenso predefinito fosse impostato, oppure lo ha ricevuto in ritardo. Le cause possono essere Google Tag Gateway, iniezioni a livello di CDN o l'ordine di caricamento degli script sulla pagina. In questa situazione i tag Google potrebbero partire prima che venga applicato il blocco preventivo."
+
+msgid "Generate reconsent widget code"
+msgstr "Genera il codice del widget di riconsenso"
+
+msgid "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do."
+msgstr "Incolla questo codice nella pagina, nel punto in cui compare l'elemento bloccato. L'avviso viene mostrato a chi non ha accettato questo cookie e scompare da sé quando lo accetta."
+
+msgid "Copy"
+msgstr "Copia"
+
+msgid "Copied"
+msgstr "Copiato"
 
 msgid "See the instructions to fix this"
 msgstr "Consulta le istruzioni per risolvere"

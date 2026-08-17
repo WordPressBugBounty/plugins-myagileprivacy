@@ -1,0 +1,15 @@
+#wp-admin-bar-map_cookieshield.learning_mode { background: #FFC205 !important; }
+#wp-admin-bar-map_cookieshield.config_finished{ background: #28A745 !important; }
+#wp-admin-bar-map_cookieshield.turned_off{ background: #DC3546 !important; }
+
+#wp-admin-bar-map_cookieshield a {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	font-weight: bold !important;
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+	column-gap: 5px !important;
+}
+#wp-admin-bar-map_cookieshield.learning_mode a { color: #333 !important; }
+#wp-admin-bar-map_cookieshield a:hover { color: #fff !important; }

@@ -3261,8 +3261,20 @@ msgstr "My Agile Privacy ha detectado que Google Tag Manager se carga antes del 
 msgid "My Agile Privacy has detected a loading priority issue."
 msgstr "My Agile Privacy ha detectado un problema de prioridad de carga."
 
-msgid "Google Tag Manager runs before the consent management system (a configuration typical of Google Tag Gateway or CDN-level injections). In this situation, Google tags start without receiving the default consent state and preventive blocking may not be applied."
-msgstr "Google Tag Manager se ejecuta antes del sistema de gestión del consentimiento (una configuración típica de Google Tag Gateway o de inyecciones a nivel de CDN). En esta situación, las etiquetas de Google se inician sin recibir el estado de consentimiento predeterminado y el bloqueo preventivo podría no aplicarse."
+msgid "Google Tag Manager started before the default consent state was set, or received it late. Possible causes include Google Tag Gateway, CDN-level injections, or the loading order of scripts on the page. In this situation, Google tags may fire before preventive blocking is applied."
+msgstr "Google Tag Manager se inició antes de que se estableciera el estado de consentimiento predeterminado, o lo recibió con retraso. Las causas posibles son Google Tag Gateway, inyecciones a nivel de CDN o el orden de carga de los scripts en la página. En esta situación, las etiquetas de Google podrían activarse antes de que se aplique el bloqueo preventivo."
+
+msgid "Generate reconsent widget code"
+msgstr "Generar el código del widget de reconsentimiento"
+
+msgid "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do."
+msgstr "Pegue este código en su página, en el lugar donde aparece el elemento bloqueado. El aviso se muestra a los visitantes que no han aceptado esta cookie y desaparece por sí solo cuando la aceptan."
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Copied"
+msgstr "Copiado"
 
 msgid "See the instructions to fix this"
 msgstr "Consulte las instrucciones para resolverlo"

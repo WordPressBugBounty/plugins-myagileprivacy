@@ -3,10 +3,13 @@
 * plain js version
 */
 
+if( typeof map_full_config === 'undefined' ) { window.map_full_config = undefined; }
+if( typeof map_ajax === 'undefined' )        { window.map_ajax = undefined; }
+
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0016",
+	'js_internal_version' 				: "3.0018",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -116,20 +119,22 @@ var MAP_SYS = {
 
 if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 {
-	MAP_POSTFIX = '';
-	MAP_ACCEPTED_ALL_COOKIE_NAME = 'map_accepted_all_cookie_policy';
-	MAP_ACCEPTED_SOMETHING_COOKIE_NAME = 'map_accepted_something_cookie_policy';
-	MAP_CONSENT_STATUS = 'map_consent_status';
-	MAP_MICROSOFT_CONSENT_STATUS = 'map_microsoft_consent_status';
-	MAP_CLARITY_CONSENT_STATUS = 'map_clarity_consent_status';
-	MAP_USER_UUID = 'map_user_uuid';
-	MAP_LAST_CONSENT_MODIFY_DATE = 'map_last_c_m_date';
+	window.MAP_POSTFIX = '';
+	window.MAP_ACCEPTED_ALL_COOKIE_NAME = 'map_accepted_all_cookie_policy';
+	window.MAP_ACCEPTED_SOMETHING_COOKIE_NAME = 'map_accepted_something_cookie_policy';
+	window.MAP_CONSENT_STATUS = 'map_consent_status';
+	window.MAP_MICROSOFT_CONSENT_STATUS = 'map_microsoft_consent_status';
+	window.MAP_CLARITY_CONSENT_STATUS = 'map_clarity_consent_status';
+	window.MAP_USER_UUID = 'map_user_uuid';
+	window.MAP_LAST_CONSENT_MODIFY_DATE = 'map_last_c_m_date';
 
 	MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
 
-var MAP_SVG_VIDEO = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M4 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4zm6 3.5 6 3.5-6 3.5v-7z'/></svg>";
-var MAP_SVG_MAPS = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path d='M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z'/></svg>";
+window.MAP_TRANSPORT_COOKIE_NAME = 'map_tp';
+
+window.MAP_SVG_VIDEO = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M4 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4zm6 3.5 6 3.5-6 3.5v-7z'/></svg>";
+window.MAP_SVG_MAPS = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path d='M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z'/></svg>";
 
 if( typeof MAP_Cookie === 'undefined' )
 {
@@ -2580,7 +2585,7 @@ var MAP =
 			var other_iab_and_google_vendors = [];
 			var vendors_all = [];
 
-			for ( const [key, value] of Object.entries( map_full_config?.cookie_api_key_remote_id_map_active ) )
+			for ( const [key, value] of Object.entries( map_full_config?.cookie_api_key_remote_id_map_active || {} ) )
 			{
 				let item = {
 					name: key,
@@ -2628,7 +2633,7 @@ var MAP =
 			{
 				let counter = 0;
 
-				Object.entries( map_full_config.cookie_api_key_remote_id_map_active ).forEach( ([key, value] ) => {
+				Object.entries( map_full_config?.cookie_api_key_remote_id_map_active || {} ).forEach( ([key, value] ) => {
 
 					if( MAP_Cookie.read( value ) == '1')
 					{
@@ -4047,10 +4052,7 @@ var MAP =
 
 								if( !$_this.classList.contains( '_is_activated' ) )
 								{
-									if( !$_this.classList.contains( 'mapWait' ) )
-									{
-										$_this.classList.add( '_is_activated' );
-									}
+									$_this.classList.add( '_is_activated' );
 
 									if( $_this.classList.contains( 'custom_patch_apply' ) )
 									{
@@ -4140,10 +4142,7 @@ var MAP =
 
 								if( !$_this.classList.contains( '_is_activated' ) )
 								{
-									if( !$_this.classList.contains('mapWait') )
-									{
-										$_this.classList.add( '_is_activated' );
-									}
+									$_this.classList.add( '_is_activated' );
 
 									if( $_this.classList.contains( 'custom_patch_apply' ) )
 									{
@@ -4811,7 +4810,7 @@ var MAP =
 					if( map_full_config?.cookie_api_key_remote_id_map_active &&
 						typeof map_full_config.cookie_api_key_remote_id_map_active === 'object')
 					{
-						Object.entries( map_full_config.cookie_api_key_remote_id_map_active).
+						Object.entries( map_full_config?.cookie_api_key_remote_id_map_active || {} ).
 						forEach( ([key, value] ) => {
 
 							const friendlyName = map_full_config?.cookie_api_key_friendly_name_map?.[key];
@@ -5130,7 +5129,7 @@ var MAP =
 		}
 	},
 
-	checkJsShield: function( send_due_to_error = false )
+	checkJsShield: function()
 	{
 		try {
 
@@ -5161,11 +5160,6 @@ var MAP =
 				};
 
 				MAP_SYS.map_missing_cookie_shield = 0;
-			}
-
-			if( send_due_to_error )
-			{
-				data['missing_api_support'] = 1;
 			}
 
 			data['map_api_token'] = map_ajax?.api_token || '';
@@ -5328,7 +5322,7 @@ var MAP =
 		}
 	},
 
-	sendDetectedKeys: function( key )
+	sendDetectedKeys: function()
 	{
 		try {
 
@@ -5363,25 +5357,12 @@ var MAP =
 						detectedKeys_to_send = detectedKeys.join( ',' );
 					}
 
-					if( key )
-					{
-						var data = {
-							action: 'map_remote_save_detected_keys',
-							map_api_token: map_ajax?.api_token || '',
-							key : key,
-							detectableKeys: detectableKeys_to_send,
-							detectedKeys: detectedKeys_to_send
-						};
-					}
-					else
-					{
-						var data = {
-							action: 'map_save_detected_keys',
-							map_api_token: map_ajax?.api_token || '',
-							detectableKeys: detectableKeys_to_send,
-							detectedKeys: detectedKeys_to_send
-						};
-					}
+					var data = {
+						action: 'map_save_detected_keys',
+						map_api_token: map_ajax?.api_token || '',
+						detectableKeys: detectableKeys_to_send,
+						detectedKeys: detectedKeys_to_send
+					};
 
 					fetch(map_ajax.ajax_url, {
 						method: 'POST',
@@ -6109,12 +6090,16 @@ function map_on_document_load_event()
 			MAP.settings
 		)
 		{
-			if( MAP_SYS?.allow_js_fast_callback )
+			if( MAP_SYS?.allow_js_fast_callback && ! MAP_Cookie.read( MAP_TRANSPORT_COOKIE_NAME ) )
 			{
 			    setTimeout( function() {
 
 			        MAP.sendDiagnosticData()
 			            .catch( function() {
+
+			                // Remembered in the browser, so the next page goes straight
+			                // to the fallback route instead of trying again.
+			                MAP_Cookie.set( MAP_TRANSPORT_COOKIE_NAME, '1', 7 );
 
 			                // Fallback: send data the old way
 			                if(
@@ -6128,10 +6113,9 @@ function map_on_document_load_event()
 			                )
 			                {
 			                    MAP.sendDetectedKeys();
+			                    MAP.checkJsShield();
+			                    MAP.checkConsentModeStatus();
 			                }
-
-			                MAP.checkJsShield( true );
-			                MAP.checkConsentModeStatus();
 			            });
 
 			    }, 500 );
@@ -6149,35 +6133,17 @@ function map_on_document_load_event()
 				)
 				{
 					MAP.sendDetectedKeys();
+
+					setTimeout( function() {
+						MAP.checkJsShield();
+						MAP.checkConsentModeStatus();
+					}, 800 );
 				}
 
 				setTimeout( function() {
-					MAP.checkJsShield( false );
-					MAP.checkConsentModeStatus();
-
 					// availability check of the API endpoint.
 					MAP.sendDiagnosticData( true ).catch( function() { /* silent */ } );
 				}, 800 );
-			}
-		}
-
-		if( typeof CookieShield !== 'undefined' &&
-			CookieShield &&
-			MAP &&
-			typeof URLSearchParams !== 'undefined' &&
-			URLSearchParams )
-		{
-			var queryString = window.location.search;
-
-			if( queryString )
-			{
-				var urlParams = new URLSearchParams( queryString );
-
-				var auto_activate_cookies_with_key = urlParams.get( 'auto_activate_cookies_with_key' )
-				if( auto_activate_cookies_with_key )
-				{
-					MAP.sendDetectedKeys( auto_activate_cookies_with_key );
-				}
 			}
 		}
 

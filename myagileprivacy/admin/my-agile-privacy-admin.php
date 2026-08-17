@@ -476,8 +476,162 @@ final class MyAgilePrivacyAdmin {
 	 *
 	 * @access   public
 	 */
+	/**
+	 * Tells whether the current screen belongs to the plugin.
+	 *
+	 * @return bool
+	 */
+	public static function is_map_screen()
+	{
+		$screen = get_current_screen();
+
+		if( !is_object( $screen ) )
+		{
+			return false;
+		}
+
+		$bases = array(
+			'my-agile-privacy-c_page_my-agile-privacy-c_settings',
+			'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore',
+			'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report',
+			'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk',
+			'my-agile-privacy-c_page_my-agile-privacy-c_dashboard',
+			'my-agile-privacy-c_page_my-agile-privacy-c_stats',
+			'my-agile-privacy-c_page_my-agile-privacy-c_translations',
+			'my-agile-privacy-c_page_my-agile-privacy-c_guided_wizard',
+		);
+
+		if( isset( $screen->base ) && in_array( $screen->base, $bases, true ) )
+		{
+			return true;
+		}
+
+		if( isset( $screen->post_type ) &&
+			( $screen->post_type == MAP_POST_TYPE_COOKIES || $screen->post_type == MAP_POST_TYPE_POLICY )
+		)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Resolves the file a callback is defined in and matches it against the
+	 * plugin directory and the WordPress core directories.
+	 *
+	 * @param  mixed $callback
+	 * @return bool
+	 */
+	private static function is_own_or_core_callback( $callback )
+	{
+		try
+		{
+			if( is_array( $callback ) && 2 === count( $callback ) )
+			{
+				$target = is_object( $callback[0] ) ? get_class( $callback[0] ) : $callback[0];
+				$ref    = new ReflectionMethod( $target, $callback[1] );
+			}
+			elseif( is_object( $callback ) && !( $callback instanceof Closure ) && method_exists( $callback, '__invoke' ) )
+			{
+				$ref = new ReflectionMethod( $callback, '__invoke' );
+			}
+			elseif( is_string( $callback ) && false !== strpos( $callback, '::' ) )
+			{
+				$ref = new ReflectionMethod( $callback );
+			}
+			else
+			{
+				$ref = new ReflectionFunction( $callback );
+			}
+
+			$file = (string) $ref->getFileName();
+		}
+		catch( Exception $e )
+		{
+			return true;
+		}
+
+		if( '' === $file )
+		{
+			return true;
+		}
+
+		$file = wp_normalize_path( $file );
+
+		if( 0 === strpos( $file, wp_normalize_path( ABSPATH.'wp-admin' ) ) ||
+			0 === strpos( $file, wp_normalize_path( ABSPATH.'wp-includes' ) )
+		)
+		{
+			return true;
+		}
+
+		$own = array( MAP_PLUGIN_SLUG, 'myagilepixel' );
+
+		foreach( $own as $slug )
+		{
+			if( false !== strpos( $file, '/'.$slug ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Keeps unrelated notices out of the plugin screens.
+	 *
+	 */
+	public function hide_foreign_notices()
+	{
+		if( !self::is_map_screen() )
+		{
+			return;
+		}
+
+		global $wp_filter;
+
+		$hooks = array( 'admin_notices', 'all_admin_notices' );
+
+		foreach( $hooks as $hook )
+		{
+			if( !isset( $wp_filter[ $hook ] ) || !is_object( $wp_filter[ $hook ] ) )
+			{
+				continue;
+			}
+
+			$to_remove = array();
+
+			foreach( $wp_filter[ $hook ]->callbacks as $priority => $callbacks )
+			{
+				foreach( $callbacks as $callback )
+				{
+					if( !isset( $callback['function'] ) || self::is_own_or_core_callback( $callback['function'] ) )
+					{
+						continue;
+					}
+
+					$to_remove[] = array( $callback['function'], $priority );
+				}
+			}
+
+			foreach( $to_remove as $item )
+			{
+				remove_action( $hook, $item[0], $item[1] );
+			}
+		}
+	}
+
 	public function enqueue_styles()
 	{
+		wp_enqueue_style( 'map-notices', plugin_dir_url( __FILE__ ) ."css/map-notices.css", array(),$this->version, 'all' );
+
+		if( MyAgilePrivacy::map_can_edit() )
+		{
+			wp_enqueue_style( 'map-adminbar', plugin_dir_url( __FILE__ ) ."css/map-adminbar.css", array(),$this->version, 'all' );
+		}
+
 		$do_load = false;
 
 		global $pagenow;
@@ -487,17 +641,7 @@ final class MyAgilePrivacyAdmin {
 
 		$current_post_type = get_post_type();
 
-		if( $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_settings' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_dashboard' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_stats' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_translations' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_guided_wizard' ||
-			 $current_page_post_type == MAP_POST_TYPE_COOKIES ||
-			 $current_page_post_type == MAP_POST_TYPE_POLICY
-		)
+		if( self::is_map_screen() )
 		{
 			$do_load = true;
 		}
@@ -531,17 +675,7 @@ final class MyAgilePrivacyAdmin {
 
 		$current_post_type = get_post_type();
 
-		if( $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_settings' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_dashboard' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_stats' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_translations' ||
-			 $current_page_base == 'my-agile-privacy-c_page_my-agile-privacy-c_guided_wizard' ||
-			 $current_page_post_type == MAP_POST_TYPE_COOKIES ||
-			 $current_page_post_type == MAP_POST_TYPE_POLICY
-			)
+		if( self::is_map_screen() )
 		{
 			$do_load = true;
 		}
@@ -2252,26 +2386,6 @@ final class MyAgilePrivacyAdmin {
 			break;
 		}
 
-		echo '
-		<style>
-			#wp-admin-bar-map_cookieshield.learning_mode { background: #FFC205 !important; }
-			#wp-admin-bar-map_cookieshield.config_finished{ background: #28A745 !important; }
-			#wp-admin-bar-map_cookieshield.turned_off{ background: #DC3546 !important; }
-
-			#wp-admin-bar-map_cookieshield a {
-				display: flex !important;
-				flex-direction: row !important;
-				align-items: center !important;
-				font-weight: bold !important;
-				padding-left: 20px !important;
-				padding-right: 20px !important;
-				column-gap: 5px !important;
-			}
-			#wp-admin-bar-map_cookieshield.learning_mode a { color: #333 !important; }
-			#wp-admin-bar-map_cookieshield a:hover { color: #fff !important; }
-		</style>
-		';
-
 		$this_href = null;
 
 		if( MyAgilePrivacy::map_can_edit() )
@@ -3309,6 +3423,7 @@ final class MyAgilePrivacyAdmin {
 						<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
 							<?php echo "<strong>" . wp_kses_post( __( 'Welcome to the Policy list! ', 'MAP_txt' ) ) . "</strong>"; ?><br>
 							<?php echo wp_kses_post( __( 'Here you will find a list of all the available policies. You can modify specific options by clicking on the policy.', 'MAP_txt' ) ); ?>
+							<div class="mt-2"><?php map_render_helpdesk_link( 'policy_management', null, true, 'policy-list' ); ?></div>
 						</div>
 					</div>
 
@@ -3340,6 +3455,7 @@ final class MyAgilePrivacyAdmin {
 			                . wp_kses_post( __( '<b>Draft</b>: represents a Cookie or a software that you are not currently using, and is available as a "library".', 'MAP_txt' ) ) . '<br>'
 			                . wp_kses_post( __( '<b>Blocked without notification</b>: represents a Cookie that you want to block without it appearing in the list of Cookies for which you are requesting consent.', 'MAP_txt' ) ) . '<br>'
 			                . wp_kses_post( __( '<b>Allowed without notification</b>: represents a Cookie that you do not wish to block, and you want to prevent it from appearing in the list of cookies. This setting is intended for advanced users and should be used with caution.', 'MAP_txt' ) )
+			                . '<div class="mt-2">' . map_render_helpdesk_link( 'cookie_management', null, false, 'cookie-list' ) . '</div>'
 			            . '</div>'
 			        . '</div>';
 			}
@@ -3469,18 +3585,6 @@ final class MyAgilePrivacyAdmin {
 			array( $this, 'dashboard_view' )
 		);
 
-		if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRATION )
-		{
-			add_submenu_page(
-				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-				__('Consent Statistics', 'MAP_txt'),
-				__('Consent Statistics', 'MAP_txt'),
-				MyAgilePrivacy::get_capability( 'options' ),
-				MAP_POST_TYPE_COOKIES.'_stats',
-				array( $this, 'stats_view' )
-			);
-		}
-
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
 			__('Privacy Settings', 'MAP_txt'),
@@ -3507,15 +3611,17 @@ final class MyAgilePrivacyAdmin {
 			'edit.php?post_type='.MAP_POST_TYPE_POLICY
 		);
 
-		add_submenu_page(
-			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
-			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
-			MyAgilePrivacy::get_capability( 'options' ),
-			MAP_POST_TYPE_COOKIES.'_backup_restore',
-			array( $this, 'backup_restore_view' )
-		);
-
+		if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRATION )
+		{
+			add_submenu_page(
+				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+				__('Consent Statistics', 'MAP_txt'),
+				__('Consent Statistics', 'MAP_txt'),
+				MyAgilePrivacy::get_capability( 'options' ),
+				MAP_POST_TYPE_COOKIES.'_stats',
+				array( $this, 'stats_view' )
+			);
+		}
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
@@ -3524,6 +3630,16 @@ final class MyAgilePrivacyAdmin {
 			MyAgilePrivacy::get_capability( 'options' ),
 			MAP_POST_TYPE_COOKIES.'_translations',
 			array( $this, 'translations_view' )
+		);
+
+
+		add_submenu_page(
+			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
+			wp_kses_post( __( 'Backup & Restore', 'MAP_txt' ) ),
+			MyAgilePrivacy::get_capability( 'options' ),
+			MAP_POST_TYPE_COOKIES.'_backup_restore',
+			array( $this, 'backup_restore_view' )
 		);
 
 
@@ -4625,6 +4741,100 @@ final class MyAgilePrivacyAdmin {
 					</div>
 				</div>
 
+				<?php
+
+					$map_widget_langs = array();
+
+					if( $_map_api_key )
+					{
+						$map_widget_context = MyAgilePrivacy::getCurrentAndSupportedLanguages();
+						$map_widget_texts   = MyAgilePrivacy::getFixedTranslations();
+
+						foreach( $map_widget_context['supported_languages'] as $map_widget_code => $map_widget_data )
+						{
+							if( isset( $map_widget_texts[ $map_widget_code ]['blocked_element'] ) )
+							{
+								$map_widget_langs[ $map_widget_code ] = array(
+									'label'	=>	ucfirst( $map_widget_data['en_label'] ),
+									'text'	=>	$map_widget_texts[ $map_widget_code ]['blocked_element'],
+								);
+							}
+						}
+
+						//the visible list is empty until the language set is received
+						if( empty( $map_widget_langs ) )
+						{
+							$map_widget_fallback = MyAgilePrivacy::normalizeLocaleTo4Char( get_locale() );
+
+							if( !$map_widget_fallback ||
+								!isset( $map_widget_texts[ $map_widget_fallback ]['blocked_element'] ) )
+							{
+								$map_widget_fallback = 'en_US';
+							}
+
+							$map_widget_all = MyAgilePrivacy::get_supported_languages();
+
+							$map_widget_langs[ $map_widget_fallback ] = array(
+								'label'	=>	isset( $map_widget_all[ $map_widget_fallback ]['en_label'] ) ? ucfirst( $map_widget_all[ $map_widget_fallback ]['en_label'] ) : $map_widget_fallback,
+								'text'	=>	$map_widget_texts[ $map_widget_fallback ]['blocked_element'],
+							);
+						}
+					}
+
+				?>
+
+				<?php if( $_map_api_key && !empty( $map_widget_langs ) ): ?>
+
+					<div class="map-widget-generator mt-4">
+
+						<button type="button" class="button-agile btn-md map-widget-generate-btn"><?php echo wp_kses_post( __( "Generate reconsent widget code", 'MAP_txt' ) ); ?></button>
+
+						<div class="map-widget-panel displayNone mt-3">
+
+							<p class="map-widget-note"><?php echo wp_kses_post( __( "Paste this code into your page where the blocked element appears. The notice is shown to visitors who have not accepted this cookie, and disappears on its own once they do.", 'MAP_txt' ) ); ?></p>
+
+							<?php if( count( $map_widget_langs ) > 1 ): ?>
+
+								<p class="map-widget-lang-row">
+									<label class="me-2"><b><?php echo wp_kses_post( __( "Language", 'MAP_txt' ) ); ?></b></label>
+									<select class="map-widget-lang-select mt-2 lh-sm">
+										<?php foreach( $map_widget_langs as $map_widget_code => $map_widget_lang ): ?>
+											<option value="<?php echo esc_attr( $map_widget_code ); ?>"><?php echo esc_html( $map_widget_lang['label'] ); ?></option>
+										<?php endforeach; ?>
+									</select>
+								</p>
+
+							<?php endif; ?>
+
+							<?php
+
+								$map_widget_first = true;
+
+								foreach( $map_widget_langs as $map_widget_code => $map_widget_lang )
+								{
+									$map_widget_snippet = '<div class="map_custom_notify map_api_key_'.$_map_api_key.' showConsentAgain mapShowItem">'."\n".$map_widget_lang['text']."\n".'</div>';
+
+							?>
+
+								<div class="map-widget-snippet<?php echo $map_widget_first ? '' : ' displayNone'; ?>" data-map-widget-lang="<?php echo esc_attr( $map_widget_code ); ?>">
+									<pre class="map-widget-code language-html"><code class="language-html"><?php echo esc_html( $map_widget_snippet ); ?></code></pre>
+								</div>
+
+							<?php
+
+									$map_widget_first = false;
+								}
+
+							?>
+
+							<button type="button" class="button-agile btn-md map-widget-copy-btn" data-map-widget-copied="<?php echo esc_attr( __( "Copied", 'MAP_txt' ) ); ?>"><?php echo wp_kses_post( __( "Copy", 'MAP_txt' ) ); ?></button>
+
+						</div>
+
+					</div>
+
+				<?php endif; ?>
+
 				<?php if( $_map_api_key ): ?>
 
 					<div class="map_js_dependencies_wrapper mt-4">
@@ -5373,6 +5583,7 @@ final class MyAgilePrivacyAdmin {
 								?>
 							</div>
 
+							<div class="mt-2"><?php map_render_helpdesk_link( 'policy_management', null, true, 'policy-manual-edit' ); ?></div>
 						</div>
 					</div>
 
@@ -5380,7 +5591,7 @@ final class MyAgilePrivacyAdmin {
 						<div class="map-text-quickview">
 							<div class="map-custom-card">
 								<div class="map-custom-card-header">
-									<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><?php echo wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ); ?></button></h1>
+									<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Edit Policy', 'MAP_txt' ) ); ?></button></h1>
 								</div>
 								<div class="map-custom-card-body">
 
@@ -5654,6 +5865,7 @@ final class MyAgilePrivacyAdmin {
 
 							<?php echo wp_kses_post( __( 'On this page, you can choose which cookies to keep always active (necessary) and which to enable only with your consent. You can decide whether to refresh the page after acceptance and, if you’re an advanced user, manage any JavaScript dependencies. Warning: change these settings only if you know what you’re doing; incorrect configurations can compromise site functionality and regulatory compliance. If in doubt, keep the recommended settings. ', 'MAP_txt' ) ); ?>
 
+							<div class="mt-2"><?php map_render_helpdesk_link( 'cookie_management', null, true, 'preventive-blocking' ); ?></div>
 						</div>
 				</div>
 
@@ -5661,7 +5873,7 @@ final class MyAgilePrivacyAdmin {
 					<div class="map-text-quickview">
 						<div class="map-custom-card">
 							<div class="map-custom-card-header">
-								<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><?php echo wp_kses_post( __( 'Edit Cookie Text', 'MAP_txt' ) ); ?></button></h1>
+								<h1><?php echo wp_kses_post( __( "Quickview for", 'MAP_txt' ) ).' '.esc_html( $post->post_title ) ?> <button type="button" class="button-agile btn-md map-do-edit-this-text"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Edit Cookie Text', 'MAP_txt' ) ); ?></button></h1>
 							</div>
 							<div class="map-custom-card-body">
 
@@ -5877,6 +6089,11 @@ final class MyAgilePrivacyAdmin {
 	 */
 	public function check_license_status()
 	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			wp_send_json_error( array( 'code' => 'forbidden' ), 403 );
+		}
+
 		//check security param
 		check_ajax_referer( 'check_license_status', 'security' );
 

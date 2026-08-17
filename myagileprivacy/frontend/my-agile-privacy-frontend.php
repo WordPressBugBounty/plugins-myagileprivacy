@@ -2602,15 +2602,6 @@ final class MyAgilePrivacyFrontend {
 	        $allow_js_fast_callback = 1;
 	    }
 
-		if( $allow_js_fast_callback &&
-		    isset( $the_settings['missing_api_support'] ) &&
-		    $the_settings['missing_api_support'] &&
-		    isset( $the_settings['missing_api_support_timestamp'] ) &&
-		    ( time() - intval( $the_settings['missing_api_support_timestamp'] ) ) < ( 7 * 24 * 60 * 60 ) ) // valid only for 1 week
-		{
-		    $allow_js_fast_callback = 0;
-		}
-
 	    $cookie_domain = null;
 
 	    if( isset( $rconfig ) &&
@@ -3129,21 +3120,36 @@ final class MyAgilePrivacyFrontend {
 	 * Internal functin for detected keys save
 	 *
 	 */
-	private function internal_save_detected_keys( $key=null )
+	/**
+	 * Whether the site is currently scanning.
+	 *
+	 * Mirrors the condition the frontend applies before reporting: the same two
+	 * sources, combined the same way. Reports that arrive outside this state did
+	 * not come from our own code.
+	 *
+	 * @return bool
+	 */
+	private function is_scanning_mode()
 	{
-		// Get settings
 		$the_settings = MyAgilePrivacy::get_settings();
 
-		if( isset( $key ) && $key )
+		// Same two sources the frontend reads, and nothing more: the licence
+		// state is checked by the callers that depend on it, so adding it here
+		// would reject reports the frontend still considers valid.
+		if( isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] == 'learning_mode' )
 		{
-			if( $key != $the_settings['license_code'] )
-			{
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'Wrong key' );
-
-				return false;
-			}
+			return true;
 		}
 
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		return ( is_array( $rconfig ) &&
+			isset( $rconfig['force_js_learning_mode'] ) &&
+			$rconfig['force_js_learning_mode'] == 1 );
+	}
+
+	private function internal_save_detected_keys()
+	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'start internal_save_detected_keys' );
 
 		// Get settings
@@ -3279,36 +3285,6 @@ final class MyAgilePrivacyFrontend {
 	}
 
 	/**
-	 * Save remotely detected keys callback function
-	 *
-	 */
-	public function map_remote_save_detected_keys_callback()
-	{
-		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
-		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
-
-		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
-		{
-			$success = false;
-
-			// check form submit
-			if( isset( $_POST['key'] ) )
-			{
-				$success = $this->internal_save_detected_keys( $_POST['key'] );
-			}
-
-			$answer = array(
-				'success'				=>	$success,
-			);
-
-			wp_send_json( $answer );
-
-		}
-
-		die();
-	}
-
-	/**
 	 * Loading-priority detection report callback.
 	 * admin-ajax fallback for the api/api.php detection endpoint.
 	 */
@@ -3317,7 +3293,13 @@ final class MyAgilePrivacyFrontend {
 		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
 		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		if( empty( $expected ) || ! hash_equals( $expected, $map_token ) )
+		if( empty( $expected ) || ! is_string( $map_token ) || ! hash_equals( $expected, $map_token ) )
+		{
+			wp_send_json( array( 'success' => false ) );
+		}
+
+		// The beacon is emitted only while scanning; see is_scanning_mode().
+		if( ! $this->is_scanning_mode() )
 		{
 			wp_send_json( array( 'success' => false ) );
 		}
@@ -3363,8 +3345,14 @@ final class MyAgilePrivacyFrontend {
 		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
 		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
+		if( ! empty( $expected ) && is_string( $map_token ) && hash_equals( $expected, $map_token ) )
 		{
+			// The report is only expected while scanning; see is_scanning_mode().
+			if( ! $this->is_scanning_mode() )
+			{
+				wp_send_json( array( 'success' => false ) );
+			}
+
 			$success = false;
 
 			// check form submit
@@ -3376,7 +3364,6 @@ final class MyAgilePrivacyFrontend {
 					$the_settings['pa'] == 1 )
 				{
 					$detected = isset( $_POST['detected'] ) ? intval( $_POST['detected'] ) : 0;
-					$missing_api_support = isset( $_POST['missing_api_support'] ) ? intval( $_POST['missing_api_support'] ) : 0;
 
 					if( $detected == 0 )
 					{
@@ -3405,56 +3392,6 @@ final class MyAgilePrivacyFrontend {
 						}
 					}
 
-					if( $missing_api_support == 1 )
-					{
-						$now             = time();
-
-						// skip redundant write.
-						$lockout_active = ( !empty( $the_settings['missing_api_support'] ) &&
-							isset( $the_settings['missing_api_support_timestamp'] ) &&
-							( $now - intval( $the_settings['missing_api_support_timestamp'] ) ) < ( 7 * 24 * 60 * 60 ) );
-
-						$window_duration = defined( 'HOUR_IN_SECONDS' ) ? HOUR_IN_SECONDS : 3600;
-						$threshold       = 5;
-
-						$count        = isset( $the_settings['missing_api_support_failures_count'] )        ? intval( $the_settings['missing_api_support_failures_count'] )        : 0;
-						$window_start = isset( $the_settings['missing_api_support_failures_window_start'] ) ? intval( $the_settings['missing_api_support_failures_window_start'] ) : 0;
-
-						// reset the window if it has expired or never started
-						if( $window_start === 0 || ( $now - $window_start ) > $window_duration )
-						{
-							$window_start = $now;
-							$count        = 0;
-						}
-
-						$count++;
-
-						if( $count >= $threshold )
-						{
-							// set the flag and reset the counter
-							$the_settings['missing_api_support']                       = true;
-							$the_settings['missing_api_support_timestamp']             = $now;
-							$the_settings['missing_api_support_failures_count']        = 0;
-							$the_settings['missing_api_support_failures_window_start'] = 0;
-						}
-						else
-						{
-							// below threshold: just update the window state
-							$the_settings['missing_api_support_failures_count']        = $count;
-							$the_settings['missing_api_support_failures_window_start'] = $window_start;
-						}
-
-						if( ! $lockout_active )
-						{
-							MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
-
-							// invalidate the cached head script
-							if( $count >= $threshold )
-							{
-								MyAgilePrivacy::flush_json_cache( 'head_script_' );
-							}
-						}
-					}
 
 				}
 
@@ -3481,8 +3418,14 @@ final class MyAgilePrivacyFrontend {
 		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
 		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
+		if( ! empty( $expected ) && is_string( $map_token ) && hash_equals( $expected, $map_token ) )
 		{
+			// The report is only expected while scanning; see is_scanning_mode().
+			if( ! $this->is_scanning_mode() )
+			{
+				wp_send_json( array( 'success' => false ) );
+			}
+
 			$success = false;
 
 			// check form submit
@@ -3491,6 +3434,29 @@ final class MyAgilePrivacyFrontend {
 				$the_settings = MyAgilePrivacy::get_settings();
 
 				$cmode_v2_js_on_error = ( isset( $_POST['is_consent_valid'] ) && intval( $_POST['is_consent_valid'] ) ) ? false : true;
+				$error_code           = isset( $_POST['error_code'] ) ? intval( $_POST['error_code'] ) : 0;
+				$error_motivation     = isset( $_POST['error_motivation'] ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
+
+				// Free text reaches the licence server verbatim; keep it bounded.
+				// Counted in characters: cutting on a byte boundary would split a
+				// multibyte sequence and leave text that no longer encodes.
+				$max_len = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? (int) MAP_PLUGIN_JS_ERROR_TEXT_MAX : 255;
+				$error_motivation = mb_substr( $error_motivation, 0, $max_len );
+
+				// The value is stored and travels on: drop the characters that could
+				// turn it into markup and keep the message otherwise faithful.
+				$error_motivation = str_replace( array( '<', '>', '"', "'", '&' ), '', $error_motivation );
+
+				// Write only on an actual change, as the api.php twin already does.
+				$has_changed =
+					$the_settings['cmode_v2_js_on_error']         !== $cmode_v2_js_on_error ||
+					$the_settings['cmode_v2_js_error_code']       !== $error_code ||
+					$the_settings['cmode_v2_js_error_motivation'] !== $error_motivation;
+
+				if( !$has_changed )
+				{
+					wp_send_json( array( 'success' => true ) );
+				}
 
 				if( $the_settings['cmode_v2_js_on_error'] && !$cmode_v2_js_on_error )
 				{
@@ -3503,8 +3469,8 @@ final class MyAgilePrivacyFrontend {
 				}
 
 				$the_settings['cmode_v2_js_on_error'] = $cmode_v2_js_on_error;
-				$the_settings['cmode_v2_js_error_code'] = isset( $_POST['error_code'] ) ? intval( $_POST['error_code'] ) : 0;
-				$the_settings['cmode_v2_js_error_motivation'] = isset( $_POST['error_motivation'] ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
+				$the_settings['cmode_v2_js_error_code'] = $error_code;
+				$the_settings['cmode_v2_js_error_motivation'] = $error_motivation;
 
 				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 
@@ -3531,7 +3497,7 @@ final class MyAgilePrivacyFrontend {
 		$expected  = ( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) ) ? hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT ) : '';
 		$map_token = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 
-		if( ! empty( $expected ) && hash_equals( $expected, $map_token ) )
+		if( ! empty( $expected ) && is_string( $map_token ) && hash_equals( $expected, $map_token ) )
 		{
 			$success = false;
 
@@ -3540,8 +3506,11 @@ final class MyAgilePrivacyFrontend {
 			{
 				$the_settings = MyAgilePrivacy::get_settings();
 
+				// Reports arrive only while scanning; outside that state they are
+				// not ours, and this path publishes cookie declarations.
 				if( isset( $the_settings['pa'] ) &&
-					$the_settings['pa'] == 1 )
+					$the_settings['pa'] == 1 &&
+					$this->is_scanning_mode() )
 				{
 					$success = $this->internal_save_detected_keys();
 				}
@@ -3801,7 +3770,7 @@ final class MyAgilePrivacyFrontend {
 											}
 
 											$v->unblocked_src = $v->src;
-											$v->src = '';
+											$v->removeAttribute( 'src' );
 
 											$v->setAttribute( 'data-cookie-api-key', $detected_key );
 											$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
@@ -3982,7 +3951,7 @@ final class MyAgilePrivacyFrontend {
 									}
 
 									$v->unblocked_src = $the_src;
-									$v->src = '';
+									$v->removeAttribute( 'src' );
 									$v->setAttribute( 'data-cookie-api-key', $detected_key );
 									$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
 

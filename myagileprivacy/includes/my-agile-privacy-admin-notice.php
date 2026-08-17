@@ -21,7 +21,6 @@ final class MAP_Admin_Notice_Manager {
 
     private function __construct() {
         add_action( 'admin_notices',             array( $this, 'render_all' ) );
-        add_action( 'admin_head',                array( $this, 'render_inline_css' ) );
         add_action( 'admin_enqueue_scripts',     array( $this, 'enqueue_assets' ) );
         add_action( 'admin_footer',              array( $this, 'render_inline_js' ) );
         add_action( 'wp_ajax_map_remove_notice', array( $this, 'ajax_remove' ) );
@@ -202,67 +201,11 @@ final class MAP_Admin_Notice_Manager {
     }
 
     /**
-     * Reserved for future asset enqueuing. JS is inline via render_inline_js(),
-     * CSS is inline via render_inline_css().
+     * Reserved for future asset enqueuing. JS is inline via render_inline_js();
+     * the stylesheet is enqueued by the admin class.
      * Hooked to admin_enqueue_scripts.
      */
     public function enqueue_assets() {}
-
-    /**
-     * Prints the CSS for the fox-hero notice layout.
-     * Only outputs when notices are present. Hooked to admin_head.
-     */
-    public function render_inline_css() {
-        if ( empty( $this->get_all() ) ) { return; }
-        echo '<style>'
-            // Outer: WP notice anchor reset + flex row (avatar + card side by side).
-            . '.mapn-wrap{'
-                . 'display:flex!important;'
-                . 'align-items:center!important;'
-                . 'gap:12px;'
-                . 'padding:0!important;'
-                . 'border-left:none!important;'
-                . 'background:transparent!important;'
-                . 'box-shadow:none!important;'
-                . 'margin-bottom:10px;'
-            . '}'
-            // Fox avatar: circular image, no grow.
-            . '.mapn-fox{flex-shrink:0;}'
-            . '.mapn-fox img{width:56px;height:56px;border-radius:50%;display:block;}'
-            // Card: styled content box, mirrors .map_infobox look.
-            . '.mapn-card{'
-                . 'flex:1;'
-                . 'position:relative;'
-                . 'padding:10px 36px 10px 14px;'
-                . 'background:#f4f8fb;'
-                . 'border:1px solid #c5d7e8;'
-                . 'border-radius:3px;'
-                . 'min-width:0;'
-            . '}'
-            // Type-specific card colours.
-            . '.mapn-wrap--success .mapn-card{background:#f0faf0;border-color:#7ec87e;}'
-            . '.mapn-wrap--warning .mapn-card{background:#fef9e7;border-color:#d4bc47;}'
-            . '.mapn-wrap--error   .mapn-card{background:#fdf0f0;border-color:#d6797a;}'
-            // Message and actions.
-            . '.mapn-msg{margin:0;}'
-            . '.mapn-actions{margin-top:8px;}'
-            . '.mapn-actions .button+.button{margin-left:6px;}'
-            // Dismiss: top-right corner of the card.
-            . '.mapn-close{'
-                . 'position:absolute;'
-                . 'top:8px;'
-                . 'right:10px;'
-                . 'background:none;'
-                . 'border:none;'
-                . 'cursor:pointer;'
-                . 'color:#787c82;'
-                . 'font-size:15px;'
-                . 'line-height:1;'
-                . 'padding:0;'
-            . '}'
-            . '.mapn-close:hover{color:#1d2327;}'
-            . '</style>';
-    }
 
     /**
      * Prints the vanilla JS handler for dismiss and action buttons.

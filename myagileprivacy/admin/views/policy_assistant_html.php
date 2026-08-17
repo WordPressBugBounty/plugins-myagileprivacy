@@ -26,6 +26,7 @@
 </script>
 
 <div class="wrap siteAndPoliciesSettingsWrapper" id="my_agile_privacy_backend">
+	<h2>My Agile Privacy®: <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?></h2>
 
 	<p class="map-help-section">
 		<?php map_render_helpdesk_link( 'policy_assistant', __( 'Online Help: how to customize your Privacy Policies', 'MAP_txt' ) ); ?>
@@ -3084,7 +3085,7 @@
 										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'Final step: Go to the link below to complete the association.', 'MAP_txt' ) ); ?></li>
 									</ul>
 									<div class="text-center">
-										<a href="<?php echo esc_url( add_query_arg( array( 'post_type' => 'my-agile-privacy-c', 'page' => 'my-agile-privacy-c_settings' ), admin_url( 'edit.php' ) ) ); ?>#policies" class="btn btn-primary btn-lg me-3">
+										<a href="<?php echo esc_url( add_query_arg( array( 'post_type' => 'my-agile-privacy-c', 'page' => 'my-agile-privacy-c_settings' ), admin_url( 'edit.php' ) ) ); ?>#policies" class="button-agile me-3">
 											<i class="fa-regular fa-cog"></i> <?php echo wp_kses_post( __( 'Go to Settings > Policy Tab', 'MAP_txt' ) ); ?>
 										</a>
 									</div>
@@ -3098,7 +3099,7 @@
 				<div class="wizard-navigation mt-4">
 					<div class="row">
 						<div class="col-6">
-							<button type="button" class="btn btn-secondary map-wizard-prev-btn displayNone" id="wizard-prev-btn">
+							<button type="button" class="button-agile-outline map-wizard-prev-btn displayNone" id="wizard-prev-btn">
 								<i class="fa-regular fa-arrow-left"></i> <?php echo wp_kses_post( __( 'Previous', 'MAP_txt' ) ); ?>
 							</button>
 						</div>
@@ -3107,15 +3108,15 @@
 								<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 							</span>
 
-							<button type="button" class="btn btn-primary map-wizard-next-btn-first-step displayNone" id="wizard-next-btn-first-step">
+							<button type="button" class="button-agile map-wizard-next-btn-first-step displayNone" id="wizard-next-btn-first-step">
 								<?php echo wp_kses_post( __( 'Next', 'MAP_txt' ) ); ?> <i class="fa-regular fa-arrow-right"></i>
 							</button>
 
-							<button type="button" class="btn btn-primary map-wizard-next-btn displayNone" id="wizard-next-btn">
+							<button type="button" class="button-agile map-wizard-next-btn displayNone" id="wizard-next-btn">
 								<?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?> <i class="fa-regular fa-arrow-right"></i>
 							</button>
 
-							<button type="submit" name="update_guided_wizard_form" class="btn btn-success map-wizard-finish-btn displayNone" id="wizard-finish-btn">
+							<button type="submit" name="update_guided_wizard_form" class="button-agile map-wizard-finish-btn displayNone" id="wizard-finish-btn">
 								<i class="fa-regular fa-check"></i> <?php echo wp_kses_post( __( 'Complete Configuration', 'MAP_txt' ) ); ?>
 							</button>
 						</div>

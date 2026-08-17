@@ -30,7 +30,7 @@
 		?>
 
 		<div class="mb-3 <?php if( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ){ echo 'forbiddenArea'; } ?>">
-			<button type="button" class="fake-save-button button-agile btn-md"><?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
+			<button type="button" class="fake-save-button button-agile btn-md"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 			<span class="map_wait text-muted">
 				<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 			</span>
@@ -43,7 +43,7 @@
 
 		<div class="row mt-5">
 			<div class="col-12 <?php if( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ){ echo 'forbiddenArea'; } ?>">
-				<input type="submit" name="update_translations_form" value="<?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?>" class="button-agile btn-md" id="map-save-button" />
+				<button type="submit" name="update_translations_form" value="1" class="button-agile btn-md" id="map-save-button"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 				<span class="map_wait text-muted">
 					<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 				</span>

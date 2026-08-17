@@ -20,7 +20,7 @@ if( $_SERVER['REQUEST_METHOD'] !== 'GET' )
 	exit;
 }
 
-$f = isset( $_GET['f'] ) ? $_GET['f'] : '';
+$f = ( isset( $_GET['f'] ) && is_string( $_GET['f'] ) ) ? $_GET['f'] : '';
 
 if( !preg_match( '/^(json\/)?[a-zA-Z0-9_\-]+\.json$/', $f ) )
 {

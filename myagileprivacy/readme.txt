@@ -3,8 +3,8 @@ Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
-Tested up to: 7.0
-Stable tag: 3.3.6
+Tested up to: 7.1
+Stable tag: 3.3.7
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -126,6 +126,14 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.3.7
+* Tested for compatibility with WordPress 7.1
+* New button in the cookie editor to generate the reconsent widget code
+* Improved tag loading-priority warning
+* Blocked content notification stability fix
+* Security hardening of the frontend diagnostic endpoints
+* JavaScript minor code optimization
 
 = 3.3.6
 * Support for five additional US state privacy laws: Indiana, Iowa, Kentucky, Maryland and Rhode Island

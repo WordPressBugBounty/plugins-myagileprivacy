@@ -461,8 +461,6 @@ final class MyAgilePrivacy {
 		add_action( 'wp_ajax_map_missing_cookie_shield', array( $plugin_frontend, 'map_missing_cookie_shield_callback' ) );
 		add_action( 'wp_ajax_nopriv_map_check_consent_mode_status', array( $plugin_frontend, 'map_check_consent_mode_status_callback' ) );
 		add_action( 'wp_ajax_map_check_consent_mode_status', array( $plugin_frontend, 'map_check_consent_mode_status_callback' ) );
-		add_action( 'wp_ajax_nopriv_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
-		add_action( 'wp_ajax_map_remote_save_detected_keys', array( $plugin_frontend, 'map_remote_save_detected_keys_callback' ) );
 		add_action( 'wp_ajax_nopriv_map_report_gtm_gateway', array( $plugin_frontend, 'map_report_gtm_gateway_callback' ) );
 		add_action( 'wp_ajax_map_report_gtm_gateway', array( $plugin_frontend, 'map_report_gtm_gateway_callback' ) );
 
@@ -607,6 +605,7 @@ final class MyAgilePrivacy {
 		//admin init && metabox
 		add_action( 'admin_init', array( $plugin_admin, 'admin_init_and_add_meta_box' ) );
 		add_action( 'admin_init', array( 'MyAgilePrivacy', 'map_maybe_register_capabilities' ) );
+		add_action( 'admin_init', array( 'MyAgilePrivacy', 'map_protect_log_dir' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_COOKIES, array( $plugin_admin, 'save_custom_metabox_cookies' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_POLICY, array( $plugin_admin, 'save_custom_metabox_policies' ) );
 
@@ -636,6 +635,9 @@ final class MyAgilePrivacy {
 
 		//generic admin scripts
 		add_action( 'admin_enqueue_scripts', array( $plugin_admin, 'enqueue_scripts' ) );
+
+		//keeps unrelated notices out of the plugin screens
+		add_action( 'in_admin_header', array( $plugin_admin, 'hide_foreign_notices' ) );
 
 		//add settings links for the menu
 		add_filter( 'plugin_action_links_'.plugin_basename( MAP_PLUGIN_FILENAME ), array( $plugin_admin, 'plugin_action_links' ) );
@@ -4414,12 +4416,51 @@ final class MyAgilePrivacy {
         return function_exists( 'curl_init' ) || (bool) ini_get( 'allow_url_fopen' );
     }
 
+	private static function map_load_log_guard()
+	{
+		if( function_exists( 'map_log_redact' ) )
+		{
+			return;
+		}
+
+		$guard_file = dirname( __FILE__ ) . '/my-agile-privacy-log-guard.php';
+
+		if( file_exists( $guard_file ) )
+		{
+			require_once $guard_file;
+		}
+	}
+
+	/**
+	 * Puts the access guards in the log directory, whether or not anything is
+	 * being logged right now: a directory left over from an earlier run has to be
+	 * covered too.
+	 *
+	 * @access   public
+	 */
+	public static function map_protect_log_dir()
+	{
+		self::map_load_log_guard();
+
+		if( function_exists( 'map_log_protect_dir' ) && defined( 'WP_CONTENT_DIR' ) )
+		{
+			map_log_protect_dir( WP_CONTENT_DIR . '/debug/' );
+		}
+	}
+
 	/**
 	 * write to log file
 	 * @access   public
 	 */
 	public static function write_log($log)
 	{
+		self::map_load_log_guard();
+
+		if( function_exists( 'map_log_redact' ) )
+		{
+			$log = map_log_redact( $log );
+		}
+
 		if( defined( 'MAP_PLUGIN_NAME' ) )
 		{
 			$plugin_name = MAP_PLUGIN_NAME;
@@ -4435,6 +4476,11 @@ final class MyAgilePrivacy {
 		if( ! wp_mkdir_p( $dirPath ) )
 		{
 			return;
+		}
+
+		if( function_exists( 'map_log_protect_dir' ) )
+		{
+			map_log_protect_dir( $dirPath );
 		}
 
 		$bt = debug_backtrace();
