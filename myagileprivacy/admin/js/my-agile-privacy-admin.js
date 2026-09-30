@@ -21,6 +21,7 @@
 
 				var reload_at_afterfinish = false;
 
+
 				if( $my_agile_privacy_backend_inline.length )
 				{
 					console.debug( map_backend_prefix + '#my_agile_privacy_backend_inline context');
@@ -59,10 +60,17 @@
 						$loadingWrapper.removeClass( 'displayNone' );
 					});
 
-					$( window ).on( 'load', function() {
-
+					if( document.readyState === 'complete' )
+					{
 						$my_agile_privacy_backend.trigger( 'mapDomLoaded' );
-					});
+					}
+					else
+					{
+						$( window ).on( 'load', function() {
+
+							$my_agile_privacy_backend.trigger( 'mapDomLoaded' );
+						});
+					}
 
 					setTimeout(function(){
 
@@ -288,7 +296,10 @@
 
 						console.debug( map_backend_prefix + '.genericOptionsWrapper context');
 
-						$( '.wpColorPicker' ).wpColorPicker();
+						if( typeof $.fn.wpColorPicker === 'function' )
+						{
+							$( '.wpColorPicker' ).wpColorPicker();
+						}
 
 						var $is_cookie_policy_url_field = $( ':input[name="is_cookie_policy_url_field"]' );
 
@@ -388,6 +399,8 @@
 							var $license_user_status_field = $( 'input[name="license_user_status_field"]' );
 							var $customer_email = $( 'input[name="customer_email_field"]' );
 							var $summary_text = $( ':input[name="summary_text_field"]' );
+							var $license_name_field = $( '#license_name_field' );
+							var $license_name_wrapper = $( '.license_name_wrapper' );
 
 							var $premium_pills = $( '#my_agile_privacy_backend .nav-pills .nav-link.premium' );
 							var $premium_pills_content = $( 'div', $premium_pills );
@@ -506,6 +519,17 @@
 
 									$license_user_status_field.val( data.license_user_status );
 
+									if( data.license_name )
+									{
+										$license_name_field.val( data.license_name );
+										$license_name_wrapper.removeClass( 'd-none' );
+									}
+									else
+									{
+										$license_name_field.val( '' );
+										$license_name_wrapper.addClass( 'd-none' );
+									}
+
 									if( data.summary_text )
 									{
 										$brief_wrapper.removeClass( 'displayNone displayBlock' ).addClass( 'displayBlock' );
@@ -521,7 +545,10 @@
 										$summary_text.val( '' );
 									}
 
-									$last_sync_field.val( 'right now' );
+									if( !data?.sync_busy )
+									{
+										$last_sync_field.val( 'right now' );
+									}
 
 									$submit_button.css( {'opacity':'1','cursor':'pointer'} ).prop( 'disabled', false );
 
@@ -529,10 +556,20 @@
 									{
 										map_pupup_notify.warning( map_settings_warning_text );
 									}
+									else if( !!data?.sync_busy_message )
+									{
+										map_pupup_notify.warning( data.sync_busy_message );
+									}
+									else if( !!data?.ab_locked_message )
+									{
+										map_pupup_notify.warning( data.ab_locked_message );
+									}
 									else
 									{
 										map_pupup_notify.success( map_settings_success_text );
 									}
+
+									document.dispatchEvent( new CustomEvent( 'myagileprivacy_admin_settings_saved', { detail : data } ) );
 
 									//topbar update
 									if( !!data?.cookie_shield_raw_status )
@@ -589,6 +626,11 @@
 								}
 							}
 
+							if( $this.hasClass( 'reload_at_afterfinish' ) )
+							{
+								reload_at_afterfinish = true;
+							}
+
 							var data = $this.serialize();
 							var url = $this.attr( 'action' );
 
@@ -625,6 +667,8 @@
 									{
 										map_pupup_notify.success( map_settings_success_text );
 									}
+
+									document.dispatchEvent( new CustomEvent( 'myagileprivacy_admin_settings_saved', { detail : data } ) );
 
 									if( reload_at_afterfinish )
 									{
@@ -710,6 +754,8 @@
 									{
 										map_pupup_notify.success( map_settings_success_text );
 									}
+
+									document.dispatchEvent( new CustomEvent( 'myagileprivacy_admin_settings_saved', { detail : data } ) );
 
 									if( reload_at_afterfinish )
 									{
@@ -921,6 +967,8 @@
 									{
 										map_pupup_notify.success( map_settings_success_text );
 									}
+
+									document.dispatchEvent( new CustomEvent( 'myagileprivacy_admin_settings_saved', { detail : data } ) );
 
 									if( reload_at_afterfinish )
 									{
@@ -1405,8 +1453,8 @@
 
 						// Toggle checkbox on policy-card click when data-clickable is true
 						$('.policy-card[data-clickable="true"]', $my_agile_privacy_backend).on('click', function(e) {
-							// Prevent triggering if clicking on checkbox or label
-							if (!$(e.target).is('input[type="checkbox"], label')) {
+							// Prevent triggering if clicking on checkbox or label, or anything inside a label
+							if (!$(e.target).is('input[type="checkbox"], label') && !$(e.target).closest('label').length && !$(e.target).closest('.map-card-more-row').length) {
 								var $checkbox = $(this).find('.card-footer input[type="checkbox"]');
 								if ($checkbox.length && !$checkbox.prop('disabled')) {
 									$checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
@@ -1414,12 +1462,152 @@
 							}
 						});
 
+						// Collapse long regulation cards behind a read more button
+						const mapRegulationGrid = $my_agile_privacy_backend[0].querySelector( '.map-regulation-grid' );
+
+						if( mapRegulationGrid && window.ResizeObserver && window.CSS && CSS.supports && CSS.supports( 'overflow', 'clip' ) )
+						{
+							const mapMoreLabel = mapRegulationGrid.getAttribute( 'data-map-more' ) || '';
+							const mapLessLabel = mapRegulationGrid.getAttribute( 'data-map-less' ) || '';
+							const mapCardParts = new Map();
+							const mapHeadCards = new Map();
+
+							const mapSetCardExpanded = function( card, open )
+							{
+								const parts = mapCardParts.get( card );
+
+								card.classList.toggle( 'is-expanded', open );
+								parts.button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+								parts.label.textContent = open ? mapLessLabel : mapMoreLabel;
+								parts.icon.classList.toggle( 'fa-chevron-down', !open );
+								parts.icon.classList.toggle( 'fa-chevron-up', open );
+							};
+
+							const mapMeasureRegulationCards = function( cards )
+							{
+								// Read everything first, then write, so the observer never loops
+								const readings = cards.map( function( card ){
+									const parts = mapCardParts.get( card );
+
+									if( !parts.text.getClientRects().length ) return null;
+
+									const line = parseFloat( getComputedStyle( parts.text ).lineHeight );
+									const lines = parseFloat( getComputedStyle( card ).getPropertyValue( '--map-card-text-lines' ) );
+									const focused = document.activeElement === parts.button;
+
+									if( !isFinite( line ) || !isFinite( lines ) ) return { card: card, parts: parts, needs: false, focused: focused };
+
+									return { card: card, parts: parts, needs: parts.text.scrollHeight - lines * line > 2 * line, focused: focused };
+								});
+
+								readings.forEach( function( r ){
+									if( !r ) return;
+
+									if( r.needs )
+									{
+										r.card.classList.add( 'is-clamped' );
+										r.parts.row.hidden = false;
+										return;
+									}
+
+									if( r.focused && r.parts.title )
+									{
+										r.parts.title.setAttribute( 'tabindex', '-1' );
+										r.parts.title.focus( { preventScroll: true } );
+										r.parts.title.scrollIntoView( { block: 'nearest', behavior: 'instant' } );
+									}
+
+									mapSetCardExpanded( r.card, false );
+									r.card.classList.remove( 'is-clamped' );
+									r.parts.row.hidden = true;
+								});
+							};
+
+							Array.prototype.slice.call( mapRegulationGrid.querySelectorAll( '.policy-card' ) ).forEach( function( card ){
+								const body = card.querySelector( '.card-body' );
+
+								if( !body || !body.children.length ) return;
+
+								const head = body.children[0];
+								const title = head.querySelector( '.card-title' );
+								const wrapper = card.closest( '.regulation_wrapper' );
+								const regulation = wrapper ? wrapper.getAttribute( 'data-regulation' ) : null;
+								const text = document.createElement( 'div' );
+								const row = document.createElement( 'div' );
+								const button = document.createElement( 'button' );
+								const label = document.createElement( 'span' );
+								const icon = document.createElement( 'i' );
+
+								text.className = 'map-card-text';
+								Array.prototype.slice.call( body.children, 1 ).forEach( function( child ){
+									text.appendChild( child );
+								});
+
+								row.className = 'map-card-more-row';
+								row.hidden = true;
+								button.type = 'button';
+								button.className = 'map-card-more';
+								button.setAttribute( 'aria-expanded', 'false' );
+								label.className = 'map-card-more-label';
+								label.textContent = mapMoreLabel;
+								icon.className = 'fa-regular fa-chevron-down';
+								icon.setAttribute( 'aria-hidden', 'true' );
+								button.appendChild( label );
+								button.appendChild( icon );
+								row.appendChild( button );
+								body.appendChild( text );
+								body.appendChild( row );
+
+								if( regulation )
+								{
+									text.id = regulation + '_text';
+									button.setAttribute( 'aria-controls', text.id );
+
+									if( title )
+									{
+										title.id = regulation + '_title';
+										button.setAttribute( 'aria-describedby', title.id );
+									}
+								}
+
+								mapCardParts.set( card, { text: text, row: row, button: button, label: label, icon: icon, title: title } );
+								mapHeadCards.set( head, card );
+
+								button.addEventListener( 'click', function(){
+									const open = !card.classList.contains( 'is-expanded' );
+
+									mapSetCardExpanded( card, open );
+
+									if( !open ) button.scrollIntoView( { block: 'nearest', behavior: 'instant' } );
+								});
+							});
+
+							const mapCardObserver = new ResizeObserver( function( entries ){
+								const cards = [];
+
+								entries.forEach( function( entry ){
+									const card = mapHeadCards.get( entry.target );
+
+									if( card && cards.indexOf( card ) === -1 ) cards.push( card );
+								});
+
+								mapMeasureRegulationCards( cards );
+							});
+
+							mapHeadCards.forEach( function( card, head ){
+								mapCardObserver.observe( head );
+							});
+						}
+
 						updateWizardUI();
 					}
 
 					if( init_generic_options )
 					{
-						$( '.wpColorPicker' ).wpColorPicker();
+						if( typeof $.fn.wpColorPicker === 'function' )
+						{
+							$( '.wpColorPicker' ).wpColorPicker();
+						}
 
 						//preview
 						var $preview_cookiebanner = $( '#preview-cookiebanner' );
@@ -1482,6 +1670,41 @@
 											$( '#preview-' + preview_attr, $preview_cookiebanner ).css( 'background-color', this_value );
 											break;
 
+										case 'refuse-text-color':
+											$( '#preview-refuse .preview-button-label', $preview_cookiebanner ).css( 'background', this_value );
+											break;
+
+										case 'customize-text-color':
+											$( '#preview-customize .preview-button-label', $preview_cookiebanner ).css( 'background', this_value );
+											break;
+
+										case 'text-size':
+										case 'line-height':
+											// Le barre simulano il testo: si scalano cosi' che ai valori
+											// predefiniti (18 e 30) restino le stesse di sempre, 5px e 5px.
+											var map_prev_size = parseInt( jQuery( '#text_size_field' ).val(), 10 );
+											var map_prev_lh   = parseInt( jQuery( '#text_lineheight_field' ).val(), 10 );
+
+											$( '#preview-text-container .text', $preview_cookiebanner ).css( {
+												'height'        : Math.max( 2, Math.round( ( isNaN( map_prev_size ) ? 18 : map_prev_size ) / 3.6 ) ) + 'px',
+												'margin-bottom' : Math.max( 1, Math.round( ( isNaN( map_prev_lh ) ? 30 : map_prev_lh ) / 6 ) ) + 'px'
+											} );
+											break;
+
+										case 'buttons-order':
+											var map_order_ids = { accept : 'preview-accept', reject : 'preview-refuse', customize : 'preview-customize' };
+											var map_order_box = document.getElementById( 'preview-button-container' );
+
+											if( map_order_box )
+											{
+												String( this_value || 'accept_reject_customize' ).split( '_' ).forEach( function( name ) {
+													var button = document.getElementById( map_order_ids[ name ] );
+
+													if( button ) { map_order_box.appendChild( button ); }
+												} );
+											}
+											break;
+
 										case 'border_radius':
 											$preview_cookiebanner.css( 'border-radius', this_value +'px' );
 											$( '.preview-button', $preview_cookiebanner ).css( 'border-radius', this_value + 'px' );
@@ -1495,6 +1718,7 @@
 										case 'accept-text-color':
 											$( '#detail-preview-accept' ).css( 'color', this_value );
 											$( '.preview-button-icon','#detail-preview-accept' ).css( 'background-color', this_value );
+											$( '#preview-accept .preview-button-label', $preview_cookiebanner ).css( 'background', this_value );
 											break;
 
 										case 'accept-animation':
@@ -1523,7 +1747,7 @@
 
 											$preview_cookiebanner.removeClassStartingWith( 'map-shadow-' );
 
-											if( this_value != false )
+											if( this_value === 'map-shadow-soft' || this_value === 'map-shadow-hard' )
 											{
 												$preview_cookiebanner.addClass( this_value );
 											}
@@ -1998,30 +2222,58 @@
 
 						//dynamic map-btn-add / map-btn-remove
 						createDynamicFields( '#my_agile_privacy_backend' );
+					}
 
-						//bof hash url navigation // tabbed content
+					//bof hash url navigation // tabbed content
+					var $map_tab_buttons = $my_agile_privacy_backend.find( '.nav-pills [data-bs-toggle="pill"]' );
+
+					var map_restore_tab = function( last_attempt ){
+
 						var hash = window.location.hash;
 
-						$( ".nav-pills" ).find( "li button" ).each( function( key, val ){
+						$map_tab_buttons.each( function( key, val ){
 							var $val = $( val );
-							var bs_target = $val.attr( 'data-bs-target');
 
-							if( hash == bs_target )
+							if( hash && hash == $val.attr( 'data-bs-target' ) && !$val.hasClass( 'active' ) )
 							{
-								$val.click();
+								if( $val.is( ':visible' ) )
+								{
+									$val.trigger( 'click' );
+								}
+
+								if( !$val.hasClass( 'active' ) && ( last_attempt || !$val.closest( '.loadingWrapper.displayNone' ).length ) )
+								{
+									history.replaceState( null, '', window.location.pathname + window.location.search );
+								}
 							}
-
-							$val.click( function( ky, vl ){
-								location.hash = $(this).attr('data-bs-target');
-							});
 						});
+					};
 
-						//eof hash url navigation // tabbed content
+					map_restore_tab( false );
+
+					if( $map_tab_buttons.closest( '.loadingWrapper.displayNone' ).length )
+					{
+						$my_agile_privacy_backend.one( 'mapDomLoaded', function(){
+							map_restore_tab( true );
+						});
 					}
+
+					$map_tab_buttons.on( 'show.bs.tab', function(){
+						history.replaceState( null, '', $( this ).attr( 'data-bs-target' ) );
+					});
+
+					//eof hash url navigation // tabbed content
 
 					var tooltipTriggerList = [].slice.call( document.querySelectorAll( '[data-bs-toggle="tooltip"]' ) );
 					var tooltipList = tooltipTriggerList.map( function( tooltipTriggerEl ) {
 						return new bootstrap.Tooltip(tooltipTriggerEl)
+					});
+
+					document.addEventListener( 'keydown', function( e ) {
+						if( e.key === 'Escape' )
+						{
+							tooltipList.forEach( function( tooltip ) { tooltip.hide(); } );
+						}
 					});
 				}
 
@@ -2162,7 +2414,7 @@
 
 	// Toast notifications. Public interface unchanged: .success() / .error() /
 	// .warning(). Everything else follows the rules a toast has to respect to feel
-	// right — it stacks, it waits while you read it, and it never counts down in a
+	// right - it stacks, it waits while you read it, and it never counts down in a
 	// tab you are not looking at.
 	var map_pupup_notify =
 	{
@@ -2366,19 +2618,13 @@
 				html += '<div class="mapgeo-card">' + flagHtml + '<div class="mapgeo-card-title">' + esc(REGIONS[k].label) + '</div>' + badge(eff) + noteHtml + toggleHtml + '</div>';
 			});
 
-			// "Altri paesi" card — always present.
-			var rowType, rowNote;
-			if (forte) {
-				rowType = 'block';
-				rowNote = '<div class="mapgeo-note">' + esc(NOTE.others_block) + '</div>';
-			} else {
-				rowType = 'noblock';
-				rowNote = '<div class="mapgeo-note">' + esc(NOTE.others_noblock) + '<br><span class="mapgeo-note-soft">' + esc(NOTE.others_noblock_soft) + '</span></div>';
-			}
-			html += '<div class="mapgeo-card-default"><div class="mapgeo-card-title">🌍 ' + esc(TXT.others) + '</div>' + badge(rowType) + rowNote + '</div>';
+			// "Altri paesi" card - always present.
+			var usUnlisted = !forte && !isSelected('us');
+			var rowNote    = '<div class="mapgeo-note">' + esc(usUnlisted ? NOTE.others_block_us : NOTE.others_block) + '</div>';
+			html += '<div class="mapgeo-card-default"><div class="mapgeo-card-title">🌍 ' + esc(TXT.others) + '</div>' + badge('block') + rowNote + '</div>';
 
 			// Global notice.
-			var hasBlock = (rowType === 'block'), hasNoBlock = (rowType === 'noblock');
+			var hasBlock = true, hasNoBlock = usUnlisted;
 			ORDER.forEach(function (k) {
 				if (!isSelected(k)) { return; }
 				if (effType(k) === 'block') { hasBlock = true; } else { hasNoBlock = true; }
@@ -2387,7 +2633,7 @@
 			if (hasBlock && hasNoBlock) {
 				noticeHtml = '<div class="mapgeo-notice mapgeo-notice-info"><strong>📍 ' + esc(TXT.notice_mixed_strong) + '</strong> ' + esc(TXT.notice_mixed) + '</div>';
 			} else {
-				noticeHtml = '<div class="mapgeo-notice mapgeo-notice-neutral">✓ ' + esc(hasNoBlock ? TXT.notice_noblock : TXT.notice_block) + '</div>';
+				noticeHtml = '<div class="mapgeo-notice mapgeo-notice-neutral">✓ ' + esc(TXT.notice_block) + '</div>';
 			}
 
 			document.getElementById('mapgeo_notice').innerHTML = noticeHtml;
@@ -2434,6 +2680,102 @@
 		$iab.on( 'change', syncAcmVisibility );
 		$cmode.on( 'change', syncAcmVisibility );
 		syncAcmVisibility();
+	});
+
+	// ── Free trial request ──
+	$(function() {
+		var $form = $( '#map_trial_form' );
+
+		if ( ! $form.length ) { return; }
+
+		var $outcome = $( '#map_trial_outcome' );
+		var $submit  = $( '#map_trial_submit' );
+
+		function say( text, ok ) {
+			$outcome.text( text ).toggleClass( 'map-trial-ko', ! ok ).prop( 'hidden', false );
+		}
+
+		$form.on( 'submit', function( e ) {
+			e.preventDefault();
+
+			var name  = $.trim( $( '#map_trial_name' ).val() );
+			var email = $.trim( $( '#map_trial_email' ).val() );
+
+			if ( ! name || ! email ) {
+				say( map_trial_i18n.invalid, false );
+				return;
+			}
+
+			$submit.prop( 'disabled', true );
+			$outcome.prop( 'hidden', true );
+
+			$.post( map_ajax.ajax_url, {
+				action: 'map_request_trial',
+				security: map_ajax.trial_security,
+				name: name,
+				email: email,
+				user_type: $( 'input[name="map_trial_type"]:checked' ).val(),
+				// wp_localize_script would make this a string on the way in; here it goes out as a
+				// form value, and the handler compares it with == 1
+				marketing_consent: $( '#map_trial_consent' ).is( ':checked' ) ? 1 : 0
+			} ).done( function( response ) {
+				if ( response && response.success ) {
+					// the request is sent: nothing left on the page to lose
+					$( window ).off( 'beforeunload.unsaved' );
+					$form.prop( 'hidden', true );
+					say( map_trial_i18n.sent.replace( '%s', email ), true );
+					return;
+				}
+
+				var code = ( response && response.data && response.data.code ) ? response.data.code : 'refused';
+
+				say( map_trial_i18n[ code ] ? map_trial_i18n[ code ] : map_trial_i18n.refused, false );
+				$submit.prop( 'disabled', false );
+			} ).fail( function() {
+				say( map_trial_i18n.unreachable, false );
+				$submit.prop( 'disabled', false );
+			});
+		});
+	});
+
+	// ── Trial B request: no form, the customer is already identified by the licence ──
+	$(function() {
+		var $submit = $( '#map_trial_b_submit' );
+
+		if ( ! $submit.length ) { return; }
+
+		var $outcome = $( '#map_trial_b_outcome' );
+
+		function say( text, ok ) {
+			$outcome.text( text ).toggleClass( 'map-trial-ko', ! ok ).prop( 'hidden', false );
+		}
+
+		$submit.on( 'click', function( e ) {
+			e.preventDefault();
+
+			$submit.prop( 'disabled', true );
+			$outcome.prop( 'hidden', true );
+
+			$.post( map_ajax.ajax_url, {
+				action: 'map_request_trial_b',
+				security: map_ajax.trial_b_security
+			} ).done( function( response ) {
+				if ( response && response.success ) {
+					// the grant is already written: the page is reloaded so it reads the new state
+					say( map_trial_i18n.granted, true );
+					window.setTimeout( function() { window.location.reload(); }, 1500 );
+					return;
+				}
+
+				var code = ( response && response.data && response.data.code ) ? response.data.code : 'refused';
+
+				say( map_trial_i18n[ code ] ? map_trial_i18n[ code ] : map_trial_i18n.refused, false );
+				$submit.prop( 'disabled', false );
+			} ).fail( function() {
+				say( map_trial_i18n.unreachable, false );
+				$submit.prop( 'disabled', false );
+			});
+		});
 	});
 
 })( jQuery );

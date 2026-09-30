@@ -1,4 +1,5 @@
 <?php
+if( !defined( 'ABSPATH' ) ) { exit; }
 
 /**
  * My Agile Privacy - Log guard
@@ -57,12 +58,90 @@ function map_log_sensitive_keys()
 }
 
 /**
+ * True while the secrets are being read: a log line written then is dropped.
+ *
+ * @param  bool|null $set
+ * @return bool
+ */
+function map_log_preparing( $set = null )
+{
+	static $preparing = false;
+
+	if( null !== $set )
+	{
+		$preparing = (bool) $set;
+	}
+
+	return $preparing;
+}
+
+/**
+ * Secret values that must not appear in a log line, whatever key carries them.
+ *
+ * @return array
+ */
+function map_log_sensitive_values()
+{
+	static $by_site = array();
+
+	$site = function_exists( 'get_current_blog_id' ) ? (int) get_current_blog_id() : 0;
+
+	if( isset( $by_site[ $site ] ) )
+	{
+		return $by_site[ $site ];
+	}
+
+	$values = array();
+
+	if( defined( 'AUTH_KEY' ) && defined( 'AUTH_SALT' ) && function_exists( 'hash_hmac' ) )
+	{
+		$values[] = hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT );
+	}
+
+	// set before reading the option, so a log written while it is read does not recurse
+	$by_site[ $site ] = $values;
+
+	global $wpdb;
+
+	if( defined( 'MAP_PLUGIN_SETTINGS_FIELD' ) && isset( $wpdb ) && is_object( $wpdb ) && function_exists( 'maybe_unserialize' ) )
+	{
+		map_log_preparing( true );
+
+		try
+		{
+			$raw = $wpdb->get_var( $wpdb->prepare(
+				"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+				MAP_PLUGIN_SETTINGS_FIELD
+			) );
+
+			$settings = ( null !== $raw ) ? maybe_unserialize( $raw ) : null;
+		}
+		finally
+		{
+			map_log_preparing( false );
+		}
+
+		foreach( array( 'license_code', 'customer_email', 'identity_email', 'dpo_email' ) as $key )
+		{
+			if( is_array( $settings ) && isset( $settings[ $key ] ) && is_string( $settings[ $key ] ) && strlen( $settings[ $key ] ) >= 6 )
+			{
+				$values[] = $settings[ $key ];
+			}
+		}
+	}
+
+	$by_site[ $site ] = $values;
+
+	return $values;
+}
+
+/**
  * Returns a copy of the value with sensitive entries replaced.
  *
  * Operates on a copy on purpose: several callers log a structure they are about
- * to send, so mutating it in place would alter what goes out. Scalars are
- * returned untouched and the depth limit keeps self-referencing structures from
- * recursing forever.
+ * to send, so mutating it in place would alter what goes out. Strings are masked
+ * by value, other scalars returned untouched, and the depth limit keeps
+ * self-referencing structures from recursing forever.
  *
  * @param  mixed $data
  * @param  int   $depth
@@ -70,6 +149,13 @@ function map_log_sensitive_keys()
  */
 function map_log_redact( $data, $depth = 0 )
 {
+	if( is_string( $data ) )
+	{
+		$secrets = map_log_sensitive_values();
+
+		return $secrets ? str_replace( $secrets, '[redacted]', $data ) : $data;
+	}
+
 	if( !is_array( $data ) && !is_object( $data ) )
 	{
 		return $data;
@@ -120,7 +206,7 @@ function map_log_protect_dir( $dir )
 {
 	static $done = array();
 
-	if( empty( $dir ) || isset( $done[ $dir ] ) )
+	if( empty( $dir ) || isset( $done[ $dir ] ) || !function_exists( 'file_put_contents' ) )
 	{
 		return;
 	}

@@ -11,7 +11,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	<div class="col-sm-8">
 
 		<?php
-				$map_opt_import = isset( $_GET['map_options_import'] ) ? sanitize_key( $_GET['map_options_import'] ) : '';
+				$map_opt_import = ( isset( $_GET['map_options_import'] ) && is_string( $_GET['map_options_import'] ) ) ? sanitize_key( $_GET['map_options_import'] ) : '';
 				if( 'success' === $map_opt_import )
 				{
 					echo '<div class="alert alert-success">' . esc_html__( 'Options imported successfully.', 'MAP_txt' ) . '</div>';
@@ -27,6 +27,10 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				elseif( 'error' === $map_opt_import )
 				{
 					echo '<div class="alert alert-danger">' . esc_html__( 'Options import failed: invalid or unreadable file.', 'MAP_txt' ) . '</div>';
+				}
+				elseif( 'ab_running' === $map_opt_import )
+				{
+					echo '<div class="alert alert-warning">' . esc_html__( 'Want to import the settings? Then close the running Banner A/B Test first.', 'MAP_txt' ) . '</div>';
 				}
 			?>
 
@@ -140,7 +144,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 						<div class="row">
 							<div class="col-sm-6">
-								<input type="file" name="the_imported_file" >
+								<input type="file" name="the_imported_file" aria-label="<?php echo esc_attr__( 'Backup file', 'MAP_txt' ); ?>" >
 							</div>
 
 							<div class="col-sm-6">
@@ -194,7 +198,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<form action="admin-post.php" method="post" enctype="multipart/form-data">
 								<input type="hidden" name="action" value="map_import_options_form" />
 								<?php if( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( 'map_import_options' ); } ?>
-								<input type="file" name="map_options_file" accept="application/json,.json" />
+								<input type="file" name="map_options_file" accept="application/json,.json" aria-label="<?php echo esc_attr__( 'Backup file', 'MAP_txt' ); ?>" />
 								<button type="submit" class="btn-lg button-agile"><i class="fa-solid fa-upload" aria-hidden="true"></i> <?php esc_html_e( 'Import Options', 'MAP_txt' ); ?></button>
 							</form>
 						</div>
@@ -227,7 +231,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	<div class="col-sm-4">
 
 		<?php
-			$tab = 'backup';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

@@ -1,7 +1,3 @@
-:root {
-	/* --bs-danger-rgb:120,53,1 !important; */
-}
-
 /*bof design tokens*/
 /* Scoped on the plugin wrappers (never :root: that would leak into all of wp-admin).
    Inherited by every plugin surface, including CPT metaboxes and intro bubbles. */
@@ -42,7 +38,6 @@ body {
 }
 
 #adminmenu li.menu-icon-my-agile-privacy-c > a {
-	/* box-shadow: inset 16px 0 0 0 #eabb13; */
 	color: #fff;
 	background-color: #1d2327;
 }
@@ -324,7 +319,8 @@ body {
 
 /*bof page headings*/
 /* Direct page titles ("My Agile Privacy®: X") share one typographic voice.
-   Child selector on purpose: inner content h2 are untouched. */
+   Child selector on purpose: inner content headings are untouched. */
+#my_agile_privacy_backend > h1,
 #my_agile_privacy_backend > h2 {
 	font-size: 22px;
 	font-weight: 600;
@@ -381,6 +377,18 @@ body {
 .my_agile_privacy_backend_inline .button-agile:focus-visible {
 	outline: none;
 	box-shadow: var(--map-focus-ring);
+}
+
+/* A disabled button has to look disabled: the hover rules must not win over this. */
+#my_agile_privacy_backend .button-agile:disabled,
+#my_agile_privacy_backend .button-agile:disabled:hover,
+#my_agile_privacy_backend .button-agile-outline:disabled,
+#my_agile_privacy_backend .button-agile-outline:disabled:hover,
+.my_agile_privacy_backend_inline .button-agile:disabled,
+.my_agile_privacy_backend_inline .button-agile-outline:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+	box-shadow: none;
 }
 
 #my_agile_privacy_backend .button-agile-outline,
@@ -732,7 +740,8 @@ body {
 	padding: 8px 12px;
 	font-size: 12px;
 	line-height: 1.4;
-	white-space: nowrap;
+	width: 460px;
+	white-space: normal;
 	opacity: 0;
 	visibility: hidden;
 	transform: translateY(4px);
@@ -803,6 +812,11 @@ body {
 #my_agile_privacy_backend .grace_period_style{
 	background: #FFF3CD!important;
 	color: #664D03!important;
+}
+
+#my_agile_privacy_backend .license_name_style{
+	background: #e9ecef!important;
+	color: #212529!important;
 }
 
 /*bof styled radio formatting*/
@@ -980,16 +994,21 @@ body {
 	transform: rotate(-45deg);
 }
 
+/* Both shapes: the drawn box is a sibling of the input, or nested in its label. */
 #my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox,
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + label .label-checkbox,
 #my_agile_privacy_backend .styled_radio .round .label-checkbox.checked,
 #my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + label .label-radio,
 #my_agile_privacy_backend .styled_radio .round .label-radio.checked {
 	border-color: #34b93d;
 }
 
 #my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox::after,
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + label .label-checkbox::after,
 #my_agile_privacy_backend .styled_radio .round .label-checkbox.checked::after,
 #my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio::after,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + label .label-radio::after,
 #my_agile_privacy_backend .styled_radio .round .label-radio.checked::after {
 	height: calc(var(--checkbox-height) / 2);
 	-moz-animation: map_anim_checkbox_bottom 0.2s ease 0s forwards;
@@ -999,8 +1018,10 @@ body {
 }
 
 #my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + .label-checkbox::before,
+#my_agile_privacy_backend .styled_radio .round input[type="checkbox"]:checked + label .label-checkbox::before,
 #my_agile_privacy_backend .styled_radio .round .label-checkbox.checked::before,
 #my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + .label-radio::before,
+#my_agile_privacy_backend .styled_radio .round input[type="radio"]:checked + label .label-radio::before,
 #my_agile_privacy_backend .styled_radio .round .label-radio.checked::before {
 	height: calc(var(--checkbox-height) * 1.2);
 	-moz-animation: map_anim_checkbox_top 0.4s ease 0s forwards;
@@ -1073,7 +1094,7 @@ body {
 /* Press feedback: the whole toast is a dismiss target. */
 .map_notify_popup.is-visible:active{ transform: scale( .98 ); transition-duration: 120ms; }
 
-/* Exit is quicker than entry — the system responding, not the user deciding —
+/* Exit is quicker than entry - the system responding, not the user deciding -
    and collapses its own box so the toasts below slide up instead of jumping. */
 .map_notify_popup.is-leaving{
 	opacity: 0;
@@ -1149,27 +1170,6 @@ body {
 .metabox-pill {
 	top: -52px;
 	left: -12px;
-}
-
-.compliance-report-row div.badge.rounded-pill {
-	font-size: 15px;
-	min-width: 250px;
-	padding: 10px 35px 10px 35px;
-	position: relative;
-}
-.compliance-report-row div.badge.rounded-pill i {
-	position: absolute;
-	left: 10px;
-}
-
-.compliance-report-row div[data-bs-toggle="tooltip"] {
-	text-decoration: underline;
-	text-decoration-style: dotted;
-}
-
-.compliance-report-row .progress {
-	height: 40px;
-	font-size: 18px;
 }
 
 .map_highlight {
@@ -1445,7 +1445,8 @@ body {
 }
 .progress-bar.bg-success,
 .data-text.text-success {
-	color: var(--bs-green) !important;
+	/* Bootstrap's green fails on the pale fill; this is the .alert-success green. */
+	color: #0f5132 !important;
 }
 
 .progress-bar {
@@ -1642,11 +1643,77 @@ body {
 	background-color: transparent;
 }
 
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card {
+	--map-card-text-lines: 15;
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-text {
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+@supports (overflow: clip) {
+	#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card.is-clamped:not(.is-expanded) .map-card-text {
+		max-height: calc( var(--map-card-text-lines) * 1.5em );
+		overflow: clip;
+		-webkit-mask-image: linear-gradient( to bottom, #000 calc( 100% - 3em ), transparent );
+		mask-image: linear-gradient( to bottom, #000 calc( 100% - 3em ), transparent );
+	}
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more-row {
+	padding-top: 4px;
+	cursor: default;
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 24px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: #2271b1;
+	font-size: 13px;
+	line-height: 1.5;
+	cursor: pointer;
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more:hover {
+	text-decoration: underline;
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more,
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .card-title {
+	scroll-margin-top: calc( var(--wp-admin--admin-bar--height, 46px) + 8px );
+	scroll-margin-bottom: 8px;
+}
+
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more:focus-visible,
+#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .card-title[tabindex="-1"]:focus-visible {
+	outline: 2px solid transparent;
+	outline-offset: 2px;
+	box-shadow: var(--map-focus-ring);
+}
+
+@media (forced-colors: active) {
+	#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card.is-clamped:not(.is-expanded) .map-card-text {
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card .map-card-more {
+		color: LinkText;
+		text-decoration: underline;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	#my_agile_privacy_backend.siteAndPoliciesSettingsWrapper .policy-card { transition: none; }
 }
 
-/* geolocalization behaviour section — ported from prototipo-localizzazione.html, namespaced */
+/* geolocalization behaviour section - ported from prototipo-localizzazione.html, namespaced */
 #my_agile_privacy_backend .mapgeo-section { margin: 20px 0 8px; }
 #my_agile_privacy_backend .mapgeo-notice { border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.5; margin:18px 0; }
 #my_agile_privacy_backend .mapgeo-notice-info { background:#dbeafe; color:#1e40af; }
@@ -1662,7 +1729,6 @@ body {
 #my_agile_privacy_backend .mapgeo-badge-noblock { background:#FAEEDA; color:#854F0B; }
 #my_agile_privacy_backend .mapgeo-note { font-size:13px; line-height:1.5; color:#3c434a; margin-top:11px; }
 #my_agile_privacy_backend .mapgeo-note-warn { color:#b91c1c; }
-#my_agile_privacy_backend .mapgeo-note-soft { color:#787c82; }
 #my_agile_privacy_backend .mapgeo-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#3c434a; margin-bottom:11px; }
 #my_agile_privacy_backend .mapgeo-sw { position:relative; width:32px; height:18px; display:inline-block; flex:none; }
 #my_agile_privacy_backend .mapgeo-sw input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
@@ -1810,7 +1876,7 @@ body {
 #my_agile_privacy_backend .map-help-link,
 #_my_agile_privacy_backend .map-help-link {
 	font-size: 12px;
-	color: #8a6d60;
+	color: #7d6255;
 	text-decoration: none;
 	cursor: help;
 	border-bottom: 1px dashed transparent;
@@ -1849,7 +1915,7 @@ body {
 /* separator between two side-by-side help links */
 #my_agile_privacy_backend .map-help-sep,
 #_my_agile_privacy_backend .map-help-sep {
-	color: #c9b8b0;
+	color: #75665e;
 	margin: 0 8px;
 	font-size: 12px;
 }
@@ -1866,7 +1932,8 @@ body {
 #my_agile_privacy_backend .map-seg button { background:#fff; border:0; border-left:1px solid #ccd0d4; padding:6px 14px; cursor:pointer; font-size:13px; color:#1d2327; }
 #my_agile_privacy_backend .map-seg button:first-child { border-left:0; }
 #my_agile_privacy_backend .map-seg button.active { background:var(--map-navy); color:#fff; font-weight:600; }
-#my_agile_privacy_backend #map-stats-variant { padding:6px 10px; border:1px solid #ccd0d4; border-radius:6px; background:#fff; }
+/* Same box as .map-seg buttons: wp-admin gives selects min-height 40px and line-height 38px. */
+#my_agile_privacy_backend .map-stats-controls select { padding:6px 10px; border:1px solid #ccd0d4; border-radius:6px; background:#fff; font-size:13px; line-height:1.5; height:auto; min-height:0; color:#1d2327; }
 #my_agile_privacy_backend .map-stats-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:0 0 18px; }
 #my_agile_privacy_backend .map-kpi { background:#fff; border:2px solid #e0e0e2; border-radius:12px; padding:16px; position:relative; }
 #my_agile_privacy_backend .map-kpi-lab { display:flex; align-items:center; gap:6px; font-size:12px; color:#646970; text-transform:uppercase; letter-spacing:.03em; }
@@ -1886,7 +1953,7 @@ body {
 @media (max-width:600px) { #my_agile_privacy_backend .map-stats-kpis { grid-template-columns:1fr 1fr; } }
 
 /* Hero rate: the opt-in is the headline of the page, the volume is context.
-   Sober on purpose — this admin has no display font and no comic layer. */
+   Sober on purpose - this admin has no display font and no comic layer. */
 #my_agile_privacy_backend .map-stats-hero { background:var(--map-bg-subtle); border:1px solid #e6e6ec; border-radius:var(--map-radius-lg); padding:18px 20px; display:flex; flex-direction:column; gap:14px; margin:0 0 18px; }
 #my_agile_privacy_backend .map-stats-hero-top { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
 #my_agile_privacy_backend .map-stats-hero-top .map-pill { max-width:none; overflow:visible; text-overflow:clip; }
@@ -1948,3 +2015,134 @@ body {
 #my_agile_privacy_backend .map-widget-code { margin:0; padding:12px 14px; border-radius:var(--map-radius-md); white-space:pre-wrap; word-break:break-word; overflow:visible; height:auto; }
 #my_agile_privacy_backend .map-widget-code code { white-space:pre-wrap; word-break:break-word; font-size:14px; line-height:1.6; }
 #my_agile_privacy_backend .map-widget-copy-btn { margin-top:10px; }
+
+/*bof contrasto AA*/
+
+/* Restores the WordPress admin link colour that Bootstrap repaints.
+   body a is (0,0,2): it outranks Bootstrap's bare a from any position in the
+   cascade, and still loses to a:hover and to every component rule. */
+body a {
+	color: #2271b1;
+}
+
+#my_agile_privacy_backend .map-preview-credits,
+#_my_agile_privacy_backend .map-preview-credits {
+	max-width: 300px;
+}
+
+/* List table dots: the glyph is a character, so WAVE applies the 4.5 text threshold. */
+.map-dot-on {
+	color: #287a37;
+}
+
+.map-dot-off {
+	color: #6f6f6f;
+}
+
+#my_agile_privacy_backend .form-text,
+#_my_agile_privacy_backend .form-text,
+#my_agile_privacy_backend .link-secondary,
+#_my_agile_privacy_backend .link-secondary {
+	color: #646d74;
+}
+
+#my_agile_privacy_backend .text-muted,
+#_my_agile_privacy_backend .text-muted {
+	color: #646d74 !important;
+}
+
+#my_agile_privacy_backend .link-secondary:hover,
+#my_agile_privacy_backend .link-secondary:focus,
+#_my_agile_privacy_backend .link-secondary:hover,
+#_my_agile_privacy_backend .link-secondary:focus {
+	color: #565e64;
+}
+
+/* Not inside Prism blocks: those set their own base colour on code[class*=language-]. */
+#my_agile_privacy_backend code:not([class*="language-"]),
+#_my_agile_privacy_backend code:not([class*="language-"]) {
+	color: #b82c72;
+}
+
+#my_agile_privacy_backend .map-kpi-delta.up {
+	color: #12873d;
+}
+
+#my_agile_privacy_backend .map-stats-hero-val.empty {
+	color: #6f7175;
+}
+/*eof contrast */
+
+/* The label lays out drawn box and text on one line. */
+#my_agile_privacy_backend .styled_radio .round > label.round-label {
+	display: flex;
+	/* flex-start: centring moves the box down 2px. */
+	align-items: flex-start;
+	margin: 0;
+	cursor: pointer;
+}
+/*eof decorated control */
+
+/*bof styles moved out of the page
+
+  This sheet is enqueued BEFORE bootstrap.min.css: single-class rules lose ties,
+  hence the tag and second-class qualifiers below. */
+
+.fa-spinner-third.fa-spin { --fa-animation-duration: 1s; }
+
+/* Unscoped: rendered on the CPT screen, outside #my_agile_privacy_backend. */
+img.map-lang-flag {
+	width: 16px;
+	height: auto;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+select.map-mw-100,
+input.map-mw-100,
+textarea.map-mw-100 { max-width: 100%; }
+
+input.map-w-95 { width: 95%; }
+
+textarea.map-fs-12 { font-size: 12px; }
+
+.progress.map-h-3rem { height: 3rem; }
+.progress-bar.map-w-20 { width: 20%; }
+
+i.map-fs-4rem { font-size: 4rem; }
+
+img.map-w-100 { width: 100%; }
+
+#my_agile_privacy_backend .map-text-left { text-align: left; }
+
+#my_agile_privacy_backend .map-pt-20 { padding-top: 20px; }
+
+/* Unscoped on purpose: .displayNone is scoped and misses the premium pages. */
+.map-hidden { display: none; }
+
+/*eof styles moved out of the page*/
+
+/* Free trial and premium pages: same box and type scale as the Dashboard, measured there.
+   .consistent-box is only styled inside .genericOptionsWrapper .tab-content, so these screens
+   need their own rules or they fall back to the 13px admin default. */
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box {
+	background: #fff;
+	border: 1px solid #dee2e6;
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 24px;
+}
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box p,
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box label,
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box legend { font-size: 16px; line-height: 24px; }
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box p.lead { font-size: 18px; line-height: 27px; font-weight: 400; }
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box h2 { font-size: 20px; font-weight: 500; line-height: 24px; margin: 0 0 12px; padding: 0; }
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box small { font-size: 14px; line-height: 21px; }
+#my_agile_privacy_backend.dashboardOptionsWrapper .consistent-box .bg-light { font-size: 16px; }
+
+.map-trial-form .map-trial-label { display: block; margin-bottom: 4px; font-weight: 600; }
+.map-trial-form .map-trial-input { width: 100%; font-size: 16px; padding: 6px 10px; }
+.map-trial-form .map-trial-legend { font-weight: 600; margin-bottom: 6px; padding: 0; float: none; width: auto; }
+.map-trial-form fieldset label { display: inline-block; font-weight: 400; }
+.map-trial-outcome { margin-top: 14px; padding: 12px 14px; font-size: 16px; border-left: 4px solid #46b450; background: #f6f7f7; }
+.map-trial-outcome.map-trial-ko { border-left-color: #d63638; }

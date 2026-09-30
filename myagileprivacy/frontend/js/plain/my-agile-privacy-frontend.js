@@ -9,11 +9,14 @@ if( typeof map_ajax === 'undefined' )        { window.map_ajax = undefined; }
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0018",
+	'js_internal_version' 				: "3.0020",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
 	'map_initted' 						: false,
+	'map_banner_ready_waiting' 			: false,
+	'map_banner_ready_done' 			: false,
+	'map_after_init_done' 				: false,
 	'map_document_load' 				: false,
 	'map_debug' 						: false,
 	'map_cookie_expire' 				: 180,
@@ -132,6 +135,7 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 }
 
 window.MAP_TRANSPORT_COOKIE_NAME = 'map_tp';
+window.MAP_GEO_TRANSPORT_COOKIE_NAME = 'map_geo_tp';
 
 window.MAP_SVG_VIDEO = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M4 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4zm6 3.5 6 3.5-6 3.5v-7z'/></svg>";
 window.MAP_SVG_MAPS = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='48' height='48' fill='currentColor' aria-hidden='true'><path d='M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z'/></svg>";
@@ -358,11 +362,10 @@ var MAP =
 					geo_sede_strong : MAP_SYS.geo_sede_strong,
 					geo_force_optout: MAP_SYS.geo_force_optout
 				} );
-				MAP.mapGeoInit();
 			}
 			else
 			{
-				MapLogger.log( 'MAP-GEO', 'geo disabled in config (map_full_config.geo_enabled falsy) — skipping geo init' );
+				MapLogger.log( 'MAP-GEO', 'geo disabled in config (map_full_config.geo_enabled falsy) - skipping geo init' );
 			}
 
 			if( typeof CookieShield !== 'undefined' &&
@@ -453,6 +456,12 @@ var MAP =
 			this.toggleBar();
 			this.createInlineNotify();
 			this.attachEvents();
+
+			// Needs the bar references and the button handlers, both set up above.
+			if( MAP_SYS.geo_enabled )
+			{
+				MAP.mapGeoInit();
+			}
 
 			this.attachAnimations();
 
@@ -843,7 +852,7 @@ var MAP =
 
 	        // 3. Configured default (native mode safety net; gtm mode typically
 	        //    has no MAP-side default so this returns null and the caller
-	        //    falls back to platform-level defaults — e.g. Shopify essential)
+	        //    falls back to platform-level defaults - e.g. Shopify essential)
 	        if( typeof map_full_config !== 'undefined' &&
 	            map_full_config?.cmode_v2_default_consent_obj )
 	        {
@@ -1791,6 +1800,23 @@ var MAP =
 		}
 	},
 
+	//true when the page is rendered as a banner preview
+	isSplitPreview: function()
+	{
+		return (
+			typeof map_full_config !== 'undefined' &&
+			map_full_config &&
+			map_full_config.split_test &&
+			map_full_config.split_test.preview === true
+		);
+	},
+
+	//true when the page is the response to a form submission
+	isPostMode: function()
+	{
+		return ( !!this?.settings && this.settings.post_mode == 1 );
+	},
+
 	toggleBar: function()
 	{
 		//for preserving scope
@@ -1806,7 +1832,7 @@ var MAP =
 			// .showConsent listeners below are still bound, so the manage-consent
 			// widget works regardless. mapGeoApply() re-invokes toggleBar() once
 			// resolved. Sites without geo are unaffected.
-			var geoDefer = ( MAP_SYS.geo_enabled && ! MAP_SYS.geo_resolved );
+			var geoDefer = ( MAP_SYS.geo_enabled && ! MAP_SYS.geo_resolved ) && ! that.isSplitPreview();
 			if( geoDefer )
 			{
 				MAP_SYS.geo_bar_deferred = true;
@@ -1824,9 +1850,10 @@ var MAP =
 
 			if( ! geoDefer )
 			{
-			if( ! geoNoBlock &&
+			if( that.isSplitPreview() ||
+				( ! geoNoBlock &&
 				!MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
-				!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME )
+				!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME ) )
 				)
 			{
 				if( MAP_SYS.in_iab_context )
@@ -1852,7 +1879,7 @@ var MAP =
 
 							setTimeout( function() {
 								var scroll_to_top = document.querySelector( '.map_notification-message.map-iab-context' );
-								if( scroll_to_top ) {
+								if( scroll_to_top && window.getComputedStyle( that.bar_elm ).position === 'fixed' ) {
 									scroll_to_top.scrollIntoView( { behavior: 'smooth' } );
 								}
 							}, 400);
@@ -1981,6 +2008,7 @@ var MAP =
 							}
 
 							that.bar_open = true;
+							that.dispatchConsentEvents( 'myagileprivacy_bar_shown' );
 							that.bar_elm.focus();
 							that.optimizeMobile();
 
@@ -2095,6 +2123,7 @@ var MAP =
 						}
 
 						that.bar_open = true;
+						that.dispatchConsentEvents( 'myagileprivacy_bar_shown' );
 						that.bar_elm.focus();
 						that.optimizeMobile();
 					}
@@ -2925,7 +2954,7 @@ var MAP =
 
 			if( typeof map_ajax !== 'undefined' &&
 				typeof map_ajax.cookie_process_delayed_mode !== 'undefined' &&
-				map_ajax.cookie_process_delayed_mode === 1
+				map_ajax.cookie_process_delayed_mode == 1
 				)
 			{
 				//wait for page load
@@ -3400,7 +3429,10 @@ var MAP =
 			} );
 
 			that.bar_open = true;
-			that.bar_elm.focus();
+			that.dispatchConsentEvents( 'myagileprivacy_bar_shown' );
+
+			//no scroll while the stylesheet is not applied yet
+			that.bar_elm.focus( window.getComputedStyle( that.bar_elm ).position !== 'fixed' ? { preventScroll: true } : undefined );
 
 			that.optimizeMobile();
 
@@ -3531,7 +3563,15 @@ var MAP =
 					break;
 			}
 
+			// a bar that was never displayed is not being hidden by anyone
+			var was_open = this.bar_open;
+
 			this.bar_open = false;
+
+			if( was_open )
+			{
+				this.dispatchConsentEvents( 'myagileprivacy_bar_hidden' );
+			}
 
 			(async() => {
 
@@ -3694,6 +3734,8 @@ var MAP =
 				break;
 			}
 
+			that.dispatchConsentEvents( 'myagileprivacy_bar_hidden' );
+
 			var this_showagain_tab = Boolean( that.settings.showagain_tab );
 
 			if( !this_showagain_tab &&
@@ -3824,6 +3866,7 @@ var MAP =
 			}
 
 			that.bar_open = false;
+			that.dispatchConsentEvents( 'myagileprivacy_bar_hidden' );
 
 			var this_showagain_tab = Boolean( that.settings.showagain_tab );
 
@@ -4282,7 +4325,15 @@ var MAP =
 
 			if( need_reload )
 			{
-				window.location.reload();
+				//a reload would resubmit the form: navigate to the same address instead
+				if( that.isPostMode() )
+				{
+					window.location.replace( window.location.href );
+				}
+				else
+				{
+					window.location.reload();
+				}
 			}
 
 			//execution of once custom patch functions
@@ -4625,6 +4676,16 @@ var MAP =
 
 						that.updateLastConsentRecords();
 
+						that.dispatchConsentEvents( 'myagileprivacy_iab_accept_all' );
+
+						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+
+						if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+						{
+							window.CookieShield.resetAcceptedAllCache();
+						}
+
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox ').forEach(function( $_this ) {
 							$_this.value = '1';
 							MAP.mapSyncSlider( $_this );
@@ -4657,6 +4718,16 @@ var MAP =
 						e.stopImmediatePropagation();
 
 						that.updateLastConsentRecords();
+
+						that.dispatchConsentEvents( 'myagileprivacy_iab_reject_all' );
+
+						MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
+						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+
+						if( typeof window.CookieShield?.resetAcceptedAllCache === "function" )
+						{
+							window.CookieShield.resetAcceptedAllCache();
+						}
 
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( $elem ) {
 							$elem.value = '0';
@@ -4699,23 +4770,33 @@ var MAP =
 		en: { prefix: "[MyAgilePrivacy admin-only notification]", close: "Close",
 			detected: "The Cookie Shield has detected the following cookies so far: %s.",
 			none: "The Cookie Shield has not detected any cookies.",
-			off: "Cookie Shield is turned off. Enable it in order to block cookies." },
+			off: "Cookie Shield is turned off. Enable it in order to block cookies.",
+			bar_label: "Administrator notices", bar_close_all: "Close all",
+			sr_line: "%s, administrator only" },
 		it: { prefix: "[MyAgilePrivacy notifica solo per l'amministratore]", close: "Chiudi",
 			detected: "Il Cookie Shield ha rilevato finora i seguenti cookie: %s.",
 			none: "Il Cookie Shield non ha rilevato alcun cookie.",
-			off: "Il Cookie Shield è disattivato. Attivalo per bloccare i cookie." },
+			off: "Il Cookie Shield è disattivato. Attivalo per bloccare i cookie.",
+			bar_label: "Notifiche per l'amministratore", bar_close_all: "Chiudi tutti",
+			sr_line: "%s, solo per l'amministratore" },
 		fr: { prefix: "[MyAgilePrivacy notification réservée à l'administrateur]", close: "Fermer",
 			detected: "Le Cookie Shield a détecté jusqu'à présent les cookies suivants : %s.",
 			none: "Le Cookie Shield n'a détecté aucun cookie.",
-			off: "Le Cookie Shield est désactivé. Activez-le pour bloquer les cookies." },
+			off: "Le Cookie Shield est désactivé. Activez-le pour bloquer les cookies.",
+			bar_label: "Notifications pour l'administrateur", bar_close_all: "Tout fermer",
+			sr_line: "%s, réservé à l'administrateur" },
 		de: { prefix: "[MyAgilePrivacy Hinweis nur für Administratoren]", close: "Schließen",
 			detected: "Der Cookie Shield hat bisher die folgenden Cookies erkannt: %s.",
 			none: "Der Cookie Shield hat keine Cookies erkannt.",
-			off: "Der Cookie Shield ist deaktiviert. Aktivieren Sie ihn, um Cookies zu blockieren." },
+			off: "Der Cookie Shield ist deaktiviert. Aktivieren Sie ihn, um Cookies zu blockieren.",
+			bar_label: "Hinweise für Administratoren", bar_close_all: "Alle schließen",
+			sr_line: "%s, nur für Administratoren" },
 		es: { prefix: "[MyAgilePrivacy aviso solo para el administrador]", close: "Cerrar",
 			detected: "El Cookie Shield ha detectado hasta ahora las siguientes cookies: %s.",
 			none: "El Cookie Shield no ha detectado ninguna cookie.",
-			off: "El Cookie Shield está desactivado. Actívelo para bloquear las cookies." }
+			off: "El Cookie Shield está desactivado. Actívelo para bloquear las cookies.",
+			bar_label: "Avisos para el administrador", bar_close_all: "Cerrar todo",
+			sr_line: "%s, solo para el administrador" }
 	},
 
 	// Localized admin-notice text with English fallback.
@@ -4726,6 +4807,22 @@ var MAP =
 		return table[ key ] || this.notice_i18n.en[ key ] || '';
 	},
 
+	// Slot names are shared with the twin plugin, so each product owns its own.
+	nb_prefix: 'map',
+
+	// Card layout settings, read on every call because they are printed late.
+	nbConfig: function()
+	{
+		if( typeof window.map_nb_config === 'undefined' ||
+			!window.map_nb_config ||
+			window.map_nb_config.style !== 'card' )
+		{
+			return null;
+		}
+
+		return window.map_nb_config;
+	},
+
 	// A message passed with a slot name owns its own line: a later call with the
 	// same slot rewrites that line instead of adding another one, so re-running
 	// the check updates the text rather than repeating it. Without a slot the
@@ -4734,64 +4831,513 @@ var MAP =
 	{
 		try {
 
-			var body = document.querySelector( 'body' );
-			var bar = document.querySelector( '#mapx_notification_bar' );
+			var that = this;
+			var host = document.body || document.documentElement;
+
+			if( !host )
+			{
+				document.addEventListener( 'DOMContentLoaded', function() {
+					that.showNotificationBar( message, success, slot );
+				}, { once: true } );
+
+				return;
+			}
+
+			var config = this.nbConfig();
+			var bar    = document.querySelector( '#mapx_notification_bar' );
 
 			if( !bar )
 			{
 				bar = document.createElement( 'div' );
 				bar.setAttribute( 'id','mapx_notification_bar' );
-				bar.innerHTML = "<span class='mapx_close_notification_bar'>" + this.noticeText( 'close' ) + "</span>";
-				body.append( bar );
 
-
-				document.addEventListener( 'click', function (event) {
-					if(!event.target.matches( '.mapx_close_notification_bar' )) return;
-
-					event.preventDefault();
-
-					bar.parentNode.removeChild( bar );
-
-				}, false);
-			}
-
-			var safe_message  = String( message || '' )
-				.replace( /&/g, '&amp;' )
-				.replace( /</g, '&lt;' )
-				.replace( />/g, '&gt;' );
-			var final_message = '<b>' + this.noticeText( 'prefix' ) + '</b> ' + safe_message;
-
-			if( success == 1 )
-			{
-				final_message = final_message + '&nbsp;<span class="mapx_proxification_success_true">OK!</span>';
-			}
-
-			if( success == 2 )
-			{
-				final_message = final_message + '&nbsp;<span class="mapx_proxification_success_false">ERROR!</span>';
-			}
-
-			var line = slot ? bar.querySelector( '[data-map-notice="' + slot + '"]' ) : null;
-
-			if( !line )
-			{
-				line = document.createElement( 'div' );
-
-				if( slot )
+				if( !config )
 				{
-					line.setAttribute( 'data-map-notice', slot );
+					bar.innerHTML = "<span class='mapx_close_notification_bar'>" + this.noticeText( 'close' ) + "</span>";
 				}
 
-				bar.append( line );
+				host.append( bar );
 			}
 
-			line.innerHTML = final_message;
+			if( config )
+			{
+				this.nbPrepareBar( bar );
+			}
+
+			this.nbBindClose();
+
+			var key  = slot ? this.nb_prefix + ':' + slot : null;
+			var line = key ? bar.querySelector( '[data-map-notice="' + key + '"]' ) : null;
+
+			if( config )
+			{
+				this.nbWriteCard( bar, line, key, message, success, config );
+			}
+			else
+			{
+				this.nbWriteLegacy( bar, line, key, message, success );
+			}
+
+			this.nbRefreshCloseAll( bar );
 
 		}
 		catch( error )
 		{
 			console.error( error );
 		}
+	},
+
+	// Adopts a bar this product may not have created.
+	nbPrepareBar: function( bar )
+	{
+		var that = this;
+
+		if( !bar.classList.contains( 'mapx_nb--card' ) )
+		{
+			bar.classList.add( 'mapx_nb--card' );
+			bar.setAttribute( 'role', 'region' );
+			bar.setAttribute( 'aria-label', this.noticeText( 'bar_label' ) );
+		}
+
+		// The twin plugin can append rows without going through this code.
+		if( bar.getAttribute( 'data-mapx-nb-watched' ) !== '1' &&
+			typeof MutationObserver !== 'undefined' )
+		{
+			bar.setAttribute( 'data-mapx-nb-watched', '1' );
+
+			new MutationObserver( function() {
+				that.nbRefreshCloseAll( bar );
+			} ).observe( bar, { childList: true } );
+		}
+
+		var tab = document.querySelector( '#' + this.nbConsentTabId() );
+
+		bar.classList.toggle( 'mapx_nb--has-tab', !!( tab && tab.offsetParent !== null ) );
+	},
+
+	nbConsentTabId: function()
+	{
+		return ( this.settings && this.settings.showagain_div_id ) ? this.settings.showagain_div_id : 'my-agile-privacy-consent-again';
+	},
+
+	// One handler per product: the twin registers its own.
+	nbBindClose: function()
+	{
+		var root = document.documentElement;
+		var attr = 'data-mapx-nb-bound-' + this.nb_prefix;
+
+		if( root.getAttribute( attr ) === '1' )
+		{
+			return;
+		}
+
+		root.setAttribute( attr, '1' );
+
+		var that = this;
+
+		document.addEventListener( 'click', function( event ) {
+
+			var closer = that.nbCloserFrom( event.target );
+
+			if( !closer )
+			{
+				return;
+			}
+
+			event.preventDefault();
+
+			that.nbDismiss( closer );
+
+		}, false );
+
+		document.addEventListener( 'keydown', function( event ) {
+
+			if( event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar' )
+			{
+				return;
+			}
+
+			var closer = event.target && typeof event.target.closest === 'function'
+				? event.target.closest( '.mapx_close_notification_bar' )
+				: null;
+
+			if( !closer )
+			{
+				return;
+			}
+
+			event.preventDefault();
+
+			that.nbDismiss( closer );
+
+		}, false );
+	},
+
+	nbCloserFrom: function( target )
+	{
+		if( !target || typeof target.closest !== 'function' )
+		{
+			return null;
+		}
+
+		return target.closest( '.mapx_nb_close, .mapx_nb_close_all, .mapx_close_notification_bar' );
+	},
+
+	nbDismiss: function( closer )
+	{
+		var bar = closer.closest( '#mapx_notification_bar' );
+
+		if( !bar )
+		{
+			return;
+		}
+
+		if( closer.classList.contains( 'mapx_nb_close' ) )
+		{
+			var line = closer.closest( '.mapx_nb_line' );
+
+			if( !line || !line.parentNode )
+			{
+				return;
+			}
+
+			this.nbMoveFocus( line, bar );
+			line.remove();
+			this.nbRefreshCloseAll( bar );
+
+			if( !this.nbMessageCount( bar ) )
+			{
+				this.nbRemoveBar( bar );
+			}
+
+			return;
+		}
+
+		this.nbMoveFocus( bar, bar );
+		this.nbRemoveBar( bar );
+	},
+
+	nbRemoveBar: function( bar )
+	{
+		if( bar.parentNode )
+		{
+			bar.remove();
+		}
+	},
+
+	// The two overall close controls are not messages.
+	nbMessageCount: function( bar )
+	{
+		var children = bar.children;
+		var count    = 0;
+
+		for( var i = 0; i < children.length; i++ )
+		{
+			if( children[ i ].classList.contains( 'mapx_nb_close_all' ) ||
+				children[ i ].classList.contains( 'mapx_close_notification_bar' ) )
+			{
+				continue;
+			}
+
+			count++;
+		}
+
+		return count;
+	},
+
+	nbMoveFocus: function( removed, bar )
+	{
+		var active = document.activeElement;
+
+		if( !active || !removed.contains( active ) )
+		{
+			return;
+		}
+
+		var buttons    = bar.querySelectorAll( '.mapx_nb_close, .mapx_nb_close_all, .mapx_close_notification_bar' );
+		var candidates = [];
+
+		for( var i = 0; i < buttons.length; i++ )
+		{
+			if( !removed.contains( buttons[ i ] ) )
+			{
+				candidates.push( buttons[ i ] );
+			}
+		}
+
+		var next = null;
+
+		for( var j = 0; j < candidates.length; j++ )
+		{
+			next = candidates[ j ];
+
+			if( removed.compareDocumentPosition( candidates[ j ] ) & Node.DOCUMENT_POSITION_FOLLOWING )
+			{
+				break;
+			}
+		}
+
+		if( next && typeof next.focus === 'function' )
+		{
+			next.focus();
+
+			return;
+		}
+
+		this.nbFocusBody();
+	},
+
+	nbFocusBody: function()
+	{
+		var body = document.body;
+
+		if( !body || typeof body.focus !== 'function' )
+		{
+			return;
+		}
+
+		body.setAttribute( 'tabindex', '-1' );
+		body.focus();
+
+		body.addEventListener( 'blur', function() {
+			body.removeAttribute( 'tabindex' );
+		}, { once: true } );
+	},
+
+	nbWriteCard: function( bar, line, key, message, success, config )
+	{
+		var text  = String( message || '' );
+		var state = success == 1 ? 'success' : ( success == 2 ? 'error' : ( success == 3 ? 'warning' : 'info' ) );
+		var stamp = state + '|' + text;
+
+		if( line && line.querySelector( '.mapx_nb_text' ) )
+		{
+			if( line.getAttribute( 'data-mapx-nb-key' ) === stamp )
+			{
+				return;
+			}
+		}
+		else
+		{
+			if( !line )
+			{
+				line = document.createElement( 'div' );
+
+				if( key )
+				{
+					line.setAttribute( 'data-map-notice', key );
+				}
+
+				bar.append( line );
+			}
+
+			line.innerHTML = '';
+			this.nbBuildLine( line, config );
+		}
+
+		line.className = 'mapx_nb_line mapx_nb_line--' + state;
+		line.setAttribute( 'data-mapx-nb-key', stamp );
+		line.querySelector( '.mapx_nb_text' ).textContent = text;
+
+		this.nbSetBadge( line, success );
+		this.nbAnnounce( config, text );
+	},
+
+	nbBuildLine: function( line, config )
+	{
+		var mascot = document.createElement( 'span' );
+		mascot.className = 'mapx_nb_mascot' + ( config.shape === 'round' ? ' mapx_nb_mascot--round' : '' );
+
+		var img = document.createElement( 'img' );
+		img.src = String( config.mascot || '' );
+		img.alt = '';
+		img.setAttribute( 'aria-hidden', 'true' );
+		mascot.appendChild( img );
+
+		var card = document.createElement( 'div' );
+		card.className = 'mapx_nb_card';
+
+		var sr = document.createElement( 'span' );
+		sr.className   = 'mapx_nb_sr';
+		sr.textContent = this.nbSrText( config );
+		card.appendChild( sr );
+
+		var text = document.createElement( 'span' );
+		text.className = 'mapx_nb_text';
+		card.appendChild( text );
+
+		var close = document.createElement( 'button' );
+		close.type      = 'button';
+		close.className = 'mapx_nb_close';
+		close.setAttribute( 'aria-label', this.noticeText( 'close' ) );
+		close.textContent = '✕';
+		card.appendChild( close );
+
+		line.appendChild( mascot );
+		line.appendChild( card );
+	},
+
+	nbSrText: function( config )
+	{
+		return this.noticeText( 'sr_line' ).replace( '%s', String( config.product || '' ) );
+	},
+
+	nbSetBadge: function( line, success )
+	{
+		var card = line.querySelector( '.mapx_nb_card' );
+		var old  = card.querySelector( '.mapx_nb_badge' );
+
+		if( old )
+		{
+			old.remove();
+		}
+
+		if( success != 1 && success != 2 )
+		{
+			return;
+		}
+
+		var badge = document.createElement( 'span' );
+		badge.className   = 'mapx_nb_badge ' + ( success == 1 ? 'mapx_proxification_success_true' : 'mapx_proxification_success_false' );
+		badge.textContent = success == 1 ? 'OK!' : 'ERROR!';
+
+		card.insertBefore( badge, card.querySelector( '.mapx_nb_close' ) );
+	},
+
+	// The announcing region lives outside the bar, which is removed when empty.
+	nbAnnounce: function( config, text )
+	{
+		var status = document.getElementById( 'mapx_nb_status' );
+
+		if( !status )
+		{
+			status = document.createElement( 'div' );
+			status.setAttribute( 'id', 'mapx_nb_status' );
+			status.setAttribute( 'role', 'status' );
+			status.className = 'mapx_nb_sr';
+			( document.body || document.documentElement ).append( status );
+		}
+
+		var spoken = this.nbSrText( config ) + '. ' + text;
+
+		window.setTimeout( function() {
+
+			var node = document.createElement( 'span' );
+			node.textContent = spoken;
+			status.appendChild( node );
+
+			window.setTimeout( function() {
+				if( node.parentNode )
+				{
+					node.remove();
+				}
+			}, 6000 );
+
+		}, 60 );
+	},
+
+	nbWriteLegacy: function( bar, line, key, message, success )
+	{
+		var safe_message  = String( message || '' )
+			.replace( /&/g, '&amp;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' );
+		var final_message = '<b>' + this.noticeText( 'prefix' ) + '</b> ' + safe_message;
+
+		if( success == 1 )
+		{
+			final_message = final_message + '&nbsp;<span class="mapx_proxification_success_true">OK!</span>';
+		}
+
+		if( success == 2 )
+		{
+			final_message = final_message + '&nbsp;<span class="mapx_proxification_success_false">ERROR!</span>';
+		}
+
+		if( !line )
+		{
+			line = document.createElement( 'div' );
+
+			if( key )
+			{
+				line.setAttribute( 'data-map-notice', key );
+			}
+
+			bar.append( line );
+		}
+
+		line.innerHTML = final_message;
+	},
+
+	// Rows left by an older twin have no close button of their own.
+	nbRefreshCloseAll: function( bar )
+	{
+		if( !bar.classList.contains( 'mapx_nb--card' ) )
+		{
+			return;
+		}
+
+		var children = bar.children;
+		var orphan   = false;
+
+		for( var i = 0; i < children.length; i++ )
+		{
+			if( children[ i ].classList.contains( 'mapx_nb_close_all' ) ||
+				children[ i ].classList.contains( 'mapx_close_notification_bar' ) )
+			{
+				continue;
+			}
+
+			if( !children[ i ].querySelector( '.mapx_nb_close' ) )
+			{
+				orphan = true;
+				break;
+			}
+		}
+
+		var legacy = bar.querySelector( ':scope > .mapx_close_notification_bar' );
+		var mine   = bar.querySelector( ':scope > .mapx_nb_close_all' );
+
+		if( legacy )
+		{
+			this.nbPromoteLegacyClose( legacy );
+			legacy.hidden = !orphan;
+
+			if( mine )
+			{
+				mine.remove();
+			}
+
+			return;
+		}
+
+		if( orphan && !mine )
+		{
+			mine = document.createElement( 'button' );
+			mine.type        = 'button';
+			mine.className   = 'mapx_nb_close_all';
+			mine.textContent = this.noticeText( 'bar_close_all' );
+			bar.append( mine );
+
+			return;
+		}
+
+		if( !orphan && mine )
+		{
+			mine.remove();
+		}
+	},
+
+	nbPromoteLegacyClose: function( span )
+	{
+		if( span.getAttribute( 'role' ) === 'button' )
+		{
+			return;
+		}
+
+		span.setAttribute( 'role', 'button' );
+		span.setAttribute( 'tabindex', '0' );
+		span.setAttribute( 'aria-label', this.noticeText( 'bar_close_all' ) );
 	},
 
 	administratorNotices: function()
@@ -5408,7 +5954,7 @@ var MAP =
 	            MAP.settings &&
 	            (
 	                ( MAP.settings.scan_mode && MAP.settings.scan_mode == 'learning_mode' ) ||
-	                ( map_ajax.force_js_learning_mode === 1 )
+	                ( map_ajax.force_js_learning_mode == 1 )
 	            )
 	        )
 	        {
@@ -5819,30 +6365,8 @@ var MAP =
 		var testQs   = test ? ( 'map_geo_test=' + encodeURIComponent( test ) ) : '';
 		var apiUrl   = test ? ( map_ajax.advanced_api_url + ( map_ajax.advanced_api_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.advanced_api_url;
 
-		MapLogger.log( 'MAP-GEO', 'mapGeoResolve: calling advanced-api.php', { url: apiUrl, test: test || '(none)' } );
-
-		var payload = new URLSearchParams( {
-			action        : 'map_resolve_geo',
-			map_api_token : map_ajax.api_token
-		} );
-
-		fetch( apiUrl, {
-			method  : 'POST',
-			headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body    : payload
-		} )
-		.then( function( resp ) {
-			if( ! resp.ok ) { throw new Error( 'advanced-api.php ' + resp.status ); }
-			return resp.json();
-		} )
-		.then( function( data ) {
-			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php OK', data );
-			that.mapGeoHandleResult( data );
-		} )
-		.catch( function( err ) {
-			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php failed → fallback wp-ajax', String( err ) );
-
-			// Secondary request.
+		var viaAjax = function()
+		{
 			if( ! map_ajax.ajax_url ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: no ajax_url → fail-closed (block)' ); that.mapGeoFailClosed(); return; }
 
 			var ajaxUrl = test ? ( map_ajax.ajax_url + ( map_ajax.ajax_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.ajax_url;
@@ -5860,6 +6384,41 @@ var MAP =
 			.then( function( resp ) { return resp.json(); } )
 			.then( function( data ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax OK', data ); that.mapGeoHandleResult( data ); } )
 			.catch( function( err2 ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax failed → fail-closed (block)', String( err2 ) ); that.mapGeoFailClosed(); } );
+		};
+
+		// the fast endpoint failed on an earlier page of this browser
+		if( MAP_Cookie.read( MAP_GEO_TRANSPORT_COOKIE_NAME ) )
+		{
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: fast endpoint marked as failing → wp-ajax' );
+			viaAjax();
+			return;
+		}
+
+		MapLogger.log( 'MAP-GEO', 'mapGeoResolve: calling advanced-api.php', { url: apiUrl, test: test || '(none)' } );
+
+		fetch( apiUrl, {
+			method  : 'POST',
+			headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body    : new URLSearchParams( {
+				action        : 'map_resolve_geo',
+				map_api_token : map_ajax.api_token
+			} )
+		} )
+		.then( function( resp ) {
+			if( ! resp.ok ) { throw new Error( 'advanced-api.php ' + resp.status ); }
+			return resp.json();
+		} )
+		.then( function( data ) {
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php OK', data );
+			that.mapGeoHandleResult( data );
+		} )
+		.catch( function( err ) {
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php failed → fallback wp-ajax', String( err ) );
+
+			// remembered in the browser, so the next pages go straight to the fallback route
+			MAP_Cookie.set( MAP_GEO_TRANSPORT_COOKIE_NAME, '1', 7 );
+
+			viaAjax();
 		} );
 	},
 
@@ -5902,6 +6461,8 @@ var MAP =
 		{
 			if( ! MAP_SYS.geo_resolved ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: not resolved yet → abort' ); return; }
 
+			if( this.isSplitPreview() ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: preview → abort' ); return; }
+
 			MAP_SYS.geo_eff_type = this.mapGeoEffType( MAP_SYS.geo_country, MAP_SYS.geo_native );
 
 			MapLogger.log( 'MAP-GEO', 'mapGeoApply', {
@@ -5925,7 +6486,7 @@ var MAP =
 				}
 				else if( MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '1' )
 				{
-					// Already in implicit-consent state (return visit) — nothing to do;
+					// Already in implicit-consent state (return visit) - nothing to do;
 					// the UI/consent were set on the first visit.
 					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block, implicit consent already set (return visit) → no action' );
 				}
@@ -6011,13 +6572,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
 		if( typeof map_cookiebar_settings !== 'undefined' )
 		{
-			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
-
-			MAP.set({
-				settings : map_cookiebar_settings
-			});
-
-			MAP_SYS.map_initted = true;
+			map_init_banner();
 		}
 
 		setTimeout( function() {
@@ -6027,13 +6582,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 			{
 				try {
 
-					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
-
-					MAP.set({
-						settings : map_cookiebar_settings
-					});
-
-					MAP_SYS.map_initted = true;
+					map_init_banner();
 
 				}
 				catch( error )
@@ -6058,32 +6607,62 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
 });
 
-//triggered on document load
-function map_on_document_load_event()
+//initialises the banner, waiting for the configuration to be settled
+function map_init_banner()
 {
-	try {
+	if( MAP_SYS.map_initted )              { return; }
+	if( MAP_SYS.map_banner_ready_waiting ) { return; }
 
-		MAP_SYS.map_document_load = true;
+	var ready = window.map_banner_ready;
 
-		if( !MAP_SYS.map_initted &&
-				typeof map_cookiebar_settings !== 'undefined' )
-		{
+	if( ready && typeof ready.then === 'function' && !MAP_SYS.map_banner_ready_done )
+	{
+		MAP_SYS.map_banner_ready_waiting = true;
+
+		var done = function() {
+
 			try {
 
-				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
+				MAP_SYS.map_banner_ready_waiting = false;
+				MAP_SYS.map_banner_ready_done    = true;
 
-				MAP.set({
-					settings : map_cookiebar_settings
-				});
-
-				MAP_SYS.map_initted = true;
+				map_init_banner();
 
 			}
 			catch( error )
 			{
 				console.error( error );
 			}
-		}
+		};
+
+		Promise.race( [ ready, new Promise( function( resolve ) { setTimeout( resolve, 1000 ); } ) ] ).then( done, done );
+
+		return;
+	}
+
+	if( typeof map_cookiebar_settings === 'undefined' ) { return; }
+
+	if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'initting' );
+
+	MAP.set({
+		settings : map_cookiebar_settings
+	});
+
+	MAP_SYS.map_initted = true;
+
+	if( MAP_SYS.map_document_load ) { map_after_init_tasks(); }
+}
+
+//tasks that need both the document loaded and the banner initted
+function map_after_init_tasks()
+{
+	if( MAP_SYS.map_after_init_done ) { return; }
+
+	MAP_SYS.map_after_init_done = true;
+
+	if( MAP.isPostMode() ) { return; }
+
+	try {
 
 		if(
 			map_ajax &&
@@ -6108,7 +6687,7 @@ function map_on_document_load_event()
 			                        MAP?.settings?.scan_mode == 'learning_mode'
 			                    ) ||
 			                    (
-			                        map_ajax?.force_js_learning_mode === 1
+			                        map_ajax?.force_js_learning_mode == 1
 			                    )
 			                )
 			                {
@@ -6128,7 +6707,7 @@ function map_on_document_load_event()
 					 MAP?.settings?.scan_mode == 'learning_mode'
 					) ||
 					(
-						map_ajax?.force_js_learning_mode === 1
+						map_ajax?.force_js_learning_mode == 1
 					)
 				)
 				{
@@ -6149,6 +6728,36 @@ function map_on_document_load_event()
 
 		// Re-evaluate the admin notice once everything has loaded.
 		MAP.administratorNotices();
+	}
+	catch( error )
+	{
+		console.error( error );
+	}
+}
+
+//triggered on document load
+function map_on_document_load_event()
+{
+	try {
+
+		MAP_SYS.map_document_load = true;
+
+		if( !MAP_SYS.map_initted &&
+				typeof map_cookiebar_settings !== 'undefined' )
+		{
+			try {
+
+				map_init_banner();
+
+			}
+			catch( error )
+			{
+				console.error( error );
+			}
+		}
+
+		if( MAP_SYS.map_initted ) { map_after_init_tasks(); }
+
 	}
 	catch( error )
 	{
@@ -6344,15 +6953,15 @@ if( typeof map_full_config !== 'undefined' &&
 					return;
 				}
 
-				// MAP not ready yet — retry later.
+				// MAP not ready yet - retry later.
 				setTimeout( _retry, _baseInterval * Math.pow( 2, _retryCount - 1 ) );
 				return;
 			}
 
-			// Listener already present — no action needed
+			// Listener already present - no action needed
 			if( _listeners.length > 1 )
 			{
-				MapLogger.debug( MAP_SYS.maplog + 'GTM consent listener retry: ' + _listeners.length + ' listeners registered (bridge + GTM template?) — consent updates may appear duplicated in dataLayer' );
+				MapLogger.debug( MAP_SYS.maplog + 'GTM consent listener retry: ' + _listeners.length + ' listeners registered (bridge + GTM template?) - consent updates may appear duplicated in dataLayer' );
 			}
 			MapLogger.debug( MAP_SYS.maplog + 'GTM consent listener retry: listener already present, skipping' );
 		};
@@ -6369,10 +6978,11 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		if( typeof map_ajax === 'undefined' || ! map_ajax || ! map_ajax.api_token ) { return; }
 
 		var learning = ( typeof map_cookiebar_settings !== 'undefined' && map_cookiebar_settings && map_cookiebar_settings.scan_mode === 'learning_mode' ) ||
-		               ( map_ajax.force_js_learning_mode === 1 );
+		               ( map_ajax.force_js_learning_mode == 1 );
 		if( ! learning ) { return; }
+		if( typeof map_cookiebar_settings !== 'undefined' && map_cookiebar_settings && map_cookiebar_settings.post_mode == 1 ) { return; }
 
-		if( map_ajax.gtm_gateway_detection_disabled === 1 ) { return; }
+		if( map_ajax.gtm_gateway_detection_disabled == 1 ) { return; }
 		if( typeof MAP_Cookie === 'undefined' ) { return; }
 		if( MAP_Cookie.read( 'map_gtm_gw_reported' ) === '1' ) { return; }
 		MAP_Cookie.set( 'map_gtm_gw_reported', '1', 0.5 );

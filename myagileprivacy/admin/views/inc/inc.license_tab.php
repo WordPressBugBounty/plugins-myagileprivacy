@@ -27,7 +27,6 @@ $caller = 'genericOptionsWrapper';
 
 	<div class="col-sm-4">
 		<?php
-			$tab = 'license';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

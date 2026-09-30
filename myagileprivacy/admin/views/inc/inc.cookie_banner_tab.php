@@ -7,7 +7,22 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 ?>
 
-<input type="hidden" name="is_bottom_field" value="">
+<?php
+	$map_ab_locked = isset( $map_ab_locked ) ? $map_ab_locked : false;
+	$map_ab_state  = isset( $map_ab_state ) ? $map_ab_state : array( 'panel_url' => '' );
+
+	// the shared allow-list has no place for the lock attributes: a local copy carries them
+	$map_color_tags = MyAgilePrivacy::allowed_html_tags();
+
+	if( isset( $map_color_tags['input'] ) && is_array( $map_color_tags['input'] ) )
+	{
+		$map_color_tags['input']['disabled']         = true;
+		$map_color_tags['input']['aria-describedby'] = true;
+	}
+
+	$map_ab_lock_banner  = $map_ab_locked ? ' disabled aria-describedby="' . esc_attr( 'map-ab-locked-banner' ) . '"' : '';
+	$map_ab_lock_buttons = $map_ab_locked ? ' disabled aria-describedby="' . esc_attr( 'map-ab-locked-buttons' ) . '"' : '';
+?>
 
 <div class="row" id="cookie_banner_options_container">
 	<div class="col-sm-8">
@@ -19,14 +34,21 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<?php echo wp_kses_post( __( 'Cookie Banner', 'MAP_txt' ) ); ?>
 			</h4>
 
+			<?php if( $map_ab_locked ) : ?>
+				<div class="alert alert-info" id="map-ab-locked-banner" role="status">
+					<?php echo esc_html__( 'Want to change the graphic options? Then close the running Banner A/B Test first: while it is running, these options stay locked.', 'MAP_txt' ); ?>
+					<a href="<?php echo esc_url( $map_ab_state['panel_url'] ); ?>" class="alert-link"><?php echo esc_html__( 'Open Banner A/B Test', 'MAP_txt' ); ?></a>
+				</div>
+			<?php endif; ?>
+
 			<!-- show banner -->
 			<div class="row mb-4">
-				<label for="is_on_field_yes" class="col-sm-5 col-form-label">
+				<span id="is_on_field_caption" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable Cookie Banner', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="is_on_field_caption">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_on'] == true ): ?>
 								<input
@@ -34,9 +56,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									id="is_on_field_yes"
 									name="is_on_field"
 									value="true" checked="checked" />
-								<label for="is_on_field_yes" class="me-2 label-radio"></label>
-
-								<label for="is_on_field_yes"><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
+								<label for="is_on_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
 
 							<?php else: ?>
 								<input
@@ -44,9 +64,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									id="is_on_field_yes"
 									name="is_on_field"
 									value="true" />
-								<label for="is_on_field_yes" class="me-2 label-radio"></label>
-
-								<label for="is_on_field_yes"><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
+								<label for="is_on_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
 							<?php endif; ?>
 
 						</div>
@@ -59,18 +77,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									name="is_on_field"
 									value="false"
 									checked="checked" />
-								<label for="is_on_field_no" class="me-2 label-radio"></label>
-
-								<label for="is_on_field_no"><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
+								<label for="is_on_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
 							<?php else: ?>
 								<input
 									type="radio"
 									id="is_on_field_no"
 									name="is_on_field"
 									value="false" />
-								<label for="is_on_field_no" class="me-2 label-radio"></label>
-
-								<label for="is_on_field_no"><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
+								<label for="is_on_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
 
 							<?php endif; ?>
 						</div>
@@ -101,7 +115,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="<?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
 
 						<select
-							name="cookie_banner_size_field"
+							name="cookie_banner_size_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 							class="form-control hideShowInput"
 							id="cookie_banner_size_field"
 							data-preview="mapSize"
@@ -138,7 +152,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-sm-7">
 
 					<select
-						name="cookie_banner_vertical_position_field"
+						name="cookie_banner_vertical_position_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 						class="form-control"
 						id="cookie_banner_vertical_position_field"
 						data-preview="mapPosition">
@@ -164,7 +178,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="col-sm-7">
 
 						<select
-							name="cookie_banner_horizontal_position_field"
+							name="cookie_banner_horizontal_position_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 							class="form-control"
 							id="cookie_banner_horizontal_position_field"
 							data-preview="mapPosition">
@@ -193,7 +207,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-sm-7">
 
 					<select
-						name="floating_banner_field"
+						name="floating_banner_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 						class="form-control"
 						id="floating_banner_field"
 						data-preview="floating_banner">
@@ -217,7 +231,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-sm-7">
 
 					<select
-						name="cookie_banner_shadow_field"
+						name="cookie_banner_shadow_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 						class="form-control"
 						id="cookie_banner_shadow_field"
 						data-preview="shadow">
@@ -247,8 +261,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					max="50"
 					data-preview="border_radius"
 					class="form-control"
-					id="elements_border_radius_field" name="elements_border_radius_field"
-					value="<?php echo esc_attr( stripslashes( $the_settings['elements_border_radius'] ) ); ?>" />
+					id="elements_border_radius_field" name="elements_border_radius_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
+					value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['elements_border_radius'] ) ? (string) $the_settings['elements_border_radius'] : '' ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -266,7 +280,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-sm-7">
 
 					<select
-						name="cookie_banner_animation_field"
+						name="cookie_banner_animation_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 						class="form-control"
 						id="cookie_banner_animation_field">
 						<option value="none" <?php selected( $the_settings['cookie_banner_animation'], 'none' ); ?>><?php esc_attr_e('None', 'MAP_txt' ); ?></option>
@@ -283,29 +297,25 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- NEW banner title -->
 			<div class="row mb-4">
-				<label for="title_is_on_field_yes" class="col-sm-5 col-form-label">
+				<span id="title_is_on_field_caption" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable banner heading', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="title_is_on_field_caption">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['title_is_on'] == true ): ?>
 								<input
 									type="radio"
 									id="title_is_on_field_yes"
 									class="hideShowInput"
-									name="title_is_on_field"
+									name="title_is_on_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 									value="true"
 									checked="checked"
 									data-hide-show-ref="show_banner_title"
 									data-meaning="1"
 									data-preview="bannerTitle" />
-								<label for="title_is_on_field_yes" class="me-2 label-radio"></label>
-
-								<label for="title_is_on_field_yes">
-									<?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="title_is_on_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
 
 
 							<?php else: ?>
@@ -313,16 +323,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									type="radio"
 									id="title_is_on_field_yes"
 									class="hideShowInput"
-									name="title_is_on_field"
+									name="title_is_on_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 									value="true"
 									data-hide-show-ref="show_banner_title"
 									data-meaning="1"
 									data-preview="bannerTitle" />
-								<label for="title_is_on_field_yes" class="me-2 label-radio"></label>
-
-								<label for="title_is_on_field_yes">
-									<?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="title_is_on_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'On', 'MAP_txt' ) ); ?></label>
 
 							<?php endif; ?>
 
@@ -334,32 +340,24 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									type="radio"
 									id="title_is_on_field_no"
 									class="hideShowInput"
-									name="title_is_on_field"
+									name="title_is_on_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 									value="false"
 									checked="checked"
 									data-hide-show-ref="show_banner_title"
 									data-meaning="0"
 									data-preview="bannerTitle" />
-								<label for="title_is_on_field_no" class="me-2 label-radio"></label>
-
-								<label for="title_is_on_field_no">
-									<?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="title_is_on_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
 							<?php else: ?>
 								<input
 									type="radio"
 									id="title_is_on_field_no"
 									class="hideShowInput"
-									name="title_is_on_field"
+									name="title_is_on_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 									value="false"
 									data-hide-show-ref="show_banner_title"
 									data-meaning="0"
 									data-preview="bannerTitle" />
-								<label for="title_is_on_field_no" class="me-2 label-radio"></label>
-
-								<label for="title_is_on_field_no">
-									<?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="title_is_on_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Off', 'MAP_txt' ) ); ?></label>
 							<?php endif; ?>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -375,7 +373,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<div class="row mb-4 show_banner_title">
 				<label for="bar_heading_text_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Banner title', 'MAP_txt' ) ); ?>
-					<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 
 				</label>
 
@@ -394,13 +392,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<div class="row mb-4">
 				<label for="notify_message_v2_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Message', 'MAP_txt' ) ); ?>
-					<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 				</label>
 
 				<div class="col-sm-7">
 
 					<?php
-						echo '<textarea id="notify_message_v2_field" name="" class="form-control text_style" rows="4" style="font-size:12px;" readonly>';
+						echo '<textarea id="notify_message_v2_field" name="" class="form-control text_style map-fs-12" rows="4" readonly>';
 						echo apply_filters( 'format_to_edit', esc_attr( stripslashes( $the_translations[$selected_lang]['notify_message_v2'] ) ) ) . '</textarea>';
 					?>
 
@@ -408,7 +406,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="form-text d-none">
 						<?php echo wp_kses_post( __( 'Example code:', 'MAP_txt' ) ); ?>
 						<br>
-						<textarea class="text_style form-control" rows="9" style="font-size:12px" disabled><?php echo wp_kses_post( __( 'This website uses technical and profiling cookies. Clicking on "Accept" authorises all profiling cookies. Clicking on "Refuse" or the X will refuse all profiling cookies. By clicking on "Customise" you can select which profiling cookies to activate.[myagileprivacy_extra_info]', 'MAP_txt' ) ); ?></textarea>
+						<textarea class="text_style form-control map-fs-12" rows="9" disabled aria-label="<?php echo esc_attr__( 'Example code:', 'MAP_txt' ); ?>"><?php echo wp_kses_post( __( 'This website uses technical and profiling cookies. Clicking on "Accept" authorises all profiling cookies. Clicking on "Refuse" or the X will refuse all profiling cookies. By clicking on "Customise" you can select which profiling cookies to activate.[myagileprivacy_extra_info]', 'MAP_txt' ) ); ?></textarea>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
@@ -420,37 +418,38 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				</label>
 				<div class="col-sm-7">
 
-					<select
-						name="layer_1_button_order_field"
+					<?php $layer_1_button_order_selected = is_string( $the_settings['layer_1_button_order'] ) ? $the_settings['layer_1_button_order'] : ''; ?><select
+						name="layer_1_button_order_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
 						class="form-control"
+						data-preview="buttons-order"
 						id="layer_1_button_order_field">
 
-						<option value="accept_reject_customize" <?php selected( $the_settings['layer_1_button_order'], 'accept_reject_customize' ); ?>>
+						<option value="accept_reject_customize" <?php selected( $layer_1_button_order_selected,'accept_reject_customize' ); ?>>
 
 							<?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?>
 
 						</option>
-						<option value="accept_customize_reject" <?php selected( $the_settings['layer_1_button_order'], 'accept_customize_reject' ); ?>>
+						<option value="accept_customize_reject" <?php selected( $layer_1_button_order_selected,'accept_customize_reject' ); ?>>
 
 							<?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?>
 
 						</option>
-						<option value="reject_accept_customize" <?php selected( $the_settings['layer_1_button_order'], 'reject_accept_customize' ); ?>>
+						<option value="reject_accept_customize" <?php selected( $layer_1_button_order_selected,'reject_accept_customize' ); ?>>
 
 							<?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?>
 
 						</option>
-						<option value="reject_customize_accept" <?php selected( $the_settings['layer_1_button_order'], 'reject_customize_accept' ); ?>>
+						<option value="reject_customize_accept" <?php selected( $layer_1_button_order_selected,'reject_customize_accept' ); ?>>
 
 							<?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?>
 
 						</option>
-						<option value="customize_accept_reject" <?php selected( $the_settings['layer_1_button_order'], 'customize_accept_reject' ); ?>>
+						<option value="customize_accept_reject" <?php selected( $layer_1_button_order_selected,'customize_accept_reject' ); ?>>
 
 							<?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?>
 
 						</option>
-						<option value="customize_reject_accept" <?php selected( $the_settings['layer_1_button_order'], 'customize_reject_accept' ); ?>>
+						<option value="customize_reject_accept" <?php selected( $layer_1_button_order_selected,'customize_reject_accept' ); ?>>
 
 							<?php esc_attr_e('Customize', 'MAP_txt' ); ?> - <?php esc_attr_e('Refuse', 'MAP_txt' ); ?> - <?php esc_attr_e('Accept', 'MAP_txt' ); ?>
 
@@ -467,9 +466,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- banner flat css-->
 			<div class="row mb-4 d-none">
-				<label for="with_css_effects_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable shadows and rounding effects', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -482,7 +481,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								value="true"
 								id="with_css_effects_field"
 								<?php checked( $the_settings['with_css_effects'], true ); ?>>
-							<label for="with_css_effects_field" class="me-2 label-checkbox"></label><?php echo wp_kses_post( __( 'Enable shadows and rounding effects', 'MAP_txt' ) ); ?>
+							<label for="with_css_effects_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable shadows and rounding effects', 'MAP_txt' ) ); ?></label>
 
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -502,8 +501,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					max="50"
 					class="form-control"
 					id="text_size_field"
-					name="text_size_field"
-					value="<?php echo esc_attr( stripslashes( $the_settings['text_size'] ) ); ?>" />
+					data-preview="text-size"
+					name="text_size_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
+					value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['text_size'] ) ? (string) $the_settings['text_size'] : '' ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -526,8 +526,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					max="100"
 					class="form-control"
 					id="text_lineheight_field"
-					name="text_lineheight_field"
-					value="<?php echo esc_attr( stripslashes( $the_settings['text_lineheight'] ) ); ?>" />
+					data-preview="line-height"
+					name="text_lineheight_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>
+					value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['text_lineheight'] ) ? (string) $the_settings['text_lineheight'] : '' ) ); ?>" />
 					<span class="input-group-text">pixel</span>
 				</div>
 
@@ -548,7 +549,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<select
 						name="color_preset"
 						class="form-control"
-						id="color_preset">
+						id="color_preset"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-banner' ); ?>>
 						<option value="none"><?php esc_attr_e( 'Select a preset', 'MAP_txt' ); ?></option>
 						<option value="light"><?php esc_attr_e( 'Light', 'MAP_txt' ); ?></option>
 						<option value="dark"><?php esc_attr_e( 'Dark', 'MAP_txt' ); ?></option>
@@ -577,7 +578,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-sm-7">
 
 					<?php
-						echo wp_kses( '<input type="color" id="background_field" name="background_field" value="' . esc_attr( $the_settings['background'] ) . '" data-default-color="#ffffff" data-preview="bg_color">', MyAgilePrivacy::allowed_html_tags() );
+						$map_color_input = '<input type="color" id="background_field" name="background_field" value="' . esc_attr( $the_settings['background'] ) . '" data-default-color="#ffffff" data-preview="bg_color"';
+						echo wp_kses( $map_color_input . $map_ab_lock_banner . '>', $map_color_tags );
 					?>
 
 					<div class="form-text">
@@ -596,7 +598,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</label>
 					<div class="col-sm-7">
 						<?php
-							echo wp_kses( '<input type="color" id="heading_background_color_field" name="heading_background_color_field" value="' . esc_attr( $the_settings['heading_background_color'] ) . '" data-default-color="#F14307" data-preview="title_background_color">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="heading_background_color_field" name="heading_background_color_field" value="' . esc_attr( $the_settings['heading_background_color'] ) . '" data-default-color="#F14307" data-preview="title_background_color"';
+							echo wp_kses( $map_color_input . $map_ab_lock_banner . '>', $map_color_tags );
 						?>
 						<div class="form-text">
 							<?php
@@ -612,7 +615,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</label>
 					<div class="col-sm-7">
 						<?php
-							echo wp_kses( '<input type="color" id="heading_text_color_field" name="heading_text_color_field" value="' . esc_attr( $the_settings['heading_text_color'] ) . '" data-default-color="#ffffff" data-preview="title_color">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="heading_text_color_field" name="heading_text_color_field" value="' . esc_attr( $the_settings['heading_text_color'] ) . '" data-default-color="#ffffff" data-preview="title_color"';
+							echo wp_kses( $map_color_input . $map_ab_lock_banner . '>', $map_color_tags );
 						?>
 						<div class="form-text">
 							<?php
@@ -631,7 +635,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				<div class="col-sm-7">
 					<?php
-						echo wp_kses( '<input type="color" id="text_field" name="text_field" value="' . esc_attr( $the_settings['text'] ) . '" data-default-color="#000" data-preview="text_color">', MyAgilePrivacy::allowed_html_tags() );
+						$map_color_input = '<input type="color" id="text_field" name="text_field" value="' . esc_attr( $the_settings['text'] ) . '" data-default-color="#000" data-preview="text_color"';
+						echo wp_kses( $map_color_input . $map_ab_lock_banner . '>', $map_color_tags );
 					?>
 
 					<div class="form-text">
@@ -654,6 +659,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<?php echo wp_kses_post( __( 'Buttons Customization', 'MAP_txt' ) ); ?>
 			</h4>
 
+			<?php if( $map_ab_locked ) : ?>
+				<div class="alert alert-info" id="map-ab-locked-buttons" role="status">
+					<?php echo esc_html__( 'Want to change the graphic options? Then close the running Banner A/B Test first: while it is running, these options stay locked.', 'MAP_txt' ); ?>
+					<a href="<?php echo esc_url( $map_ab_state['panel_url'] ); ?>" class="alert-link"><?php echo esc_html__( 'Open Banner A/B Test', 'MAP_txt' ); ?></a>
+				</div>
+			<?php endif; ?>
+
 			<div class="form-text mb-3">
 				<?php echo wp_kses_post( __( 'Set text and background colors for each consent button. Button texts are editable from the Texts and Translations section.', 'MAP_txt' ) ); ?>
 			</div>
@@ -673,51 +685,45 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 				</p>
 
+				<?php if( ! $map_ab_locked ) : ?>
 				<p class="mb-0">
 					<?php
 						echo wp_kses_post( __( 'You can use the default color settings or <a href="#" role="button" class="standardize_colors_button">click here to standardize the colors</a>.', 'MAP_txt' ) );
 					?>
 				</p>
+				<?php endif; ?>
 			</div>
 
 			<div class="row mb-4">
-				<label for="is_on_field_yes" class="col-sm-5 col-form-label">
+				<span id="show_buttons_icons_caption" class="col-sm-5 col-form-label">
 				<?php echo wp_kses_post( __( 'Show Buttons icon', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="show_buttons_icons_caption">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['show_buttons_icons'] == true ): ?>
 
 								<input
 									type="radio"
 									id="show_buttons_icons_field_yes"
-									name="show_buttons_icons_field"
+									name="show_buttons_icons_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-buttons' ); ?>
 									value="true"
 									checked="checked"
 									data-meaning="1"
 									data-preview="button_icon" />
-								<label for="show_buttons_icons_field_yes" class="me-2 label-radio"></label>
-
-								<label for="show_buttons_icons_field_yes">
-									<?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="show_buttons_icons_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?></label>
 
 							<?php else: ?>
 
 								<input
 									type="radio"
 									id="show_buttons_icons_field_yes"
-									name="show_buttons_icons_field"
+									name="show_buttons_icons_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-buttons' ); ?>
 									value="true"
 									data-meaning="1"
 									data-preview="button_icon" />
-								<label for="show_buttons_icons_field_yes" class="me-2 label-radio"></label>
-
-								<label for="show_buttons_icons_field_yes">
-									<?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="show_buttons_icons_field_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes', 'MAP_txt' ) ); ?></label>
 
 							<?php endif; ?>
 
@@ -729,31 +735,23 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<input
 									type="radio"
 									id="show_buttons_icons_field_no"
-									name="show_buttons_icons_field"
+									name="show_buttons_icons_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-buttons' ); ?>
 									value="false"
 									checked="checked"
 									data-meaning="0" data-preview="button_icon" />
 
-								<label for="show_buttons_icons_field_no" class="me-2 label-radio"></label>
-
-								<label for="show_buttons_icons_field_no">
-									<?php echo wp_kses_post( __( 'No', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="show_buttons_icons_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'No', 'MAP_txt' ) ); ?></label>
 
 							<?php else: ?>
 
 								<input
 									type="radio"
 									id="show_buttons_icons_field_no"
-									name="show_buttons_icons_field"
+									name="show_buttons_icons_field"<?php MyAgilePrivacyAdmin::print_ab_lock_attrs( $map_ab_locked, 'map-ab-locked-buttons' ); ?>
 									value="false" data-meaning="0"
 									data-preview="button_icon" />
 
-								<label for="show_buttons_icons_field_no" class="me-2 label-radio"></label>
-
-								<label for="show_buttons_icons_field_no">
-									<?php echo wp_kses_post( __( 'No', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="show_buttons_icons_field_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'No', 'MAP_txt' ) ); ?></label>
 
 							<?php endif; ?>
 						</div>
@@ -777,7 +775,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_accept_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -793,14 +791,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_accept_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_accept_link_color_field" name="button_accept_link_color_field" data-preview="accept-text-color" value="' . esc_attr( $the_settings['button_accept_link_color'] ) . '" data-default-color="#ffffff">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_accept_link_color_field" name="button_accept_link_color_field" data-preview="accept-text-color" value="' . esc_attr( $the_settings['button_accept_link_color'] ) . '" data-default-color="#ffffff"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_accept_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_accept_button_color_field" name="button_accept_button_color_field" data-preview="accept" value="' . esc_attr( $the_settings['button_accept_button_color'] ) . '" data-default-color="#34C759">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_accept_button_color_field" name="button_accept_button_color_field" data-preview="accept" value="' . esc_attr( $the_settings['button_accept_button_color'] ) . '" data-default-color="#34C759"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 				</div>
@@ -820,7 +820,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_reject_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -834,14 +834,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="col-sm-4 text-center">
 						<div><label for="button_reject_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_reject_link_color_field" name="button_reject_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_reject_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_reject_link_color_field" name="button_reject_link_color_field" data-preview="refuse-text-color" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_reject_link_color'] ) . '"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_reject_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_reject_button_color_field" name="button_reject_button_color_field" data-preview="refuse" data-default-color="#636366" value="' . esc_attr( $the_settings['button_reject_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_reject_button_color_field" name="button_reject_button_color_field" data-preview="refuse" data-default-color="#636366" value="' . esc_attr( $the_settings['button_reject_button_color'] ) . '"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 				</div>
@@ -859,7 +861,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_customize_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -874,14 +876,16 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="col-sm-4 text-center">
 						<div><label for="button_customize_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_customize_link_color_field" name="button_customize_link_color_field" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_customize_link_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_customize_link_color_field" name="button_customize_link_color_field" data-preview="customize-text-color" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_customize_link_color'] ) . '"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 
 					<div class="col-sm-4 text-center">
 						<div><label for="button_customize_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
-							echo wp_kses( '<input type="color" id="button_customize_button_color_field" name="button_customize_button_color_field" data-default-color="#636366" data-preview="customize" value="' . esc_attr( $the_settings['button_customize_button_color'] ) . '">', MyAgilePrivacy::allowed_html_tags() );
+							$map_color_input = '<input type="color" id="button_customize_button_color_field" name="button_customize_button_color_field" data-default-color="#636366" data-preview="customize" value="' . esc_attr( $the_settings['button_customize_button_color'] ) . '"';
+							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
 						?>
 					</div>
 				</div>
@@ -904,9 +908,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- content blocked notification checkbox -->
 			<div class="row mb-4">
-				<label for="blocked_content_notify_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
@@ -922,11 +926,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="blocked_content_notify_field"
 								<?php checked( $the_settings['blocked_content_notify'], true ); ?>>
 
-							<label for="blocked_content_notify_field" class="me-2 label-checkbox"></label>
-
-							<label for="blocked_content_notify_field">
-								<?php echo wp_kses_post( __( 'Enable Notification Bar', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="blocked_content_notify_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable Notification Bar', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div>
 
@@ -938,9 +938,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- notification bar on "no choice" checkbox -->
 			<div class="row mb-4 blocked_content_reladed_options displayNone">
-				<label for="show_ntf_bar_on_not_yet_consent_choice_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
@@ -954,11 +954,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="show_ntf_bar_on_not_yet_consent_choice_field"
 								<?php checked( $the_settings['show_ntf_bar_on_not_yet_consent_choice'], true ); ?>>
 
-							<label for="show_ntf_bar_on_not_yet_consent_choice_field" class="me-2 label-checkbox"></label>
-
-							<label for="show_ntf_bar_on_not_yet_consent_choice_field">
-								<?php echo wp_kses_post( __( 'Show the bar even if there is no consent choice', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="show_ntf_bar_on_not_yet_consent_choice_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Show the bar even if there is no consent choice', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div>
 
@@ -971,9 +967,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- autoclose notification bar checkbox -->
 			<div class="row mb-4 blocked_content_reladed_options displayNone">
-				<label for="blocked_content_notify_auto_shutdown_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Auto Close Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
@@ -987,12 +983,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="blocked_content_notify_auto_shutdown_field"
 								<?php checked( $the_settings['blocked_content_notify_auto_shutdown'], true ); ?>>
 
-							<label for="blocked_content_notify_auto_shutdown_field" class="me-2 label-checkbox"></label>
-
-
-							<label for="blocked_content_notify_auto_shutdown_field">
-								<?php echo wp_kses_post( __( 'Auto Close Blocked Content Notification Bar', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="blocked_content_notify_auto_shutdown_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Auto Close Blocked Content Notification Bar', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div>
 
@@ -1015,7 +1006,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						class="form-control"
 						id="blocked_content_notify_auto_shutdown_time_field"
 						name="blocked_content_notify_auto_shutdown_time_field"
-						value="<?php echo esc_attr( stripslashes( $the_settings['blocked_content_notify_auto_shutdown_time' ] ) ); ?>" />
+						value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['blocked_content_notify_auto_shutdown_time' ] ) ? (string) $the_settings['blocked_content_notify_auto_shutdown_time' ] : '' ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( 'The value is in milliseconds. (Default value: 3000).', 'MAP_txt' ) ); ?>
@@ -1102,8 +1093,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-5">
 					<div id="device-view-container" class="mb-2 text-center">
 						<div class="btn-group">
-							<button class="btn btn-outline-primary active" data-view="desktop"><i class="fa-regular fa-desktop"></i></button>
-							<button class="btn btn-outline-primary" data-view="mobile"><i class="fa-regular fa-mobile"></i></button>
+							<button class="btn btn-outline-primary active" data-view="desktop" aria-label="<?php echo esc_attr__( 'Desktop preview', 'MAP_txt' ); ?>"><i class="fa-regular fa-desktop"></i></button>
+							<button class="btn btn-outline-primary" data-view="mobile" aria-label="<?php echo esc_attr__( 'Mobile preview', 'MAP_txt' ); ?>"><i class="fa-regular fa-mobile"></i></button>
 						</div>
 					</div> <!-- device-view-container -->
 				</div>
@@ -1120,7 +1111,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div id="preview-content">
-						<div class="branded-logo"><img src="<?php echo plugin_dir_url(__DIR__) ?>../img/map_logo_branded.svg"></div>
+						<div class="branded-logo"><img src="<?php echo plugin_dir_url(__DIR__) ?>../img/map_logo_branded.svg" alt="My Agile Privacy&reg;"></div>
 						<div class="map-preview-content">
 							<div id="preview-text-container">
 								<div class="text" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
@@ -1137,9 +1128,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<div class="text show_boxed_preview" style="<?php echo esc_attr( $preview_text_styles ); ?>"></div>
 							</div>
 							<div id="preview-button-container">
-								<div class="preview-button" id="preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style ); ?>"></div>
-								<div class="preview-button" id="preview-refuse" style="<?php echo esc_attr( $preview_refuse_styles.$border_radius_style ); ?>"></div>
-								<div class="preview-button" id="preview-customize" style="<?php echo esc_attr( $preview_customize_styles.$border_radius_style ); ?>"></div>
+								<div class="preview-button" id="preview-accept" style="<?php echo esc_attr( $preview_accept_styles.$border_radius_style ); ?>"><span class="preview-button-label"></span></div>
+								<div class="preview-button" id="preview-refuse" style="<?php echo esc_attr( $preview_refuse_styles.$border_radius_style ); ?>"><span class="preview-button-label"></span></div>
+								<div class="preview-button" id="preview-customize" style="<?php echo esc_attr( $preview_customize_styles.$border_radius_style ); ?>"><span class="preview-button-label"></span></div>
 							</div>
 						</div>
 					</div>

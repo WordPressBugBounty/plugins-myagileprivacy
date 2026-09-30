@@ -6,6 +6,11 @@
  * @author     https://www.myagileprivacy.com/
  */
 
+if( function_exists( 'ini_set' ) )
+{
+	ini_set( 'display_errors', 0 );
+}
+
 if( !defined( 'ABSPATH' ) )
 {
 	define( 'SHORTINIT', true );
@@ -14,23 +19,40 @@ if( !defined( 'ABSPATH' ) )
 
 	while ( ! file_exists( $wp_load_path . '/wp-load.php' ) )
 	{
-		$wp_load_path = dirname( $wp_load_path );
-		if( $wp_load_path === '/' ) {
-			die( 'wp-load.php not found' );
+		$wp_load_parent = dirname( $wp_load_path );
+		if( $wp_load_parent === $wp_load_path || $wp_load_parent === '/' || $wp_load_parent === '.' ) {
+			if( !headers_sent() ) { http_response_code( 500 ); }
+			echo json_encode( array( 'success' => false, 'message' => 'wp-load.php not found' ) );
+			exit;
 		}
+		$wp_load_path = $wp_load_parent;
 	}
 
 	require_once $wp_load_path . '/wp-load.php';
 }
 
+if( function_exists( 'ini_set' ) )
+{
+	ini_set( 'display_errors', 0 );
+}
+
 global $wpdb;
+
+// the helpers below cache only for the length of the request
+if( function_exists( 'wp_cache_add_non_persistent_groups' ) )
+{
+	wp_cache_add_non_persistent_groups( array( 'map_api_options' ) );
+}
 
 // Load plugin defines
 require_once dirname( __FILE__ ) . '/../includes/my-agile-privacy-defines.php';
 
-header( 'Content-Type: application/json' );
-header( 'X-Content-Type-Options: nosniff' );
-header( 'Access-Control-Allow-Origin: *' );
+if( !headers_sent() )
+{
+	header( 'Content-Type: application/json' );
+	header( 'X-Content-Type-Options: nosniff' );
+	header( 'Access-Control-Allow-Origin: *' );
+}
 
 // ============================================================
 // Diagnostic echo mode.
@@ -39,27 +61,11 @@ header( 'Access-Control-Allow-Origin: *' );
 $map_api_debug = false;
 
 // ============================================================
-// MULTISITE: detect correct options table from current domain
+// MULTISITE: the site was already resolved by WordPress from host and path
 // ============================================================
 
-$map_options_table = $wpdb->base_prefix . 'options';
-$map_api_blog_id   = 0;
-
-if( is_multisite() )
-{
-	$current_domain = isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '';
-
-	$blog = $wpdb->get_row( $wpdb->prepare(
-		"SELECT blog_id FROM {$wpdb->blogs} WHERE domain = %s LIMIT 1",
-		$current_domain
-	));
-
-	if( $blog && intval( $blog->blog_id ) > 1 )
-	{
-		$map_options_table = $wpdb->base_prefix . intval( $blog->blog_id ) . '_options';
-		$map_api_blog_id   = intval( $blog->blog_id );
-	}
-}
+$map_options_table = $wpdb->options;
+$map_api_blog_id   = ( is_multisite() && get_current_blog_id() > 1 ) ? get_current_blog_id() : 0;
 
 // ============================================================
 // DB HELPERS
@@ -168,6 +174,15 @@ function map_api_update_option( $option_name, $new_value )
 		wp_cache_delete( $option_name, 'options' );
 		wp_cache_delete( 'alloptions', 'options' );
 
+		// a name remembered as missing would hide a newly inserted option
+		$map_api_notoptions = wp_cache_get( 'notoptions', 'options' );
+
+		if( is_array( $map_api_notoptions ) && isset( $map_api_notoptions[ $option_name ] ) )
+		{
+			unset( $map_api_notoptions[ $option_name ] );
+			wp_cache_set( 'notoptions', $map_api_notoptions, 'options' );
+		}
+
 		if( $map_api_switched )
 		{
 			wp_cache_switch_to_blog( get_current_blog_id() );
@@ -181,7 +196,7 @@ function map_api_update_option( $option_name, $new_value )
 // SECURITY
 // ============================================================
 
-// Polyfill for hash_equals() — available natively from PHP 5.6.0.
+// Polyfill for hash_equals() - available natively from PHP 5.6.0.
 if( !function_exists( 'hash_equals' ) )
 {
 	function hash_equals( $known_string, $user_string )
@@ -210,6 +225,76 @@ if( !function_exists( 'hash_equals' ) )
 }
 
 /**
+ * Core files the handlers below rely on.
+ */
+function map_api_load_core()
+{
+	if( !function_exists( 'sanitize_text_field' ) )
+	{
+		require_once ABSPATH . WPINC . '/formatting.php';
+	}
+
+	if( !function_exists( 'wp_kses' ) )
+	{
+		if( defined( 'CUSTOM_TAGS' ) && CUSTOM_TAGS )
+		{
+			foreach( array( 'allowedposttags', 'allowedtags', 'allowedentitynames', 'allowedxmlentitynames' ) as $map_kses_global )
+			{
+				if( !isset( $GLOBALS[ $map_kses_global ] ) || !is_array( $GLOBALS[ $map_kses_global ] ) )
+				{
+					$GLOBALS[ $map_kses_global ] = array();
+				}
+			}
+		}
+
+		require_once ABSPATH . WPINC . '/kses.php';
+	}
+}
+
+/**
+ * intval() with the PHP 8 reading of numeric strings, saturated instead of wrapped.
+ */
+function map_api_intval( $value )
+{
+	if( is_string( $value ) )
+	{
+		if( preg_match( '/^[ \t\n\r\v\f]*[+-]?[0-9]+[ \t\n\r\v\f]*$/', $value ) )
+		{
+			return (int) $value;
+		}
+
+		if( !preg_match( '/^[ \t\n\r\v\f]*[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?/', $value ) )
+		{
+			return intval( $value );
+		}
+
+		$value = (float) $value;
+	}
+
+	if( is_float( $value ) )
+	{
+		if( is_nan( $value ) || is_infinite( $value ) )
+		{
+			return 0;
+		}
+
+		if( $value >= PHP_INT_MAX )
+		{
+			return PHP_INT_MAX;
+		}
+
+		if( $value <= -PHP_INT_MAX )
+		{
+			return -PHP_INT_MAX;
+		}
+
+		return (int) $value;
+	}
+
+	return intval( $value );
+}
+
+/**
  * Validates the request token.
  *
  * @return bool
@@ -221,21 +306,64 @@ function map_api_check_token()
 		return false;
 	}
 
+	if( !function_exists( 'hash_hmac' ) )
+	{
+		return false;
+	}
+
 	$token    = isset( $_POST['map_api_token'] ) ? $_POST['map_api_token'] : '';
 	$expected = hash_hmac( 'sha256', 'map_api_v1', AUTH_KEY . AUTH_SALT );
 
-	return !empty( $token ) && is_string( $token ) && hash_equals( $expected, $token );
+	return !empty( $token ) && is_string( $token ) && is_string( $expected ) && hash_equals( $expected, $token );
+}
+
+/**
+ * Whether a plugin is active on this site or network-wide.
+ *
+ * @param string $plugin plugin basename
+ * @return bool
+ */
+function map_api_plugin_is_active( $plugin )
+{
+	global $wpdb;
+
+	$active = map_api_get_option( 'active_plugins', array() );
+
+	if( is_array( $active ) && in_array( $plugin, $active, true ) )
+	{
+		return true;
+	}
+
+	if( is_multisite() && !empty( $wpdb->sitemeta ) )
+	{
+		$network = maybe_unserialize( $wpdb->get_var( $wpdb->prepare(
+			"SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s AND site_id = %d LIMIT 1",
+			'active_sitewide_plugins',
+			(int) $wpdb->siteid
+		) ) );
+
+		return is_array( $network ) && isset( $network[ $plugin ] );
+	}
+
+	return false;
 }
 
 // ============================================================
 // DISPATCHER
 // ============================================================
 
-$action = isset( $_POST['action'] ) ? sanitize_text_field( $_POST['action'] ) : '';
+if( !map_api_plugin_is_active( basename( dirname( dirname( __FILE__ ) ) ) . '/my-agile-privacy.php' ) )
+{
+	if( !headers_sent() ) { http_response_code( 404 ); }
+	echo json_encode( array( 'success' => false ) );
+	exit;
+}
+
+$action = ( isset( $_POST['action'] ) && is_string( $_POST['action'] ) ) ? $_POST['action'] : '';
 
 if( empty( $action ) )
 {
-	http_response_code( 400 );
+	if( !headers_sent() ) { http_response_code( 400 ); }
 	echo json_encode( array( 'success' => false, 'message' => 'Missing action' ) );
 	exit;
 }
@@ -251,7 +379,7 @@ switch ( $action )
 		break;
 
 	default:
-		http_response_code( 400 );
+		if( !headers_sent() ) { http_response_code( 400 ); }
 		echo json_encode( array( 'success' => false, 'message' => 'Unknown action' ) );
 		exit;
 }
@@ -274,30 +402,32 @@ function map_diagnostic_data()
 	global $map_api_debug;
 
 	if( !map_api_check_token() ) {
-		http_response_code( 403 );
+		if( !headers_sent() ) { http_response_code( 403 ); }
 		echo json_encode( array( 'success' => false, 'message' => 'Invalid token' ) );
 		exit;
 	}
 
+	map_api_load_core();
+
 	// Sanitize incoming data
-	$send_detected_keys     = isset( $_POST['send_detected_keys'] )     ? intval( $_POST['send_detected_keys'] )             : 0;
-	$cookie_shield_detected = isset( $_POST['cookie_shield_detected'] ) ? intval( $_POST['cookie_shield_detected'] )         : 0;
-	$is_consent_valid       = isset( $_POST['is_consent_valid'] )       ? intval( $_POST['is_consent_valid'] )               : 0;
-	$error_motivation       = isset( $_POST['error_motivation'] )       ? sanitize_text_field( $_POST['error_motivation'] )  : '';
+	$send_detected_keys     = isset( $_POST['send_detected_keys'] )     ? map_api_intval( $_POST['send_detected_keys'] )     : 0;
+	$cookie_shield_detected = isset( $_POST['cookie_shield_detected'] ) ? map_api_intval( $_POST['cookie_shield_detected'] ) : 0;
+	$is_consent_valid       = isset( $_POST['is_consent_valid'] )       ? map_api_intval( $_POST['is_consent_valid'] )       : 0;
+	$error_motivation       = ( isset( $_POST['error_motivation'] ) && is_string( $_POST['error_motivation'] ) ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
 
 	// Free text reaches the licence server verbatim; keep it bounded. Counted in
 	// characters: cutting on a byte boundary would split a multibyte sequence
 	// and leave text that no longer encodes.
-	$map_api_text_max = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? (int) MAP_PLUGIN_JS_ERROR_TEXT_MAX : 255;
+	$map_api_text_max = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? map_api_intval( MAP_PLUGIN_JS_ERROR_TEXT_MAX ) : 255;
 	$error_motivation = mb_substr( $error_motivation, 0, $map_api_text_max );
 
 	// The value is stored and travels on: drop the characters that could turn it
 	// into markup and keep the message otherwise faithful.
 	$error_motivation = str_replace( array( '<', '>', '"', "'", '&' ), '', $error_motivation );
 
-	$error_code             = isset( $_POST['error_code'] )             ? intval( $_POST['error_code'] )                     : 0;
-	$detectable_keys_raw    = isset( $_POST['detectableKeys'] )         ? sanitize_text_field( $_POST['detectableKeys'] )    : '';
-	$detected_keys_raw      = isset( $_POST['detectedKeys'] )           ? sanitize_text_field( $_POST['detectedKeys'] )      : '';
+	$error_code             = isset( $_POST['error_code'] )             ? map_api_intval( $_POST['error_code'] )             : 0;
+	$detectable_keys_raw    = ( isset( $_POST['detectableKeys'] ) && is_string( $_POST['detectableKeys'] ) ) ? sanitize_text_field( $_POST['detectableKeys'] ) : '';
+	$detected_keys_raw      = ( isset( $_POST['detectedKeys'] ) && is_string( $_POST['detectedKeys'] ) )     ? sanitize_text_field( $_POST['detectedKeys'] )   : '';
 
 	// Debug mode: return received data without processing
 	if( $map_api_debug )
@@ -363,7 +493,7 @@ function map_diagnostic_data()
 function map_api_report_gtm_gateway()
 {
 	if( !map_api_check_token() ) {
-		http_response_code( 403 );
+		if( !headers_sent() ) { http_response_code( 403 ); }
 		echo json_encode( array( 'success' => false, 'message' => 'Invalid token' ) );
 		exit;
 	}
@@ -464,11 +594,11 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 	// Merge detectableKeys
 	if( $detectable_keys_raw )
 	{
-		foreach( explode( ',', $detectable_keys_raw ) as $v )
+		foreach( array_slice( explode( ',', $detectable_keys_raw, MAP_DETECTED_KEYS_MAX + 1 ), 0, MAP_DETECTED_KEYS_MAX ) as $v )
 		{
 			$v = sanitize_text_field( $v );
 
-			if( $v && $v !== 'null' )
+			if( $v && $v !== 'null' && preg_match( MAP_DETECTED_KEY_PATTERN, $v ) )
 			{
 				$js_cookie_shield_detected_keys[] = $v;
 			}
@@ -478,16 +608,16 @@ function map_api_internal_save_detected_keys( $the_settings, $detectable_keys_ra
 	// Merge detectedKeys
 	if( $detected_keys_raw )
 	{
-		foreach( explode( ',', $detected_keys_raw ) as $v )
+		foreach( array_slice( explode( ',', $detected_keys_raw, MAP_DETECTED_KEYS_MAX + 1 ), 0, MAP_DETECTED_KEYS_MAX ) as $v )
 		{
 			$v = sanitize_text_field( $v );
-			if( $v && $v !== 'null' ) {
+			if( $v && $v !== 'null' && preg_match( MAP_DETECTED_KEY_PATTERN, $v ) ) {
 				$js_cookie_shield_detected_keys[] = $v;
 			}
 		}
 	}
 
-	$js_cookie_shield_detected_keys = array_unique( array_filter( $js_cookie_shield_detected_keys ) );
+	$js_cookie_shield_detected_keys = array_slice( array_unique( array_filter( $js_cookie_shield_detected_keys ) ), 0, MAP_DETECTED_KEYS_MAX );
 
 	map_api_update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, implode( ',', $js_cookie_shield_detected_keys ) );
 
@@ -586,80 +716,134 @@ function map_api_auto_activate_cookie_posts( $keys )
 }
 
 /**
- * Updates the cookie shield status in the plugin settings.
- * Writes to DB only if the current status differs from what is already stored,
- * avoiding unnecessary DB writes on every page load.
- * Tracks timestamps for both the missing and running states.
+ * Runtime state of the scan, kept apart from the settings (twin of MyAgilePrivacy::get_scan_runtime()).
  *
- * @param array $the_settings        Current plugin settings, passed by reference.
+ * @param array $the_settings  Current plugin settings, read for values saved by earlier versions.
+ * @return array
+ */
+function map_api_get_scan_runtime( $the_settings )
+{
+	$defaults = array(
+		'missing_cookie_shield'					=>	false,
+		'missing_cookie_shield_timestamp'		=>	null,
+		'cookie_shield_running'					=>	false,
+		'cookie_shield_running_timestamp'		=>	null,
+		'cmode_v2_js_on_error'					=>	false,
+		'cmode_v2_js_on_error_first_relevation'	=>	false,
+		'cmode_v2_js_error_code'				=>	0,
+		'cmode_v2_js_error_motivation'			=>	null,
+		'last_scan_date_internal'				=>	null,
+		'last_sync'								=>	null,
+		'learning_mode_last_active_timestamp'	=>	null,
+	);
+
+	$runtime = map_api_get_option( MAP_PLUGIN_SCAN_RUNTIME, false );
+
+	if( !is_array( $runtime ) )
+	{
+		$runtime = array();
+	}
+
+	$runtime = array_intersect_key( $runtime, $defaults );
+
+	// values saved inside the settings by earlier versions, with the typing of MyAgilePrivacy::sanitise_settings()
+	$legacy = is_array( $the_settings ) ? array_diff_key( array_intersect_key( $the_settings, $defaults ), $runtime ) : array();
+
+	foreach( $legacy as $key => $value )
+	{
+		if( in_array( $key, array( 'missing_cookie_shield', 'cmode_v2_js_on_error' ), true ) )
+		{
+			$value = ( $value === true || $value === 'true' );
+		}
+		elseif( in_array( $key, array( 'cmode_v2_js_error_code', 'cmode_v2_js_on_error_first_relevation' ), true ) )
+		{
+			$value = map_api_intval( $value );
+		}
+
+		$runtime[ $key ] = $value;
+	}
+
+	return array_merge( $defaults, $runtime );
+}
+
+/**
+ * Updates the cookie shield status in the scan runtime state.
+ * Writes to DB only if the current status differs from what is already stored.
+ *
+ * @param array $the_settings            Current plugin settings.
  * @param int   $cookie_shield_detected  1 if CookieShield is detected and running, 0 if missing.
  */
-function map_api_save_cookie_shield_status( &$the_settings, $cookie_shield_detected )
+function map_api_save_cookie_shield_status( $the_settings, $cookie_shield_detected )
 {
+	$runtime = map_api_get_scan_runtime( $the_settings );
+
 	if( $cookie_shield_detected == 0 )
 	{
-		if( $the_settings['missing_cookie_shield'] == false ||
-			$the_settings['cookie_shield_running'] == true
+		if( $runtime['missing_cookie_shield'] == false ||
+			$runtime['cookie_shield_running'] == true
 		)
 		{
-			$the_settings['cookie_shield_running']           = false;
-			$the_settings['missing_cookie_shield']           = true;
-			$the_settings['missing_cookie_shield_timestamp'] = time();
+			$runtime['cookie_shield_running']           = false;
+			$runtime['missing_cookie_shield']           = true;
+			$runtime['missing_cookie_shield_timestamp'] = time();
 
-			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			map_api_update_option( MAP_PLUGIN_SCAN_RUNTIME, $runtime );
 		}
 	}
 	elseif( $cookie_shield_detected == 1 )
 	{
-		if( $the_settings['cookie_shield_running'] == false ||
-			$the_settings['missing_cookie_shield'] == true
+		if( $runtime['cookie_shield_running'] == false ||
+			$runtime['missing_cookie_shield'] == true
 		) {
-			$the_settings['missing_cookie_shield']           = false;
-			$the_settings['cookie_shield_running']           = true;
-			$the_settings['cookie_shield_running_timestamp'] = time();
+			$runtime['missing_cookie_shield']           = false;
+			$runtime['cookie_shield_running']           = true;
+			$runtime['cookie_shield_running_timestamp'] = time();
 
-			map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			map_api_update_option( MAP_PLUGIN_SCAN_RUNTIME, $runtime );
 		}
 	}
 }
 
 /**
- * Updates the Google Consent Mode V2 status in the plugin settings.
- * Writes to DB only if the status, error code, or error motivation have changed
- * since the last save, avoiding unnecessary DB writes on every page load.
+ * Updates the Google Consent Mode V2 status in the scan runtime state.
+ * Writes to DB only if the status, error code, or error motivation have changed.
  * Tracks the timestamp of the first error detection and resets it when resolved.
  *
- * @param array  $the_settings    Current plugin settings, passed by reference.
+ * @param array  $the_settings      Current plugin settings.
  * @param int    $is_consent_valid  1 if Consent Mode is correctly configured, 0 if not.
  * @param string $error_motivation  Human-readable description of the error, empty if valid.
  * @param int    $error_code        Numeric error code, 0 if valid.
  */
-function map_api_save_consent_mode_status( &$the_settings, $is_consent_valid, $error_motivation, $error_code )
+function map_api_save_consent_mode_status( $the_settings, $is_consent_valid, $error_motivation, $error_code )
 {
 	$cmode_v2_js_on_error = $is_consent_valid ? false : true;
 
+	$runtime = map_api_get_scan_runtime( $the_settings );
+
+	$stored_on_error = $runtime['cmode_v2_js_on_error'];
+
 	// Write to DB only if something has changed
 	$has_changed =
-		$the_settings['cmode_v2_js_on_error']        !== $cmode_v2_js_on_error ||
-		$the_settings['cmode_v2_js_error_code']       !== $error_code ||
-		$the_settings['cmode_v2_js_error_motivation'] !== $error_motivation;
+		$stored_on_error                         !== $cmode_v2_js_on_error ||
+		$runtime['cmode_v2_js_error_code']       !== $error_code ||
+		$runtime['cmode_v2_js_error_motivation'] !== $error_motivation;
 
 	if( !$has_changed ) return;
 
-	if( $the_settings['cmode_v2_js_on_error'] && ! $cmode_v2_js_on_error )
+	if( $stored_on_error && ! $cmode_v2_js_on_error )
 	{
-		$the_settings['cmode_v2_js_on_error_first_relevation'] = 0;
+		$runtime['cmode_v2_js_on_error_first_relevation'] = 0;
 	}
 
-	if( ! $the_settings['cmode_v2_js_on_error'] && $cmode_v2_js_on_error )
+	if( ! $stored_on_error && $cmode_v2_js_on_error )
 	{
-		$the_settings['cmode_v2_js_on_error_first_relevation'] = time();
+		$runtime['cmode_v2_js_on_error_first_relevation'] = time();
 	}
 
-	$the_settings['cmode_v2_js_on_error']        = $cmode_v2_js_on_error;
-	$the_settings['cmode_v2_js_error_code']       = $error_code;
-	$the_settings['cmode_v2_js_error_motivation'] = $error_motivation;
+	$runtime['cmode_v2_js_on_error']         = $cmode_v2_js_on_error;
+	$runtime['cmode_v2_js_error_code']       = $error_code;
+	$runtime['cmode_v2_js_error_motivation'] = $error_motivation;
 
-	map_api_update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+	map_api_update_option( MAP_PLUGIN_SCAN_RUNTIME, $runtime );
 }
 

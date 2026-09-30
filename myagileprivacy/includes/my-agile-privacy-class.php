@@ -39,6 +39,15 @@ final class MyAgilePrivacy {
 	// guard flag used during programmatic post updates
 	public static $doing_internal_write = false;
 
+	// set when the CDN did not answer during this request
+	private static $cdn_unreachable = false;
+
+	// per request banner configuration state; null means not resolved yet
+	private static $banner_overrides    = null;
+	private static $banner_variant_id   = 'default';
+	private static $banner_variant_slot = 0;
+	private static $banner_public       = array( 'active' => false, 'ids' => array(), 'cookie_days' => 30, 'preview' => false, 'variant_looks' => array() );
+
 	/**
 	 * Core functionality of the plugin.
 	 *
@@ -95,6 +104,9 @@ final class MyAgilePrivacy {
 		{
 			add_option( MAP_PLUGIN_SETTINGS_FIELD, array( 'video_privacy_mode' => 'block' ) );
 			wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+
+			// a new installation, not an update
+			self::update_option( MAP_PLUGIN_INSTALLED_VERSION, MAP_PLUGIN_VERSION );
 		}
 
 		self::map_maybe_register_capabilities();
@@ -261,10 +273,24 @@ final class MyAgilePrivacy {
 			(int) $the_settings['dont_ask_license_code_timestamp'] <= $now - MAP_BYPASS_LICENSE_TRESHOLD
 		)
 		{
-			$the_settings['dont_ask_license_code'] = false;
-			$the_settings['dont_ask_license_code_timestamp'] = 0;
+			wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			$the_settings = MyAgilePrivacy::get_settings();
+
+			// the flag may have been set again in the meantime
+			if(
+				!empty( $the_settings['dont_ask_license_code'] ) &&
+				isset( $the_settings['dont_ask_license_code_timestamp'] ) &&
+				(int) $the_settings['dont_ask_license_code_timestamp'] > 0 &&
+				(int) $the_settings['dont_ask_license_code_timestamp'] <= $now - MAP_BYPASS_LICENSE_TRESHOLD
+			)
+			{
+				$the_settings['dont_ask_license_code'] = false;
+				$the_settings['dont_ask_license_code_timestamp'] = 0;
+
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			}
 		}
 
 		return true;
@@ -437,17 +463,32 @@ final class MyAgilePrivacy {
 	{
 		$plugin_frontend = new MyAgilePrivacyFrontend( $this->plugin_name, $this->version, $this );
 
+		$map_first_priority = defined( 'PHP_INT_MIN' ) ? PHP_INT_MIN : ~PHP_INT_MAX;
+
 		/* Frontend styles*/
-		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_styles' ), PHP_INT_MIN );
+		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_styles' ), $map_first_priority );
 
 		/* Frontend scripts*/
-		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_scripts' ), PHP_INT_MIN );
+		add_action( 'wp_enqueue_scripts', array( $plugin_frontend, 'enqueue_scripts' ), $map_first_priority );
+
+		/* stylesheet loading compatibility */
+		$rconfig = self::get_rconfig();
+
+		if( is_array( $rconfig ) &&
+			isset( $rconfig['enable_plugins_loaded_filter'] ) &&
+			$rconfig['enable_plugins_loaded_filter'] )
+		{
+			add_filter( 'jetpack_boost_async_style', array( $plugin_frontend, 'map_jetpack_boost_async_style' ), 10, 2 );
+		}
 
 		/* inline script attribute rewrite */
 		add_filter( 'wp_inline_script_attributes', array( $plugin_frontend, 'add_attrs_to_inline_script' ), 10, 2 );
 
 		/* set locale, register custom post type */
 		add_action( 'init', array( $plugin_frontend, 'plugin_init' ) );
+
+		/* resolves the banner configuration before any producer runs */
+		add_action( 'init', array( 'MyAgilePrivacy', 'arm_banner_variant' ), $map_first_priority );
 
 		/* wp_footer hook*/
 		add_action( 'wp_footer', array( $plugin_frontend, 'inject_html_code' ) );
@@ -481,7 +522,7 @@ final class MyAgilePrivacy {
 						$rconfig['js_legacy_mode'] == 1
 					) ||
 					( $the_settings['scanner_compatibility_mode'] && $the_settings['forced_legacy_mode'] ) ||
-					$the_settings['missing_cookie_shield']
+					self::get_scan_runtime()['missing_cookie_shield']
 				)
 				{
 					$logic_legacy_mode = true;
@@ -489,7 +530,7 @@ final class MyAgilePrivacy {
 
 				if( $logic_legacy_mode )
 				{
-					add_action( 'wp_head', array( $plugin_frontend, 'wp_head_inject' ), isset( $rconfig['js_legacy_mode_head_prio'] ) ? intval( $rconfig['js_legacy_mode_head_prio'] ) : PHP_INT_MIN );
+					add_action( 'wp_head', array( $plugin_frontend, 'wp_head_inject' ), isset( $rconfig['js_legacy_mode_head_prio'] ) ? self::intvalPhp8( $rconfig['js_legacy_mode_head_prio'] ) : $map_first_priority );
 				}
 
 				/**
@@ -566,10 +607,7 @@ final class MyAgilePrivacy {
 			add_action( 'my_agile_privacy_do_cron_sync_twice_day_hook', array( $plugin_admin, 'do_cron_sync' ) );
 		}
 
-		//upgrader_process_complete
-		add_action( 'upgrader_process_complete', array( $plugin_admin, 'plugin_upgrade_callback' ), 10, 2);
-
-		//plugins_loaded: post-update transient check (unconditional - fires on any request type)
+		//plugins_loaded: post-update check (unconditional - fires on any request type)
 		add_action( 'plugins_loaded', array( $plugin_admin, 'map_check_post_update_transient' ) );
 
 		//wp_footer hook
@@ -577,6 +615,8 @@ final class MyAgilePrivacy {
 
 		/* admin callback actions */
 		add_action( 'wp_ajax_check_license_status', array( $plugin_admin, 'check_license_status' ) );
+		add_action( 'wp_ajax_map_request_trial', array( $plugin_admin, 'map_request_trial' ) );
+		add_action( 'wp_ajax_map_request_trial_b', array( $plugin_admin, 'map_request_trial_b' ) );
 
 		//capability mapping
 		add_filter( 'user_has_cap', array( 'MyAgilePrivacy', 'map_bridge_admin_capability' ), 10, 3 );
@@ -606,6 +646,8 @@ final class MyAgilePrivacy {
 		add_action( 'admin_init', array( $plugin_admin, 'admin_init_and_add_meta_box' ) );
 		add_action( 'admin_init', array( 'MyAgilePrivacy', 'map_maybe_register_capabilities' ) );
 		add_action( 'admin_init', array( 'MyAgilePrivacy', 'map_protect_log_dir' ) );
+		add_action( 'admin_init', array( 'MyAgilePrivacy', 'seed_scan_runtime' ) );
+		add_action( 'admin_init', array( 'MyAgilePrivacy', 'seed_rconfig' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_COOKIES, array( $plugin_admin, 'save_custom_metabox_cookies' ) );
 		add_action( 'save_post_'.MAP_POST_TYPE_POLICY, array( $plugin_admin, 'save_custom_metabox_policies' ) );
 
@@ -781,7 +823,7 @@ final class MyAgilePrivacy {
 
 		self::$stored_options = self::get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
 
-		if( !empty( self::$stored_options ) )
+		if( !empty( self::$stored_options ) && is_array( self::$stored_options ) )
 		{
 			//use default setting in case of missing site_and_policy_settings array
 			if(
@@ -802,6 +844,14 @@ final class MyAgilePrivacy {
 				{
 					$settings[ $key ] = self::sanitise_settings( $key, $option );
 				}
+			}
+		}
+
+		if( !empty( self::$banner_overrides ) )
+		{
+			foreach( self::$banner_overrides as $override_key => $override_value )
+			{
+				$settings[ $override_key ] = $override_value;
 			}
 		}
 
@@ -827,7 +877,7 @@ final class MyAgilePrivacy {
 	    {
 	        if( is_array( $v ) )
 	        {
-	            $sanitised[ $k ] = self::sanitise_array_settings( $k, $v );
+	            $sanitised[ $k ] = self::sanitise_array_settings( null, $v );
 	        }
 	        else
 	        {
@@ -847,6 +897,11 @@ final class MyAgilePrivacy {
 	{
 	    $ret   = null;
 	    $logic = null;
+
+	    if( !is_string( $key ) )
+	    {
+	        $key = (string) $key;
+	    }
 
 	    // get logic validation criteria
 	    if(
@@ -942,20 +997,28 @@ final class MyAgilePrivacy {
 	            // html (no js code)
 	            case 'bar_heading_text':
 	            case 'website_name':
+	                $logic = 'html';
+	                break;
+
+	            // identity and DPO: emphasis only
 	            case 'identity_name':
 	            case 'identity_address':
 	            case 'identity_vat_id':
-	                $logic = 'html';
+	                $logic = 'identity_html';
+	                break;
+
+	            // identity and DPO + trim
+	            case 'identity_email':
+	            case 'dpo_email':
+	            case 'dpo_name':
+	            case 'dpo_address':
+	                $logic = 'identity_html_trim';
 	                break;
 
 	            // html + trim
 	            case 'cookie_policy_url':
 	            case 'personal_data_policy_url':
 	            case 'license_code':
-	            case 'identity_email':
-	            case 'dpo_email':
-	            case 'dpo_name':
-	            case 'dpo_address':
 	                $logic = 'html_trim';
 	                break;
 
@@ -1024,7 +1087,7 @@ final class MyAgilePrivacy {
 	            break;
 
 	        case 'int':
-	            $ret = intval( $value );
+	            $ret = self::intvalPhp8( $value );
 	            break;
 
 	        case 'hexcolor':
@@ -1040,11 +1103,22 @@ final class MyAgilePrivacy {
 	            break;
 
 	        case 'html':
-	            $ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
+	            $ret = is_scalar( $value ) ? wp_kses( (string) $value, self::allowed_html_tags(), self::allowed_protocols() ) : '';
 	            break;
 
 	        case 'html_trim':
-	            $ret = wp_kses( $value, self::allowed_html_tags(), self::allowed_protocols() );
+	            $ret = is_scalar( $value ) ? wp_kses( (string) $value, self::allowed_html_tags(), self::allowed_protocols() ) : '';
+	            if( ! is_null( $ret ) ) {
+	                $ret = trim( $ret );
+	            }
+	            break;
+
+	        case 'identity_html':
+	            $ret = is_scalar( $value ) ? wp_kses( (string) $value, self::allowed_identity_tags(), self::allowed_protocols() ) : '';
+	            break;
+
+	        case 'identity_html_trim':
+	            $ret = is_scalar( $value ) ? wp_kses( (string) $value, self::allowed_identity_tags(), self::allowed_protocols() ) : '';
 	            if( ! is_null( $ret ) ) {
 	                $ret = trim( $ret );
 	            }
@@ -1226,7 +1300,7 @@ final class MyAgilePrivacy {
 	            return 'true';
 	        }
 
-	        if( isset( $_GET['et_fb'] ) && $_GET['et_fb'] == 1 )
+	        if( isset( $_GET['et_fb'] ) && self::looseEqualsPhp8( $_GET['et_fb'], 1 ) )
 	        {
 	            return 'true';
 	        }
@@ -1242,7 +1316,7 @@ final class MyAgilePrivacy {
 	        }
 
 	        // Avada
-	        if( isset( $_GET['fb-edit'] ) && $_GET['fb-edit'] == 1 )
+	        if( isset( $_GET['fb-edit'] ) && self::looseEqualsPhp8( $_GET['fb-edit'], 1 ) )
 	        {
 	            return 'true';
 	        }
@@ -1293,8 +1367,8 @@ final class MyAgilePrivacy {
 	        foreach( $url_skip_regexp as $regexp )
 	        {
 	            if( !is_string( $regexp ) || empty( $regexp ) ) { continue; }
-	            if( ( $current_href && preg_match( $regexp, $current_href ) ) ||
-	                ( $alt_current_href && preg_match( $regexp, $alt_current_href ) ) )
+	            if( ( $current_href && 1 === @preg_match( $regexp, $current_href ) ) ||
+	                ( $alt_current_href && 1 === @preg_match( $regexp, $alt_current_href ) ) )
 	            {
 	                return 'true';
 	            }
@@ -1399,6 +1473,287 @@ final class MyAgilePrivacy {
 			'fixed_translations_encoded',
 			// Policy Assistant (nested; inner prefix-whitelist applied on import)
 			'site_and_policy_settings',
+		);
+	}
+
+
+	/**
+	 * Appearance keys handled by the banner split test.
+	 */
+	public static function get_banner_variant_keys()
+	{
+		return array(
+			'cookie_banner_size', 'cookie_banner_vertical_position', 'cookie_banner_horizontal_position',
+			'floating_banner', 'cookie_banner_shadow', 'elements_border_radius', 'cookie_banner_animation',
+			'title_is_on', 'layer_1_button_order', 'text_size', 'text_lineheight',
+			'background', 'heading_background_color', 'heading_text_color', 'text', 'show_buttons_icons',
+			'button_accept_link_color', 'button_accept_button_color',
+			'button_reject_link_color', 'button_reject_button_color',
+			'button_customize_link_color', 'button_customize_button_color',
+		);
+	}
+
+
+	/**
+	 * Accepted values of the enumerated appearance keys.
+	 */
+	public static function get_banner_variant_enums()
+	{
+		return array(
+			'cookie_banner_size'                => array( 'sizeWideBranded', 'sizeBig', 'sizeWide', 'sizeBoxed' ),
+			'cookie_banner_vertical_position'   => array( 'Top', 'Center', 'Bottom' ),
+			'cookie_banner_horizontal_position' => array( 'Center', 'Left', 'Right' ),
+			'cookie_banner_shadow'              => array( 'false', 'map-shadow-soft', 'map-shadow-hard' ),
+			'cookie_banner_animation'           => array( 'none', 'slide', 'fade' ),
+			'layer_1_button_order'              => array(
+				'accept_reject_customize', 'accept_customize_reject', 'reject_accept_customize',
+				'reject_customize_accept', 'customize_accept_reject', 'customize_reject_accept',
+			),
+		);
+	}
+
+
+	/**
+	 * Keeps the appearance values that are inside their domain, in their stored type.
+	 *
+	 * A value out of domain is dropped, so the saved setting keeps its place.
+	 */
+	public static function sanitise_banner_variant( $values )
+	{
+		$clean = array();
+
+		if( !is_array( $values ) ) return $clean;
+
+		$enums = self::get_banner_variant_enums();
+
+		$ranges = array(
+			'floating_banner'        => array( 0, 1 ),
+			'elements_border_radius' => array( 0, 50 ),
+			'text_size'              => array( 4, 50 ),
+			'text_lineheight'        => array( 0, 100 ),
+		);
+
+		$booleans = array( 'title_is_on', 'show_buttons_icons' );
+
+		foreach( self::get_banner_variant_keys() as $key )
+		{
+			if( !isset( $values[ $key ] ) ) continue;
+
+			$value = $values[ $key ];
+
+			if( is_array( $value ) || is_object( $value ) ) continue;
+
+			if( isset( $enums[ $key ] ) )
+			{
+				if( is_string( $value ) && in_array( $value, $enums[ $key ], true ) )
+				{
+					$clean[ $key ] = $value;
+				}
+
+				continue;
+			}
+
+			if( isset( $ranges[ $key ] ) )
+			{
+				if( !self::isNumericPhp8( $value ) ) continue;
+
+				$number = self::intvalPhp8( $value );
+
+				if( $number < $ranges[ $key ][0] ) $number = $ranges[ $key ][0];
+				if( $number > $ranges[ $key ][1] ) $number = $ranges[ $key ][1];
+
+				$clean[ $key ] = ( $key === 'floating_banner' ) ? $number : strval( $number );
+
+				continue;
+			}
+
+			if( in_array( $key, $booleans, true ) )
+			{
+				if( $value === true || $value === 'true' || $value === 1 || $value === '1' )
+				{
+					$clean[ $key ] = true;
+				}
+				elseif( $value === false || $value === 'false' || $value === 0 || $value === '0' )
+				{
+					$clean[ $key ] = false;
+				}
+
+				continue;
+			}
+
+			if( is_string( $value ) && preg_match( '/^(#[a-f0-9]{6}|#[a-f0-9]{3})$/i', $value ) )
+			{
+				$clean[ $key ] = $value;
+			}
+		}
+
+		return $clean;
+	}
+
+
+	/**
+	 * Resolves the banner configuration for this request, once.
+	 */
+	public static function arm_banner_variant()
+	{
+		if( self::$banner_overrides !== null ) return;
+
+		self::$banner_overrides = array();
+
+		if( is_admin() )                                                                                    return;
+		if( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) ) return;
+		if( defined( 'DOING_CRON' ) && DOING_CRON )                                                         return;
+		if( defined( 'WP_CLI' ) && WP_CLI )                                                                 return;
+		if( PHP_SAPI === 'cli' )                                                                            return;
+		if( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST )                                                 return;
+
+		if(
+			( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
+			( isset( $_GET['rest_route'] ) && is_string( $_GET['rest_route'] ) ) ||
+			( isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false )
+		) return;
+
+		if( function_exists( 'wp_is_json_request' ) && wp_is_json_request() )                               return;
+		if( self::is_wplogin() )                                                                            return;
+		if( !function_exists( 'map_call_advanced_get_banner_variant' ) )                                     return;
+
+		$preview = '';
+		$warm    = '';
+
+		if(
+			isset( $_GET['map_ab_preview'] ) && is_string( $_GET['map_ab_preview'] ) &&
+			preg_match( '/^[a-z0-9]{1,32}$/', $_GET['map_ab_preview'] ) && self::map_can_edit()
+		)
+		{
+			$preview = $_GET['map_ab_preview'];
+		}
+		elseif(
+			isset( $_GET['map_ab_warm'] ) && is_string( $_GET['map_ab_warm'] ) &&
+			preg_match( '/^[a-z0-9]{1,32}$/', $_GET['map_ab_warm'] ) && self::map_can_edit()
+		)
+		{
+			$warm = $_GET['map_ab_warm'];
+		}
+
+		$cookie = '';
+
+		if(
+			isset( $_COOKIE['map_banner_variant'] ) && is_string( $_COOKIE['map_banner_variant'] ) &&
+			preg_match( '/^[a-z0-9]{1,32}$/', $_COOKIE['map_banner_variant'] )
+		)
+		{
+			$cookie = $_COOKIE['map_banner_variant'];
+		}
+
+		$variant = map_call_advanced_get_banner_variant( $cookie, $preview, $warm );
+
+		self::$banner_variant_id   = $variant['id'];
+		self::$banner_variant_slot = intval( $variant['slot'] );
+		self::$banner_overrides    = self::sanitise_banner_variant( $variant['overrides'] );
+		self::$banner_public       = $variant['public'];
+	}
+
+
+	/**
+	 * Identifier of the banner configuration served in this request.
+	 */
+	public static function get_banner_variant_id()
+	{
+		return self::$banner_variant_id;
+	}
+
+
+	/**
+	 * Cache key fragment of the served configuration; empty for the saved settings.
+	 */
+	public static function get_json_cache_variant_segment()
+	{
+		if( self::$banner_variant_slot === 0 || self::$banner_variant_id === 'default' ) return '';
+
+		return self::$banner_variant_id . '_';
+	}
+
+
+	/**
+	 * True while the page is rendered as a preview.
+	 */
+	public static function is_split_preview()
+	{
+		return ( isset( self::$banner_public['preview'] ) && self::$banner_public['preview'] === true );
+	}
+
+
+	/**
+	 * Configuration block published to the frontend script.
+	 */
+	/**
+	 * The two appearance flags the JS payload carries, from the settings they derive from.
+	 *
+	 * @param mixed  $title_is_on
+	 * @param string $banner_size
+	 * @param bool   $paid
+	 * @return array
+	 */
+	public static function banner_look_flags( $title_is_on, $banner_size, $paid )
+	{
+		return array(
+			'title'   => $title_is_on ? '1' : '0',
+			'branded' => ( !$paid || $banner_size === 'sizeWideBranded' ) ? '1' : '0',
+		);
+	}
+
+	public static function get_split_public_config()
+	{
+		$public = self::$banner_public;
+
+		$ids = array();
+
+		if( isset( $public['ids'] ) && is_array( $public['ids'] ) )
+		{
+			$ids = array_values( $public['ids'] );
+		}
+
+		$blog_id = is_multisite() ? get_current_blog_id() : 1;
+		$scheme  = is_ssl() ? 'https' : 'http';
+
+		$shim_base = '';
+
+		if( defined( 'MAP_PLUGIN_FILENAME' ) )
+		{
+			$shim_base = self::get_plugin_url( MAP_PLUGIN_FILENAME ) . '/api/cache-json.php';
+			$shim_base = preg_replace( '/([^:])(\/{2,})/', '$1/', $shim_base );
+		}
+
+		// The two flags each variant needs, so the swap does not fetch a second file for them.
+		$settings = self::get_settings();
+		$paid     = ( isset( $settings['pa'] ) && $settings['pa'] );
+		$looks    = array();
+
+		if( isset( $public['variant_looks'] ) && is_array( $public['variant_looks'] ) )
+		{
+			foreach( $public['variant_looks'] as $token => $raw )
+			{
+				if( !in_array( $token, $ids, true ) ) { continue; }
+
+				$looks[ $token ] = self::banner_look_flags(
+					isset( $raw['title_is_on'] ) ? $raw['title_is_on'] : false,
+					isset( $raw['cookie_banner_size'] ) ? $raw['cookie_banner_size'] : '',
+					$paid
+				);
+			}
+		}
+
+		return array(
+			'active'      => ( isset( $public['active'] ) && $public['active'] === true ),
+			'ids'         => $ids,
+			'looks'       => $looks,
+			'cookie_days' => isset( $public['cookie_days'] ) ? intval( $public['cookie_days'] ) : 30,
+			'preview'     => self::is_split_preview(),
+			'served'      => self::$banner_variant_id,
+			'suffix'      => self::getCurrentLang4Char() . '_' . $blog_id . '_' . $scheme,
+			'json_base'   => self::get_base_url_for_cache() . 'json/',
+			'shim_base'   => $shim_base,
+			'timeout_ms'  => 800,
 		);
 	}
 
@@ -1554,7 +1909,8 @@ final class MyAgilePrivacy {
 			'grace_period'								=>	false,
 			'customer_email'							=>	null,
 			'summary_text'								=>	null,
-			'notify_div_id' 							=> '#my-agile-privacy-notification-area',
+			'license_name'								=>	'',
+			'notify_div_id'							=> '#my-agile-privacy-notification-area',
 			'showagain_tab' 							=> 	true,
 			'wrap_shortcodes'							=>	false,
 			'notify_position_horizontal'				=> 	'right',
@@ -1562,11 +1918,10 @@ final class MyAgilePrivacy {
 			'cookie_policy_link'						=>	false,
 			'is_cookie_policy_url'						=>	false,
 			'cookie_policy_url'							=>	null,
-			'cookie_policy_page'						=> 	self::get_option( 'wp_page_for_privacy_policy', 0 ),
+			'cookie_policy_page'						=> 	0,
 			'is_personal_data_policy_url'				=>	false,
 			'personal_data_policy_url'					=>	null,
 			'personal_data_policy_page'					=>	0,
-			'last_sync'									=>	null,
 			'default_locale'							=>	$default_locale,
 			'disable_logo'								=>	false,
 			'consent_widget_style'						=>	'text_and_logo',
@@ -1589,16 +1944,11 @@ final class MyAgilePrivacy {
 			'scanner_end_hook_prio'						=>	-10000,
 			'alt_accepted_all_cookie_name'				=>	null,
 			'alt_accepted_something_cookie_name'		=>	null,
-			'learning_mode_last_active_timestamp'		=>	null,
 			'enforce_youtube_privacy'					=>	false,
 			'show_ntf_bar_on_not_yet_consent_choice'	=>	false,
 			'with_css_effects'							=>	true,
 			'forced_legacy_mode'						=>	false,
 			'dev_mode'									=>	false,
-			'missing_cookie_shield'						=> 	false,
-			'missing_cookie_shield_timestamp'			=> 	null,
-			'cookie_shield_running'						=>	false,
-			'cookie_shield_running_timestamp'			=>	null,
 			'forced_auto_update'						=>	true,
 			'enable_iab_tcf'							=>	false,
 			'enable_metadata_sync'						=>	true,
@@ -1620,40 +1970,38 @@ final class MyAgilePrivacy {
 			'cmode_v2_gtag_ad_user_data'				=> 	'denied',
 			'cmode_v2_gtag_ad_personalization'			=> 	'denied',
 			'cmode_v2_gtag_analytics_storage'			=> 	'denied',
-			'cmode_v2_js_on_error'						=>	false,
-			'cmode_v2_js_on_error_first_relevation'		=>	false,
-			'cmode_v2_js_error_code'					=>	0,
-			'cmode_v2_js_error_motivation'				=>	null,
 
 			'fixed_translations_encoded'				=>	null,
 			'cmode_v2_forced_off_ga4_advanced'			=>	false,
-
-
-			'last_scan_date_internal'					=>	null,
 
 			'enable_language_fallback' 					=> 	false,
 			'language_fallback_locale'					=>	null,
 			'layer_1_button_order'						=>	'accept_reject_customize',
 			'site_and_policy_settings'					=>	$site_and_policy_settings,
 
-			'add_cookie_policy_to_first_layer'			=>	true,
-			'add_personal_policy_to_first_layer'		=>	true,
+			'add_cookie_policy_to_first_layer'			=>	false,
+			'add_personal_policy_to_first_layer'		=>	false,
 
 			'send_ga4_event_on_consent_change'			=>	false,
 
 			'stats_enabled'								=>	false,
 
-			'missing_api_support'						=> 	false,
-			'missing_api_support_timestamp'				=> 	null,
-			'missing_api_support_failures_count'		=>	0,
-			'missing_api_support_failures_window_start'	=>	0,
-
 
 		);
 
-		$settings = apply_filters( 'map_plugin_settings', $settings );
+		$filtered_settings = apply_filters( 'map_plugin_settings', $settings );
 
-		return $key != "" ? $settings[ $key ] : $settings;
+		if( is_array( $filtered_settings ) )
+		{
+			$settings = $filtered_settings;
+		}
+
+		if( $key != "" )
+		{
+			return isset( $settings[ $key ] ) ? $settings[ $key ] : null;
+		}
+
+		return $settings;
 	}
 
 
@@ -1816,6 +2164,22 @@ final class MyAgilePrivacy {
 
 
 	/**
+	 * Returns the tags allowed in identity and DPO fields.
+	 * @access   public
+	 */
+	public static function allowed_identity_tags()
+	{
+		return array(
+			'b'      => array(),
+			'strong' => array(),
+			'i'      => array(),
+			'em'     => array(),
+			'br'     => array(),
+		);
+	}
+
+
+	/**
 	 * Returns list of allowed protocols, used in wp_kset field validation.
 	 * @access   public
 	 */
@@ -1833,7 +2197,6 @@ final class MyAgilePrivacy {
 		$the_settings = self::get_settings();
 		$rconfig = self::get_rconfig();
 
-		$logged_in_and_admin = false;
 		$internal_debug = false;
 
 		//get translations
@@ -1842,7 +2205,6 @@ final class MyAgilePrivacy {
 
 		if( current_user_can( 'manage_options' ) && isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 )
 		{
-			$logged_in_and_admin = true;
 			$internal_debug = true;
 		}
 
@@ -1855,21 +2217,16 @@ final class MyAgilePrivacy {
 			$verbose_remote_log = true;
 		}
 
-		$map_notify_title = '0';
+		$map_look = self::banner_look_flags(
+			$the_settings['title_is_on'],
+			isset( $the_settings['cookie_banner_size'] ) ? $the_settings['cookie_banner_size'] : '',
+			( isset( $the_settings['pa'] ) && $the_settings['pa'] )
+		);
 
-		if( $the_settings['title_is_on'] )
-		{
-			$map_notify_title = '1';
-		}
-
-		$map_first_layer_branded = '0';
-		if( !( isset( $the_settings['pa'] ) && $the_settings['pa'] ) || $the_settings['cookie_banner_size'] == 'sizeWideBranded' )
-		{
-			$map_first_layer_branded = '1';
-		}
+		$map_notify_title        = $map_look['title'];
+		$map_first_layer_branded = $map_look['branded'];
 
 		$return_settings = array(
-			'logged_in_and_admin'						=>	$logged_in_and_admin,
 			'verbose_remote_log'						=>	$verbose_remote_log,
 			'internal_debug'							=>	$internal_debug,
 			'notify_div_id'								=> 	$the_settings['notify_div_id'],
@@ -1904,11 +2261,22 @@ final class MyAgilePrivacy {
 	}
 
 	/**
+	 * Returns the settings payload without values tied to the current visitor
+	 * @access   public
+	 */
+	public static function anonymize_json_settings( $settings )
+	{
+		$settings['internal_debug'] = false;
+
+		return $settings;
+	}
+
+	/**
 	 * f for cleaning hex color
 	 */
 	public static function clean_hex_color( $hex )
 	{
-		$hex = strtolower($hex);
+		$hex = strtolower( is_scalar( $hex ) ? (string) $hex : '' );
 
 		//remove the leading "#"
 		if(strlen($hex) == 7 || strlen($hex) == 4)
@@ -1934,6 +2302,13 @@ final class MyAgilePrivacy {
 	 */
 	public static function call_api( $params )
 	{
+		if( !is_string( MAP_API_ENDPOINT ) )
+		{
+			return array(
+				'internal_error_message'	=>	'invalid endpoint',
+			);
+		}
+
 		$url = MAP_API_ENDPOINT;
 
 		$site_url = null;
@@ -2105,8 +2480,8 @@ final class MyAgilePrivacy {
 		{
 			if( $alt_local_filename )
 			{
-				if( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age &&
-					is_file( $local_alt_filename_fullpath ) && filemtime( $local_alt_filename_fullpath ) > $max_age
+				if( is_file( $local_filename_fullpath ) && @filemtime( $local_filename_fullpath ) > $max_age &&
+					is_file( $local_alt_filename_fullpath ) && @filemtime( $local_alt_filename_fullpath ) > $max_age
 				)
 				{
 					//no download needed
@@ -2116,7 +2491,7 @@ final class MyAgilePrivacy {
 			}
 			else
 			{
-				if( is_file( $local_filename_fullpath ) && filemtime( $local_filename_fullpath ) > $max_age )
+				if( is_file( $local_filename_fullpath ) && @filemtime( $local_filename_fullpath ) > $max_age )
 				{
 					//no download needed
 					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'check C : no download needed' );
@@ -2125,22 +2500,16 @@ final class MyAgilePrivacy {
 			}
 		}
 
-		if( file_exists( $local_filename_fullpath ) )
+		// the other files of a request whose CDN did not answer are not tried, and keep their old copy
+		if( self::$cdn_unreachable )
 		{
-			wp_delete_file( $local_filename_fullpath );
-		}
-
-		if( $alt_local_filename )
-		{
-			if( file_exists( $local_alt_filename_fullpath ) )
-			{
-				wp_delete_file( $local_alt_filename_fullpath );
-			}
+			return false;
 		}
 
 		if( ! wp_mkdir_p( $directory ) )
 		{
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'Error creating needed directory: ' . $directory );
+			if( !get_transient( 'map_download_brake' ) ) { set_transient( 'map_download_brake', 1, 12 * HOUR_IN_SECONDS ); }
 			return false;
 		}
 
@@ -2156,28 +2525,65 @@ final class MyAgilePrivacy {
 		    $download_url = add_query_arg( 'v', $version_number, $remote_filename );
 		}
 
-		$tmp_file = download_url( $download_url );
+		$tmp_file = download_url( $download_url, 10 );
 
 		if( !$tmp_file || !is_string( $tmp_file ) )
 		{
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'Error downloading remote_filename: ' . $remote_filename );
+
+			if( is_wp_error( $tmp_file ) && $tmp_file->get_error_code() === 'http_request_failed' )
+			{
+				self::$cdn_unreachable = true;
+
+				if( !get_transient( 'map_download_brake' ) ) { set_transient( 'map_download_brake', 1, 12 * HOUR_IN_SECONDS ); }
+			}
+
 			return false;
 		}
 
-		copy( $tmp_file, $local_filename_fullpath );
+		// the old copy goes only once a new one is in hand
+		if( file_exists( $local_filename_fullpath ) )
+		{
+			wp_delete_file( $local_filename_fullpath );
+		}
 
 		if( $alt_local_filename )
 		{
-			copy( $tmp_file, $local_alt_filename_fullpath );
+			if( file_exists( $local_alt_filename_fullpath ) )
+			{
+				wp_delete_file( $local_alt_filename_fullpath );
+			}
+		}
+
+		$copied = @copy( $tmp_file, $local_filename_fullpath );
+
+		if( $copied && $alt_local_filename )
+		{
+			$copied = @copy( $tmp_file, $local_alt_filename_fullpath );
 		}
 
 		if( file_exists( $tmp_file ) ) { wp_delete_file( $tmp_file ); }
+
+		if( !$copied )
+		{
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'Error copying remote_filename: ' . $remote_filename );
+
+			// a partial copy must not be served as a good file
+			if( file_exists( $local_filename_fullpath ) ) { wp_delete_file( $local_filename_fullpath ); }
+			if( $local_alt_filename_fullpath && file_exists( $local_alt_filename_fullpath ) ) { wp_delete_file( $local_alt_filename_fullpath ); }
+
+			if( !get_transient( 'map_download_brake' ) ) { set_transient( 'map_download_brake', 1, 12 * HOUR_IN_SECONDS ); }
+			return false;
+		}
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'download_remote_file -> remote file downloaded to '.$local_filename_fullpath . ' from '.$remote_filename );
 
 		//old folder cleanup
 		$old_cache_dir = WP_CONTENT_DIR . '/local-cache/'.MAP_PLUGIN_NAME.'/';
-		MyAgilePrivacy::flush_manifest_file_cache( $old_cache_dir, true ) ;
+		if( !is_link( rtrim( $old_cache_dir, '/' ) ) )
+		{
+			MyAgilePrivacy::flush_manifest_file_cache( $old_cache_dir, true ) ;
+		}
 
 		return true;
 	}
@@ -2204,14 +2610,22 @@ final class MyAgilePrivacy {
 			return false;
 		}
 
-		$objects = scandir( $directory );
+		$objects = @scandir( $directory );
+
+		if( !is_array( $objects ) )
+		{
+			return false;
+		}
+
 		foreach ( $objects as $object ) {
 			if( $object != "." && $object != ".." ) {
-				if( is_dir( $directory . DIRECTORY_SEPARATOR . $object ) && ! is_link( $directory . "/" . $object ) ) {
-					MyAgilePrivacy::flush_manifest_file_cache( $directory . DIRECTORY_SEPARATOR . $object );
-				} else {
-					$this_filepath = $directory . DIRECTORY_SEPARATOR . $object;
+				$this_filepath = $directory . DIRECTORY_SEPARATOR . $object;
 
+				if( is_link( $this_filepath ) ) {
+					@unlink( $this_filepath );
+				} elseif( is_dir( $this_filepath ) ) {
+					MyAgilePrivacy::flush_manifest_file_cache( $this_filepath, $remove_dir );
+				} else {
 					if( file_exists( $this_filepath ) ) { wp_delete_file( $this_filepath ); }
 				}
 			}
@@ -2219,7 +2633,7 @@ final class MyAgilePrivacy {
 
 		if( $remove_dir )
 		{
-			rmdir( $directory );
+			@rmdir( $directory );
 		}
 
 		return true;
@@ -2287,6 +2701,8 @@ final class MyAgilePrivacy {
 	 */
 	public static function set_json_cache( $cache_key, $data, $ttl_seconds = 21600 )
 	{
+	    if( !function_exists( 'file_put_contents' ) || !function_exists( 'rename' ) ) return false;
+
 	    if( !MyAgilePrivacy::ensure_json_cache_directory() ) return false;
 
 	    $filepath = MyAgilePrivacy::get_json_cache_filepath( $cache_key );
@@ -2309,13 +2725,14 @@ final class MyAgilePrivacy {
 	    $tmp_filepath = $filepath . '.tmp.' . uniqid();
 	    $written = file_put_contents( $tmp_filepath, $json, LOCK_EX );
 
-	    if( $written === false )
+	    if( $written !== strlen( $json ) )
 	    {
 	        wp_delete_file( $tmp_filepath );
 	        return false;
 	    }
 
-	    if( !rename( $tmp_filepath, $filepath ) )
+	    // A concurrent cache flush may remove the temp file before the rename.
+	    if( !@rename( $tmp_filepath, $filepath ) )
 	    {
 	        wp_delete_file( $tmp_filepath );
 	        return false;
@@ -2328,7 +2745,7 @@ final class MyAgilePrivacy {
 	 * Reads a value from the JSON file cache.
 	 *
 	 * Returns false if the cache file does not exist, is expired, or is corrupted.
-	 * Expired and corrupted files are NOT deleted here — they will be overwritten
+	 * Expired and corrupted files are NOT deleted here - they will be overwritten
 	 * by the next set_json_cache() call
 	 *
 	 * @param string $cache_key Unique identifier for the cached item.
@@ -2341,7 +2758,7 @@ final class MyAgilePrivacy {
 
 	    if( !is_file( $filepath ) ) return false;
 
-	    $raw = file_get_contents( $filepath );
+	    $raw = @file_get_contents( $filepath );
 	    if( $raw === false ) return false;
 
 	    $payload = json_decode( $raw, true );
@@ -2367,7 +2784,7 @@ final class MyAgilePrivacy {
 	/**
 	 * Invalidates all JSON cache files by setting their expiry to the past.
 	 *
-	 * Files are NOT deleted — they are marked as expired so that the next
+	 * Files are NOT deleted - they are marked as expired so that the next
 	 * get_json_cache() call returns false and triggers regeneration via set_json_cache().
 	 * This approach ensures no downtime: the old file remains on disk and can still
 	 * be inspected, while the next request will overwrite it with fresh data.
@@ -2376,6 +2793,8 @@ final class MyAgilePrivacy {
 	 */
 	public static function flush_json_cache( $prefix = '' )
 	{
+	    if( !function_exists( 'file_put_contents' ) || !function_exists( 'rename' ) || !function_exists( 'glob' ) ) return 0;
+
 	    $dir = MyAgilePrivacy::get_json_cache_directory();
 	    if( !$dir || !is_dir( $dir ) ) return 0;
 
@@ -2388,7 +2807,7 @@ final class MyAgilePrivacy {
 	    {
 	        if( !is_file( $file ) ) continue;
 
-	        $raw = file_get_contents( $file );
+	        $raw = @file_get_contents( $file );
 	        if( $raw === false ) continue;
 
 	        $payload = json_decode( $raw, true );
@@ -2406,13 +2825,13 @@ final class MyAgilePrivacy {
 	        $tmp_filepath = $file . '.tmp.' . uniqid();
 	        $written = file_put_contents( $tmp_filepath, $json, LOCK_EX );
 
-	        if( $written === false )
+	        if( $written !== strlen( $json ) )
 	        {
 	            wp_delete_file( $tmp_filepath );
 	            continue;
 	        }
 
-	        if( !rename( $tmp_filepath, $file ) )
+	        if( !@rename( $tmp_filepath, $file ) )
 	        {
 	            wp_delete_file( $tmp_filepath );
 	            continue;
@@ -2425,13 +2844,35 @@ final class MyAgilePrivacy {
 	}
 
 	/**
-	 * equivalent for php7 null coalesce
+	 * Deletes the cache files whose name carries the given fragment.
 	 */
-	public static function nullCoalesce( $var, $default = null )
+	public static function purge_json_cache( $fragment )
 	{
-		return isset( $var ) ? $var : $default;
-	}
+	    if( !is_string( $fragment ) || !preg_match( '/^[a-z0-9]{1,32}$/', $fragment ) ) return 0;
 
+	    $dir = MyAgilePrivacy::get_json_cache_directory();
+	    if( !$dir || !is_dir( $dir ) ) return 0;
+
+	    // The directory is shared across the network while the identifiers restart
+	    // per site: without the blog id this would delete another site's files.
+	    $blog_id = is_multisite() ? get_current_blog_id() : 1;
+	    $files   = glob( $dir . '*' . $fragment . '*_' . $blog_id . '_*.json' );
+
+	    if( !is_array( $files ) ) return 0;
+
+	    $deleted = 0;
+
+	    foreach( $files as $file )
+	    {
+	        if( !is_file( $file ) ) continue;
+
+	        wp_delete_file( $file );
+
+	        $deleted++;
+	    }
+
+	    return $deleted;
+	}
 
 	/**
 	 * equivalent for php7 null coalesce (array)
@@ -2439,6 +2880,138 @@ final class MyAgilePrivacy {
 	public static function nullCoalesceArrayItem( $var, $key, $default = null )
 	{
 		return isset( $var[ $key ] ) ? $var[ $key ] : $default;
+	}
+
+
+	/**
+	 * First value of a post meta entry, or the default when the key is absent.
+	 * The array access happens inside, so the caller never triggers a warning.
+	 */
+	public static function nullCoalesceMetaItem( $all_meta, $key, $default = null )
+	{
+		return isset( $all_meta[ $key ][0] ) ? $all_meta[ $key ][0] : $default;
+	}
+
+
+	/**
+	 * Whether a value is numeric the way PHP 8 reads it, on every version.
+	 */
+	public static function isNumericPhp8( $value )
+	{
+		if( is_int( $value ) || is_float( $value ) )
+		{
+			return true;
+		}
+
+		if( !is_string( $value ) )
+		{
+			return false;
+		}
+
+		$trimmed = rtrim( $value, " \t\n\r\v\f" );
+
+		return is_numeric( $trimmed ) && !preg_match( '/^[ \t\n\r\v\f]*[+-]?0[xX]/', $trimmed );
+	}
+
+
+	/**
+	 * Loose comparison with the PHP 8 result, on every version.
+	 */
+	public static function looseEqualsPhp8( $a, $b )
+	{
+		$spaces = " \t\n\r\v\f";
+
+		if( is_string( $a ) && is_string( $b ) )
+		{
+			if( self::isNumericPhp8( $a ) && self::isNumericPhp8( $b ) )
+			{
+				return rtrim( $a, $spaces ) == rtrim( $b, $spaces );
+			}
+
+			return $a === $b;
+		}
+
+		if( ( is_int( $a ) || is_float( $a ) ) && is_string( $b ) )
+		{
+			if( is_float( $a ) && is_nan( $a ) )
+			{
+				return false;
+			}
+
+			return self::isNumericPhp8( $b ) ? ( $a == rtrim( $b, $spaces ) ) : ( (string) $a === $b );
+		}
+
+		if( ( is_int( $b ) || is_float( $b ) ) && is_string( $a ) )
+		{
+			if( is_float( $b ) && is_nan( $b ) )
+			{
+				return false;
+			}
+
+			return self::isNumericPhp8( $a ) ? ( $b == rtrim( $a, $spaces ) ) : ( (string) $b === $a );
+		}
+
+		return $a == $b;
+	}
+
+
+	/**
+	 * json_encode that keeps what JSON can write when some values cannot be encoded
+	 */
+	public static function jsonEncodeSafe( $data, $flags = 0 )
+	{
+		$json = wp_json_encode( $data, $flags );
+
+		if( $json === false )
+		{
+			$json = json_encode( $data, $flags | JSON_PARTIAL_OUTPUT_ON_ERROR );
+		}
+
+		return $json;
+	}
+
+
+	/**
+	 * intval() with the PHP 8 reading of numeric strings, saturated instead of wrapped.
+	 */
+	public static function intvalPhp8( $value )
+	{
+		if( is_string( $value ) )
+		{
+			if( preg_match( '/^[ \t\n\r\v\f]*[+-]?[0-9]+[ \t\n\r\v\f]*$/', $value ) )
+			{
+				return (int) $value;
+			}
+
+			if( !preg_match( '/^[ \t\n\r\v\f]*[+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?/', $value ) )
+			{
+				return intval( $value );
+			}
+
+			$value = (float) $value;
+		}
+
+		if( is_float( $value ) )
+		{
+			if( is_nan( $value ) || is_infinite( $value ) )
+			{
+				return 0;
+			}
+
+			if( $value >= PHP_INT_MAX )
+			{
+				return PHP_INT_MAX;
+			}
+
+			if( $value <= -PHP_INT_MAX )
+			{
+				return -PHP_INT_MAX;
+			}
+
+			return (int) $value;
+		}
+
+		return intval( $value );
 	}
 
 
@@ -2468,6 +3041,41 @@ final class MyAgilePrivacy {
 	{
 		$return_data = array();
 
+		$keysToKeep = array(
+			'SERVER_SOFTWARE',
+			'SERVER_SIGNATURE',
+			'SERVER_NAME',
+			'SERVER_PORT',
+			'SERVER_PROTOCOL',
+			'HTTP_HOST',
+			'HTTPS',
+			'REQUEST_SCHEME',
+			'REQUEST_METHOD',
+			'REQUEST_TIME',
+			'REDIRECT_STATUS',
+			'GATEWAY_INTERFACE',
+			'FCGI_ROLE',
+			'DOCUMENT_ROOT',
+			'CONTEXT_DOCUMENT_ROOT',
+			'CONTEXT_PREFIX',
+			'SCRIPT_NAME',
+			'SCRIPT_FILENAME',
+			'PHP_SELF',
+			'PHP_INI_SCAN_DIR',
+			'PHP_MEMORY_LIMIT',
+			'PHP_MAX_EXECUTION_TIME',
+			'PHP_MAX_INPUT_TIME',
+			'PHP_POST_MAX_SIZE',
+			'PHP_UPLOAD_MAX_FILESIZE',
+			'SSL_PROTOCOL',
+			'HTTP_X_FORWARDED_PROTO',
+			'HTTP_X_FORWARDED_PORT',
+			'HTTP_X_HTTPS',
+			'HTTP_CF_VISITOR',
+			'HTTP_CDN_LOOP',
+			'X-LSCACHE',
+		);
+
 		$keysToRemove = array(
 			'HTTP_COOKIE',
 			'HTTP_USER_AGENT',
@@ -2491,13 +3099,14 @@ final class MyAgilePrivacy {
 
 		foreach( $_SERVER as $k => $v )
 		{
-			if( is_array( $keysToRemove ) &&
-				in_array( $k, $keysToRemove ) )
+			if( in_array( $k, $keysToRemove, true ) )
 			{
-				$v = '(set)';
+				$return_data[ $k ] = '(set)';
 			}
-
-			$return_data[ $k ] = $v;
+			elseif( in_array( $k, $keysToKeep, true ) && is_scalar( $v ) )
+			{
+				$return_data[ $k ] = $v;
+			}
 		}
 
 		return $return_data;
@@ -2916,6 +3525,101 @@ final class MyAgilePrivacy {
 		return false;
 	}
 
+	/**
+	 * Runtime state of the scan, kept apart from the settings.
+	 */
+	public static function get_scan_runtime()
+	{
+		$defaults = self::get_scan_runtime_defaults();
+
+		$runtime = self::get_option( MAP_PLUGIN_SCAN_RUNTIME, false );
+
+		if( !is_array( $runtime ) )
+		{
+			$runtime = array();
+		}
+
+		$runtime = array_intersect_key( $runtime, $defaults );
+
+		// values saved inside the settings by earlier versions
+		if( count( $runtime ) < count( $defaults ) )
+		{
+			$stored = self::get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
+
+			if( is_array( $stored ) )
+			{
+				foreach( $defaults as $key => $value )
+				{
+					if( !array_key_exists( $key, $runtime ) && array_key_exists( $key, $stored ) )
+					{
+						$runtime[ $key ] = self::sanitise_settings( $key, $stored[ $key ] );
+					}
+				}
+			}
+		}
+
+		return array_merge( $defaults, $runtime );
+	}
+
+	/**
+	 * Default values of the scan runtime state.
+	 */
+	public static function get_scan_runtime_defaults()
+	{
+		return array(
+			'missing_cookie_shield'					=>	false,
+			'missing_cookie_shield_timestamp'		=>	null,
+			'cookie_shield_running'					=>	false,
+			'cookie_shield_running_timestamp'		=>	null,
+			'cmode_v2_js_on_error'					=>	false,
+			'cmode_v2_js_on_error_first_relevation'	=>	false,
+			'cmode_v2_js_error_code'				=>	0,
+			'cmode_v2_js_error_motivation'			=>	null,
+			'last_scan_date_internal'				=>	null,
+			'last_sync'								=>	null,
+			'learning_mode_last_active_timestamp'	=>	null,
+		);
+	}
+
+	/**
+	 * Creates the scan runtime state once, from an administrator request.
+	 */
+	public static function seed_scan_runtime()
+	{
+		if( !self::map_can_edit() )
+		{
+			return;
+		}
+
+		$runtime = self::get_option( MAP_PLUGIN_SCAN_RUNTIME, false );
+
+		if( is_array( $runtime ) && !array_diff_key( self::get_scan_runtime_defaults(), $runtime ) )
+		{
+			return;
+		}
+
+		self::update_option( MAP_PLUGIN_SCAN_RUNTIME, self::get_scan_runtime() );
+	}
+
+	/**
+	 * Writes some keys of the scan runtime state.
+	 */
+	public static function update_scan_runtime( $changes )
+	{
+		// merge onto the stored copy, not the one loaded at the start of the request
+		wp_cache_delete( MAP_PLUGIN_SCAN_RUNTIME, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		$runtime = self::get_scan_runtime();
+
+		foreach( $changes as $key => $value )
+		{
+			$runtime[ $key ] = $value;
+		}
+
+		return self::update_option( MAP_PLUGIN_SCAN_RUNTIME, $runtime );
+	}
+
 	//f for getting data
 	public static function get_option( $option_name, $default = false )
 	{
@@ -2966,6 +3670,26 @@ final class MyAgilePrivacy {
 	//f for avoiding polylang filters
 	public static function update_option( $option_name, $new_value )
 	{
+		// keeps the stored appearance out of any write made while a variant is served
+		if( $option_name === MAP_PLUGIN_SETTINGS_FIELD && !empty( self::$banner_overrides ) && is_array( $new_value ) )
+		{
+			$stored = self::get_option( MAP_PLUGIN_SETTINGS_FIELD, array() );
+
+			if( !is_array( $stored ) ) $stored = array();
+
+			foreach( self::$banner_overrides as $override_key => $override_value )
+			{
+				if( array_key_exists( $override_key, $stored ) )
+				{
+					$new_value[ $override_key ] = $stored[ $override_key ];
+				}
+				else
+				{
+					unset( $new_value[ $override_key ] );
+				}
+			}
+		}
+
 		$use_alt_option_method = self::use_alt_option_method();
 
 		if( !$use_alt_option_method )
@@ -3021,17 +3745,86 @@ final class MyAgilePrivacy {
 					array('%s', '%s', '%s')
 				);
 
+				// the row may have been created between the count and the insert
+				if( $result === false )
+				{
+					$result = $wpdb->update(
+						$wpdb->options,
+						array('option_value' => $serialized_value),
+						array('option_name' => $option_name),
+						array('%s'),
+						array('%s')
+					);
+
+					// no row touched and none there: the insert failed for another reason
+					if( $result === 0 && !$wpdb->get_var( $wpdb->prepare(
+						"SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name = %s",
+						$option_name
+					) ) )
+					{
+						$result = false;
+					}
+				}
+
 				if( $result === false )
 				{
 					return false;
 				}
 			}
 
-			// Clear the cache for this option
-			wp_cache_delete( $option_name, 'options' );
+			self::drop_option_cache( $option_name );
 
 			return true;
 		}
+	}
+
+	/**
+	 * Drops the cached copies of an option written directly in the database.
+	 */
+	public static function drop_option_cache( $option_name )
+	{
+		// the core reads autoloaded options from 'alloptions', so both entries go
+		wp_cache_delete( $option_name, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		// a name remembered as missing would hide a newly inserted option
+		$notoptions = wp_cache_get( 'notoptions', 'options' );
+
+		if( is_array( $notoptions ) && isset( $notoptions[ $option_name ] ) )
+		{
+			unset( $notoptions[ $option_name ] );
+			wp_cache_set( 'notoptions', $notoptions, 'options' );
+		}
+	}
+
+	/**
+	 * Creates an empty remote configuration once, from an administrator request.
+	 */
+	public static function seed_rconfig()
+	{
+		global $wpdb;
+
+		if( !self::map_can_edit() )
+		{
+			return;
+		}
+
+		// the alternative reader caches the default of an earlier call as if it were stored
+		wp_cache_delete( MAP_PLUGIN_RCONFIG, 'options' );
+
+		if( false !== self::get_option( MAP_PLUGIN_RCONFIG, false ) )
+		{
+			return;
+		}
+
+		// never overwrites a configuration that arrived meanwhile
+		$wpdb->query( $wpdb->prepare(
+			"INSERT IGNORE INTO {$wpdb->options} ( option_name, option_value, autoload ) VALUES ( %s, %s, 'yes' )",
+			MAP_PLUGIN_RCONFIG,
+			serialize( array() )
+		) );
+
+		self::drop_option_cache( MAP_PLUGIN_RCONFIG );
 	}
 
 
@@ -3046,7 +3839,7 @@ final class MyAgilePrivacy {
 
 		$final_txt = $default_txt;
 
-		$fixed_translations = ( isset( $the_settings['fixed_translations_encoded'] ) && $the_settings['fixed_translations_encoded'] ) ? json_decode( $the_settings['fixed_translations_encoded'], true ) : array();
+		$fixed_translations = ( isset( $the_settings['fixed_translations_encoded'] ) && is_string( $the_settings['fixed_translations_encoded'] ) && $the_settings['fixed_translations_encoded'] ) ? json_decode( $the_settings['fixed_translations_encoded'], true ) : array();
 
 		if( is_array( $fixed_translations ) && !empty( $fixed_translations ) )
 		{
@@ -3290,7 +4083,7 @@ final class MyAgilePrivacy {
 			$return_data['with_multilang'] = true;
 
 			$multilang_default_lang = $sitepress->get_default_language();
-			$wpml_current_lang = ICL_LANGUAGE_CODE;
+			$wpml_current_lang = defined( 'ICL_LANGUAGE_CODE' ) ? ICL_LANGUAGE_CODE : $multilang_default_lang;
 
 			//portuguese fix
 			if( $wpml_current_lang == 'pt-pt' )
@@ -3305,6 +4098,12 @@ final class MyAgilePrivacy {
 			}
 
 			$language_list = icl_get_languages();
+
+			if( !is_array( $language_list ) )
+			{
+				$language_list = array();
+			}
+
 			$language_list_codes = array();
 
 			foreach( $language_list as $k => $v )
@@ -3368,9 +4167,25 @@ final class MyAgilePrivacy {
 			$language_list_codes = array();
 			$language_list = FALANG()->model->get_languages_list();
 
+			if( !is_array( $language_list ) )
+			{
+				$language_list = array();
+			}
+
 			foreach( $language_list as $k => $v )
 			{
+				if( !is_object( $v ) )
+				{
+					continue;
+				}
+
 				$the_language_code = $v->slug;
+
+				if( !is_string( $the_language_code ) )
+				{
+					continue;
+				}
+
 				$language_list_codes[] = $the_language_code;
 			}
 
@@ -3447,6 +4262,11 @@ final class MyAgilePrivacy {
 			{
 				foreach( $weglot_options['destination_language'] as $k => $v )
 				{
+					if( !is_array( $v ) || !isset( $v['language_to'] ) )
+					{
+						continue;
+					}
+
 					$the_language_code = $v['language_to'];
 					$language_list_codes[] = $the_language_code;
 				}
@@ -3483,7 +4303,7 @@ final class MyAgilePrivacy {
 			);
 
 			//check $return_data['current_language']
-			$website_locale_2_char = substr( $return_data['current_language'], 0, 2 );
+			$website_locale_2_char = substr( (string) $return_data['current_language'], 0, 2 );
 
 			foreach( $MAP_SUPPORTED_LANGUAGES as $lang_code => $lang_data )
 			{
@@ -3603,6 +4423,11 @@ final class MyAgilePrivacy {
 	//f. for text cleanup & compile
 	public static function internalMAPCleanupAndCompilePolicy( $text, $the_translations, $current_lang, $caller, $cookie_list_html )
 	{
+		if( !is_string( $current_lang ) )
+		{
+			$current_lang = '';
+		}
+
 		$the_settings = MyAgilePrivacy::get_settings();
 		$rconfig = MyAgilePrivacy::get_rconfig();
 		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
@@ -3686,11 +4511,11 @@ final class MyAgilePrivacy {
 
 		$text = str_replace( '[website_name]', $website_name, $text );
 
-		$text = str_replace( '[identity_vat_id]', ( isset( $templateConfig['map_identity_vat_id'] ) && $templateConfig['map_identity_vat_id'] ) ? esc_html( $the_translations[ $current_lang ]['vat_id'] ).': '.esc_html( stripslashes( $templateConfig['map_identity_vat_id'] ) ) : '', $text );
+		$text = str_replace( '[identity_vat_id]', ( isset( $templateConfig['map_identity_vat_id'] ) && $templateConfig['map_identity_vat_id'] ) ? esc_html( isset( $the_translations[ $current_lang ]['vat_id'] ) ? $the_translations[ $current_lang ]['vat_id'] : '' ).': '.wp_kses( stripslashes( $templateConfig['map_identity_vat_id'] ), self::allowed_identity_tags(), self::allowed_protocols() ) : '', $text );
 
 		$processed_keys[] = 'shortcode_identity_vat_id';
 
-		if( isset( $rconfig ) && $rconfig['allow_dpo_edit'] &&
+		if( is_array( $rconfig ) && isset( $rconfig['allow_dpo_edit'] ) && $rconfig['allow_dpo_edit'] &&
 			isset( $templateConfig['map_dpo_text'] ) && $templateConfig['map_dpo_text'] == 1 )
 		{
 			$remove_dpo_text = false;
@@ -3736,7 +4561,7 @@ final class MyAgilePrivacy {
 		{
 			if( $templateConfig['shortcode_dpo_email'] )
 			{
-				$text = str_replace( 'MAP_DPO_MAIL', esc_html( stripslashes( $templateConfig['shortcode_dpo_email'] ) ), $text );
+				$text = str_replace( 'MAP_DPO_MAIL', wp_kses( stripslashes( $templateConfig['shortcode_dpo_email'] ), self::allowed_identity_tags(), self::allowed_protocols() ), $text );
 			}
 			else
 			{
@@ -3747,7 +4572,7 @@ final class MyAgilePrivacy {
 
 			if( $templateConfig['shortcode_dpo_name'] )
 			{
-				$text = str_replace( 'MAP_DPO_NAME', esc_html( stripslashes( $templateConfig['shortcode_dpo_name'] ) ), $text );
+				$text = str_replace( 'MAP_DPO_NAME', wp_kses( stripslashes( $templateConfig['shortcode_dpo_name'] ), self::allowed_identity_tags(), self::allowed_protocols() ), $text );
 			}
 			else
 			{
@@ -3758,7 +4583,7 @@ final class MyAgilePrivacy {
 
 			if( $templateConfig['shortcode_dpo_address'] )
 			{
-				$text = str_replace( 'MAP_DPO_ADDRESS', esc_html( stripslashes( $templateConfig['shortcode_dpo_address'] ) ), $text );
+				$text = str_replace( 'MAP_DPO_ADDRESS', wp_kses( stripslashes( $templateConfig['shortcode_dpo_address'] ), self::allowed_identity_tags(), self::allowed_protocols() ), $text );
 			}
 			else
 			{
@@ -3861,7 +4686,7 @@ final class MyAgilePrivacy {
 					if( isset( $templateConfig[ $templateConfigKey ] ) &&
 						is_string( $templateConfig[ $templateConfigKey ] ) )
 					{
-						$text = str_replace( $shortcode_to_search, esc_html( stripslashes( $templateConfig[ $templateConfigKey ] ) ), $text );
+						$text = str_replace( $shortcode_to_search, wp_kses( stripslashes( $templateConfig[ $templateConfigKey ] ), self::allowed_identity_tags(), self::allowed_protocols() ), $text );
 
 						$set_list[] = $templateConfigKey;
 					}
@@ -3879,10 +4704,10 @@ final class MyAgilePrivacy {
 
 		$processed_keys[] = 'shortcode_identity_name';
 
-		$text = str_replace( '[identity_address]', esc_html( stripslashes( $templateConfig['shortcode_identity_address'] ) ), $text );
+		$text = str_replace( '[identity_address]', esc_html( stripslashes( (string) $templateConfig['shortcode_identity_address'] ) ), $text );
 		$processed_keys[] = 'shortcode_identity_address';
 
-		$text = str_replace( '[identity_email]', esc_html( stripslashes( $templateConfig['shortcode_identity_email'] ) ), $text );
+		$text = str_replace( '[identity_email]', esc_html( stripslashes( (string) $templateConfig['shortcode_identity_email'] ) ), $text );
 		$processed_keys[] = 'shortcode_identity_email';
 
 		if( $caller == 'frontend' )
@@ -4223,6 +5048,19 @@ final class MyAgilePrivacy {
 		}
 	}
 
+	/**
+	 * Returns the permalink of a page, or null when the page is not published.
+	 */
+	public static function get_published_page_url( $page_id )
+	{
+		if( !$page_id || get_post_status( $page_id ) !== 'publish' )
+		{
+			return null;
+		}
+
+		return get_permalink( $page_id );
+	}
+
 	//fixed get_locale / get_user_locale
 	public static function get_locale()
 	{
@@ -4395,7 +5233,7 @@ final class MyAgilePrivacy {
 
     /**
      * Check if WordPress can perform remote HTTP requests.
-     * Uses curl or allow_url_fopen — both work in CLI/cron context.
+     * Uses curl or allow_url_fopen - both work in CLI/cron context.
      *
      * @return bool
      */
@@ -4416,6 +5254,22 @@ final class MyAgilePrivacy {
         return function_exists( 'curl_init' ) || (bool) ini_get( 'allow_url_fopen' );
     }
 
+    /**
+     * Check if WordPress allows file modifications.
+     *
+     * @return bool
+     */
+    public static function verify_file_mods_allowed()
+    {
+        // wp_is_file_mod_allowed() exists since WP 4.8; the constant is honoured before that.
+        if( !function_exists( 'wp_is_file_mod_allowed' ) )
+        {
+            return !( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS );
+        }
+
+        return wp_is_file_mod_allowed( 'capability_update_core' );
+    }
+
 	private static function map_load_log_guard()
 	{
 		if( function_exists( 'map_log_redact' ) )
@@ -4427,7 +5281,7 @@ final class MyAgilePrivacy {
 
 		if( file_exists( $guard_file ) )
 		{
-			require_once $guard_file;
+			@include_once $guard_file;
 		}
 	}
 
@@ -4456,10 +5310,17 @@ final class MyAgilePrivacy {
 	{
 		self::map_load_log_guard();
 
-		if( function_exists( 'map_log_redact' ) )
+		if( !function_exists( 'map_log_redact' ) || !function_exists( 'file_put_contents' ) )
 		{
-			$log = map_log_redact( $log );
+			return;
 		}
+
+		if( function_exists( 'map_log_preparing' ) && map_log_preparing() )
+		{
+			return;
+		}
+
+		$log = map_log_redact( $log );
 
 		if( defined( 'MAP_PLUGIN_NAME' ) )
 		{
@@ -4499,6 +5360,6 @@ final class MyAgilePrivacy {
 
 		$string = "file=$file, line=$line, func=$func: ".$data."\n";
 
-		file_put_contents( $filePath, $string, FILE_APPEND );
+		@file_put_contents( $filePath, $string, FILE_APPEND );
 	}
 }

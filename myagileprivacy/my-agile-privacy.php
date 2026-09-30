@@ -1,11 +1,12 @@
 <?php
+if( !defined( 'ABSPATH' ) ) { exit; }
 
 /**
  * @wordpress-plugin
  * Plugin Name:       My Agile Privacy®
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       My Agile Privacy® - CMP, Cookie Consent & Privacy Tools
- * Version:           3.3.7
+ * Version:           3.4.0
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
@@ -16,7 +17,10 @@
  * Domain Path:       /lang
  */
 
-define( 'MAP_PLUGIN_FILENAME', realpath( __FILE__ ) );
+// another copy is already loaded
+if( defined( 'MAP_PLUGIN_FILENAME' ) ) { return; }
+
+define( 'MAP_PLUGIN_FILENAME', ( function_exists( 'realpath' ) && realpath( __FILE__ ) ) ? realpath( __FILE__ ) : __FILE__ );
 
 require plugin_dir_path( __FILE__ ) . 'includes/my-agile-privacy-defines.php';
 require plugin_dir_path( __FILE__ ) . 'includes/my-agile-privacy-class.php';
@@ -31,7 +35,7 @@ if( is_admin() )
 
 if( !defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) )
 {
-    define( 'MAP_ENABLE_ADVANCED_INTEGRATION', false );
+    define( 'MAP_ENABLE_ADVANCED_INTEGRATION', true );
 }
 
 if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRATION )
@@ -48,22 +52,27 @@ if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRAT
  * Starts the plugin execution
  *
  */
-function run_my_agile_privacy() {
-	ini_set( 'display_errors', 0 );
-	$plugin  = new MyAgilePrivacy();
-	$rconfig = MyAgilePrivacy::get_rconfig();
+if( !function_exists( 'run_my_agile_privacy' ) ) {
+    function run_my_agile_privacy() {
+    	if( function_exists( 'ini_set' ) )
+    	{
+    		ini_set( 'display_errors', 0 );
+    	}
+    	$plugin  = new MyAgilePrivacy();
+    	$rconfig = MyAgilePrivacy::get_rconfig();
 
-    if( !defined( 'MAP_DEBUGGER' ) )
-    {
-        if( isset( $rconfig ) &&
-            isset( $rconfig['verbose_remote_log'] ) &&
-            $rconfig['verbose_remote_log'] )
+        if( !defined( 'MAP_DEBUGGER' ) )
         {
-            define ( 'MAP_DEBUGGER', true );
-        }
-        else
-        {
-            define ( 'MAP_DEBUGGER', false );
+            if( isset( $rconfig ) &&
+                isset( $rconfig['verbose_remote_log'] ) &&
+                $rconfig['verbose_remote_log'] )
+            {
+                define ( 'MAP_DEBUGGER', true );
+            }
+            else
+            {
+                define ( 'MAP_DEBUGGER', false );
+            }
         }
     }
 }

@@ -1,6 +1,12 @@
 #wp-admin-bar-map_cookieshield.learning_mode { background: #FFC205 !important; }
-#wp-admin-bar-map_cookieshield.config_finished{ background: #28A745 !important; }
+#wp-admin-bar-map_cookieshield.config_finished{ background: #1f8137 !important; }
 #wp-admin-bar-map_cookieshield.turned_off{ background: #DC3546 !important; }
+
+#wp-admin-bar-map_cookieshield .map_cookieshield_logo {
+	max-height: 18px;
+	width: auto;
+	margin-right: 5px;
+}
 
 #wp-admin-bar-map_cookieshield a {
 	display: flex !important;

@@ -9,12 +9,12 @@
 ?>
 
 <script type="text/javascript">
-	var map_settings_success_text = '<?php echo wp_kses_post( __( 'Settings updated.', 'MAP_txt' ) ); ?>';
-	var map_settings_step_saved_text = '<?php echo wp_kses_post( __( 'Step saved!', 'MAP_txt' ) ); ?>';
-	var map_settings_warning_text ='<?php echo wp_kses_post( __( 'Settings saved successfully, but some mandatory data is missing. Please check the required fields', 'MAP_txt' ) ); ?>';
-	var map_settings_need_validation_text ='<?php echo wp_kses_post( __( 'Please fill in all required fields before proceeding.', 'MAP_txt' ) ); ?>';
-	var map_settings_error_message_text = '<?php echo wp_kses_post( __( 'Unable to update Settings.', 'MAP_txt' ) ); ?>';
-	var map_settings_connection_error = '<?php echo wp_kses_post( __( 'Connection error. Please try again.', 'MAP_txt' ) ); ?>';
+	var map_settings_success_text = <?php echo wp_json_encode( __( 'Settings updated.', 'MAP_txt' ) ); ?>;
+	var map_settings_step_saved_text = <?php echo wp_json_encode( __( 'Step saved!', 'MAP_txt' ) ); ?>;
+	var map_settings_warning_text = <?php echo wp_json_encode( __( 'Settings saved successfully, but some mandatory data is missing. Please check the required fields', 'MAP_txt' ) ); ?>;
+	var map_settings_need_validation_text = <?php echo wp_json_encode( __( 'Please fill in all required fields before proceeding.', 'MAP_txt' ) ); ?>;
+	var map_settings_error_message_text = <?php echo wp_json_encode( __( 'Unable to update Settings.', 'MAP_txt' ) ); ?>;
+	var map_settings_connection_error = <?php echo wp_json_encode( __( 'Connection error. Please try again.', 'MAP_txt' ) ); ?>;
 </script>
 
 
@@ -26,7 +26,7 @@
 </script>
 
 <div class="wrap siteAndPoliciesSettingsWrapper" id="my_agile_privacy_backend">
-	<h2>My Agile Privacy®: <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?></h2>
+	<h1>My Agile Privacy®: <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?></h1>
 
 	<p class="map-help-section">
 		<?php map_render_helpdesk_link( 'policy_assistant', __( 'Online Help: how to customize your Privacy Policies', 'MAP_txt' ) ); ?>
@@ -36,7 +36,7 @@
 		<h4 class="mb-4"><i class="fa-solid fa-scale-balanced"></i> <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?></h4>
 		<form action="admin-ajax.php" method="post" id="map_policy_assistant_form">
 			<input type="hidden" name="action" value="update_admin_settings_form" id="action" />
-			<input type="hidden" name="site_and_policy_settings[completion_percentage]" value="<?php echo esc_attr( $site_and_policy_settings['completion_percentage'] ); ?>" id="policy_completion_percentage" />
+			<input type="hidden" name="site_and_policy_settings[completion_percentage]" value="<?php echo esc_attr( isset( $site_and_policy_settings['completion_percentage'] ) ? $site_and_policy_settings['completion_percentage'] : '' ); ?>" id="policy_completion_percentage" />
 			<input type="hidden" name="site_and_policy_settings[last_update_timestamp]" value="<?php echo esc_attr( $site_and_policy_settings['last_update_timestamp'] ); ?>" id="last_update_timestamp" />
 			<?php
 				if( function_exists( 'wp_nonce_field' ) )
@@ -48,7 +48,7 @@
 				<!-- Progress Bar -->
 				<div class="wizard-progress mb-4">
 					<div class="progress">
-						<div class="progress-bar" role="progressbar" style="width: 20%" id="map_policy_assistant_progress-bar"></div>
+						<div class="progress-bar map-w-20" role="progressbar" id="map_policy_assistant_progress-bar"></div>
 					</div>
 					<div class="d-flex justify-content-between mt-2">
 						<small class="text-muted step-indicator active" data-step="1">
@@ -170,7 +170,7 @@
 												'selected' 	=> false
 											);
 
-											$selected_value = $site_and_policy_settings['base_location'];
+											$selected_value = is_string( $site_and_policy_settings['base_location'] ) ? $site_and_policy_settings['base_location'] : '';
 
 											if( isset( $valid_options[ $selected_value ] ) )
 											{
@@ -223,7 +223,7 @@
 
 									<div class="col-md-3">
 										<label for="customer_location" class="form-label">
-											<?php echo wp_kses_post( __( 'Where are your customers located?', 'MAP_txt' ) ); ?> <span class="">(*)</span>
+											<?php echo wp_kses_post( __( 'Where is your site\'s audience located?', 'MAP_txt' ) ); ?> <span class="">(*)</span>
 										</label>
 									</div>
 									<div class="col-md-9">
@@ -238,7 +238,7 @@
 
 											);
 
-											$selected_value = $site_and_policy_settings['customer_location'];
+											$selected_value = is_string( $site_and_policy_settings['customer_location'] ) ? $site_and_policy_settings['customer_location'] : '';
 
 											if( isset( $valid_options[ $selected_value ] ) )
 											{
@@ -253,9 +253,10 @@
 											name="site_and_policy_settings[customer_location]"
 											class="form-select hideShowInput"
 											data-hide-show-ref="map_customer_countries_wrapper"
+											aria-describedby="customer_location_help"
 											required>
 
-											<option value=""><?php echo wp_kses_post( __( 'Select your customer location', 'MAP_txt' ) ); ?></option>
+											<option value=""><?php echo wp_kses_post( __( 'Select your audience location', 'MAP_txt' ) ); ?></option>
 
 											<?php
 
@@ -277,6 +278,8 @@
 
 											?>
 										</select>
+
+										<p class="text-muted small mt-1" id="customer_location_help"><?php echo wp_kses_post( __( 'Consider the countries of the people your site is aimed at or whose behaviour it monitors (for example through profiling or behavioural advertising), not every country from which it can be visited. If in doubt, select the country: the card of each regulation, below, explains when it applies, and only the regulations you confirm are added to your policies.', 'MAP_txt' ) ); ?> <?php echo wp_kses_post( __( 'These selections determine which regulations are considered for your policies; they do not change how the cookie banner behaves for visitors.', 'MAP_txt' ) ); ?></p>
 
 									</div>
 								</div>
@@ -302,8 +305,7 @@
 													data-checkbox-group="map_customer_countries_wrapper"
 													<?php checked( $site_and_policy_settings['customer_area_eu'], true ); ?>
 													/>
-												<label for="customer_area_eu" class="me-2 label-checkbox"></label>
-												<label for="customer_area_eu"><?php echo wp_kses_post( __( 'Any European Union country', 'MAP_txt' ) ); ?></label>
+												<label for="customer_area_eu" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Any European Union country', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -326,8 +328,7 @@
 													<?php checked( $site_and_policy_settings['customer_area_gb'], true ); ?>
 													/>
 
-												<label for="customer_area_gb" class="me-2 label-checkbox"></label>
-												<label for="customer_area_gb"><?php echo wp_kses_post( __( 'United Kingdom', 'MAP_txt' ) ); ?></label>
+												<label for="customer_area_gb" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'United Kingdom', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -357,8 +358,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_california'], true ); ?>
 																/>
 
-															<label for="customer_area_california" class="me-2 label-checkbox"></label>
-															<label for="customer_area_california"><?php echo wp_kses_post( __( 'California', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_california" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'California', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -377,8 +377,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_colorado'], true ); ?>
 																/>
 
-															<label for="customer_area_colorado" class="me-2 label-checkbox"></label>
-															<label for="customer_area_colorado"><?php echo wp_kses_post( __( 'Colorado', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_colorado" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Colorado', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -396,8 +395,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_connecticut'], true ); ?>
 																/>
 
-															<label for="customer_area_connecticut" class="me-2 label-checkbox"></label>
-															<label for="customer_area_connecticut"><?php echo wp_kses_post( __( 'Connecticut', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_connecticut" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Connecticut', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -415,8 +413,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_delaware'], true ); ?>
 																/>
 
-															<label for="customer_area_delaware" class="me-2 label-checkbox"></label>
-															<label for="customer_area_delaware"><?php echo wp_kses_post( __( 'Delaware', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_delaware" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Delaware', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -434,8 +431,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_indiana'], true ); ?>
 																/>
 
-															<label for="customer_area_indiana" class="me-2 label-checkbox"></label>
-															<label for="customer_area_indiana"><?php echo wp_kses_post( __( 'Indiana', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_indiana" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Indiana', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -453,8 +449,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_iowa'], true ); ?>
 																/>
 
-															<label for="customer_area_iowa" class="me-2 label-checkbox"></label>
-															<label for="customer_area_iowa"><?php echo wp_kses_post( __( 'Iowa', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_iowa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Iowa', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -472,8 +467,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_kentucky'], true ); ?>
 																/>
 
-															<label for="customer_area_kentucky" class="me-2 label-checkbox"></label>
-															<label for="customer_area_kentucky"><?php echo wp_kses_post( __( 'Kentucky', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_kentucky" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Kentucky', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -491,8 +485,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_maryland'], true ); ?>
 																/>
 
-															<label for="customer_area_maryland" class="me-2 label-checkbox"></label>
-															<label for="customer_area_maryland"><?php echo wp_kses_post( __( 'Maryland', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_maryland" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Maryland', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -510,8 +503,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_minnesota'], true ); ?>
 																/>
 
-															<label for="customer_area_minnesota" class="me-2 label-checkbox"></label>
-															<label for="customer_area_minnesota"><?php echo wp_kses_post( __( 'Minnesota', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_minnesota" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Minnesota', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -529,8 +521,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_montana'], true ); ?>
 																/>
 
-															<label for="customer_area_montana" class="me-2 label-checkbox"></label>
-															<label for="customer_area_montana"><?php echo wp_kses_post( __( 'Montana', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_montana" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Montana', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -548,8 +539,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_nebraska'], true ); ?>
 																/>
 
-															<label for="customer_area_nebraska" class="me-2 label-checkbox"></label>
-															<label for="customer_area_nebraska"><?php echo wp_kses_post( __( 'Nebraska', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_nebraska" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Nebraska', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -567,8 +557,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_nevada'], true ); ?>
 																/>
 
-															<label for="customer_area_nevada" class="me-2 label-checkbox"></label>
-															<label for="customer_area_nevada"><?php echo wp_kses_post( __( 'Nevada', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_nevada" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Nevada', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -591,8 +580,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_new_hampshire'], true ); ?>
 																/>
 
-															<label for="customer_area_new_hampshire" class="me-2 label-checkbox"></label>
-															<label for="customer_area_new_hampshire"><?php echo wp_kses_post( __( 'New Hampshire', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_new_hampshire" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'New Hampshire', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -610,8 +598,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_new_jersey'], true ); ?>
 																/>
 
-															<label for="customer_area_new_jersey" class="me-2 label-checkbox"></label>
-															<label for="customer_area_new_jersey"><?php echo wp_kses_post( __( 'New Jersey', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_new_jersey" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'New Jersey', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -629,8 +616,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_oregon'], true ); ?>
 																/>
 
-															<label for="customer_area_oregon" class="me-2 label-checkbox"></label>
-															<label for="customer_area_oregon"><?php echo wp_kses_post( __( 'Oregon', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_oregon" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Oregon', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -648,8 +634,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_rhode_island'], true ); ?>
 																/>
 
-															<label for="customer_area_rhode_island" class="me-2 label-checkbox"></label>
-															<label for="customer_area_rhode_island"><?php echo wp_kses_post( __( 'Rhode Island', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_rhode_island" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Rhode Island', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -667,8 +652,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_tennessee'], true ); ?>
 																/>
 
-															<label for="customer_area_tennessee" class="me-2 label-checkbox"></label>
-															<label for="customer_area_tennessee"><?php echo wp_kses_post( __( 'Tennessee', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_tennessee" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Tennessee', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -686,8 +670,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_texas'], true ); ?>
 																/>
 
-															<label for="customer_area_texas" class="me-2 label-checkbox"></label>
-															<label for="customer_area_texas"><?php echo wp_kses_post( __( 'Texas', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_texas" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Texas', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -705,8 +688,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_utah'], true ); ?>
 																/>
 
-															<label for="customer_area_utah" class="me-2 label-checkbox"></label>
-															<label for="customer_area_utah"><?php echo wp_kses_post( __( 'Utah', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_utah" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Utah', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -724,8 +706,7 @@
 																<?php checked( $site_and_policy_settings['customer_area_virginia'], true ); ?>
 																/>
 
-															<label for="customer_area_virginia" class="me-2 label-checkbox"></label>
-															<label for="customer_area_virginia"><?php echo wp_kses_post( __( 'Virginia', 'MAP_txt' ) ); ?></label>
+															<label for="customer_area_virginia" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Virginia', 'MAP_txt' ) ); ?></label>
 														</div>
 													</div>
 
@@ -748,8 +729,7 @@
 													<?php checked( $site_and_policy_settings['customer_area_ch'], true ); ?>
 													/>
 
-												<label for="customer_area_ch" class="me-2 label-checkbox"></label>
-												<label for="customer_area_ch"><?php echo wp_kses_post( __( 'Switzerland', 'MAP_txt' ) ); ?></label>
+												<label for="customer_area_ch" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Switzerland', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -767,8 +747,7 @@
 													<?php checked( $site_and_policy_settings['customer_area_ca'], true ); ?>
 													/>
 
-												<label for="customer_area_ca" class="me-2 label-checkbox"></label>
-												<label for="customer_area_ca"><?php echo wp_kses_post( __( 'Canada', 'MAP_txt' ) ); ?></label>
+												<label for="customer_area_ca" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Canada', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -786,8 +765,7 @@
 													<?php checked( $site_and_policy_settings['customer_area_br'], true ); ?>
 													/>
 
-												<label for="customer_area_br" class="me-2 label-checkbox"></label>
-												<label for="customer_area_br"><?php echo wp_kses_post( __( 'Brazil', 'MAP_txt' ) ); ?></label>
+												<label for="customer_area_br" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Brazil', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -814,7 +792,7 @@
 										<div class="card-body pb-0">
 
 											<p>
-												<?php echo wp_kses_post( __( 'The privacy and cookie regulations that apply to your site depend on where your company is established and where your visitors are located.', 'MAP_txt' ) ); ?>
+												<?php echo wp_kses_post( __( 'The privacy and cookie regulations that apply to your site depend on where your company is established and on the criteria set by each law. Visits or purchases from a country do not automatically make its law applicable: depending on the law, what matters may be whether you target or monitor people there, do business there or exceed certain thresholds.', 'MAP_txt' ) ); ?>
 											</p>
 
 										</div>
@@ -830,7 +808,7 @@
 
 										<div class="card-body">
 											<p>
-												<?php echo wp_kses_post( __( '-Indicate where your business is established and select the geographic areas of your visitors', 'MAP_txt' ) ); ?><br>
+												<?php echo wp_kses_post( __( '-Indicate where your business is established and select the countries of the audience your site is aimed at', 'MAP_txt' ) ); ?><br>
 												<?php echo wp_kses_post( __( '-Read the information for each regulation and select those that apply to your case', 'MAP_txt' ) ); ?><br>
 												<?php echo wp_kses_post( __( '-Where available, the system also shows how the banner will behave for each geographic area: verify and customize if needed', 'MAP_txt' ) ); ?><br>
 											</p>
@@ -842,7 +820,7 @@
 												<p>
 													<a href="#" class="map-sensitive-data-toggle"><?php echo wp_kses_post( __( 'What are the special categories of personal data?', 'MAP_txt' ) ); ?></a>
 												</p>
-													<ul class="map-sensitive-data-examples mt-2" style="display: none;">
+													<ul class="map-sensitive-data-examples mt-2 map-hidden">
 														<li><strong><?php echo wp_kses_post( __( 'Health data', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., diagnoses, medical conditions, treatments and medications, test results/reports, disability)', 'MAP_txt' ) ); ?></li>
 														<li><strong><?php echo wp_kses_post( __( 'Political opinions', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., membership, support or donations to parties/movements)', 'MAP_txt' ) ); ?></li>
 														<li><strong><?php echo wp_kses_post( __( 'Religious or philosophical beliefs', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., membership in a religious denomination or ethical belief organization)', 'MAP_txt' ) ); ?></li>
@@ -876,7 +854,7 @@
 						?>
 						<div class="mapgeo-section">
 							<h4 class="mb-1"><?php echo wp_kses_post( __( 'Banner behaviour by geographic area', 'MAP_txt' ) ); ?></h4>
-							<p class="text-muted small"><?php echo wp_kses_post( __( 'Depending on your company location and the selected countries, the Cookie Banner may appear differently. The summary below shows the specific behavior. "Other countries" shows the behavior for visitors not in the list.', 'MAP_txt' ) ); ?></p>
+							<p class="text-muted small"><?php echo wp_kses_post( __( 'Depending on your company location, the Cookie Banner may behave differently for visitors from different areas. The summary below shows the behavior for the selected areas. "Other countries" shows the behavior for visitors not in the list.', 'MAP_txt' ) ); ?></p>
 						</div>
 
 						<div id="mapgeo_notice"></div>
@@ -884,42 +862,40 @@
 
 						<script type="text/javascript">
 						var MAPGEO_DATA = {
-							flag_base: <?php echo json_encode( plugin_dir_url( __FILE__ ) . '../img/' ); ?>,
+							flag_base: <?php echo wp_json_encode( plugin_dir_url( __FILE__ ) . '../img/' ); ?>,
 							regions: {
-								ue: { label: <?php echo json_encode( __( 'European Union', 'MAP_txt' ) ); ?>, nat:'block',   checkbox:'customer_area_eu', flag:'flag-ue.png' },
-								uk: { label: <?php echo json_encode( __( 'United Kingdom', 'MAP_txt' ) ); ?>, nat:'block',   checkbox:'customer_area_gb', flag:'flag-uk.png' },
-								us: { label: <?php echo json_encode( __( 'United States', 'MAP_txt' ) ); ?>,  nat:'noblock', checkbox:null,               flag:'flag-us.png' },
-								ch: { label: <?php echo json_encode( __( 'Switzerland', 'MAP_txt' ) ); ?>,    nat:'block',   checkbox:'customer_area_ch', flag:'flag-ch.png' },
-								ca: { label: <?php echo json_encode( __( 'Canada', 'MAP_txt' ) ); ?>,         nat:'block',   checkbox:'customer_area_ca', flag:'flag-ca.png' },
-								br: { label: <?php echo json_encode( __( 'Brazil', 'MAP_txt' ) ); ?>,         nat:'block',   checkbox:'customer_area_br', flag:'flag-br.png' }
+								ue: { label: <?php echo wp_json_encode( __( 'European Union', 'MAP_txt' ) ); ?>, nat:'block',   checkbox:'customer_area_eu', flag:'flag-ue.png' },
+								uk: { label: <?php echo wp_json_encode( __( 'United Kingdom', 'MAP_txt' ) ); ?>, nat:'block',   checkbox:'customer_area_gb', flag:'flag-uk.png' },
+								us: { label: <?php echo wp_json_encode( __( 'United States', 'MAP_txt' ) ); ?>,  nat:'noblock', checkbox:null,               flag:'flag-us.png' },
+								ch: { label: <?php echo wp_json_encode( __( 'Switzerland', 'MAP_txt' ) ); ?>,    nat:'block',   checkbox:'customer_area_ch', flag:'flag-ch.png' },
+								ca: { label: <?php echo wp_json_encode( __( 'Canada', 'MAP_txt' ) ); ?>,         nat:'block',   checkbox:'customer_area_ca', flag:'flag-ca.png' },
+								br: { label: <?php echo wp_json_encode( __( 'Brazil', 'MAP_txt' ) ); ?>,         nat:'block',   checkbox:'customer_area_br', flag:'flag-br.png' }
 							},
 							order:     ['ue','uk','us','ch','ca','br'],
 							us_states: ['california','colorado','connecticut','delaware','indiana','iowa','kentucky','maryland','minnesota','montana','nebraska','nevada','new_hampshire','new_jersey','oregon','rhode_island','tennessee','texas','utah','virginia'],
 							note: {
-								ue_strong:           <?php echo json_encode( __( 'Preventive blocking applied globally.', 'MAP_txt' ) ); ?>,
-								ue_light:            <?php echo json_encode( __( 'Applies to EU visitors only, via targeting. Cookies blocked until consent.', 'MAP_txt' ) ); ?>,
-								uk:                  <?php echo json_encode( __( 'Same behavior as the EU for visitors from the United Kingdom.', 'MAP_txt' ) ); ?>,
-								us:                  <?php echo json_encode( __( 'Scripts loaded by default for US residents. No preventive blocking applied and any browser signals (GPP) are respected.', 'MAP_txt' ) ); ?>,
-								ch:                  <?php echo json_encode( __( 'Treated as a GDPR-like area: preventive blocking applied.', 'MAP_txt' ) ); ?>,
-								ca:                  <?php echo json_encode( __( 'Consent required.', 'MAP_txt' ) ); ?>,
-								br:                  <?php echo json_encode( __( 'Same behavior as the EU for visitors from Brazil.', 'MAP_txt' ) ); ?>,
-								forced_risk:         <?php echo json_encode( __( '⚠️ You have chosen to disable preventive blocking at your own risk: the GDPR still applies to these visitors. Any browser signal (GPP) will still be respected.', 'MAP_txt' ) ); ?>,
-								force_off:           <?php echo json_encode( __( 'Preventive blocking applied.', 'MAP_txt' ) ); ?>,
-								others_block:        <?php echo json_encode( __( 'Preventive blocking applies to all countries not in the list.', 'MAP_txt' ) ); ?>,
-								others_noblock:      <?php echo json_encode( __( 'For identified countries not subject to GDPR/UK, scripts load normally.', 'MAP_txt' ) ); ?>,
-								others_noblock_soft: <?php echo json_encode( __( 'For visitors whose location cannot be resolved (unknown IP, unidentified VPN/proxy), preventive blocking is applied as a safety measure.', 'MAP_txt' ) ); ?>
+								ue_strong:           <?php echo wp_json_encode( __( 'Preventive blocking applied globally.', 'MAP_txt' ) ); ?>,
+								ue_light:            <?php echo wp_json_encode( __( 'Applies to EU visitors only, via targeting. Cookies blocked until consent.', 'MAP_txt' ) ); ?>,
+								uk:                  <?php echo wp_json_encode( __( 'Same behavior as the EU for visitors from the United Kingdom.', 'MAP_txt' ) ); ?>,
+								us:                  <?php echo wp_json_encode( __( 'Scripts loaded by default for US residents. No preventive blocking applied and any browser signals (GPC/GPP) are respected.', 'MAP_txt' ) ); ?>,
+								ch:                  <?php echo wp_json_encode( __( 'Treated as a GDPR-like area: preventive blocking applied.', 'MAP_txt' ) ); ?>,
+								ca:                  <?php echo wp_json_encode( __( 'Consent required.', 'MAP_txt' ) ); ?>,
+								br:                  <?php echo wp_json_encode( __( 'Same behavior as the EU for visitors from Brazil.', 'MAP_txt' ) ); ?>,
+								forced_risk:         <?php echo wp_json_encode( __( '⚠️ You have chosen to disable preventive blocking at your own risk: the GDPR still applies to these visitors. Any browser signal (GPC/GPP) will still be respected.', 'MAP_txt' ) ); ?>,
+								force_off:           <?php echo wp_json_encode( __( 'Preventive blocking applied.', 'MAP_txt' ) ); ?>,
+								others_block:        <?php echo wp_json_encode( __( 'Preventive blocking applies to all countries not in the list.', 'MAP_txt' ) ); ?>,
+								others_block_us:     <?php echo wp_json_encode( __( 'Preventive blocking applies to visitors from all countries not in the list and to those whose location cannot be determined. Exception: visitors identified as being in the United States, for whom scripts are not blocked preventively; any opt-out signals, such as the browser\'s Global Privacy Control, and choices transmitted via GPP are respected.', 'MAP_txt' ) ); ?>
 							},
 							txt: {
-								badge_block:         <?php echo json_encode( __( 'preventive blocking', 'MAP_txt' ) ); ?>,
-								badge_noblock:       <?php echo json_encode( __( 'no preventive blocking', 'MAP_txt' ) ); ?>,
-								toggle:              <?php echo json_encode( __( 'Force disable preventive blocking', 'MAP_txt' ) ); ?>,
-								others:              <?php echo json_encode( __( 'Other countries', 'MAP_txt' ) ); ?>,
-								notice_mixed_strong: <?php echo json_encode( __( 'Geolocation active:', 'MAP_txt' ) ); ?>,
-								notice_mixed:        <?php echo json_encode( __( 'preventive blocking will be applied in the Geographic Areas as shown below.', 'MAP_txt' ) ); ?>,
-								notice_block:        <?php echo json_encode( __( 'Uniform behavior: preventive blocking for all visitors.', 'MAP_txt' ) ); ?>,
-								notice_noblock:      <?php echo json_encode( __( 'Uniform behavior: no preventive blocking.', 'MAP_txt' ) ); ?>
+								badge_block:         <?php echo wp_json_encode( __( 'preventive blocking', 'MAP_txt' ) ); ?>,
+								badge_noblock:       <?php echo wp_json_encode( __( 'no preventive blocking', 'MAP_txt' ) ); ?>,
+								toggle:              <?php echo wp_json_encode( __( 'Force disable preventive blocking', 'MAP_txt' ) ); ?>,
+								others:              <?php echo wp_json_encode( __( 'Other countries', 'MAP_txt' ) ); ?>,
+								notice_mixed_strong: <?php echo wp_json_encode( __( 'Geolocation active:', 'MAP_txt' ) ); ?>,
+								notice_mixed:        <?php echo wp_json_encode( __( 'preventive blocking will be applied in the Geographic Areas as shown below.', 'MAP_txt' ) ); ?>,
+								notice_block:        <?php echo wp_json_encode( __( 'Uniform behavior: preventive blocking for all visitors.', 'MAP_txt' ) ); ?>
 							},
-							forced: <?php echo json_encode( (object) array_map( function( $v ){ return ( $v === true || $v === 'true' || $v === 1 || $v === '1' ); }, $geo_force_optout_current ) ); ?>
+							forced: <?php echo wp_json_encode( (object) array_map( function( $v ){ return ( $v === true || $v === 'true' || $v === 1 || $v === '1' ); }, $geo_force_optout_current ) ); ?>
 						};
 						</script>
 						<?php endif; // map_geo_enabled ?>
@@ -927,14 +903,14 @@
 						<div class="row mt-4">
 							<div class="col-md-12">
 								<h4 class="mb-1"><?php echo wp_kses_post( __( 'Applicable policies', 'MAP_txt' ) ); ?></h4>
-								<p class="text-muted small mt-1"><?php echo wp_kses_post( __( 'Here are the regulations relevant to your company location and the geographic distribution of your visitors. Read the information below and select the regulations that apply to your case: your legal documents will be customized accordingly.', 'MAP_txt' ) ); ?></p>
+								<p class="text-muted small mt-1"><?php echo wp_kses_post( __( 'Here are the regulations relevant to your company location and to the countries of the audience your site is aimed at. Read the information below and select the regulations that apply to your case: your legal documents will be customized accordingly.', 'MAP_txt' ) ); ?></p>
 							</div>
 						</div>
 						<div class="row mb-3">
 							<div class="col-md-12">
 
 								<!-- CARDS -->
-								<div class="row g-4 pb-4">
+								<div class="row g-4 pb-4 map-regulation-grid" data-map-more="<?php echo esc_attr( __( 'Read more', 'MAP_txt' ) ); ?>" data-map-less="<?php echo esc_attr( __( 'Show less', 'MAP_txt' ) ); ?>">
 
 									<!-- GDPR -->
 									<div class="col-12 col-md-4 regulation_wrapper displayNone" data-regulation="regulation_gdpr_like">
@@ -942,7 +918,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'GDPR (European Union)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ue.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ue.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to your processing of personal data when:', 'MAP_txt' ) ); ?>
@@ -975,8 +951,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_gdpr_like'], true ); ?>
 															/>
-														<label for="regulation_gdpr_like" class="me-2 label-checkbox"></label>
-														<label for="regulation_gdpr_like"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_gdpr_like" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -990,7 +965,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'UK GDPR (United Kingdom)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-uk.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-uk.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2"><?php echo wp_kses_post( __( 'Applies to your processing of personal data when:', 'MAP_txt' ) ); ?></p>
 												<ul class="mb-0">
@@ -1004,6 +979,9 @@
 														<?php echo wp_kses_post( __( 'you are not established in the United Kingdom but you monitor the behavior of individuals to the extent that such behavior takes place in the United Kingdom (e.g., tracking, profiling, geolocation).', 'MAP_txt' ) ); ?>
 													</li>
 												</ul>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'If you are a controller or processor not established in the United Kingdom and this law applies to you, you must also designate in writing a representative in the United Kingdom (Art. 27 UK GDPR), unless you are a public authority or body, or your processing is occasional, does not include large-scale processing of special categories of data or data on criminal convictions and offenses, and is unlikely to result in a risk to the rights and freedoms of individuals. Generating privacy and cookie policies does not appoint the representative or otherwise fulfill this obligation.', 'MAP_txt' ) ); ?>
+												</p>
 											</div>
 											<div class="card-footer">
 
@@ -1021,8 +999,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_gdpr_gb'], true ); ?>
 															/>
-														<label for="regulation_gdpr_gb" class="me-2 label-checkbox"></label>
-														<label for="regulation_gdpr_gb"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_gdpr_gb" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1040,14 +1017,14 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'CCPA / CPRA (California)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to for-profit businesses that do business in California, collect or have collected personal information of California residents, and determine the purposes and means of processing, when they meet at least one of the following conditions:', 'MAP_txt' ) ); ?>
 												</p>
 												<ul class="mb-0">
 													<li>
-														<?php echo wp_kses_post( __( 'annual gross revenues exceeding USD 25 million (in the preceding calendar year); or', 'MAP_txt' ) ); ?>
+														<?php echo wp_kses_post( __( 'annual gross revenues exceeding USD 26,625,000 in the preceding calendar year (amount in force since January 1, 2025 and subject to adjustment in each odd-numbered year); or', 'MAP_txt' ) ); ?>
 													</li>
 													<li>
 														<?php echo wp_kses_post( __( 'buy, sell, or share, in a year, the personal information of 100,000 or more California consumers or households; or', 'MAP_txt' ) ); ?>
@@ -1073,8 +1050,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ccpa'], true ); ?>
 															/>
-														<label for="regulation_ccpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ccpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ccpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1093,7 +1069,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'CPA (Colorado Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Colorado or intentionally target products/services to Colorado residents and, during a calendar year, meet at least one of these thresholds:', 'MAP_txt' ) ); ?>
@@ -1123,8 +1099,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_cpa'], true ); ?>
 															/>
-														<label for="regulation_cpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_cpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_cpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1143,7 +1118,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'CTDPA (Connecticut Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Connecticut or target products/services to Connecticut residents and, in the preceding calendar year, meet at least one of these conditions:', 'MAP_txt' ) ); ?>
@@ -1179,8 +1154,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ctdpa'], true ); ?>
 															/>
-														<label for="regulation_ctdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ctdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ctdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1200,7 +1174,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'DPDPA (Delaware Personal Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Delaware or target products/services to Delaware residents and, in the previous calendar year:', 'MAP_txt' ) ); ?>
@@ -1230,8 +1204,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_dpdpa'], true ); ?>
 															/>
-														<label for="regulation_dpdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_dpdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_dpdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1251,7 +1224,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'INCDPA (Indiana Consumer Data Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Indiana or target products/services to Indiana residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1281,8 +1254,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_incdpa'], true ); ?>
 															/>
-														<label for="regulation_incdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_incdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_incdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1302,7 +1274,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'ICDPA (Iowa Consumer Data Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Iowa or target products/services to Iowa residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1332,8 +1304,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_icdpa'], true ); ?>
 															/>
-														<label for="regulation_icdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_icdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_icdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1353,7 +1324,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'KCDPA (Kentucky Consumer Data Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Kentucky or target products/services to Kentucky residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1383,8 +1354,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_kcdpa'], true ); ?>
 															/>
-														<label for="regulation_kcdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_kcdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_kcdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1404,7 +1374,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'MODPA (Maryland Online Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Maryland or target products/services to Maryland residents and, in the previous calendar year:', 'MAP_txt' ) ); ?>
@@ -1437,8 +1407,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_modpa'], true ); ?>
 															/>
-														<label for="regulation_modpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_modpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_modpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1458,7 +1427,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'MCDPA (Minnesota Consumer Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Minnesota or target products/services to Minnesota residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1473,6 +1442,9 @@
 												</ul>
 												<p class="mt-2 mb-0">
 													<?php echo wp_kses_post( __( 'Entities that fall within the small business definition (SBA - Small Business Administration) are excluded from the law but may not sell sensitive personal data without the consent of the consumer.', 'MAP_txt' ) ); ?>
+												</p>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'The small business exemption refers to US federal SBA criteria, which include a place of business in the United States, the industry size standard and the affiliation rules: it has not been clarified how these state laws apply them to a business with no place of business in the United States, so a case-by-case assessment is needed.', 'MAP_txt' ) ); ?>
 												</p>
 											</div>
 											<div class="card-footer">
@@ -1491,8 +1463,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_mcdpa'], true ); ?>
 															/>
-														<label for="regulation_mcdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_mcdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_mcdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1512,7 +1483,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'MTCDPA (Montana Consumer Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Montana or intentionally target products/services to Montana residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1542,8 +1513,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_mtcdpa'], true ); ?>
 															/>
-														<label for="regulation_mtcdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_mtcdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_mtcdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1564,10 +1534,10 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'NDPA (Nebraska Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
-													<?php echo wp_kses_post( __( 'Applies to those who do business in Nebraska or target products/services to Nebraska residents and process or sell personal data.', 'MAP_txt' ) ); ?>
+													<?php echo wp_kses_post( __( 'Applies to those who do business in Nebraska or produce products/services consumed by Nebraska residents and process or sell personal data.', 'MAP_txt' ) ); ?>
 												</p>
 												<ul class="mb-0">
 													<li>
@@ -1577,6 +1547,9 @@
 														<?php echo wp_kses_post( __( 'Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent.', 'MAP_txt' ) ); ?>
 													</li>
 												</ul>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'The small business exemption refers to US federal SBA criteria, which include a place of business in the United States, the industry size standard and the affiliation rules: it has not been clarified how these state laws apply them to a business with no place of business in the United States, so a case-by-case assessment is needed.', 'MAP_txt' ) ); ?>
+												</p>
 											</div>
 											<div class="card-footer">
 
@@ -1594,8 +1567,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ndpa'], true ); ?>
 															/>
-														<label for="regulation_ndpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ndpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ndpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1615,10 +1587,10 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'NRS 603A (Nevada Privacy Law)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
-													<?php echo wp_kses_post( __( 'Applies to operators of commercial websites or online services that collect and maintain certain personal information (covered information) from consumers residing in Nevada and have a commercial connection with Nevada.', 'MAP_txt' ) ); ?>
+													<?php echo wp_kses_post( __( 'Applies to operators of commercial websites or online services that collect and maintain certain personal information (covered information) from consumers residing in Nevada and that have a connection with Nevada; even a single transaction with a Nevada resident may be enough to establish that connection.', 'MAP_txt' ) ); ?>
 												</p>
 												<ul class="mb-0">
 													<li>
@@ -1642,8 +1614,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_nevada'], true ); ?>
 															/>
-														<label for="regulation_nevada" class="me-2 label-checkbox"></label>
-														<label for="regulation_nevada"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_nevada" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1663,10 +1634,10 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'NHPA (New Hampshire Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
-													<?php echo wp_kses_post( __( 'Applies to those who do business in New Hampshire or target products/services to New Hampshire residents and, in the previous calendar year:', 'MAP_txt' ) ); ?>
+													<?php echo wp_kses_post( __( 'Applies to those who do business in New Hampshire or target products/services to New Hampshire residents and, during a one-year period:', 'MAP_txt' ) ); ?>
 												</p>
 												<ul class="mb-0">
 													<li>
@@ -1693,8 +1664,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_nhpa'], true ); ?>
 															/>
-														<label for="regulation_nhpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_nhpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_nhpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1714,7 +1684,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'NJDPA (New Jersey Data Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in New Jersey or target products/services to New Jersey residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1727,6 +1697,9 @@
 														<?php echo wp_kses_post( __( 'control or process the personal data of at least 25,000 consumers and derive revenue, or receive a discount on the price of goods or services, from the sale of personal data (no minimum revenue percentage is required).', 'MAP_txt' ) ); ?>
 													</li>
 												</ul>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'Since June 30, 2026, New Jersey law also prohibits any individual or entity from selling sensitive data of New Jersey consumers, even below the thresholds above and regardless of consent; for data brokers and data collectors, the prohibition also covers licensing sensitive data. Limited statutory exemptions apply.', 'MAP_txt' ) ); ?>
+												</p>
 											</div>
 											<div class="card-footer">
 
@@ -1744,8 +1717,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_njdpa'], true ); ?>
 															/>
-														<label for="regulation_njdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_njdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_njdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1765,7 +1737,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'OCPA (Oregon Consumer Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Oregon or target products/services to Oregon residents and, during a calendar year:', 'MAP_txt' ) ); ?>
@@ -1795,8 +1767,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ocpa'], true ); ?>
 															/>
-														<label for="regulation_ocpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ocpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ocpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1816,7 +1787,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'RIDTPPA (Rhode Island Data Transparency and Privacy Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Rhode Island or target products/services to Rhode Island residents and, in the previous calendar year:', 'MAP_txt' ) ); ?>
@@ -1849,8 +1820,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ridtppa'], true ); ?>
 															/>
-														<label for="regulation_ridtppa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ridtppa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ridtppa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1870,7 +1840,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'TIPA (Tennessee Information Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Tennessee or target products/services to Tennessee residents and meet all of the following:', 'MAP_txt' ) ); ?>
@@ -1900,8 +1870,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_tipa'], true ); ?>
 															/>
-														<label for="regulation_tipa" class="me-2 label-checkbox"></label>
-														<label for="regulation_tipa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_tipa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1921,14 +1890,17 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'TDPSA (Texas Data Privacy and Security Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
-													<?php echo wp_kses_post( __( 'Applies to those who do business in Texas or target products/services to Texas residents and process or sell personal data.', 'MAP_txt' ) ); ?>
+													<?php echo wp_kses_post( __( 'Applies to those who do business in Texas or produce products/services consumed by Texas residents and process or sell personal data.', 'MAP_txt' ) ); ?>
 												</p>
 
 												<p class="mb-0">
 													<?php echo wp_kses_post( __( 'No numerical thresholds. Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent.', 'MAP_txt' ) ); ?>
+												</p>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'The small business exemption refers to US federal SBA criteria, which include a place of business in the United States, the industry size standard and the affiliation rules: it has not been clarified how these state laws apply them to a business with no place of business in the United States, so a case-by-case assessment is needed.', 'MAP_txt' ) ); ?>
 												</p>
 											</div>
 											<div class="card-footer">
@@ -1947,8 +1919,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_tdpsa'], true ); ?>
 															/>
-														<label for="regulation_tdpsa" class="me-2 label-checkbox"></label>
-														<label for="regulation_tdpsa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_tdpsa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -1968,7 +1939,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'UCPA (Utah Consumer Privacy Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Utah or target products/services to Utah residents and satisfy all of the following conditions:', 'MAP_txt' ) ); ?>
@@ -1998,8 +1969,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_ucpa'], true ); ?>
 															/>
-														<label for="regulation_ucpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_ucpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_ucpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -2018,7 +1988,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'VCDPA (Virginia Consumer Data Protection Act)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-us.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to those who do business in Virginia or target products/services to Virginia residents and, in a calendar year:', 'MAP_txt' ) ); ?>
@@ -2048,8 +2018,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_vcdpa'], true ); ?>
 															/>
-														<label for="regulation_vcdpa" class="me-2 label-checkbox"></label>
-														<label for="regulation_vcdpa"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_vcdpa" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -2073,11 +2042,12 @@
 										<div class="card h-100 policy-card" <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 ) echo 'data-clickable="true"'; ?>>
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
-													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'nLPD / nFADP (Switzerland - new Federal Act on Data Protection)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ch.png" class="policy-card-flag">
+													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'nLPD / nFADP (Switzerland - Federal Act on Data Protection)', 'MAP_txt' ) ); ?></h3>
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ch.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2"><?php echo wp_kses_post( __( 'Applies to private individuals and federal bodies that process personal data of natural persons (cantonal authorities are governed by cantonal law).', 'MAP_txt' ) ); ?></p>
 												<p class="mb-0"><?php echo wp_kses_post( __( 'It also applies if the processing takes place abroad when it has effects in Switzerland, for example because you offer goods or services to people in Switzerland or monitor their behavior.', 'MAP_txt' ) ); ?></p>
+												<p class="mt-2 mb-0"><?php echo wp_kses_post( __( 'If you are a private controller with a registered office or domicile abroad, you must also designate a representative in Switzerland and publish the name and address of the representative when your processing concerns people in Switzerland, is connected with offering goods or services to them or monitoring their behavior, and is at the same time large-scale, regular and high-risk for their personality (Art. 14 nFADP).', 'MAP_txt' ) ); ?></p>
 											</div>
 											<div class="card-footer">
 
@@ -2095,8 +2065,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_lpd'], true ); ?>
 															/>
-														<label for="regulation_lpd" class="me-2 label-checkbox"></label>
-														<label for="regulation_lpd"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_lpd" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -2115,14 +2084,17 @@
 										<div class="card h-100 policy-card" <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 ) echo 'data-clickable="true"'; ?>>
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
-													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'PIPEDA (Canada - federal private‑sector law)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ca.png" class="policy-card-flag">
+													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'PIPEDA (Canada - federal private-sector law)', 'MAP_txt' ) ); ?></h3>
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-ca.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to private-sector organizations that, in the course of commercial activities, collect, use, or disclose personal information in Canada, except where a provincial law deemed substantially similar applies (for example in Québec, Alberta, and British Columbia) to wholly intra-provincial activities.', 'MAP_txt' ) ); ?>
 												</p>
 												<p class="mb-0">
 													<?php echo wp_kses_post( __( 'It applies in any case to interprovincial or international transfers of personal information and to employers that are federal works, undertakings or businesses with respect to the personal information of their employees.', 'MAP_txt' ) ); ?>
+												</p>
+												<p class="mt-2 mb-0">
+													<?php echo wp_kses_post( __( 'For organizations established outside Canada, it may apply when there is a real and substantial connection with Canada: targeting Canadian customers is one relevant factor, while the mere accessibility of the site from Canada is generally not enough.', 'MAP_txt' ) ); ?>
 												</p>
 											</div>
 											<div class="card-footer">
@@ -2141,8 +2113,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_pipeda'], true ); ?>
 															/>
-														<label for="regulation_pipeda" class="me-2 label-checkbox"></label>
-														<label for="regulation_pipeda"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_pipeda" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -2163,7 +2134,7 @@
 											<div class="card-body">
 												<div class="d-flex align-items-start justify-content-between">
 													<h3 class="h5 card-title"><?php echo wp_kses_post( __( 'LGPD (Brazil - General Data Protection Law)', 'MAP_txt' ) ); ?></h3>
-													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-br.png" class="policy-card-flag">
+													<img src="<?php echo plugin_dir_url( __FILE__ ) ?>../img/flag-br.png" alt="" class="policy-card-flag">
 												</div>
 												<p class="mb-2">
 													<?php echo wp_kses_post( __( 'Applies to any processing operation carried out by natural persons or legal entities, under public or private law, regardless of the controller/processor’s location or the location of the data, when at least one of these conditions is met:', 'MAP_txt' ) ); ?>
@@ -2200,8 +2171,7 @@
 															data-checkbox-group="map_regulation"
 															<?php checked( $site_and_policy_settings['regulation_lgpd'], true ); ?>
 															/>
-														<label for="regulation_lgpd" class="me-2 label-checkbox"></label>
-														<label for="regulation_lgpd"><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
+														<label for="regulation_lgpd" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes - this applies to my processing. Add it to my policies.', 'MAP_txt' ) ); ?></label>
 													</div>
 												</div>
 
@@ -2253,7 +2223,7 @@
 											id="identity_name"
 											name="site_and_policy_settings[identity_name]"
 											class="form-control"
-											value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_name'] ) ); ?>"
+											value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_name'] ) ? (string) $site_and_policy_settings['identity_name'] : '' ) ); ?>"
 											required />
 									</div>
 
@@ -2272,7 +2242,7 @@
 											id="identity_address"
 											name="site_and_policy_settings[identity_address]"
 											class="form-control"
-											value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_address'] ) ); ?>"
+											value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_address'] ) ? (string) $site_and_policy_settings['identity_address'] : '' ) ); ?>"
 											/>
 
 									</div>
@@ -2290,7 +2260,7 @@
 											id="identity_vat_id"
 											name="site_and_policy_settings[identity_vat_id]"
 											class="form-control"
-											value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_vat_id'] ) ); ?>"
+											value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_vat_id'] ) ? (string) $site_and_policy_settings['identity_vat_id'] : '' ) ); ?>"
 											/>
 									</div>
 								</div>
@@ -2307,7 +2277,7 @@
 											id="identity_email"
 											name="site_and_policy_settings[identity_email]"
 											class="form-control"
-											value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_email'] ) ); ?>"
+											value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_email'] ) ? (string) $site_and_policy_settings['identity_email'] : '' ) ); ?>"
 											required/>
 									</div>
 								</div>
@@ -2338,10 +2308,7 @@
 													value="true"
 													<?php checked( $site_and_policy_settings['display_dpo'], true ); ?>
 													/>
-												<label for="display_dpo" class="me-2 label-checkbox"></label>
-												<label for="display_dpo">
-													<?php echo wp_kses_post( __( 'Yes, I have a DPO', 'MAP_txt' ) ); ?>
-												</label>
+												<label for="display_dpo" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, I have a DPO', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 
@@ -2361,7 +2328,7 @@
 													id="dpo_email"
 													name="site_and_policy_settings[dpo_email]"
 													class="form-control"
-													value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_email'] ) );?>"
+													value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_email'] ) ? (string) $site_and_policy_settings['dpo_email'] : '' ) );?>"
 													/>
 
 											</div>
@@ -2380,7 +2347,7 @@
 													id="dpo_name"
 													name="site_and_policy_settings[dpo_name]"
 													class="form-control"
-													value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_name'] ) );?>"
+													value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_name'] ) ? (string) $site_and_policy_settings['dpo_name'] : '' ) );?>"
 													/>
 
 											</div>
@@ -2398,7 +2365,7 @@
 													id="dpo_address"
 													name="site_and_policy_settings[dpo_address]"
 													class="form-control"
-													value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_address'] ) );?>"
+													value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_address'] ) ? (string) $site_and_policy_settings['dpo_address'] : '' ) );?>"
 													/>
 
 											</div>
@@ -2495,9 +2462,8 @@
 													/>
 
 
-												<label for="site_features_contact_forms" class="me-2 label-checkbox"></label>
-												<label for="site_features_contact_forms"><?php echo wp_kses_post( __( 'Contact forms', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Forms that collect user information—such as names, email addresses, and phone numbers—as well as user requests.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_contact_forms" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Contact forms', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Forms that collect user information, such as names, email addresses, and phone numbers, as well as user requests.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2518,9 +2484,8 @@
 													<?php checked( $site_and_policy_settings['site_features_payments'], true ); ?>
 													/>
 
-												<label for="site_features_payments" class="me-2 label-checkbox"></label>
-												<label for="site_features_payments"><?php echo wp_kses_post( __( 'Payments', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Online payment processing, e‑commerce transactions, credit card transactions, and financial data handling.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_payments" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Payments', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Online payment processing, e-commerce transactions, credit card transactions, and financial data handling.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2536,9 +2501,8 @@
 													<?php checked( $site_and_policy_settings['site_features_account_reg'], true ); ?>
 													/>
 
-												<label for="site_features_account_reg" class="me-2 label-checkbox"></label>
-												<label for="site_features_account_reg"><?php echo wp_kses_post( __( 'Account registration', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'User registration, user accounts and login, user profiles, and membership areas.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_account_reg" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Account registration', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'User registration, user accounts and login, user profiles, and membership areas.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2556,9 +2520,8 @@
 													<?php checked( $site_and_policy_settings['site_features_newsletter'], true ); ?>
 													/>
 
-												<label for="site_features_newsletter" class="me-2 label-checkbox"></label>
-												<label for="site_features_newsletter"><?php echo wp_kses_post( __( 'Newsletter', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Email marketing and newsletters, postal mailings (direct mail), SMS/MMS, other messaging services.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_newsletter" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Newsletter', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Email marketing and newsletters, postal mailings (direct mail), SMS/MMS, other messaging services.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2576,9 +2539,8 @@
 													<?php checked( $site_and_policy_settings['site_features_show_marketing_data_retention'], true ); ?>
 													/>
 
-												<label for="site_features_show_marketing_data_retention" class="me-2 label-checkbox"></label>
-												<label for="site_features_show_marketing_data_retention"><?php echo wp_kses_post( __( 'I retain data for a maximum of 24 months from the last meaningful interaction', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'By "last meaningful interaction" we mean, for example, opening a communication, clicking within a communication, or submitting a request through the website.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_show_marketing_data_retention" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'I retain data for a maximum of 24 months from the last meaningful interaction', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'By "last meaningful interaction" we mean, for example, opening a communication, clicking within a communication, or submitting a request through the website.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2596,9 +2558,8 @@
 													<?php checked( $site_and_policy_settings['site_features_reviews_collect'], true ); ?>
 													/>
 
-												<label for="site_features_reviews_collect" class="me-2 label-checkbox"></label>
-												<label for="site_features_reviews_collect"><?php echo wp_kses_post( __( 'Reviews / Feedback collection', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Customer reviews, ratings, testimonials, surveys, and feedback forms.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_reviews_collect" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Reviews / Feedback collection', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Customer reviews, ratings, testimonials, surveys, and feedback forms.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2614,9 +2575,8 @@
 													<?php checked( $site_and_policy_settings['site_features_minors_data'], true ); ?>
 													/>
 
-												<label for="site_features_minors_data" class="me-2 label-checkbox"></label>
-												<label for="site_features_minors_data"><?php echo wp_kses_post( __( 'Processing of minors\' personal data', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection of personal data of users under 18.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_minors_data" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Processing of minors\' personal data', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection of personal data of users under 18.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2632,9 +2592,8 @@
 													<?php checked( $site_and_policy_settings['site_features_social_login'], true ); ?>
 													/>
 
-												<label for="site_features_social_login" class="me-2 label-checkbox"></label>
-												<label for="site_features_social_login"><?php echo wp_kses_post( __( 'Social login', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site allows sign-in or registration via social accounts.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_social_login" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Social login', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site allows sign-in or registration via social accounts.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2650,9 +2609,8 @@
 													<?php checked( $site_and_policy_settings['site_features_advertising'], true ); ?>
 													/>
 
-												<label for="site_features_advertising" class="me-2 label-checkbox"></label>
-												<label for="site_features_advertising"><?php echo wp_kses_post( __( 'Advertising and marketing partners', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site runs advertising and/or shares data with commercial or affiliate partners for marketing or advertising purposes.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_advertising" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Advertising and marketing partners', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site runs advertising and/or shares data with commercial or affiliate partners for marketing or advertising purposes.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2668,16 +2626,15 @@
 													<?php checked( $site_and_policy_settings['site_features_sensitive_data'], true ); ?>
 													/>
 
-												<label for="site_features_sensitive_data" class="me-2 label-checkbox"></label>
-												<label for="site_features_sensitive_data"><?php echo wp_kses_post( __( 'Processing of special categories of personal data', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection and processing of special categories of personal data.', 'MAP_txt' ) ); ?>"></i>
+												<label for="site_features_sensitive_data" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Processing of special categories of personal data', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection and processing of special categories of personal data.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="mt-2">
 											<p>
 												<a href="#" class="map-sensitive-data-toggle"><?php echo wp_kses_post( __( 'What are the special categories of personal data?', 'MAP_txt' ) ); ?></a>
 											</p>
-												<ul class="map-sensitive-data-examples mt-2" style="display: none;">
+												<ul class="map-sensitive-data-examples mt-2 map-hidden">
 													<li><strong><?php echo wp_kses_post( __( 'Health data', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., diagnoses, medical conditions, treatments and medications, test results/reports, disability)', 'MAP_txt' ) ); ?></li>
 													<li><strong><?php echo wp_kses_post( __( 'Political opinions', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., membership, support or donations to parties/movements)', 'MAP_txt' ) ); ?></li>
 													<li><strong><?php echo wp_kses_post( __( 'Religious or philosophical beliefs', 'MAP_txt' ) ); ?></strong> <?php echo wp_kses_post( __( '(e.g., membership in a religious denomination or ethical belief organization)', 'MAP_txt' ) ); ?></li>
@@ -2710,7 +2667,8 @@
 											<p>
 												<?php echo wp_kses_post( __( 'For transparency to users, you should disclose what is actually active (contact forms, newsletters, payments, members-only area, reviews, social media integrations, analytics/marketing). ', 'MAP_txt' ) ); ?><br>
 												<?php echo wp_kses_post( __( 'This allows the policies to be tailored, explaining to your users what data you collect and why. ', 'MAP_txt' ) ); ?><br>
-												<?php echo wp_kses_post( __( 'Select only the features that are actually active.', 'MAP_txt' ) ); ?>
+												<?php echo wp_kses_post( __( 'Select only the features that are actually active.', 'MAP_txt' ) ); ?><br>
+												<?php echo wp_kses_post( __( 'Also include features completed on an external platform that processes data on your behalf, for example a hosted checkout or a booking portal.', 'MAP_txt' ) ); ?>
 											</p>
 
 										</div>
@@ -2765,10 +2723,7 @@
 													<?php checked( $site_and_policy_settings['outside_adequate_suppliers'], true ); ?>
 													/>
 
-												<label for="outside_adequate_suppliers" class="me-2 label-checkbox"></label>
-												<label for="outside_adequate_suppliers">
-													<?php echo wp_kses_post( __( 'Yes, I use suppliers outside EU / Switzerland / adequate countries', 'MAP_txt' ) ); ?>
-												</label>
+												<label for="outside_adequate_suppliers" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, I use suppliers outside EU / Switzerland / adequate countries', 'MAP_txt' ) ); ?></label>
 											</div>
 										</div>
 										<div class="map_outside_adequate_countries_wrapper mt-3 displayNone">
@@ -2790,6 +2745,11 @@
 													{
 														foreach( $available_countries['not_adequate'] as $country_key => $country_item )
 														{
+															if( !is_scalar( $country_item ) )
+															{
+																continue;
+															}
+
 															// Compute which column the i-th item belongs to (balanced chunks)
 															$colIdx = ( $total > 0 ) ? (int) floor( $idx * $columns / $total ) : 0;
 
@@ -2827,8 +2787,7 @@
 																		/>
 
 
-																	<label for="outside_country_<?php echo esc_attr( $country_key );?>" class="me-2 label-checkbox"></label>
-																	<label for="outside_country_<?php echo esc_attr( $country_key );?>"><?php echo wp_kses_post( $country_item ); ?></label>
+																	<label for="outside_country_<?php echo esc_attr( $country_key );?>" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( $country_item ); ?></label>
 																</div>
 															</div>
 
@@ -2933,10 +2892,9 @@
 													<?php checked( $site_and_policy_settings['protection_system_https'], true ); ?>
 													/>
 
-												<label for="protection_system_https" class="me-2 label-checkbox"></label>
-												<label for="protection_system_https"><?php echo wp_kses_post( __( 'Communication encryption (https)', 'MAP_txt' ) ); ?></label>
+												<label for="protection_system_https" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Communication encryption (https)', 'MAP_txt' ) ); ?></label>
 
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Communications between your browser and the site are protected by HTTPS encryption, which prevents the interception or tampering of data exchanged while you browse.', 'MAP_txt' ) ); ?>"></i>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Communications between your browser and the site are protected by HTTPS encryption, which prevents the interception or tampering of data exchanged while you browse.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2957,9 +2915,8 @@
 													<?php checked( $site_and_policy_settings['protection_system_log_control'], true ); ?>
 													/>
 
-												<label for="protection_system_log_control" class="me-2 label-checkbox"></label>
-												<label for="protection_system_log_control"><?php echo wp_kses_post( __( 'Log monitoring', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'The system logs and monitors access and activity to detect suspicious or unauthorized attempts and ensure data security.', 'MAP_txt' ) ); ?>"></i>
+												<label for="protection_system_log_control" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Log monitoring', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'The system logs and monitors access and activity to detect suspicious or unauthorized attempts and ensure data security.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2975,9 +2932,8 @@
 													<?php checked( $site_and_policy_settings['protection_system_backup'], true ); ?>
 													/>
 
-												<label for="protection_system_backup" class="me-2 label-checkbox"></label>
-												<label for="protection_system_backup"><?php echo wp_kses_post( __( 'Periodic backups', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Data is regularly backed up and stored to protect it against accidental loss or technical incidents.', 'MAP_txt' ) ); ?>"></i>
+												<label for="protection_system_backup" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Periodic backups', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Data is regularly backed up and stored to protect it against accidental loss or technical incidents.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 
 											</div>
 										</div>
@@ -2994,9 +2950,8 @@
 													<?php checked( $site_and_policy_settings['protection_system_audit'], true ); ?>
 													/>
 
-												<label for="protection_system_audit" class="me-2 label-checkbox"></label>
-												<label for="protection_system_audit"><?php echo wp_kses_post( __( 'Security audits and checks', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Regular security assessments and tests are conducted to identify and address potential system vulnerabilities.', 'MAP_txt' ) ); ?>"></i>
+												<label for="protection_system_audit" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Security audits and checks', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Regular security assessments and tests are conducted to identify and address potential system vulnerabilities.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -3012,9 +2967,8 @@
 													<?php checked( $site_and_policy_settings['protection_system_access_limited'], true ); ?>
 													/>
 
-												<label for="protection_system_access_limited" class="me-2 label-checkbox"></label>
-												<label for="protection_system_access_limited"><?php echo wp_kses_post( __( 'Restriction of data access to duly authorized subjects only', 'MAP_txt' ) ); ?></label>
-												<i class="fa-regular fa-circle-info text-muted ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Access to personal data is granted only to authorized and trained personnel, in accordance with internal security policies.', 'MAP_txt' ) ); ?>"></i>
+												<label for="protection_system_access_limited" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Restriction of data access to duly authorized subjects only', 'MAP_txt' ) ); ?></label>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Tick this if access to the site\'s data is limited to those who need it. For example: admin area accessible only to the owner and the appointed web provider, personal accounts that are not shared, strong passwords, no unused accounts or accounts with more permissions than needed.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 									</div>
@@ -3057,7 +3011,7 @@
 						<div class="row">
 							<div class="col-12 text-center">
 								<div class="mb-4 success-confirmation alert-success p-4">
-									<i class="fa-regular fa-check-circle" style="font-size: 4rem;"></i>
+									<i class="fa-regular fa-check-circle map-fs-4rem"></i>
 									<h3><?php echo wp_kses_post( __( 'Policy Configuration Complete!', 'MAP_txt' ) ); ?></h3>
 								</div>
 								<p class="text-muted mb-4"><strong><?php echo wp_kses_post( __( 'Your Policies has been successfully configured and update based on your preferences.', 'MAP_txt' ) ); ?></strong></p>
@@ -3105,7 +3059,7 @@
 						</div>
 						<div class="col-6 text-end">
 							<span class="map_wait text-muted ms-2">
-								<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+								<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 							</span>
 
 							<button type="button" class="button-agile map-wizard-next-btn-first-step displayNone" id="wizard-next-btn-first-step">

@@ -82,9 +82,8 @@ if( isset( $the_settings['pa'] ) &&
 				<select
 					id="scan_mode_field"
 					name="scan_mode_field"
-					class="hideShowInput form-control"
-					data-hide-show-ref="map_scan_mode"
-					style="max-width:100%;" >
+					class="hideShowInput form-control map-mw-100"
+					data-hide-show-ref="map_scan_mode" >
 					<?php
 
 					$valid_options = array(
@@ -97,7 +96,7 @@ if( isset( $the_settings['pa'] ) &&
 																'selected' => false ),
 					);
 
-					$selected_value = $the_settings['scan_mode'];
+					$selected_value = is_string( $the_settings['scan_mode'] ) ? $the_settings['scan_mode'] : '';
 
 					if( isset( $valid_options[ $selected_value ] ) )
 					{
@@ -138,9 +137,9 @@ if( isset( $the_settings['pa'] ) &&
 
 				<!-- compatibility mode checkbox -->
 				<div class="row mb-4">
-					<label for="scanner_compatibility_mode_field" class="col-sm-5 col-form-label">
+					<span class="col-sm-5 col-form-label">
 						<?php echo wp_kses_post( __( 'Enable compatibility mode', 'MAP_txt' ) ); ?>
-					</label>
+					</span>
 					<div class="col-sm-7">
 						<div class="styled_radio d-inline-flex">
 							<div class="round d-flex me-4">
@@ -154,11 +153,7 @@ if( isset( $the_settings['pa'] ) &&
 									id="scanner_compatibility_mode_field"
 									<?php checked( $the_settings['scanner_compatibility_mode'], true ); ?>>
 
-								<label for="scanner_compatibility_mode_field" class="me-2 label-checkbox"></label>
-
-								<label for="scanner_compatibility_mode_field">
-									<?php echo wp_kses_post( __( 'Enable compatibility mode', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="scanner_compatibility_mode_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable compatibility mode', 'MAP_txt' ) ); ?></label>
 							</div>
 						</div>
 
@@ -175,9 +170,9 @@ if( isset( $the_settings['pa'] ) &&
 
 					<!-- forced_legacy_mode checkbox -->
 					<div class="row mb-4">
-						<label for="forced_legacy_mode_field" class="col-sm-5 col-form-label">
+						<span class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Legacy mode', 'MAP_txt' ) ); ?>
-						</label>
+						</span>
 						<div class="col-sm-7">
 							<div class="styled_radio d-inline-flex">
 								<div class="round d-flex me-4">
@@ -190,11 +185,7 @@ if( isset( $the_settings['pa'] ) &&
 										id="forced_legacy_mode_field"
 										<?php checked( $the_settings['forced_legacy_mode'], true ); ?>>
 
-									<label for="forced_legacy_mode_field" class="me-2 label-checkbox"></label>
-
-									<label for="forced_legacy_mode_field">
-										<?php echo wp_kses_post( __( 'Cookies are not being detected; enable "legacy mode."', 'MAP_txt' ) ); ?>
-									</label>
+									<label for="forced_legacy_mode_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Cookies are not being detected; enable "legacy mode."', 'MAP_txt' ) ); ?></label>
 								</div>
 							</div>
 
@@ -215,9 +206,8 @@ if( isset( $the_settings['pa'] ) &&
 							<select
 								id="video_privacy_mode_field"
 								name="video_privacy_mode_field"
-								class="form-control hideShowInput"
-								data-hide-show-ref="video_privacy_mode_ref"
-								style="max-width:100%;" >
+								class="form-control hideShowInput map-mw-100"
+								data-hide-show-ref="video_privacy_mode_ref" >
 								<?php
 
 								$valid_options = array(
@@ -227,7 +217,7 @@ if( isset( $the_settings['pa'] ) &&
 															'selected' => false ),
 								);
 
-								$selected_value = $the_settings['video_privacy_mode'];
+								$selected_value = is_string( $the_settings['video_privacy_mode'] ) ? $the_settings['video_privacy_mode'] : '';
 
 								if( isset( $valid_options[ $selected_value ] ) )
 								{
@@ -260,9 +250,9 @@ if( isset( $the_settings['pa'] ) &&
 
 					<!-- youtube enforce privacy checkbox -->
 					<div class="row mb-4 video_privacy_mode_ref displayNone" data-value="anonymous">
-						<label for="enforce_youtube_privacy_field" class="col-sm-5 col-form-label">
+						<span class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Enforce Youtube Privacy', 'MAP_txt' ) ); ?>
-						</label>
+						</span>
 						<div class="col-sm-7">
 							<div class="styled_radio d-inline-flex">
 								<div class="round d-flex me-4">
@@ -277,11 +267,7 @@ if( isset( $the_settings['pa'] ) &&
 										id="enforce_youtube_privacy_field"
 										<?php checked( $the_settings['enforce_youtube_privacy'], true ); ?>>
 
-									<label for="enforce_youtube_privacy_field" class="me-2 label-checkbox"></label>
-
-									<label for="enforce_youtube_privacy_field">
-										<?php echo wp_kses_post( __( 'Enforce Youtube Privacy', 'MAP_txt' ) ); ?>
-									</label>
+									<label for="enforce_youtube_privacy_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enforce Youtube Privacy', 'MAP_txt' ) ); ?></label>
 								</div>
 							</div>
 							<div class="form-text">
@@ -291,9 +277,9 @@ if( isset( $the_settings['pa'] ) &&
 					</div> <!-- row -->
 
 					<div class="row mb-4">
-						<label for="dev_mode_field" class="col-sm-5 col-form-label">
+						<span class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Developer mode', 'MAP_txt' ) ); ?>
-						</label>
+						</span>
 						<div class="col-sm-7">
 							<div class="styled_radio d-inline-flex">
 								<div class="round d-flex me-4">
@@ -309,11 +295,7 @@ if( isset( $the_settings['pa'] ) &&
 										id="dev_mode_field"
 										<?php checked( $the_settings['dev_mode'], true ); ?>>
 
-									<label for="dev_mode_field" class="me-2 label-checkbox"></label>
-
-									<label for="dev_mode_field">
-										<?php echo wp_kses_post( __( 'Enable Developer mode', 'MAP_txt' ) ); ?>
-									</label>
+									<label for="dev_mode_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable Developer mode', 'MAP_txt' ) ); ?></label>
 								</div>
 							</div>
 
@@ -336,8 +318,7 @@ if( isset( $the_settings['pa'] ) &&
 								<select
 									id="scanner_hook_type_field"
 									name="scanner_hook_type_field"
-									class="form-control"
-									style="max-width:100%;">
+									class="form-control map-mw-100">
 									<?php
 										$valid_options = array(
 											'init-shutdown'					=>	array(  'label' => esc_attr( __( 'Init / Shutdown', 'MAP_txt' ) ),
@@ -345,7 +326,7 @@ if( isset( $the_settings['pa'] ) &&
 											'template_redirect-shutdown'	=>	array(  'label' => esc_attr( __( 'Template Redirect / Shutdown', 'MAP_txt' ) ),
 																					'selected' => false ),
 										);
-										$selected_value = $the_settings['scanner_hook_type'];
+										$selected_value = is_string( $the_settings['scanner_hook_type'] ) ? $the_settings['scanner_hook_type'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -389,7 +370,7 @@ if( isset( $the_settings['pa'] ) &&
 									class="form-control"
 									id="scanner_start_hook_prio_field"
 									name="scanner_start_hook_prio_field"
-									value="<?php echo esc_attr( stripslashes( $the_settings['scanner_start_hook_prio'] ) ); ?>" />
+									value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['scanner_start_hook_prio'] ) ? (string) $the_settings['scanner_start_hook_prio'] : '' ) ); ?>" />
 
 								<div class="form-text">
 									<?php echo wp_kses_post( __( 'Change this only if asked by customer support. (Default value: -10000).', 'MAP_txt' ) ); ?>
@@ -409,7 +390,7 @@ if( isset( $the_settings['pa'] ) &&
 									class="form-control"
 									id="scanner_end_hook_prio_field"
 									name="scanner_end_hook_prio_field"
-									value="<?php echo esc_attr( stripslashes( $the_settings['scanner_end_hook_prio'] ) ); ?>" />
+									value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['scanner_end_hook_prio'] ) ? (string) $the_settings['scanner_end_hook_prio'] : '' ) ); ?>" />
 
 								<div class="form-text">
 									<?php echo wp_kses_post( __( 'Change this only if asked by customer support. (Default value: -10000).', 'MAP_txt' ) ); ?>

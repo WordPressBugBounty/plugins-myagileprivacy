@@ -69,6 +69,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['iab_bannertext_2_a'] = 'Puoi sempre scegliere gli scopi specifici legati alla profilazione accedendo al';
 		$default_txt['it_IT']['iab_bannertext_2_link'] = 'pannello delle preferenze pubblicitarie';
 		$default_txt['it_IT']['iab_bannertext_2_b'] = ', e puoi sempre revocare il tuo consenso in qualsiasi momento facendo clic su "Gestisci consenso" in fondo alla pagina.';
+		$default_txt['it_IT']['iab_bannertext_2_c'] = 'Le tue scelte valgono soltanto per questo sito.';
 		$default_txt['it_IT']['iab_bannertext_3'] = 'Elenco di alcune possibili autorizzazioni pubblicitarie';
 		$default_txt['it_IT']['iab_bannertext_4_a'] = 'Puoi consultare: la nostra lista di';
 		$default_txt['it_IT']['iab_bannertext_4_b'] = 'partner pubblicitari';
@@ -134,6 +135,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['iab_bannertext_2_a'] = 'You can always choose the specific purposes related to profiling by accessing the';
 		$default_txt['en_US']['iab_bannertext_2_link'] = 'advertising preferences panel';
 		$default_txt['en_US']['iab_bannertext_2_b'] = ', and you can withdraw your consent at any time by clicking on "Manage consent" at the bottom of the page.';
+		$default_txt['en_US']['iab_bannertext_2_c'] = 'Your choices apply only to this website.';
 		$default_txt['en_US']['iab_bannertext_3'] = 'List of some possible advertising permissions';
 		$default_txt['en_US']['iab_bannertext_4_a'] = 'You can consult: our list of';
 		$default_txt['en_US']['iab_bannertext_4_b'] = 'advertising partners';
@@ -199,6 +201,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['iab_bannertext_2_a'] = 'Vous pouvez toujours choisir les objectifs spécifiques liés au profilage en accédant au';
 		$default_txt['fr_FR']['iab_bannertext_2_link'] = 'panneau des préférences publicitaires';
 		$default_txt['fr_FR']['iab_bannertext_2_b'] = ', et vous pouvez toujours retirer votre consentement à tout moment en cliquant sur "Gérer le consentement" en bas de la page.';
+		$default_txt['fr_FR']['iab_bannertext_2_c'] = 'Vos choix s\'appliquent uniquement à ce site.';
 		$default_txt['fr_FR']['iab_bannertext_3'] = 'Liste de quelques autorisations publicitaires possibles';
 		$default_txt['fr_FR']['iab_bannertext_4_a'] = 'Vous pouvez consulter: notre liste de';
 		$default_txt['fr_FR']['iab_bannertext_4_b'] = 'partenaires publicitaires';
@@ -264,6 +267,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['iab_bannertext_2_a'] = 'Siempre puedes elegir los propósitos específicos relacionados con el perfilado accediendo al';
 		$default_txt['es_ES']['iab_bannertext_2_link'] = 'panel de preferencias de publicidad';
 		$default_txt['es_ES']['iab_bannertext_2_b'] = ', y siempre puedes retirar tu consentimiento en cualquier momento haciendo clic en "Gestionar consentimiento" en la parte inferior de la página.';
+		$default_txt['es_ES']['iab_bannertext_2_c'] = 'Tus decisiones se aplican únicamente a este sitio.';
 		$default_txt['es_ES']['iab_bannertext_3'] = 'Lista de algunos permisos publicitarios posibles';
 		$default_txt['es_ES']['iab_bannertext_4_a'] = 'Puedes consultar: nuestra lista de';
 		$default_txt['es_ES']['iab_bannertext_4_b'] = 'socios publicitarios';
@@ -329,6 +333,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['iab_bannertext_2_a'] = 'Sie können jederzeit die spezifischen Zwecke in Bezug auf das Profiling auswählen, indem Sie auf das';
 		$default_txt['de_DE']['iab_bannertext_2_link'] = 'Werbepräferenz-Panel';
 		$default_txt['de_DE']['iab_bannertext_2_b'] = 'zugreifen, und Sie können Ihre Einwilligung jederzeit widerrufen, indem Sie unten auf der Seite auf "Einwilligung verwalten" klicken.';
+		$default_txt['de_DE']['iab_bannertext_2_c'] = 'Ihre Entscheidungen gelten nur für diese Website.';
 		$default_txt['de_DE']['iab_bannertext_3'] = 'Liste einiger möglicher Werbeeinwilligungen';
 		$default_txt['de_DE']['iab_bannertext_4_a'] = 'Sie können einsehen: unsere Liste von';
 		$default_txt['de_DE']['iab_bannertext_4_b'] = 'Werbepartnern';
@@ -394,6 +399,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['iab_bannertext_2_a'] = 'Pode sempre escolher os propósitos específicos relacionados com o perfil acedendo ao';
 		$default_txt['pt_PT']['iab_bannertext_2_link'] = 'painel de preferências de publicidade';
 		$default_txt['pt_PT']['iab_bannertext_2_b'] = ', e pode sempre retirar o seu consentimento a qualquer momento clicando em "Gerir consentimento" no final da página.';
+		$default_txt['pt_PT']['iab_bannertext_2_c'] = 'As suas escolhas aplicam-se apenas a este site.';
 		$default_txt['pt_PT']['iab_bannertext_3'] = 'Lista de algumas permissões publicitárias possíveis';
 		$default_txt['pt_PT']['iab_bannertext_4_a'] = 'Pode consultar: a nossa lista de';
 		$default_txt['pt_PT']['iab_bannertext_4_b'] = 'parceiros de publicidade';
@@ -459,6 +465,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['iab_bannertext_2_a'] = 'U kunt altijd de specifieke doeleinden met betrekking tot profilering kiezen door toegang te krijgen tot het';
 		$default_txt['nl_NL']['iab_bannertext_2_link'] = 'advertentievoorkeurenpaneel';
 		$default_txt['nl_NL']['iab_bannertext_2_b'] = ', en u kunt uw toestemming altijd intrekken door op "Beheer toestemmingen" onderaan de pagina te klikken.';
+		$default_txt['nl_NL']['iab_bannertext_2_c'] = 'Uw keuzes gelden alleen voor deze website.';
 		$default_txt['nl_NL']['iab_bannertext_3'] = 'Lijst van enkele mogelijke reclame-machtigingen';
 		$default_txt['nl_NL']['iab_bannertext_4_a'] = 'U kunt raadplegen: onze lijst van';
 		$default_txt['nl_NL']['iab_bannertext_4_b'] = 'advertentiepartners';
@@ -524,6 +531,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['iab_bannertext_2_a'] = 'Zawsze możesz wybrać konkretne cele związane z profilowaniem, uzyskując dostęp do';
 		$default_txt['pl_PL']['iab_bannertext_2_link'] = 'panelu preferencji reklamowych';
 		$default_txt['pl_PL']['iab_bannertext_2_b'] = ', a także zawsze możesz wycofać swoją zgodę w dowolnym momencie, klikając na "Zarządzaj zgodami" na dole strony.';
+		$default_txt['pl_PL']['iab_bannertext_2_c'] = 'Twoje wybory dotyczą wyłącznie tej witryny.';
 		$default_txt['pl_PL']['iab_bannertext_3'] = 'Lista niektórych możliwych pozwoleń reklamowych';
 		$default_txt['pl_PL']['iab_bannertext_4_a'] = 'Możesz zapoznać się z: naszą listą';
 		$default_txt['pl_PL']['iab_bannertext_4_b'] = 'partnerów reklamowych';
@@ -589,6 +597,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['el']['iab_bannertext_2_a'] = 'Μπορείτε πάντα να επιλέγετε συγκεκριμένους σκοπούς σχετικά με το προφίλ αποκτώντας πρόσβαση στον';
 		$default_txt['el']['iab_bannertext_2_link'] = 'πίνακα προτιμήσεων διαφημίσεων';
 		$default_txt['el']['iab_bannertext_2_b'] = ', και μπορείτε πάντα να αποσύρετε τη συγκατάθεσή σας ανά πάσα στιγμή κάνοντας κλικ στο "Διαχείριση συναίνεσης" στο κάτω μέρος της σελίδας.';
+		$default_txt['el']['iab_bannertext_2_c'] = 'Οι επιλογές σας ισχύουν μόνο για αυτόν τον ιστότοπο.';
 		$default_txt['el']['iab_bannertext_3'] = 'Λίστα ορισμένων πιθανών διαφημιστικών αδειών';
 		$default_txt['el']['iab_bannertext_4_a'] = 'Μπορείτε να συμβουλευτείτε: τη λίστα μας με τους';
 		$default_txt['el']['iab_bannertext_4_b'] = 'διαφημιστικούς συνεργάτες';
@@ -654,6 +663,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['iab_bannertext_2_a'] = 'A profilalkotáshoz kapcsolódó konkrét célokat bármikor kiválaszthatja a';
 		$default_txt['hu_HU']['iab_bannertext_2_link'] = 'hirdetési beállítások panelen';
 		$default_txt['hu_HU']['iab_bannertext_2_b'] = ', és a hozzájárulását bármikor visszavonhatja az oldal alján található „Hozzájárulás kezelése” gombra kattintva.';
+		$default_txt['hu_HU']['iab_bannertext_2_c'] = 'A döntései kizárólag erre a webhelyre vonatkoznak.';
 		$default_txt['hu_HU']['iab_bannertext_3'] = 'Néhány lehetséges hirdetési engedély listája';
 		$default_txt['hu_HU']['iab_bannertext_4_a'] = 'Megtekintheti: a';
 		$default_txt['hu_HU']['iab_bannertext_4_b'] = 'hirdetési partnereink listáját';
@@ -719,6 +729,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['iab_bannertext_2_a'] = 'Du kan alltid velge de spesifikke formålene knyttet til profilering ved å åpne';
 		$default_txt['nb_NO']['iab_bannertext_2_link'] = 'panelet for annonseinnstillinger';
 		$default_txt['nb_NO']['iab_bannertext_2_b'] = ', og du kan når som helst trekke tilbake samtykket ditt ved å klikke på «Administrer samtykke» nederst på siden.';
+		$default_txt['nb_NO']['iab_bannertext_2_c'] = 'Valgene dine gjelder bare for dette nettstedet.';
 		$default_txt['nb_NO']['iab_bannertext_3'] = 'Liste over noen mulige annonseringstillatelser';
 		$default_txt['nb_NO']['iab_bannertext_4_a'] = 'Du kan se: vår liste over';
 		$default_txt['nb_NO']['iab_bannertext_4_b'] = 'annonsepartnere';
@@ -784,6 +795,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['iab_bannertext_2_a'] = 'Du kan alltid välja de specifika syftena som rör profilering genom att gå till';
 		$default_txt['sv_SE']['iab_bannertext_2_link'] = 'panelen för annonsinställningar';
 		$default_txt['sv_SE']['iab_bannertext_2_b'] = ', och du kan när som helst återkalla ditt samtycke genom att klicka på ”Hantera samtycke” längst ned på sidan.';
+		$default_txt['sv_SE']['iab_bannertext_2_c'] = 'Dina val gäller endast för den här webbplatsen.';
 		$default_txt['sv_SE']['iab_bannertext_3'] = 'Lista över några möjliga annonstillstånd';
 		$default_txt['sv_SE']['iab_bannertext_4_a'] = 'Du kan ta del av: vår lista över';
 		$default_txt['sv_SE']['iab_bannertext_4_b'] = 'annonspartners';
@@ -806,7 +818,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['always_enable'] = 'Всегда включено';
 		$default_txt['ru_RU']['is_enabled'] = 'Включено';
 		$default_txt['ru_RU']['is_disabled'] = 'Отключено';
-		$default_txt['ru_RU']['blocked_content'] = 'Предупреждение: некоторые функции страницы могут не работать из‑за ваших настроек конфиденциальности';
+		$default_txt['ru_RU']['blocked_content'] = 'Предупреждение: некоторые функции страницы могут не работать из-за ваших настроек конфиденциальности';
 		$default_txt['ru_RU']['blocked_video'] = 'Это видео заблокировано из-за ваших настроек файлов cookie. Нажмите здесь, чтобы пересмотреть своё согласие и включить видео';
 		$default_txt['ru_RU']['blocked_maps'] = 'Эта карта заблокирована из-за ваших настроек файлов cookie. Нажмите здесь, чтобы пересмотреть своё согласие и включить карту';
 		$default_txt['ru_RU']['blocked_element'] = 'Предупреждение: ваши настройки файлов cookie не позволяют отобразить этот элемент. Нажмите здесь, чтобы изменить свои предпочтения.';
@@ -849,6 +861,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['iab_bannertext_2_a'] = 'Вы всегда можете выбрать конкретные цели, связанные с профилированием, открыв';
 		$default_txt['ru_RU']['iab_bannertext_2_link'] = 'панель настроек рекламы';
 		$default_txt['ru_RU']['iab_bannertext_2_b'] = ', а также можете в любой момент отозвать согласие, нажав «Управлять согласием» внизу страницы.';
+		$default_txt['ru_RU']['iab_bannertext_2_c'] = 'Ваш выбор распространяется только на этот сайт.';
 		$default_txt['ru_RU']['iab_bannertext_3'] = 'Список некоторых возможных разрешений на рекламу';
 		$default_txt['ru_RU']['iab_bannertext_4_a'] = 'Вы можете ознакомиться: с нашим списком';
 		$default_txt['ru_RU']['iab_bannertext_4_b'] = 'рекламных партнёров';
@@ -914,6 +927,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['iab_bannertext_2_a'] = 'Voit aina valita profilointiin liittyvät tarkat tarkoitukset siirtymällä';
 		$default_txt['fi']['iab_bannertext_2_link'] = 'mainosasetusten paneeliin';
 		$default_txt['fi']['iab_bannertext_2_b'] = ', ja voit perua suostumuksesi milloin tahansa napsauttamalla sivun alareunassa olevaa kohtaa "Hallitse suostumusta".';
+		$default_txt['fi']['iab_bannertext_2_c'] = 'Valintasi koskevat vain tätä sivustoa.';
 		$default_txt['fi']['iab_bannertext_3'] = 'Luettelo joistakin mahdollisista mainontaan liittyvistä käyttöoikeuksista';
 		$default_txt['fi']['iab_bannertext_4_a'] = 'Voit tutustua: listaan';
 		$default_txt['fi']['iab_bannertext_4_b'] = 'mainoskumppaneistamme';
@@ -922,12 +936,12 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['vat_id'] = 'ALV-tunnus';
 		$default_txt['fi']['google_recaptcha_content_notification_a'] = 'Evästevalintasi eivät välttämättä salli lomakkeen lähettämistä. Voit tarkistaa valintasi';
 		$default_txt['fi']['google_recaptcha_content_notification_b'] = 'napsauttamalla tästä';
-		$default_txt['fi']['anchor_text_1'] = 'Privacy – My Agile Privacy®';
-		$default_txt['fi']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management – My Agile Privacy®';
-		$default_txt['fi']['anchor_text_3'] = 'Cookie Banner ja Consent Management – My Agile Privacy®';
-		$default_txt['fi']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
-		$default_txt['fi']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
-		$default_txt['fi']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
+		$default_txt['fi']['anchor_text_1'] = 'Privacy - My Agile Privacy®';
+		$default_txt['fi']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management - My Agile Privacy®';
+		$default_txt['fi']['anchor_text_3'] = 'Cookie Banner ja Consent Management - My Agile Privacy®';
+		$default_txt['fi']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
+		$default_txt['fi']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy - My Agile Privacy®';
+		$default_txt['fi']['anchor_text_6'] = 'CMP ja Cookie Banner - My Agile Privacy®';
 		$default_txt['fi']['cookie_iab_title'] = 'IAB TCF -suostumusten hallinta';
 		$default_txt['fi']['cookie_iab_desc'] = 'Tämä sivusto liittyy IAB Europen Transparency and Consent Framework (TCF) -järjestelmään. Järjestelmään liittymällä IAB Europen Global Vendor List -luetteloon rekisteröityneet toimittajat voivat asentaa teknisiä evästeitä ja kolmannen osapuolen evästeitä käyttäjän ilmaisemien asetusten perusteella. Täydellinen luettelo aktiivisista toimittajista ja suostumusten hallinta ovat saatavilla milloin tahansa My Agile Privacyn asetuspaneelin kautta.';
 
@@ -979,6 +993,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['iab_bannertext_2_a'] = 'Du kan altid vælge de specifikke formål relateret til profilering ved at åbne';
 		$default_txt['da_DK']['iab_bannertext_2_link'] = 'panelet for annonceindstillinger';
 		$default_txt['da_DK']['iab_bannertext_2_b'] = ', og du kan til enhver tid trække dit samtykke tilbage ved at klikke på "Administrer samtykke" nederst på siden.';
+		$default_txt['da_DK']['iab_bannertext_2_c'] = 'Dine valg gælder kun for dette websted.';
 		$default_txt['da_DK']['iab_bannertext_3'] = 'Liste over nogle mulige annoncetilladelser';
 		$default_txt['da_DK']['iab_bannertext_4_a'] = 'Du kan se: vores liste over';
 		$default_txt['da_DK']['iab_bannertext_4_b'] = 'annoncepartnere';
@@ -1045,6 +1060,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['iab_bannertext_2_a'] = 'Reklam amaçlı profillemeyle ilgili belirli amaçları her zaman';
 		$default_txt['tr_TR']['iab_bannertext_2_link'] = 'reklam tercihleri paneline';
 		$default_txt['tr_TR']['iab_bannertext_2_b'] = ' erişerek seçebilir ve sayfanın alt kısmındaki "Onayı yönet" seçeneğine tıklayarak onayınızı istediğiniz zaman geri çekebilirsiniz.';
+		$default_txt['tr_TR']['iab_bannertext_2_c'] = 'Tercihleriniz yalnızca bu web sitesi için geçerlidir.';
 		$default_txt['tr_TR']['iab_bannertext_3'] = 'Bazı olası reklam izinlerinin listesi';
 		$default_txt['tr_TR']['iab_bannertext_4_a'] = 'Şunlara göz atabilirsiniz:';
 		$default_txt['tr_TR']['iab_bannertext_4_b'] = 'reklam ortaklarımızın listesi';
@@ -1110,6 +1126,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['iab_bannertext_2_a'] = 'Konkrétní účely související s profilováním si můžete kdykoli zvolit v';
 		$default_txt['cs_CZ']['iab_bannertext_2_link'] = 'panelu nastavení reklamy';
 		$default_txt['cs_CZ']['iab_bannertext_2_b'] = ' a svůj souhlas můžete kdykoli odvolat kliknutím na „Spravovat souhlas“ v dolní části stránky.';
+		$default_txt['cs_CZ']['iab_bannertext_2_c'] = 'Vaše volby platí pouze pro tento web.';
 		$default_txt['cs_CZ']['iab_bannertext_3'] = 'Seznam některých možných reklamních oprávnění';
 		$default_txt['cs_CZ']['iab_bannertext_4_a'] = 'Můžete si prohlédnout: náš seznam';
 		$default_txt['cs_CZ']['iab_bannertext_4_b'] = 'reklamních partnerů';
@@ -1175,6 +1192,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['iab_bannertext_2_a'] = 'Puteți alege oricând scopurile specifice legate de profilare accesând';
 		$default_txt['ro_RO']['iab_bannertext_2_link'] = 'panoul de preferințe de publicitate';
 		$default_txt['ro_RO']['iab_bannertext_2_b'] = ', iar consimțământul poate fi retras în orice moment făcând clic pe „Gestionează consimțământul” în partea de jos a paginii.';
+		$default_txt['ro_RO']['iab_bannertext_2_c'] = 'Alegerile dvs. se aplică numai acestui site.';
 		$default_txt['ro_RO']['iab_bannertext_3'] = 'Listă cu câteva permisiuni posibile pentru publicitate';
 		$default_txt['ro_RO']['iab_bannertext_4_a'] = 'Puteți consulta: lista noastră de';
 		$default_txt['ro_RO']['iab_bannertext_4_b'] = 'parteneri de publicitate';
@@ -1240,6 +1258,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['iab_bannertext_2_a'] = 'Konkrétne účely súvisiace s profilovaním si môžete kedykoľvek zvoliť v';
 		$default_txt['sk_SK']['iab_bannertext_2_link'] = 'paneli nastavení reklamy';
 		$default_txt['sk_SK']['iab_bannertext_2_b'] = ' a svoj súhlas môžete kedykoľvek odvolať kliknutím na „Spravovať súhlas“ v spodnej časti stránky.';
+		$default_txt['sk_SK']['iab_bannertext_2_c'] = 'Vaše voľby platia iba pre túto webovú stránku.';
 		$default_txt['sk_SK']['iab_bannertext_3'] = 'Zoznam niektorých možných reklamných povolení';
 		$default_txt['sk_SK']['iab_bannertext_4_a'] = 'Môžete si pozrieť: náš zoznam';
 		$default_txt['sk_SK']['iab_bannertext_4_b'] = 'reklamných partnerov';
@@ -1305,6 +1324,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['iab_bannertext_2_a'] = 'Vedno lahko izberete specifične namene, povezane s profiliranjem, z dostopom do';
 		$default_txt['sl_SI']['iab_bannertext_2_link'] = 'plošče z nastavitvami oglaševanja';
 		$default_txt['sl_SI']['iab_bannertext_2_b'] = ', in soglasje lahko kadarkoli prekličete s klikom na »Upravljaj soglasje« na dnu strani.';
+		$default_txt['sl_SI']['iab_bannertext_2_c'] = 'Vaše odločitve veljajo samo za to spletno mesto.';
 		$default_txt['sl_SI']['iab_bannertext_3'] = 'Seznam nekaterih možnih oglaševalskih dovoljenj';
 		$default_txt['sl_SI']['iab_bannertext_4_a'] = 'Lahko si ogledate: naš seznam';
 		$default_txt['sl_SI']['iab_bannertext_4_b'] = 'oglaševalskih partnerjev';
@@ -1370,6 +1390,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hr']['iab_bannertext_2_a'] = 'Uvijek možete odabrati specifične svrhe povezane s profiliranjem pristupom';
 		$default_txt['hr']['iab_bannertext_2_link'] = 'panelu preferencija oglašavanja';
 		$default_txt['hr']['iab_bannertext_2_b'] = ', a privolu možete povući u bilo kojem trenutku klikom na „Upravljanje privolom” na dnu stranice.';
+		$default_txt['hr']['iab_bannertext_2_c'] = 'Vaši izbori vrijede samo za ovu web-stranicu.';
 		$default_txt['hr']['iab_bannertext_3'] = 'Popis nekih mogućih dopuštenja za oglašavanje';
 		$default_txt['hr']['iab_bannertext_4_a'] = 'Možete pogledati: naš popis';
 		$default_txt['hr']['iab_bannertext_4_b'] = 'oglašivačkih partnera';
@@ -1435,6 +1456,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['iab_bannertext_2_a'] = 'Visada galite pasirinkti konkrečius tikslus, susijusius su profiliavimu, atidarę';
 		$default_txt['lt_LT']['iab_bannertext_2_link'] = 'reklamos nustatymų skydelį';
 		$default_txt['lt_LT']['iab_bannertext_2_b'] = ', o sutikimą galite bet kada atšaukti spustelėdami „Tvarkyti sutikimą“ puslapio apačioje.';
+		$default_txt['lt_LT']['iab_bannertext_2_c'] = 'Jūsų pasirinkimai taikomi tik šiai svetainei.';
 		$default_txt['lt_LT']['iab_bannertext_3'] = 'Kai kurių galimų reklamos leidimų sąrašas';
 		$default_txt['lt_LT']['iab_bannertext_4_a'] = 'Galite peržiūrėti: mūsų';
 		$default_txt['lt_LT']['iab_bannertext_4_b'] = 'reklamos partnerių sąrašą';
@@ -1500,6 +1522,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['iab_bannertext_2_a'] = 'Jūs vienmēr varat izvēlēties konkrētus nolūkus, kas saistīti ar profilēšanu, atverot';
 		$default_txt['lv_LV']['iab_bannertext_2_link'] = 'reklāmas iestatījumu paneli';
 		$default_txt['lv_LV']['iab_bannertext_2_b'] = ', un jūs varat jebkurā laikā atsaukt piekrišanu, noklikšķinot uz “Pārvaldīt piekrišanu” lapas apakšā.';
+		$default_txt['lv_LV']['iab_bannertext_2_c'] = 'Jūsu izvēles attiecas tikai uz šo vietni.';
 		$default_txt['lv_LV']['iab_bannertext_3'] = 'Dažu iespējamo reklāmas atļauju saraksts';
 		$default_txt['lv_LV']['iab_bannertext_4_a'] = 'Jūs varat apskatīt: mūsu';
 		$default_txt['lv_LV']['iab_bannertext_4_b'] = 'reklāmas partneru sarakstu';
@@ -1565,6 +1588,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['iab_bannertext_2_a'] = 'Mund të zgjidhni gjithmonë qëllimet specifike që lidhen me profilizimin duke hapur';
 		$default_txt['sq_AL']['iab_bannertext_2_link'] = 'panelin e preferencave të reklamimit';
 		$default_txt['sq_AL']['iab_bannertext_2_b'] = ', dhe mund ta tërhiqni pëlqimin tuaj në çdo kohë duke klikuar “Menaxho pëlqimin” në fund të faqes.';
+		$default_txt['sq_AL']['iab_bannertext_2_c'] = 'Zgjedhjet tuaja vlejnë vetëm për këtë faqe interneti.';
 		$default_txt['sq_AL']['iab_bannertext_3'] = 'Lista e disa lejeve të mundshme për reklamim';
 		$default_txt['sq_AL']['iab_bannertext_4_a'] = 'Mund të konsultoni: listën tonë të';
 		$default_txt['sq_AL']['iab_bannertext_4_b'] = 'partnerëve të reklamimit';
@@ -1631,6 +1655,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['az']['iab_bannertext_2_a'] = 'profilləşdirmə ilə bağlı konkret məqsədləri istənilən vaxt';
 		$default_txt['az']['iab_bannertext_2_link'] = 'reklam seçimləri panelinə';
 		$default_txt['az']['iab_bannertext_2_b'] = ' daxil olaraq seçə bilərsiniz və səhifənin aşağı hissəsindəki "Razılığı idarə et" düyməsinə klikləməklə razılığınızı istənilən vaxt geri götürə bilərsiniz.';
+		$default_txt['az']['iab_bannertext_2_c'] = 'Seçimləriniz yalnız bu sayt üçün keçərlidir.';
 		$default_txt['az']['iab_bannertext_3'] = 'Bəzi mümkün reklam icazələrinin siyahısı';
 		$default_txt['az']['iab_bannertext_4_a'] = 'Baxın: bizim';
 		$default_txt['az']['iab_bannertext_4_b'] = 'reklam tərəfdaşlarımızın siyahısı';
@@ -1696,6 +1721,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['iab_bannertext_2_a'] = 'Uvijek možete odabrati specifične svrhe povezane s profilisanjem pristupom';
 		$default_txt['bs_BA']['iab_bannertext_2_link'] = 'panelu postavki oglašavanja';
 		$default_txt['bs_BA']['iab_bannertext_2_b'] = ', a saglasnost možete povući u bilo kojem trenutku klikom na "Upravljaj saglasnošću" na dnu stranice.';
+		$default_txt['bs_BA']['iab_bannertext_2_c'] = 'Vaši izbori vrijede samo za ovu web-stranicu.';
 		$default_txt['bs_BA']['iab_bannertext_3'] = 'Lista nekih mogućih dozvola za oglašavanje';
 		$default_txt['bs_BA']['iab_bannertext_4_a'] = 'Možete pogledati: našu listu';
 		$default_txt['bs_BA']['iab_bannertext_4_b'] = 'oglasnih partnera';
@@ -1761,6 +1787,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['iab_bannertext_2_a'] = 'Винаги можете да изберете конкретните цели, свързани с профилиране, като отворите';
 		$default_txt['bg_BG']['iab_bannertext_2_link'] = 'панела за настройки на рекламите';
 		$default_txt['bg_BG']['iab_bannertext_2_b'] = ', и можете да оттеглите съгласието си по всяко време, като кликнете върху „Управление на съгласието“ в долната част на страницата.';
+		$default_txt['bg_BG']['iab_bannertext_2_c'] = 'Вашите избори важат само за този сайт.';
 		$default_txt['bg_BG']['iab_bannertext_3'] = 'Списък на някои възможни разрешения за рекламиране';
 		$default_txt['bg_BG']['iab_bannertext_4_a'] = 'Можете да прегледате: нашия списък с';
 		$default_txt['bg_BG']['iab_bannertext_4_b'] = 'рекламни партньори';
@@ -1826,6 +1853,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ca']['iab_bannertext_2_a'] = 'Sempre podeu triar les finalitats específiques relacionades amb el perfilatge accedint al';
 		$default_txt['ca']['iab_bannertext_2_link'] = 'panell de preferències de publicitat';
 		$default_txt['ca']['iab_bannertext_2_b'] = ', i podeu retirar el vostre consentiment en qualsevol moment fent clic a "Gestionar el consentiment" a la part inferior de la pàgina.';
+		$default_txt['ca']['iab_bannertext_2_c'] = 'Les vostres decisions s\'apliquen únicament a aquest lloc web.';
 		$default_txt['ca']['iab_bannertext_3'] = 'Llista d\'alguns permisos publicitaris possibles';
 		$default_txt['ca']['iab_bannertext_4_a'] = 'Podeu consultar: la nostra llista de';
 		$default_txt['ca']['iab_bannertext_4_b'] = 'socis publicitaris';
@@ -1891,6 +1919,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['iab_bannertext_2_a'] = 'Saate alati valida profiilimisega seotud konkreetsed eesmärgid, avades';
 		$default_txt['et']['iab_bannertext_2_link'] = 'reklaamieelistuste paneeli';
 		$default_txt['et']['iab_bannertext_2_b'] = ', ning saate oma nõusoleku igal ajal tagasi võtta, klõpsates lehe allosas „Halda nõusolekut“.';
+		$default_txt['et']['iab_bannertext_2_c'] = 'Teie valikud kehtivad ainult selle veebisaidi kohta.';
 		$default_txt['et']['iab_bannertext_3'] = 'Mõnede võimalike reklaamilubade loetelu';
 		$default_txt['et']['iab_bannertext_4_a'] = 'Saate vaadata: meie';
 		$default_txt['et']['iab_bannertext_4_b'] = 'reklaamipartnerite nimekirja';
@@ -1899,12 +1928,12 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['vat_id'] = 'KMKR nr';
 		$default_txt['et']['google_recaptcha_content_notification_a'] = 'Teie küpsisevalikud ei pruugi lubada vormi esitamist. Saate oma valikuid üle vaadata,';
 		$default_txt['et']['google_recaptcha_content_notification_b'] = 'klõpsates siin';
-		$default_txt['et']['anchor_text_1'] = 'Privacy – My Agile Privacy®';
-		$default_txt['et']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management – My Agile Privacy®';
-		$default_txt['et']['anchor_text_3'] = 'Cookie Banner ja Consent Management – My Agile Privacy®';
-		$default_txt['et']['anchor_text_4'] = 'GDPR Cookie Banner – My Agile Privacy®';
-		$default_txt['et']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy – My Agile Privacy®';
-		$default_txt['et']['anchor_text_6'] = 'CMP ja Cookie Banner – My Agile Privacy®';
+		$default_txt['et']['anchor_text_1'] = 'Privacy - My Agile Privacy®';
+		$default_txt['et']['anchor_text_2'] = 'Consent Management Platform ja Privacy Management - My Agile Privacy®';
+		$default_txt['et']['anchor_text_3'] = 'Cookie Banner ja Consent Management - My Agile Privacy®';
+		$default_txt['et']['anchor_text_4'] = 'GDPR Cookie Banner - My Agile Privacy®';
+		$default_txt['et']['anchor_text_5'] = 'Cookie Consent ja Privacy Policy - My Agile Privacy®';
+		$default_txt['et']['anchor_text_6'] = 'CMP ja Cookie Banner - My Agile Privacy®';
 		$default_txt['et']['cookie_iab_title'] = 'IAB TCF nõusoleku haldamine';
 		$default_txt['et']['cookie_iab_desc'] = 'See veebisait ühineb IAB Europe Transparency and Consent Framework (TCF) süsteemiga. Süsteemiga ühinedes saavad IAB Europe Global Vendor List-is registreeritud tarnijad paigaldada tehnilisi ja kolmandate osapoolte küpsiseid, lähtudes kasutaja väljendatud eelistustest. Aktiivsete tarnijate täielik loend ja nõusoleku haldamine on igal ajal kättesaadavad My Agile Privacy eelistuste paneeli kaudu.';
 
@@ -1956,6 +1985,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['iab_bannertext_2_a'] = 'Секогаш можете да ги изберете конкретните цели поврзани со профилирање со пристап до';
 		$default_txt['mk_MK']['iab_bannertext_2_link'] = 'панелот за преференции за рекламирање';
 		$default_txt['mk_MK']['iab_bannertext_2_b'] = ', и можете да ја повлечете вашата согласност во секое време со клик на „Управување со согласноста“ на дното од страницата.';
+		$default_txt['mk_MK']['iab_bannertext_2_c'] = 'Вашите избори важат само за оваа веб-страница.';
 		$default_txt['mk_MK']['iab_bannertext_3'] = 'Листа на некои можни дозволи за рекламирање';
 		$default_txt['mk_MK']['iab_bannertext_4_a'] = 'Можете да погледнете: нашата листа на';
 		$default_txt['mk_MK']['iab_bannertext_4_b'] = 'рекламни партнери';
@@ -2021,6 +2051,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['iab_bannertext_2_a'] = 'Увек можете изабрати конкретне сврхе повезане са профилисањем тако што ћете приступити';
 		$default_txt['sr_RS']['iab_bannertext_2_link'] = 'панелу подешавања оглашавања';
 		$default_txt['sr_RS']['iab_bannertext_2_b'] = ', а сагласност можете повући у било ком тренутку кликом на „Управљајте сагласношћу“ на дну странице.';
+		$default_txt['sr_RS']['iab_bannertext_2_c'] = 'Ваши избори важе само за овај сајт.';
 		$default_txt['sr_RS']['iab_bannertext_3'] = 'Списак неких могућих дозвола за оглашавање';
 		$default_txt['sr_RS']['iab_bannertext_4_a'] = 'Можете погледати: нашу листу';
 		$default_txt['sr_RS']['iab_bannertext_4_b'] = 'рекламних партнера';
@@ -2086,6 +2117,7 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['uk']['iab_bannertext_2_a'] = 'Ви завжди можете вибрати конкретні цілі, пов’язані з профілюванням, відкривши';
 		$default_txt['uk']['iab_bannertext_2_link'] = 'панель налаштувань реклами';
 		$default_txt['uk']['iab_bannertext_2_b'] = ', і ви можете відкликати свою згоду в будь-який час, натиснувши «Керувати згодою» внизу сторінки.';
+		$default_txt['uk']['iab_bannertext_2_c'] = 'Ваш вибір діє лише для цього сайту.';
 		$default_txt['uk']['iab_bannertext_3'] = 'Список деяких можливих рекламних дозволів';
 		$default_txt['uk']['iab_bannertext_4_a'] = 'Ви можете переглянути: наш список';
 		$default_txt['uk']['iab_bannertext_4_b'] = 'рекламних партнерів';

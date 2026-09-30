@@ -68,9 +68,9 @@ $locale = MyAgilePrivacy::get_locale();
 			</div>
 
 			<div class="row mb-4">
-				<label for="enable_iab_tcf_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Activate IAB TCF', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -86,11 +86,7 @@ $locale = MyAgilePrivacy::get_locale();
 								<?php checked( $the_settings['enable_iab_tcf'], true ); ?>
 								data-preview="iab">
 
-							<label for="enable_iab_tcf_field" class="me-2 label-checkbox"></label>
-
-							<label for="enable_iab_tcf_field">
-								<?php echo wp_kses_post( __( 'Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on my website and I would to activate the IAB Transparency and Consent Framework', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="enable_iab_tcf_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, enable. I run Google Adsense, Ad Manager, AdMob or similar platforms on my website and I would to activate the IAB Transparency and Consent Framework', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -99,9 +95,9 @@ $locale = MyAgilePrivacy::get_locale();
 
 			<div class="map_acm_wrapper displayNone">
 			<div class="row mb-4">
-				<label for="iab_enable_advertiser_consent_mode_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Advertiser Consent Mode', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -116,11 +112,7 @@ $locale = MyAgilePrivacy::get_locale();
 								id="iab_enable_advertiser_consent_mode_field"
 								<?php checked( $the_settings['iab_enable_advertiser_consent_mode'], true ); ?>>
 
-							<label for="iab_enable_advertiser_consent_mode_field" class="me-2 label-checkbox"></label>
-
-							<label for="iab_enable_advertiser_consent_mode_field">
-								<?php echo wp_kses_post( __( 'Enable', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="iab_enable_advertiser_consent_mode_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -144,9 +136,9 @@ $locale = MyAgilePrivacy::get_locale();
 
 			<!-- widget review consent show -->
 			<div class="row mb-4">
-				<label for="showagain_tab_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable revisit consent widget', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -163,11 +155,7 @@ $locale = MyAgilePrivacy::get_locale();
 								data-hide-show-ref="showagain_tab"
 								<?php checked( $the_settings['showagain_tab'], true ); ?>>
 
-							<label for="showagain_tab_field" class="me-2 label-checkbox"></label>
-
-							<label for="showagain_tab_field">
-								<?php echo wp_kses_post( __( 'Enable revisit consent widget', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="showagain_tab_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable revisit consent widget', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -205,7 +193,7 @@ $locale = MyAgilePrivacy::get_locale();
 																		'selected' => false ),
 						);
 
-						$selected_value = $the_settings['notify_position_horizontal'];
+						$selected_value = is_string( $the_settings['notify_position_horizontal'] ) ? $the_settings['notify_position_horizontal'] : '';
 
 						if( isset( $valid_options[ $selected_value ] ) )
 						{
@@ -244,12 +232,12 @@ $locale = MyAgilePrivacy::get_locale();
 					$consent_widget_style = isset( $the_settings['consent_widget_style'] ) ? $the_settings['consent_widget_style'] : 'text_and_logo';
 				?>
 				<div class="row mb-4">
-					<label class="col-sm-5 col-form-label">
+					<span id="consent_widget_style_caption" class="col-sm-5 col-form-label">
 						<?php echo wp_kses_post( __( 'Widget Style', 'MAP_txt' ) ); ?>
-					</label>
+					</span>
 
 					<div class="col-sm-7">
-						<div class="styled_radio d-inline-flex">
+						<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="consent_widget_style_caption">
 
 							<div class="round d-flex me-4 mb-2">
 								<input
@@ -261,10 +249,7 @@ $locale = MyAgilePrivacy::get_locale();
 									data-hide-show-ref="consent_widget_has_text"
 									data-meaning="1"
 									<?php checked( $consent_widget_style, 'text_and_logo' ); ?> />
-								<label for="consent_widget_style_field_text_and_logo" class="me-2 label-radio"></label>
-								<label for="consent_widget_style_field_text_and_logo">
-									<?php echo wp_kses_post( __( 'Show text and logo', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="consent_widget_style_field_text_and_logo" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Show text and logo', 'MAP_txt' ) ); ?></label>
 							</div>
 
 							<div class="round d-flex me-4 mb-2">
@@ -277,10 +262,7 @@ $locale = MyAgilePrivacy::get_locale();
 									data-hide-show-ref="consent_widget_has_text"
 									data-meaning="1"
 									<?php checked( $consent_widget_style, 'text_only' ); ?> />
-								<label for="consent_widget_style_field_text_only" class="me-2 label-radio"></label>
-								<label for="consent_widget_style_field_text_only">
-									<?php echo wp_kses_post( __( 'Show text only', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="consent_widget_style_field_text_only" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Show text only', 'MAP_txt' ) ); ?></label>
 							</div>
 
 							<div class="round d-flex me-4 mb-2">
@@ -293,10 +275,7 @@ $locale = MyAgilePrivacy::get_locale();
 									data-hide-show-ref="consent_widget_has_text"
 									data-meaning="0"
 									<?php checked( $consent_widget_style, 'logo_only' ); ?> />
-								<label for="consent_widget_style_field_logo_only" class="me-2 label-radio"></label>
-								<label for="consent_widget_style_field_logo_only">
-									<?php echo wp_kses_post( __( 'Show logo only', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="consent_widget_style_field_logo_only" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Show logo only', 'MAP_txt' ) ); ?></label>
 							</div>
 
 						</div> <!-- ./ styled_radio -->
@@ -313,7 +292,7 @@ $locale = MyAgilePrivacy::get_locale();
 					<div class="row mb-4">
 						<label for="showagain_text" class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Title for show again policy', 'MAP_txt' ) ); ?>
-							<a href="<?php echo esc_url( $translation_menu_link ); ?>"><i class="fa-regular fa-comment-pen" data-bs-toggle="tooltip" data-bs-html="true" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"></i></a>
+							<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
 						</label>
 
 						<div class="col-sm-7">
@@ -330,9 +309,9 @@ $locale = MyAgilePrivacy::get_locale();
 
 					<!-- widget show cookie policy link -->
 					<div class="row mb-4">
-						<label for="cookie_policy_link_field" class="col-sm-5 col-form-label">
+						<span class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
-						</label>
+						</span>
 
 						<div class="col-sm-7">
 							<div class="styled_radio d-inline-flex">
@@ -347,11 +326,7 @@ $locale = MyAgilePrivacy::get_locale();
 										id="cookie_policy_link_field"
 										<?php checked( $the_settings['cookie_policy_link'], true ); ?>>
 
-									<label for="cookie_policy_link_field" class="me-2 label-checkbox"></label>
-
-									<label for="cookie_policy_link_field">
-										<?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?>
-									</label>
+									<label for="cookie_policy_link_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Show Cookie Policy link', 'MAP_txt' ) ); ?></label>
 
 								</div>
 							</div> <!-- ./ styled_radio -->
@@ -380,9 +355,9 @@ $locale = MyAgilePrivacy::get_locale();
 
 			<!-- reset consent checkbox -->
 			<div class="row mb-4">
-				<label for="reset_consent" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Reset given consent', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -395,11 +370,7 @@ $locale = MyAgilePrivacy::get_locale();
 								value="1"
 								id="reset_consent">
 
-							<label for="reset_consent" class="me-2 label-checkbox"></label>
-
-							<label for="reset_consent">
-								<?php echo wp_kses_post( __( 'Do reset given consent', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="reset_consent" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Do reset given consent', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -417,7 +388,6 @@ $locale = MyAgilePrivacy::get_locale();
 
 	<div class="col-sm-4">
 		<?php
-			$tab = 'consent_widget';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

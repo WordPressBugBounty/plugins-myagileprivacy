@@ -15,7 +15,7 @@ if( $locale && $locale == 'it_IT' )
 	$buyLink = 'https://www.myagileprivacy.com/';
 }
 
-$map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 );
+$map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && MyAgilePrivacy::looseEqualsPhp8( $rconfig['lc_hide_local'], 1 ) );
 
 $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper' && ( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ) && !$map_lc_hide_local );
 
@@ -36,11 +36,34 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 				type="text"
 				id="license_user_status_field"
 				name="license_user_status_field"
-				value="<?php echo esc_attr( stripslashes( $the_settings['license_user_status'] ) ); ?>" class="form-control <?php if( $the_settings['license_valid'] && !$the_settings['grace_period'] ) echo esc_attr( 'success_style' ); else echo esc_attr( 'warning_style' );  ?>"/>
+				value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['license_user_status'] ) ? (string) $the_settings['license_user_status'] : '' ) ); ?>" class="form-control <?php if( $the_settings['license_valid'] && !$the_settings['grace_period'] ) echo esc_attr( 'success_style' ); else echo esc_attr( 'warning_style' );  ?>"/>
 
 			<div class="form-text">
 				<?php
 					echo wp_kses_post( __( "The status of your license", 'MAP_txt' ) );
+				?>.
+			</div>
+
+		</div>
+	</div> <!-- row -->
+
+	<div class="row mb-4 license_name_wrapper <?php if( !$the_settings['license_name'] ) echo esc_attr( 'd-none' ); ?>">
+		<label for="license_name_field" class="col-sm-5 col-form-label">
+			<?php echo wp_kses_post( __( 'Your license', 'MAP_txt' ) ); ?>
+		</label>
+
+		<div class="col-sm-7">
+
+			<input
+				disabled
+				type="text"
+				id="license_name_field"
+				aria-describedby="license_name_field_help"
+				value="<?php echo esc_attr( $the_settings['license_name'] ); ?>" class="form-control license_name_style"/>
+
+			<div class="form-text" id="license_name_field_help">
+				<?php
+					echo wp_kses_post( __( 'The name of your license plan', 'MAP_txt' ) );
 				?>.
 			</div>
 
@@ -52,7 +75,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 
 <div class="license_code_extra_wrapper <?php if( $map_dont_ask_block && $the_settings['dont_ask_license_code'] ) echo 'displayNone'; ?>">
 
-	<div class="license_code_wrapper <?php if( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 ) echo 'd-none'; ?>">
+	<div class="license_code_wrapper <?php if( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && MyAgilePrivacy::looseEqualsPhp8( $rconfig['lc_hide_local'], 1 ) ) echo 'd-none'; ?>">
 
 		<!-- chiave di licenza -->
 		<div class="row mb-4">
@@ -62,14 +85,14 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 
 			<div class="col-sm-7">
 
-				<?php $map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 ); ?>
+				<?php $map_lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && MyAgilePrivacy::looseEqualsPhp8( $rconfig['lc_hide_local'], 1 ) ); ?>
 				<input
 					type="text"
 					class="form-control"
 					id="license_code_field"
 					name="license_code_field"
 					<?php if( $map_lc_hide_local ) echo 'disabled'; ?>
-					value="<?php echo $map_lc_hide_local ? '' : esc_attr( stripslashes( $the_settings['license_code'] ) ); ?>" />
+					value="<?php echo $map_lc_hide_local ? '' : esc_attr( stripslashes( is_scalar( $the_settings['license_code'] ) ? (string) $the_settings['license_code'] : '' ) ); ?>" />
 
 				<?php if( isset( $caller ) && $caller === 'dashboardOptionsWrapper' ) : ?>
 
@@ -121,7 +144,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 						type="text"
 						id="customer_email_field"
 						name="customer_email_field"
-						value="<?php echo esc_attr( stripslashes( $the_settings['customer_email'] ) );  ?>" />
+						value="<?php echo esc_attr( stripslashes( is_scalar( $the_settings['customer_email'] ) ? (string) $the_settings['customer_email'] : '' ) );  ?>" />
 
 					<div class="form-text">
 						<?php
@@ -139,24 +162,24 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 				</label>
 
 				<div class="col-sm-7">
-					<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr( stripslashes( $the_settings['summary_text'] ) ); ?></textarea>
+					<textarea disabled class="form-control" id="summary_text_field" name="summary_text_field"><?php echo esc_attr( stripslashes( is_scalar( $the_settings['summary_text'] ) ? (string) $the_settings['summary_text'] : '' ) ); ?></textarea>
 				</div>
 			</div> <!-- row -->
 
 		</div>
 	</div>
 
-	<div class="hide_code_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1) ) echo 'd-none'; ?>">
+	<div class="hide_code_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && MyAgilePrivacy::looseEqualsPhp8( $rconfig['lc_hide_local'], 1 ) ) ) echo 'd-none'; ?>">
 
 		<div class="row mb-4">
-			<label for="license_code_field" class="col-sm-5 col-form-label">
+			<span class="col-sm-5 col-form-label">
 				<?php echo wp_kses_post( __( 'Reseller info', 'MAP_txt' ) ); ?>:
-			</label>
+			</span>
 
 			<div class="col-sm-7">
 
 				<h6>
-					<?php echo wp_kses_post( __( 'Your license key is provided by', 'MAP_txt' ) ); ?> <span class="lc_owner_description"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_description'] ) ) echo esc_html( $rconfig['lc_owner_description'] ); ?></span> .
+					<?php echo wp_kses_post( __( 'Your license key is provided by', 'MAP_txt' ) ); ?> <span class="lc_owner_description"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_description'] ) && is_string( $rconfig['lc_owner_description'] ) ) echo esc_html( $rconfig['lc_owner_description'] ); ?></span> .
 				</h6>
 
 				<div class="my-3">
@@ -165,12 +188,12 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 					</strong>
 					<br>
 
-					<span class="d-block lc_owner_website_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) ) echo 'd-none'; ?>">
-						<?php echo wp_kses_post( __( 'Reseller Website:', 'MAP_txt' ) ); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_url( $rconfig['lc_owner_website'] ).'">'.esc_html( $rconfig['lc_owner_website'] ).'</a>'; ?></span>
+					<span class="d-block lc_owner_website_wrapper <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) && is_string( $rconfig['lc_owner_website'] ) ) ) echo 'd-none'; ?>">
+						<?php echo wp_kses_post( __( 'Reseller Website:', 'MAP_txt' ) ); ?> <span class="lc_owner_website"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) && is_string( $rconfig['lc_owner_website'] ) ) echo '<a target="blank" href="'.esc_url( $rconfig['lc_owner_website'] ).'">'.esc_html( $rconfig['lc_owner_website'] ).'</a>'; ?></span>
 					</span>
 
-					<span class="d-block lc_owner_email_wrapper  <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) ) echo 'd-none'; ?>">
-						<?php echo wp_kses_post( __( 'Reseller Mail:', 'MAP_txt' ) ); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) echo  '<a href="'.esc_attr( 'mailto:'.sanitize_email( $rconfig['lc_owner_email'] ) ).'">'.esc_html( $rconfig['lc_owner_email'] ).'</a>'; ?></span>
+					<span class="d-block lc_owner_email_wrapper  <?php if( !( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) && is_string( $rconfig['lc_owner_email'] ) ) ) echo 'd-none'; ?>">
+						<?php echo wp_kses_post( __( 'Reseller Mail:', 'MAP_txt' ) ); ?> <span class="lc_owner_email"><?php if( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) && is_string( $rconfig['lc_owner_email'] ) ) echo  '<a href="'.esc_attr( 'mailto:'.sanitize_email( $rconfig['lc_owner_email'] ) ).'">'.esc_html( $rconfig['lc_owner_email'] ).'</a>'; ?></span>
 					</span>
 				</div>
 
@@ -188,9 +211,9 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 
 	<div class="row mb-4">
 
-		<label for="dont_ask_license_code_field" class="col-sm-5 col-form-label">
+		<span class="col-sm-5 col-form-label">
 			<?php echo wp_kses_post( __( 'Don\'t you have a license key?', 'MAP_txt' ) ); ?>
-		</label>
+		</span>
 
 		<div class="col-sm-7">
 			<div class="styled_radio d-inline-flex">
@@ -207,10 +230,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 						id="dont_ask_license_code_field"
 						<?php checked( $the_settings['dont_ask_license_code'], true ); ?>>
 
-					<label for="dont_ask_license_code_field" class="me-2 label-checkbox"></label>
-					<label for="dont_ask_license_code_field">
-						<?php echo esc_html__( 'I don\'t have a license key yet', 'MAP_txt' ); ?>
-					</label>
+					<label for="dont_ask_license_code_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html__( 'I don\'t have a license key yet', 'MAP_txt' ); ?></label>
 				</div>
 			</div> <!-- ./ styled_radio -->
 
@@ -252,7 +272,7 @@ $map_dont_ask_block = ( isset( $caller ) && $caller === 'dashboardOptionsWrapper
 				type="text"
 				id="last_sync_field"
 				name="last_sync_field"
-				value="<?php if( $the_settings['last_sync'] ) echo esc_attr( stripslashes( $the_settings['last_sync'] ) ); else echo ''; ?>"/>
+				value="<?php $map_scan_runtime = MyAgilePrivacy::get_scan_runtime(); if( $map_scan_runtime['last_sync'] ) echo esc_attr( stripslashes( is_scalar( $map_scan_runtime['last_sync'] ) ? (string) $map_scan_runtime['last_sync'] : '' ) ); else echo ''; ?>"/>
 
 			<div class="form-text">
 				<?php

@@ -40,7 +40,7 @@
 
 
 /* ============================================================
-   3. NOTIFICATION AREA — BASE LAYOUT
+   3. NOTIFICATION AREA - BASE LAYOUT
    ============================================================ */
 
 #my-agile-privacy-notification-area,
@@ -81,7 +81,7 @@
 
 
 /* ============================================================
-   4. NOTIFICATION AREA — TITLE BAR
+   4. NOTIFICATION AREA - TITLE BAR
    ============================================================ */
 
 #my-agile-privacy-notification-area .map_notify_title {
@@ -110,7 +110,7 @@
 
 
 /* ============================================================
-   5. NOTIFICATION AREA — MESSAGE AREA
+   5. NOTIFICATION AREA - MESSAGE AREA
    ============================================================ */
 
 #my-agile-privacy-notification-area .map-area-container .map_notification-message {
@@ -155,7 +155,7 @@
 
 
 /* ============================================================
-   6. NOTIFICATION AREA — BANNER DIMENSIONS
+   6. NOTIFICATION AREA - BANNER DIMENSIONS
    ============================================================ */
 
 #my-agile-privacy-notification-area.mapSizeWide {
@@ -172,7 +172,7 @@
 
 
 /* ============================================================
-   7. NOTIFICATION AREA — BANNER POSITIONING
+   7. NOTIFICATION AREA - BANNER POSITIONING
    ============================================================ */
 
 #my-agile-privacy-notification-area.mapPositionTopLeft {
@@ -247,7 +247,7 @@
 
 
 /* ============================================================
-   8. NOTIFICATION AREA — FLOATING BANNER OFFSETS
+   8. NOTIFICATION AREA - FLOATING BANNER OFFSETS
    ============================================================ */
 
 #my-agile-privacy-notification-area.mapPositionTopLeft.map_floating_banner,
@@ -280,7 +280,7 @@
 
 
 /* ============================================================
-   9. NOTIFICATION AREA — BUTTONS
+   9. NOTIFICATION AREA - BUTTONS
    ============================================================ */
 
 #my-agile-privacy-notification-area .map_notification_container a {
@@ -299,7 +299,7 @@
     -webkit-filter: brightness(95%);
 }
 
-/* Wide layout — buttons inline */
+/* Wide layout - buttons inline */
 #my-agile-privacy-notification-area.mapSizeWide .map_notification_container {
     margin-top: 20px;
 }
@@ -313,7 +313,7 @@
     margin-right: 0;
 }
 
-/* Wide layout — buttons aside */
+/* Wide layout - buttons aside */
 #my-agile-privacy-notification-area.mapSizeWide.mapButtonsAside .map-area-container {
     display: flex;
     flex-direction: row;
@@ -417,7 +417,7 @@
 
 
 /* ============================================================
-   10. NOTIFICATION AREA — LINKS & MISC
+   10. NOTIFICATION AREA - LINKS & MISC
    ============================================================ */
 
 #my-agile-privacy-notification-area .map-triggerGotoIABTCF,
@@ -463,7 +463,7 @@
 
 
 /* ============================================================
-   11. NOTIFICATION AREA — BLOCKED CONTENT BAR
+   11. NOTIFICATION AREA - BLOCKED CONTENT BAR
    ============================================================ */
 
 #map-blocked-content-notification-area {
@@ -487,7 +487,7 @@
 
 
 /* ============================================================
-   12. NOTIFICATION AREA — BRANDED BANNER LAYOUT
+   12. NOTIFICATION AREA - BRANDED BANNER LAYOUT
    ============================================================ */
 
 #my-agile-privacy-notification-area.mapSizeWideBranded {
@@ -946,7 +946,7 @@
 
 
 /* ============================================================
-   15. MODAL — BASE STRUCTURE
+   15. MODAL - BASE STRUCTURE
    ============================================================ */
 
 .map-modal {
@@ -1066,7 +1066,7 @@
 
 
 /* ============================================================
-   16. MODAL — BACKDROP
+   16. MODAL - BACKDROP
    ============================================================ */
 
 .map-modal-backdrop {
@@ -1105,7 +1105,7 @@
 
 
 /* ============================================================
-   17. MODAL — SHOW / FADE / BLOWUP ANIMATIONS
+   17. MODAL - SHOW / FADE / BLOWUP ANIMATIONS
    ============================================================ */
 
 .map-modal.map-fade .map-modal-dialog {
@@ -1158,7 +1158,7 @@
 
 
 /* ============================================================
-   18. MODAL — FULL-SCREEN STRETCH (blowup layout fix)
+   18. MODAL - FULL-SCREEN STRETCH (blowup layout fix)
    ============================================================ */
 
 .map-modal.map-blowup.map-show {
@@ -1197,7 +1197,7 @@
 
 
 /* ============================================================
-   19. MODAL — BODY CONTENT
+   19. MODAL - BODY CONTENT
    ============================================================ */
 
 .map-modal-body .modal_credits {
@@ -1205,6 +1205,7 @@
     text-align: right;
     padding: 15px 5px 0px 5px;
     border-top: 1px solid #d6d6d6;
+    min-height: 30px;
 }
 
 .map-modal-body a {
@@ -1313,7 +1314,7 @@
     text-transform: none;
 }
 
-/* Checked state — driven by .map-slider-on class applied via JavaScript */
+/* Checked state - driven by .map-slider-on class applied via JavaScript */
 .map-switch .map-slider-on {
     background-color: #4dd06b;
 }
@@ -1354,6 +1355,8 @@ span.map-necessary-caption {
 /* ============================================================
    21. TAB SYSTEM
    ============================================================ */
+
+.my_agile_privacy_activate._raw_type_mode { display: none; }
 
 .map-tab-content {
     background: #ffffff;
@@ -1563,6 +1566,24 @@ span.map-necessary-caption {
 #mapSettingsPopup .map-wrappertab .map-vendor-description,
 #mapSettingsPopup .map-wrappertab .map-vendor-description b {
     font-size: 12px !important;
+}
+
+/* Data categories legend. Spacing is explicit: browsers give dd a 40px inline start. */
+#mapSettingsPopup #map-iab-data-categories dl {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+#mapSettingsPopup #map-iab-data-categories dt {
+    margin: 8px 0 0 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+#mapSettingsPopup #map-iab-data-categories dd {
+    margin: 0 0 0 12px;
+    padding: 0;
 }
 
 /* Headings */
@@ -1960,6 +1981,10 @@ span.map-necessary-caption {
     #my-agile-privacy-notification-area .map-modal-cookie-policy-link {
         flex-direction: column;
         gap: 0px;
+    }
+
+    #my-agile-privacy-notification-area .map-modal-cookie-policy-link a {
+        min-height: 24px;
     }
 }
 

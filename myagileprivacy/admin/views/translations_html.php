@@ -8,15 +8,15 @@
 ?>
 
 <script type="text/javascript">
-	var map_settings_success_text = '<?php echo wp_kses_post( __( 'Settings updated.', 'MAP_txt' ) ); ?>';
-	var map_settings_warning_text ='<?php echo wp_kses_post( __( 'Settings saved successfully, but some mandatory data is missing. Please check the required fields', 'MAP_txt' ) ); ?>';
-	var map_settings_error_message_text = '<?php echo wp_kses_post( __( 'Unable to update Settings.', 'MAP_txt' ) ); ?>';
-	var map_confirm_lang_reset_text = '<?php echo wp_kses_post( __( 'Continuing will result in the loss of all customizations for this language. Are you sure you want to proceed?', 'MAP_txt' ) ); ?>';
+	var map_settings_success_text = <?php echo wp_json_encode( __( 'Settings updated.', 'MAP_txt' ) ); ?>;
+	var map_settings_warning_text = <?php echo wp_json_encode( __( 'Settings saved successfully, but some mandatory data is missing. Please check the required fields', 'MAP_txt' ) ); ?>;
+	var map_settings_error_message_text = <?php echo wp_json_encode( __( 'Unable to update Settings.', 'MAP_txt' ) ); ?>;
+	var map_confirm_lang_reset_text = <?php echo wp_json_encode( __( 'Continuing will result in the loss of all customizations for this language. Are you sure you want to proceed?', 'MAP_txt' ) ); ?>;
 </script>
 
 <div class="wrap translationsWrapper" id="my_agile_privacy_backend">
 
-	<h2>My Agile Privacy®: <?php echo wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ); ?></h2>
+	<h1>My Agile Privacy®: <?php echo wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ); ?></h1>
 
 	<form action="admin-ajax.php" method="post" id="map_user_settings_form">
 
@@ -32,7 +32,7 @@
 		<div class="mb-3 <?php if( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ){ echo 'forbiddenArea'; } ?>">
 			<button type="button" class="fake-save-button button-agile btn-md"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 			<span class="map_wait text-muted">
-				<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+				<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 			</span>
 		</div>
 
@@ -45,7 +45,7 @@
 			<div class="col-12 <?php if( !isset( $the_settings['pa'] ) || $the_settings['pa'] != 1 ){ echo 'forbiddenArea'; } ?>">
 				<button type="submit" name="update_translations_form" value="1" class="button-agile btn-md" id="map-save-button"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 				<span class="map_wait text-muted">
-					<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+					<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 				</span>
 			</div>
 		</div>

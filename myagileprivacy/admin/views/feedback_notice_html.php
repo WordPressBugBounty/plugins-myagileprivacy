@@ -22,7 +22,7 @@
 				<?php echo wp_kses_post( __( '<strong>Your 5-star review will help us make My Agile Privacy® known to more and more people</strong>. It will be an opportunity to share your opinion and tell us what you like most about our service.', 'MAP_txt' ) ); ?>
 			</p>
 			<p>
-				<a href="<?php echo( esc_attr( $review_url ) ); ?>" class="button-primary" target="_blank"><?php echo wp_kses_post( __( 'Yes, I want to share my experience', 'MAP_txt' ) ); ?></a>
+				<a href="<?php echo( esc_url( $review_url ) ); ?>" class="button-primary" target="_blank"><?php echo wp_kses_post( __( 'Yes, I want to share my experience', 'MAP_txt' ) ); ?></a>
 				<button class="button-secondary" id="map_review_later"><?php echo wp_kses_post( __( 'I will do it later', 'MAP_txt' ) ); ?></button>
 				<button class="button-secondary" id="map_review_done"><?php echo wp_kses_post( __( 'Already done!', 'MAP_txt' ) ); ?></button>
 			</p>

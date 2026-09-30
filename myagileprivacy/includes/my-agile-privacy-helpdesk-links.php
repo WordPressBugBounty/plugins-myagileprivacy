@@ -38,26 +38,35 @@ final class MAP_Helpdesk_Links
 	 */
 	private static function get_map()
 	{
+		// Italian is the site's default language and lives at the root;
+		// English is served under '/en/'.
+		$it = 'https://www.myagileprivacy.com/';
+		$en = 'https://www.myagileprivacy.com/en/';
+
 		return array(
 			'install' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-installare-myagileprivacy-sul-tuo-sito-web/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-install-myagileprivacy-on-your-website/',
+				'it' => $it . 'helpdesk/come-installare-myagileprivacy-sul-tuo-sito-web/',
+				'en' => $en . 'helpdesk/how-to-install-myagileprivacy-on-your-website/',
 			),
 			'options_guide' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/guida-alle-opzioni-di-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/my-agile-privacy-options-guide/',
+				'it' => $it . 'helpdesk/guida-alle-opzioni-di-my-agile-privacy/',
+				'en' => $en . 'helpdesk/my-agile-privacy-options-guide/',
 			),
 			'customize_banner' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-personalizzare-il-cookie-banner-di-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-customise-the-my-agile-privacy-cookie-banner/',
+				'it' => $it . 'helpdesk/come-personalizzare-il-cookie-banner-di-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-customise-the-my-agile-privacy-cookie-banner/',
+			),
+			'ab_test' => array(
+				'it' => $it . 'helpdesk/test-ab-del-banner/',
+				'en' => $en . 'helpdesk/banner-ab-test/',
 			),
 			'post_install_faq' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/domande-frequenti-post-installazione/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/post-installation-frequently-asked-questions/',
+				'it' => $it . 'helpdesk/domande-frequenti-post-installazione/',
+				'en' => $en . 'helpdesk/post-installation-frequently-asked-questions/',
 			),
 			'private_area_guide' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/guida-allutilizzo-dellarea-privata/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-private-area/',
+				'it' => $it . 'helpdesk/guida-allutilizzo-dellarea-privata/',
+				'en' => $en . 'helpdesk/guide-to-using-the-private-area/',
 			),
 			// The private area web application itself (not a guide). One domain per language.
 			'private_area_app' => array(
@@ -65,99 +74,99 @@ final class MAP_Helpdesk_Links
 				'en' => 'https://privatearea.myagileprivacy.com/',
 			),
 			'cookie_shield' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-rilevare-e-bloccare-i-cookie-automaticamente-con-il-cookie-shield/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-automatically-detect-and-block-cookies-with-cookie-shield/',
+				'it' => $it . 'helpdesk/come-rilevare-e-bloccare-i-cookie-automaticamente-con-il-cookie-shield/',
+				'en' => $en . 'helpdesk/how-to-automatically-detect-and-block-cookies-with-cookie-shield/',
 			),
 			'contact_forms' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-mettere-a-norma-gdpr-i-moduli-di-contatto/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-make-contact-forms-gdpr-compliant/',
+				'it' => $it . 'helpdesk/come-mettere-a-norma-gdpr-i-moduli-di-contatto/',
+				'en' => $en . 'helpdesk/how-to-make-contact-forms-gdpr-compliant/',
 			),
 			// The Cookie list and the Cookie edit screens.
 			'cookie_management' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-gestire-i-cookie-di-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-manage-my-agile-privacy-cookies/',
+				'it' => $it . 'helpdesk/come-gestire-i-cookie-di-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-manage-my-agile-privacy-cookies/',
 			),
 			'policy_assistant' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/guide-to-using-the-my-agile-privacy-policy-assistant/',
+				'it' => $it . 'helpdesk/guida-personalizzazione-policy-gdpr-lpd-ccpa-pipeda-lgpd-my-agile-privacy/',
+				'en' => $en . 'helpdesk/guide-to-using-the-my-agile-privacy-policy-assistant/',
 			),
 			// The Policy list and the Policy edit screens.
 			'policy_management' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-gestire-le-policy-di-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-manage-my-agile-privacy-policies/',
+				'it' => $it . 'helpdesk/come-gestire-le-policy-di-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-manage-my-agile-privacy-policies/',
 			),
 			'multilanguage' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-my-agile-privacy-per-siti-web-multi-lingue/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-my-agile-privacy-for-multi-language-websites/',
+				'it' => $it . 'helpdesk/come-configurare-my-agile-privacy-per-siti-web-multi-lingue/',
+				'en' => $en . 'helpdesk/how-to-configure-my-agile-privacy-for-multi-language-websites/',
 			),
 			'cache_wprocket' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-wp-rocket-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-wp-rocket-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-wp-rocket-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-wp-rocket-with-my-agile-privacy/',
 			),
 			'cache_siteground' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-siteground-optimizer-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-siteground-optimizer-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-siteground-optimizer-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-siteground-optimizer-with-my-agile-privacy/',
 			),
 			'cache_optimizepress' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-optimize-press-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-optimize-press-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-optimize-press-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-optimize-press-with-my-agile-privacy/',
 			),
 			'cache_w3tc' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-w3-total-cache-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-w3-total-cache-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-w3-total-cache-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-w3-total-cache-with-my-agile-privacy/',
 			),
 			'cache_speedycache' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-speedy-cache-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-speedy-cache-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-speedy-cache-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-speedy-cache-with-my-agile-privacy/',
 			),
 			'cache_litespeed' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-configurare-litespeed-cache-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-configure-litespeed-cache-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-configurare-litespeed-cache-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-configure-litespeed-cache-with-my-agile-privacy/',
 			),
 			'cache_generic' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/utilizzi-un-altro-plugin-di-cache/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/do-you-use-another-cache-plugin/',
+				'it' => $it . 'helpdesk/utilizzi-un-altro-plugin-di-cache/',
+				'en' => $en . 'helpdesk/do-you-use-another-cache-plugin/',
 			),
 			'consent_mode_v2' => array(
-				'it' => 'https://www.myagileprivacy.com/supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/supporting-consent-mode-v2-what-it-is-and-how-to-implement-it-gdpr-compliant-with-my-agile-privacy/',
+				'it' => $it . 'supporto-alla-consent-mode-v2-cose-e-come-implementarla-a-norma-gdpr-con-my-agile-privacy/',
+				'en' => $en . 'supporting-consent-mode-v2-what-it-is-and-how-to-implement-it-gdpr-compliant-with-my-agile-privacy/',
 			),
 			'microsoft_cmode' => array(
-				'it' => 'https://www.myagileprivacy.com/come-implementare-microsoft-consent-mode-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/how-to-implement-microsoft-consent-mode-with-my-agile-privacy/',
+				'it' => $it . 'come-implementare-microsoft-consent-mode-con-my-agile-privacy/',
+				'en' => $en . 'how-to-implement-microsoft-consent-mode-with-my-agile-privacy/',
 			),
 			'clarity_cmode' => array(
-				'it' => 'https://www.myagileprivacy.com/come-implementare-clarity-consent-mode-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/how-to-implement-clarity-consent-mode-with-my-agile-privacy/',
+				'it' => $it . 'come-implementare-clarity-consent-mode-con-my-agile-privacy/',
+				'en' => $en . 'how-to-implement-clarity-consent-mode-with-my-agile-privacy/',
 			),
 			'gtg' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/google-tag-gateway-e-consenso-cosa-cambia-per-i-tuoi-tag-e-cosa-fare/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/google-tag-gateway-and-consent-what-changes-for-your-tags-and-what-you-should-do/',
+				'it' => $it . 'helpdesk/google-tag-gateway-e-consenso-cosa-cambia-per-i-tuoi-tag-e-cosa-fare/',
+				'en' => $en . 'helpdesk/google-tag-gateway-and-consent-what-changes-for-your-tags-and-what-you-should-do/',
 			),
 			// Standalone page, intentionally outside /helpdesk/.
 			'third_party_cookies' => array(
-				'it' => 'https://www.myagileprivacy.com/guida-installazione-cookie-software-di-terze-parti/',
-				'en' => 'https://www.myagileprivacy.com/en/cookie-installation-guide-third-party-software/',
+				'it' => $it . 'guida-installazione-cookie-software-di-terze-parti/',
+				'en' => $en . 'cookie-installation-guide-third-party-software/',
 			),
 			'iab' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-attivare-lo-iab-tcf-con-my-agile-privacy/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-activate-the-iab-tcf-with-my-agile-privacy/',
+				'it' => $it . 'helpdesk/come-attivare-lo-iab-tcf-con-my-agile-privacy/',
+				'en' => $en . 'helpdesk/how-to-activate-the-iab-tcf-with-my-agile-privacy/',
 			),
 			'backup_restore' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/come-fare-backup-e-ripristino-dei-cookie/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/how-to-backup-and-restore-your-cookies/',
+				'it' => $it . 'helpdesk/come-fare-backup-e-ripristino-dei-cookie/',
+				'en' => $en . 'helpdesk/how-to-backup-and-restore-your-cookies/',
 			),
 			'helpdesk_index' => array(
-				'it' => 'https://www.myagileprivacy.com/helpdesk/',
-				'en' => 'https://www.myagileprivacy.com/en/helpdesk/',
+				'it' => $it . 'helpdesk/',
+				'en' => $en . 'helpdesk/',
 			),
 			'contact' => array(
-				'it' => 'https://www.myagileprivacy.com/contattaci/',
-				'en' => 'https://www.myagileprivacy.com/en/contact-us/',
+				'it' => $it . 'contattaci/',
+				'en' => $en . 'contact-us/',
 			),
 			'technical_sheet' => array(
-				'it' => 'https://www.myagileprivacy.com/scheda-e-informazioni-tecniche-myagileprivacy/',
-				'en' => 'https://www.myagileprivacy.com/en/technical-sheet/',
+				'it' => $it . 'scheda-e-informazioni-tecniche-myagileprivacy/',
+				'en' => $en . 'technical-sheet/',
 			),
 		);
 	}
@@ -290,15 +299,16 @@ if( !function_exists( 'map_render_help_fox' ) )
 
 		$url = MAP_Helpdesk_Links::get( $key, $anchor );
 		$img = plugins_url( 'admin/img/fox-profile.png', MAP_PLUGIN_FILENAME );
-		// Raw source string, escaped per context below (attribute vs text node).
-		$label = __( 'Need help? Click me.', 'MAP_txt' );
+		$greeting = __( 'Hey, I\'m "Agile" and I\'m here to help you!', 'MAP_txt' );
+		$hint     = __( 'If you want to know more about these features, just click on me.', 'MAP_txt' );
+		$label    = $greeting . ' ' . $hint;
 
 		// Placeholder guides resolve to '#': render as a same-page stub
 		// (no new tab) until the real URL lands in the map.
 		$is_external = ( 0 === strpos( $url, 'http' ) );
 
 		$html = '<a href="' . esc_url( $url ) . '" class="map-help-fox"' . ( $is_external ? ' target="_blank" rel="noopener"' : '' ) . ' aria-label="' . esc_attr( $label ) . '">'
-			. '<span class="map-help-fox-bubble">' . esc_html( $label ) . '</span>'
+			. '<span class="map-help-fox-bubble">' . esc_html( $greeting ) . '<br>' . esc_html( $hint ) . '</span>'
 			. '<img class="map-help-fox-img" src="' . esc_url( $img ) . '" alt="">'
 			. '</a>';
 

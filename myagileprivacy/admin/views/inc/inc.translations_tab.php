@@ -48,7 +48,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					$label = $lang_data['en_label'].' - '.$lang_data['label'];
 			?>
 
-					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><img src="<?php echo esc_url( plugins_url( 'admin/img/flags/' . $lang_data['2char'] . '.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="<?php echo esc_attr( $label ); ?>" class="map-lang-flag"><?php echo esc_html( $label ); ?></button>
+					<button class="nav-link<?php echo esc_attr( $active_class ); ?>" id="map-pills-<?php echo esc_attr( $lang_code ); ?>-tab" data-bs-toggle="pill" data-bs-target="#map_translations-<?php echo esc_attr( $lang_code ); ?>" type="button" role="tab"><img src="<?php echo esc_url( plugins_url( 'admin/img/flags/' . $lang_data['2char'] . '.png', MAP_PLUGIN_FILENAME ) ); ?>" alt="" class="map-lang-flag"><?php echo esc_html( $label ); ?></button>
 
 			<?php
 					$lang_count++;
@@ -132,6 +132,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_2_b" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_b]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_b'] ); ?>">
 
+							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_2_c" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_c]"
+								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_c'] ); ?>">
+
 							<input type="hidden" id="<?php echo esc_attr( $lang_code ); ?>_iab_bannertext_3" name="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_3]"
 								value="<?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_3'] ); ?>">
 
@@ -176,8 +179,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div class="text-preview">
 							<div class="browser">
 
-								<div class="preview-cookiebanner" <?php if( !$the_settings['title_is_on'] )
-									echo 'style="padding-top:20px;"' ?>>
+								<div class="preview-cookiebanner<?php if( !$the_settings['title_is_on'] )
+									echo ' map-pt-20'; ?>">
 									<?php if( $the_settings['title_is_on'] ): ?>
 										<div class="preview-title">
 											<span
@@ -200,11 +203,23 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 												<span
 												role="button" tabindex="0"
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][notify_message_v2]"
-												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span><?php if( !$iab_tcf_context && isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'] && !empty( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ) ): ?> <span
+												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['notify_message_v2'] ); ?></span>
+
+											<?php endif; ?>
+
+											<?php
+												// Same conditions used by the banner renderer for the first layer extra text.
+												if( !$iab_tcf_context &&
+													isset( $the_settings['enable_cmode_v2'] ) && $the_settings['enable_cmode_v2'] &&
+													!( isset( $the_settings['bypass_cmode_enable'] ) && $the_settings['bypass_cmode_enable'] ) &&
+													!empty( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] )
+												):
+											?>
+
+												<span
 												role="button" tabindex="0"
 												data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][cmode_v2_first_layer_notice]"
-												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ); ?></span><?php endif; ?>
-
+												data-input-type="textarea"><?php echo esc_html( $the_translations[$lang_code]['cmode_v2_first_layer_notice'] ); ?></span>
 
 											<?php endif; ?>
 
@@ -261,7 +276,11 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 												<span
 													role="button" tabindex="0"
-													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_b]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_b'] ); ?></span><br><br>
+													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_b]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_b'] ); ?></span>
+
+												<span
+													role="button" tabindex="0"
+													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][iab_bannertext_2_c]"><?php echo esc_attr( $the_translations[$lang_code]['iab_bannertext_2_c'] ); ?></span><br><br>
 
 												<span
 													role="button" tabindex="0"
@@ -310,7 +329,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 											<?php
 
-												$layer_1_button_order = $the_settings['layer_1_button_order'];
+												$layer_1_button_order = is_string( $the_settings['layer_1_button_order'] ) ? $the_settings['layer_1_button_order'] : MyAgilePrivacy::get_default_settings( 'layer_1_button_order' );
 
 												$layer_1_button_order_array = explode( '_', $layer_1_button_order );
 
@@ -369,8 +388,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									</div>
 								</div> <!-- cookie banner -->
 
-								<div class="my-agile-privacy-consent-again" style="border-radius: 15px; opacity: 1; display: block;">
-									<div class="map_logo_container" style="background-color:#f14307;"></div>
+								<div class="my-agile-privacy-consent-again">
+									<div class="map_logo_container"></div>
 									<span
 										role="button" tabindex="0"
 										data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][manage_consent]"><?php echo esc_html( $the_translations[$lang_code]['manage_consent'] ); ?></span>
@@ -384,7 +403,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								<div class="second-layer">
 									<div class="map-modal-body">
 
-										<div class="map-container-fluid map-tab-container" style="height: 603px;">
+										<div class="map-container-fluid map-tab-container">
 
 											<div class="map-privacy-overview">
 												<h4><?php echo esc_html( $the_translations[$lang_code]['privacy_settings'] ); ?></h4>
@@ -395,7 +414,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 													role="button" tabindex="0"
 													data-edit="translations[<?php echo esc_attr( $lang_code ); ?>][this_website_uses_cookies]"><?php echo esc_attr( $the_translations[$lang_code]['this_website_uses_cookies'] ); ?></span>
 											</p>
-											<div class="map-cookielist-overflow-container" style="max-height: 307px;">
+											<div class="map-cookielist-overflow-container">
 
 												<div class="map-consent-extrawrapper">
 													<?php if( $iab_tcf_context ): ?>
@@ -423,7 +442,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 												</div>
 
-												<div class="mt-3 d-flex flex-row-reverse"><img src="<?php echo esc_attr( plugin_dir_url(__DIR__) ); ?>../img/privacy-by-pro.png" style="max-width: 300px"></div>
+												<div class="mt-3 d-flex flex-row-reverse"><img src="<?php echo esc_attr( plugin_dir_url(__DIR__) ); ?>../img/privacy-by-pro.png" alt="<?php echo esc_attr( sprintf( __( 'Privacy by %s', 'MAP_txt' ), 'My Agile Privacy' ) . ' - ' . sprintf( __( '%s certified CMP partner', 'MAP_txt' ), 'Google' ) ); ?>" class="map-preview-credits"></div>
 
 											</div> <!-- overflow-cookielist-container -->
 
@@ -456,7 +475,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 	<div class="modal-content">
 	  <div class="modal-header">
 		<h5 class="modal-title" id="editModalLabel"> <?php echo wp_kses_post( __( "Modify text", 'MAP_txt' ) ); ?></h5>
-		<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo esc_attr__( 'Close', 'MAP_txt' ); ?>"></button>
 	  </div>
 	  <div class="modal-body">
 	  </div>

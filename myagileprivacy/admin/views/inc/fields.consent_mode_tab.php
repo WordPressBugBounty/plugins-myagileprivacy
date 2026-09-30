@@ -50,9 +50,9 @@ if( isset( $the_settings['pa'] ) &&
 			<?php if( $caller == 'genericOptionsWrapper') : ?>
 
 				<div class="row mb-4">
-					<label for="bypass_cmode_enable_field" class="col-sm-5 col-form-label">
+					<span class="col-sm-5 col-form-label">
 						<?php echo esc_html__('Consent Mode v2 Ignore', 'MAP_txt'); ?>
-					</label>
+					</span>
 
 					<div class="col-sm-7">
 						<div class="styled_radio d-inline-flex">
@@ -67,17 +67,15 @@ if( isset( $the_settings['pa'] ) &&
 									type="checkbox"
 									value="true"
 									id="bypass_cmode_enable_field"
+									aria-describedby="bypass_cmode_enable_help"
 									<?php checked( $the_settings['bypass_cmode_enable'], true ); ?>>
 
-								<label for="bypass_cmode_enable_field" class="me-2 label-checkbox"></label>
-								<label for="bypass_cmode_enable_field">
-									<?php echo esc_html__('I do not use Google products and I do not need Consent Mode v2', 'MAP_txt'); ?>
-								</label>
+								<label for="bypass_cmode_enable_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html__('I do not use Google services that require Consent Mode v2 (e.g. Analytics, Ads, Tag Manager)', 'MAP_txt'); ?></label>
 							</div>
 						</div> <!-- ./ styled_radio -->
 
-						<div class="form-text">
-							<?php echo wp_kses_post( __( 'Hides the Consent Mode options and stops the related reminders. Enable only if the site uses no Google service (Analytics, Ads, Maps, reCAPTCHA...).', 'MAP_txt' ) ); ?>
+						<div class="form-text" id="bypass_cmode_enable_help">
+							<?php echo wp_kses_post( __( 'Hides the Consent Mode options and stops the related reminders. Enable it if the site does not use Google Analytics, Google Ads or Google Tag Manager.', 'MAP_txt' ) ); ?>
 						</div>
 
 					</div> <!-- /.col-sm-6 -->
@@ -96,9 +94,9 @@ if( isset( $the_settings['pa'] ) &&
 
 					<!-- widget review consent show -->
 					<div class="row mb-4">
-						<label for="enable_cmode_v2_field" class="col-sm-5 col-form-label">
+						<span class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Enable Google Consent Mode v2', 'MAP_txt' ) ); ?>
-						</label>
+						</span>
 
 						<div class="col-sm-7">
 							<div class="styled_radio d-inline-flex">
@@ -115,10 +113,7 @@ if( isset( $the_settings['pa'] ) &&
 										data-hide-show-ref="enable_cmode_v2_options"
 										<?php checked( $the_settings['enable_cmode_v2'], true ); ?>>
 
-									<label for="enable_cmode_v2_field" class="me-2 label-checkbox"></label>
-									<label for="enable_cmode_v2_field">
-										<?php echo esc_html__( 'Enable Google Consent Mode v2', 'MAP_txt' ); ?>
-									</label>
+									<label for="enable_cmode_v2_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html__( 'Enable Google Consent Mode v2', 'MAP_txt' ); ?></label>
 								</div>
 							</div> <!-- ./ styled_radio -->
 
@@ -137,9 +132,8 @@ if( isset( $the_settings['pa'] ) &&
 								<select
 									id="cmode_v2_implementation_type_field"
 									name="cmode_v2_implementation_type_field"
-									class="hideShowInput form-control"
-									data-hide-show-ref="cmode_v2_implementation_type_options"
-									style="max-width:100%;">
+									class="hideShowInput form-control map-mw-100"
+									data-hide-show-ref="cmode_v2_implementation_type_options">
 									<?php
 
 										$valid_options = array(
@@ -149,7 +143,7 @@ if( isset( $the_settings['pa'] ) &&
 																					'selected' => false ),
 										);
 
-										$selected_value = $the_settings['cmode_v2_implementation_type'];
+										$selected_value = is_string( $the_settings['cmode_v2_implementation_type'] ) ? $the_settings['cmode_v2_implementation_type'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -190,12 +184,12 @@ if( isset( $the_settings['pa'] ) &&
 								</div>
 							</div>
 							<div class="row m-0 p-0 alert">
-								<label for="enable_cmode_url_passthrough_field" class="col-sm-5 col-form-label">
+								<span class="col-sm-5 col-form-label">
 									<?php echo wp_kses_post( __( 'Url Passthrough', 'MAP_txt' ) ); ?><br>
 									<span class="form-text">
 										<?php echo wp_kses_post( __( "This option is useful if you do not want to lose the data related to the user, in case they do not immediately accept cookies but decide to do so later.", 'MAP_txt' ) ); ?>
 									</span>
-								</label>
+								</span>
 
 								<div class="col-sm-7">
 									<div class="styled_radio d-inline-flex">
@@ -211,10 +205,7 @@ if( isset( $the_settings['pa'] ) &&
 												id="enable_cmode_url_passthrough_field"
 												class="hideShowInput"
 												data-hide-show-ref="enable_cmode_url_passthrough_options" <?php checked( $the_settings['enable_cmode_url_passthrough'], true ); ?>>
-											<label for="enable_cmode_url_passthrough_field" class="me-2 label-checkbox"></label>
-											<label for="enable_cmode_url_passthrough_field">
-												<?php echo wp_kses_post( __( 'Enable Url Passthrough', 'MAP_txt' ) ); ?>
-											</label>
+											<label for="enable_cmode_url_passthrough_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable Url Passthrough', 'MAP_txt' ) ); ?></label>
 										</div>
 									</div> <!-- ./ styled_radio -->
 								</div>
@@ -235,8 +226,7 @@ if( isset( $the_settings['pa'] ) &&
 									<select
 										id="cmode_v2_gtag_ad_storage_field"
 										name="cmode_v2_gtag_ad_storage_field"
-										class="form-control"
-										style="max-width:100%;">
+										class="form-control map-mw-100">
 										<?php
 
 										$valid_options = array(
@@ -246,7 +236,7 @@ if( isset( $the_settings['pa'] ) &&
 																					'selected' => false ),
 										);
 
-										$selected_value = $the_settings['cmode_v2_gtag_ad_storage'];
+										$selected_value = is_string( $the_settings['cmode_v2_gtag_ad_storage'] ) ? $the_settings['cmode_v2_gtag_ad_storage'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -298,8 +288,7 @@ if( isset( $the_settings['pa'] ) &&
 									<select
 										id="cmode_v2_gtag_ad_user_data_field"
 										name="cmode_v2_gtag_ad_user_data_field"
-										class="form-control"
-										style="max-width:100%;">
+										class="form-control map-mw-100">
 										<?php
 
 										$valid_options = array(
@@ -309,7 +298,7 @@ if( isset( $the_settings['pa'] ) &&
 																					'selected' => false ),
 										);
 
-										$selected_value = $the_settings['cmode_v2_gtag_ad_user_data'];
+										$selected_value = is_string( $the_settings['cmode_v2_gtag_ad_user_data'] ) ? $the_settings['cmode_v2_gtag_ad_user_data'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -359,8 +348,7 @@ if( isset( $the_settings['pa'] ) &&
 									<select
 										id="cmode_v2_gtag_ad_personalization_field"
 										name="cmode_v2_gtag_ad_personalization_field"
-										class="form-control"
-										style="max-width:100%;">
+										class="form-control map-mw-100">
 										<?php
 
 										$valid_options = array(
@@ -370,7 +358,7 @@ if( isset( $the_settings['pa'] ) &&
 																					'selected' => false ),
 										);
 
-										$selected_value = $the_settings['cmode_v2_gtag_ad_personalization'];
+										$selected_value = is_string( $the_settings['cmode_v2_gtag_ad_personalization'] ) ? $the_settings['cmode_v2_gtag_ad_personalization'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -419,8 +407,7 @@ if( isset( $the_settings['pa'] ) &&
 									<select
 										id="cmode_v2_gtag_analytics_storage_field"
 										name="cmode_v2_gtag_analytics_storage_field"
-										class="form-control"
-										style="max-width:100%;">
+										class="form-control map-mw-100">
 										<?php
 
 										$valid_options = array(
@@ -430,7 +417,7 @@ if( isset( $the_settings['pa'] ) &&
 																					'selected' => false ),
 										);
 
-										$selected_value = $the_settings['cmode_v2_gtag_analytics_storage'];
+										$selected_value = is_string( $the_settings['cmode_v2_gtag_analytics_storage'] ) ? $the_settings['cmode_v2_gtag_analytics_storage'] : '';
 
 										if( isset( $valid_options[ $selected_value ] ) )
 										{
@@ -467,9 +454,9 @@ if( isset( $the_settings['pa'] ) &&
 							</div> <!-- /row-->
 
 							<div class="row">
-								<label for="cmode_v2_forced_off_ga4_advanced_field" class="col-sm-5 col-form-label">
+								<span class="col-sm-5 col-form-label">
 									<?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?><br>
-								</label>
+								</span>
 
 								<div class="col-sm-7">
 									<div class="styled_radio d-inline-flex">
@@ -487,10 +474,7 @@ if( isset( $the_settings['pa'] ) &&
 												data-hide-show-ref="cmode_v2_forced_off_ga4_advanced_description"
 												<?php checked( $the_settings['cmode_v2_forced_off_ga4_advanced'], true ); ?>>
 
-											<label for="cmode_v2_forced_off_ga4_advanced_field" class="me-2 label-checkbox"></label>
-											<label for="cmode_v2_forced_off_ga4_advanced_field">
-												<?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?>
-											</label>
+											<label for="cmode_v2_forced_off_ga4_advanced_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Disable Advanced Consent Mode', 'MAP_txt' ) ); ?></label>
 										</div>
 									</div> <!-- ./ styled_radio -->
 								</div>
@@ -535,9 +519,9 @@ if( isset( $the_settings['pa'] ) &&
 			<?php if( is_array( $gtm_gateway_data ) && !empty( $gtm_gateway_data ) ) : ?>
 
 				<div class="row mb-4 mt-4">
-					<label for="disable_gtm_gateway_detection_field" class="col-sm-5 col-form-label">
+					<span class="col-sm-5 col-form-label">
 						<?php echo wp_kses_post( __( 'Google Tag Gateway detection', 'MAP_txt' ) ); ?>
-					</label>
+					</span>
 
 					<div class="col-sm-7">
 						<div class="styled_radio d-inline-flex">
@@ -552,11 +536,7 @@ if( isset( $the_settings['pa'] ) &&
 									id="disable_gtm_gateway_detection_field"
 									<?php checked( $the_settings['disable_gtm_gateway_detection'], true ); ?>>
 
-								<label for="disable_gtm_gateway_detection_field" class="me-2 label-checkbox"></label>
-
-								<label for="disable_gtm_gateway_detection_field">
-									<?php echo wp_kses_post( __( 'Disable detection and notifications', 'MAP_txt' ) ); ?>
-								</label>
+								<label for="disable_gtm_gateway_detection_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Disable detection and notifications', 'MAP_txt' ) ); ?></label>
 							</div>
 						</div> <!-- ./ styled_radio -->
 

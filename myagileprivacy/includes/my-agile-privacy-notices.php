@@ -126,4 +126,9 @@ function map_sync_advanced_required_notice() {
     } else {
         $manager->remove( 'map_advanced_required' );
     }
+
+    // The trigger that would clear it is not loaded when the integration is off.
+    if ( ! $integration_on ) {
+        $manager->remove( 'map_advanced_state' );
+    }
 }

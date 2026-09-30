@@ -46,7 +46,8 @@ final class MAP_Admin_Notice_Manager {
      *   string   type        'info'|'success'|'warning'|'error'  (default 'info')
      *   string   message     HTML-safe string (wp_kses_post applied on render)
      *   bool     dismissible Show the X button (default true)
-     *   array    actions     Each: { label, ajax_action, nonce_action, classes }
+     *   array    actions     Each: { label, ajax_action, nonce_action, classes } for a button,
+     *                        or { label, url, nonce_action, classes } for a link opened in a new tab
      *   string   capability  Min cap to see notice (default 'manage_options')
      *   array    screens     WP screen IDs where notice appears (empty = all)
      * }
@@ -155,12 +156,12 @@ final class MAP_Admin_Notice_Manager {
                 . ' data-map-dismissible="' . ( $dismissible ? '1' : '0' ) . '"'
                 . '>';
 
-            // Fox avatar — sits outside the card, left side.
+            // Fox avatar - sits outside the card, left side.
             echo '<div class="mapn-fox">'
                 . '<img src="' . esc_url( $fox_url ) . '" alt="" aria-hidden="true">'
                 . '</div>';
 
-            // Card — styled box that contains message, actions, dismiss button.
+            // Card - styled box that contains message, actions, dismiss button.
             echo '<div class="mapn-card">';
 
             echo '<div class="mapn-msg">' . wp_kses_post( $message ) . '</div>';
@@ -168,6 +169,18 @@ final class MAP_Admin_Notice_Manager {
             if ( ! empty( $actions ) ) {
                 echo '<div class="mapn-actions">';
                 foreach ( $actions as $action_item ) {
+                    // a link: its nonce is made here, so a stored notice never carries a stale one
+                    if ( isset( $action_item['url'], $action_item['nonce_action'] ) ) {
+                        $label       = isset( $action_item['label'] )   ? $action_item['label']   : '';
+                        $btn_classes = isset( $action_item['classes'] ) ? $action_item['classes'] : 'button';
+
+                        echo '<a'
+                            . ' class="' . esc_attr( $btn_classes ) . '"'
+                            . ' href="' . esc_url( wp_nonce_url( $action_item['url'], $action_item['nonce_action'] ) ) . '"'
+                            . ' target="_blank" rel="noopener noreferrer"'
+                            . '>' . esc_html( $label ) . '</a> ';
+                        continue;
+                    }
                     if ( ! isset( $action_item['ajax_action'], $action_item['nonce_action'] ) ) { continue; }
                     $label        = isset( $action_item['label'] )   ? $action_item['label']   : '';
                     $ajax_action  = $action_item['ajax_action'];
@@ -229,7 +242,7 @@ final class MAP_Admin_Notice_Manager {
         }
         check_ajax_referer( 'map_remove_notice', 'security' );
 
-        $id = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
+        $id = ( isset( $_POST['id'] ) && is_scalar( $_POST['id'] ) ) ? sanitize_key( (string) wp_unslash( $_POST['id'] ) ) : '';
         if ( '' === $id ) {
             wp_send_json_error( array( 'code' => 'missing_id' ) );
         }
@@ -242,7 +255,7 @@ final class MAP_Admin_Notice_Manager {
 
     /**
      * Returns the vanilla JS that wires up dismiss and action buttons.
-     * ajaxurl is the global WP admin variable — no PHP data injection needed.
+     * ajaxurl is the global WP admin variable - no PHP data injection needed.
      */
     private function get_inline_js() {
         return '(function(){' .

@@ -47,9 +47,9 @@ if( isset( $the_settings['pa'] ) &&
 
 		<!-- widget review consent show -->
 		<div class="row mb-4">
-			<label for="enable_clarity_cmode_field" class="col-sm-5 col-form-label">
+			<span class="col-sm-5 col-form-label">
 				<?php echo wp_kses_post( __( 'Enable Clarity Consent Mode', 'MAP_txt' ) ); ?>
-			</label>
+			</span>
 
 			<div class="col-sm-7">
 				<div class="styled_radio d-inline-flex">
@@ -66,10 +66,7 @@ if( isset( $the_settings['pa'] ) &&
 							data-hide-show-ref="enable_clarity_cmode_options"
 							<?php checked( $the_settings['enable_clarity_cmode'], true ); ?>>
 
-						<label for="enable_clarity_cmode_field" class="me-2 label-checkbox"></label>
-						<label for="enable_clarity_cmode_field">
-							<?php echo esc_html__( 'Enable Clarity Consent Mode', 'MAP_txt' ); ?>
-						</label>
+						<label for="enable_clarity_cmode_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html__( 'Enable Clarity Consent Mode', 'MAP_txt' ); ?></label>
 					</div>
 				</div> <!-- ./ styled_radio -->
 
@@ -93,7 +90,7 @@ if( isset( $the_settings['pa'] ) &&
 					<select
 						id="clarity_consent_ad_storage_field"
 						name="clarity_consent_ad_storage_field"
-						class="form-control" style="max-width:100%;">
+						class="form-control map-mw-100">
 						<?php
 
 						$valid_options = array(
@@ -103,7 +100,7 @@ if( isset( $the_settings['pa'] ) &&
 																	'selected' => false ),
 						);
 
-						$selected_value = $the_settings['clarity_consent_ad_storage'];
+						$selected_value = is_string( $the_settings['clarity_consent_ad_storage'] ) ? $the_settings['clarity_consent_ad_storage'] : '';
 
 						if( isset( $valid_options[ $selected_value ] ) )
 						{
@@ -156,7 +153,7 @@ if( isset( $the_settings['pa'] ) &&
 					<select
 						id="clarity_consent_analytics_storage_field"
 						name="clarity_consent_analytics_storage_field"
-						class="form-control" style="max-width:100%;">
+						class="form-control map-mw-100">
 						<?php
 
 						$valid_options = array(
@@ -166,7 +163,7 @@ if( isset( $the_settings['pa'] ) &&
 																	'selected' => false ),
 						);
 
-						$selected_value = $the_settings['clarity_consent_analytics_storage'];
+						$selected_value = is_string( $the_settings['clarity_consent_analytics_storage'] ) ? $the_settings['clarity_consent_analytics_storage'] : '';
 
 						if( isset( $valid_options[ $selected_value ] ) )
 						{

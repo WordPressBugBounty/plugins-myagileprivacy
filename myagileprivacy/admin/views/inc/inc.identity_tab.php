@@ -50,12 +50,12 @@ $caller = 'genericOptionsWrapper';
 
 			<!-- dpo checkbox -->
 			<div class="row mb-4">
-				<label for="display_dpo_field" class="col-sm-5 col-form-label">
+				<span id="display_dpo_caption" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'I have a DPO (Data Protection Officer)', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="group" aria-labelledby="display_dpo_caption">
 						<div class="round d-flex me-4">
 
 							<input type="hidden" name="site_and_policy_settings[display_dpo]" value="false" id="display_dpo_no">
@@ -69,10 +69,7 @@ $caller = 'genericOptionsWrapper';
 								value="true"
 								<?php checked( $site_and_policy_settings['display_dpo'], true ); ?>
 								/>
-							<label for="display_dpo" class="me-2 label-checkbox"></label>
-							<label for="display_dpo">
-								<?php echo wp_kses_post( __( 'Yes, I have a DPO', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="display_dpo" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, I have a DPO', 'MAP_txt' ) ); ?></label>
 
 
 						</div>
@@ -98,7 +95,7 @@ $caller = 'genericOptionsWrapper';
 						class="form-control"
 						id="dpo_email_field"
 						name="site_and_policy_settings[dpo_email]"
-						value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_email'] ) ); ?>" />
+						value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_email'] ) ? (string) $site_and_policy_settings['dpo_email'] : '' ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( 'Insert here the email of your DPO', 'MAP_txt' ) ); ?>.
@@ -109,7 +106,7 @@ $caller = 'genericOptionsWrapper';
 
 			<!-- dpo name -->
 			<div class="row mb-4 map_dpo_fields_wrapper displayNone">
-				<label for="dpo_email_field" class="col-sm-5 col-form-label">
+				<label for="dpo_name_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'DPO Name / Company name', 'MAP_txt' ) ); ?>
 				</label>
 
@@ -120,7 +117,7 @@ $caller = 'genericOptionsWrapper';
 						class="form-control"
 						id="dpo_name_field"
 						name="site_and_policy_settings[dpo_name]"
-						value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_name'] ) ); ?>" />
+						value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_name'] ) ? (string) $site_and_policy_settings['dpo_name'] : '' ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( 'Name of the person or company acting as DPO', 'MAP_txt' ) ); ?>.
@@ -131,7 +128,7 @@ $caller = 'genericOptionsWrapper';
 
 			<!-- dpo name -->
 			<div class="row mb-4 map_dpo_fields_wrapper displayNone">
-				<label for="dpo_email_field" class="col-sm-5 col-form-label">
+				<label for="dpo_address_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'DPO Address', 'MAP_txt' ) ); ?>
 				</label>
 
@@ -142,7 +139,7 @@ $caller = 'genericOptionsWrapper';
 						class="form-control"
 						id="dpo_address_field"
 						name="site_and_policy_settings[dpo_address]"
-						value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['dpo_address'] ) ); ?>" />
+						value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['dpo_address'] ) ? (string) $site_and_policy_settings['dpo_address'] : '' ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( 'Address of the DPO. Leave it blank, if not applicable', 'MAP_txt' ) ); ?>.
@@ -158,7 +155,6 @@ $caller = 'genericOptionsWrapper';
 
 	<div class="col-sm-4">
 		<?php
-			$tab = 'identity';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

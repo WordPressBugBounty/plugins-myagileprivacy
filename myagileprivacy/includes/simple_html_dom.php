@@ -1,4 +1,5 @@
 <?php
+if( !defined( 'ABSPATH' ) ) { exit; }
 /**
  * Website: http://sourceforge.net/projects/simplehtmldom/
  * Additional projects: http://sourceforge.net/projects/debugobject/
@@ -21,23 +22,23 @@
  * Version Rev. 1.9.1 (291)
  */
 
-define('HDOM_TYPE_ELEMENT', 1);
-define('HDOM_TYPE_COMMENT', 2);
-define('HDOM_TYPE_TEXT', 3);
-define('HDOM_TYPE_ENDTAG', 4);
-define('HDOM_TYPE_ROOT', 5);
-define('HDOM_TYPE_UNKNOWN', 6);
-define('HDOM_QUOTE_DOUBLE', 0);
-define('HDOM_QUOTE_SINGLE', 1);
-define('HDOM_QUOTE_NO', 3);
-define('HDOM_INFO_BEGIN', 0);
-define('HDOM_INFO_END', 1);
-define('HDOM_INFO_QUOTE', 2);
-define('HDOM_INFO_SPACE', 3);
-define('HDOM_INFO_TEXT', 4);
-define('HDOM_INFO_INNER', 5);
-define('HDOM_INFO_OUTER', 6);
-define('HDOM_INFO_ENDSPACE', 7);
+defined('HDOM_TYPE_ELEMENT') || define('HDOM_TYPE_ELEMENT', 1);
+defined('HDOM_TYPE_COMMENT') || define('HDOM_TYPE_COMMENT', 2);
+defined('HDOM_TYPE_TEXT') || define('HDOM_TYPE_TEXT', 3);
+defined('HDOM_TYPE_ENDTAG') || define('HDOM_TYPE_ENDTAG', 4);
+defined('HDOM_TYPE_ROOT') || define('HDOM_TYPE_ROOT', 5);
+defined('HDOM_TYPE_UNKNOWN') || define('HDOM_TYPE_UNKNOWN', 6);
+defined('HDOM_QUOTE_DOUBLE') || define('HDOM_QUOTE_DOUBLE', 0);
+defined('HDOM_QUOTE_SINGLE') || define('HDOM_QUOTE_SINGLE', 1);
+defined('HDOM_QUOTE_NO') || define('HDOM_QUOTE_NO', 3);
+defined('HDOM_INFO_BEGIN') || define('HDOM_INFO_BEGIN', 0);
+defined('HDOM_INFO_END') || define('HDOM_INFO_END', 1);
+defined('HDOM_INFO_QUOTE') || define('HDOM_INFO_QUOTE', 2);
+defined('HDOM_INFO_SPACE') || define('HDOM_INFO_SPACE', 3);
+defined('HDOM_INFO_TEXT') || define('HDOM_INFO_TEXT', 4);
+defined('HDOM_INFO_INNER') || define('HDOM_INFO_INNER', 5);
+defined('HDOM_INFO_OUTER') || define('HDOM_INFO_OUTER', 6);
+defined('HDOM_INFO_ENDSPACE') || define('HDOM_INFO_ENDSPACE', 7);
 
 defined('DEFAULT_TARGET_CHARSET') || define('DEFAULT_TARGET_CHARSET', 'UTF-8');
 defined('DEFAULT_BR_TEXT') || define('DEFAULT_BR_TEXT', "\r\n");
@@ -45,7 +46,7 @@ defined('DEFAULT_SPAN_TEXT') || define('DEFAULT_SPAN_TEXT', ' ');
 
 //6mb
 defined('MAX_FILE_SIZE') || define('MAX_FILE_SIZE', 6000000);
-define('HDOM_SMARTY_AS_TEXT', 1);
+defined('HDOM_SMARTY_AS_TEXT') || define('HDOM_SMARTY_AS_TEXT', 1);
 
 //changed function name
 function shd_file_get_html(
@@ -1409,6 +1410,7 @@ final class agile_simple_html_dom
 	protected $cursor;
 	protected $parent;
 	protected $noise = array();
+	protected $noise_prefix = '';
 	protected $token_blank = " \t\r\n";
 	protected $token_equal = ' =/>';
 	protected $token_slash = " />\r\n\t";
@@ -1639,6 +1641,16 @@ final class agile_simple_html_dom
 		$this->clear();
 
 		$this->doc = trim($str);
+
+		$this->noise_prefix = '';
+		$suffix_len = 8;
+		for ($attempt = 0; $this->noise_prefix === '' || strpos($this->doc, $this->noise_prefix) !== false; $attempt++) {
+			if($attempt > 0 && $attempt % 4 === 0) {
+				$suffix_len += 8;
+			}
+			$this->noise_prefix = '___noise___' . $this->noise_suffix_candidate($suffix_len);
+		}
+
 		$this->size = strlen($this->doc);
 		$this->original_size = $this->size; // original size of the html
 		$this->pos = 0;
@@ -1654,6 +1666,26 @@ final class agile_simple_html_dom
 		$this->root->nodetype = HDOM_TYPE_ROOT;
 		$this->parent = $this->root;
 		if($this->size > 0) { $this->char = $this->doc[0]; }
+	}
+
+	protected function noise_suffix_candidate($length)
+	{
+		$suffix = '';
+		while (strlen($suffix) < $length) {
+			$n = null;
+			if(function_exists('random_int')) {
+				try {
+					$n = random_int(0, 0xffff);
+				} catch (Exception $e) {
+					$n = null;
+				}
+			}
+			if($n === null) {
+				$n = mt_rand(0, 0xffff);
+			}
+			$suffix .= sprintf('%04x', $n);
+		}
+		return substr($suffix, 0, $length);
 	}
 
 	protected function parse()
@@ -2214,7 +2246,7 @@ final class agile_simple_html_dom
 		);
 
 		for ($i = $count - 1; $i > -1; --$i) {
-			$key = '___noise___' . sprintf('% 5d', count($this->noise) + 1000);
+			$key = $this->noise_prefix . sprintf('% 5d', count($this->noise) + 1000);
 
 			if(is_object($debug_object)) {
 				$debug_object->debug_log(2, 'key is: ' . $key);
@@ -2238,42 +2270,28 @@ final class agile_simple_html_dom
 		global $debug_object;
 		if(is_object($debug_object)) { $debug_object->debug_log_entry(1); }
 
-		while (($pos = strpos($text, '___noise___')) !== false) {
-			// Sometimes there is a broken piece of markup, and we don't GET the
-			// pos+11 etc... token which indicates a problem outside of us...
+		if($this->noise_prefix === '') {
+			return $text;
+		}
 
-			// todo: "___noise___1000" (or any number with four or more digits)
-			// in the DOM causes an infinite loop which could be utilized by
-			// malicious software
-			if(strlen($text) > $pos + 15) {
-				$key = '___noise___'
-				. $text[$pos + 11]
-				. $text[$pos + 12]
-				. $text[$pos + 13]
-				. $text[$pos + 14]
-				. $text[$pos + 15];
+		$prefix_len = strlen($this->noise_prefix);
+		$key_len = $prefix_len + 5;
+		$offset = 0;
 
-				if(is_object($debug_object)) {
-					$debug_object->debug_log(2, 'located key of: ' . $key);
-				}
+		while (($pos = strpos($text, $this->noise_prefix, $offset)) !== false) {
+			$key = substr($text, $pos, $key_len);
 
-				if(isset($this->noise[$key])) {
-					$text = substr($text, 0, $pos)
-					. $this->noise[$key]
-					. substr($text, $pos + 16);
-				} else {
-					// do this to prevent an infinite loop.
-					$text = substr($text, 0, $pos)
-					. 'UNDEFINED NOISE FOR KEY: '
-					. $key
-					. substr($text, $pos + 16);
-				}
-			} else {
-				// There is no valid key being given back to us... We must get
-				// rid of the ___noise___ or we will have a problem.
+			if(is_object($debug_object)) {
+				$debug_object->debug_log(2, 'located key of: ' . $key);
+			}
+
+			if(strlen($key) === $key_len && isset($this->noise[$key])) {
 				$text = substr($text, 0, $pos)
-				. 'NO NUMERIC NOISE KEY'
-				. substr($text, $pos + 11);
+				. $this->noise[$key]
+				. substr($text, $pos + $key_len);
+				$offset = $pos;
+			} else {
+				$offset = $pos + $prefix_len;
 			}
 		}
 		return $text;

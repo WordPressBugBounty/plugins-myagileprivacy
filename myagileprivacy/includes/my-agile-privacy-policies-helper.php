@@ -48,7 +48,10 @@ final class MyAgilePrivacyPoliciesHelper
 	public static function find_shortcode_in_pages($shortcode, $options = array())
 	{
 		// Prevent timeouts on large sites
-		@set_time_limit(0);
+		if( function_exists( 'set_time_limit' ) )
+		{
+			@set_time_limit(0);
+		}
 
 		if( function_exists( "wp_raise_memory_limit" ) )
 		{
@@ -169,7 +172,7 @@ final class MyAgilePrivacyPoliciesHelper
 
 	/**
 	* Build a regex for matching the shortcode:
-	* Matches [tag], [tag ...], [tag/], [/tag] — avoids false positives like [tag123]
+	* Matches [tag], [tag ...], [tag/], [/tag] - avoids false positives like [tag123]
 	*/
 	private static function build_shortcode_pattern($shortcode)
 	{

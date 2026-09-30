@@ -116,6 +116,16 @@
     height: 20px;
     width: 30%;
     background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Simulated label: it is what shows the button text colour. */
+#preview-cookiebanner .preview-button-label {
+    width: 60%;
+    height: 4px;
+    border-radius: 2px;
 }
 
 #preview-cookiebanner .text {
@@ -157,17 +167,17 @@
 }
 
 #preview-cookiebanner.mapPositionTopLeft {
-    top: 0;
+    top: 30px;
     left: 0;
 }
 
 #preview-cookiebanner.mapPositionTopRight {
-    top: 0;
+    top: 30px;
     right: 0;
 }
 
 #preview-cookiebanner.mapPositionTopCenter {
-    top: 0;
+    top: 30px;
     left: 50%;
     transform: translate(-50%,0);
     -webkit-transform: translate(-50%,0);
@@ -198,10 +208,11 @@
 }
 
 /* floating banner*/
+/* The dots of the fake browser end at 22px: the page starts below them. */
 #preview-cookiebanner.mapPositionTopLeft.map_floating_banner,
 #preview-cookiebanner.mapPositionTopRight.map_floating_banner,
 #preview-cookiebanner.mapPositionTopCenter.map_floating_banner {
-    top: 30px;
+    top: 40px;
 }
 
 #preview-cookiebanner.mapPositionBottomLeft.map_floating_banner,
@@ -547,6 +558,9 @@
     padding: 6px 15px 6px 40px;
     color: #444;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 15px;
+    opacity: 1;
+    display: block;
 }
 #my_agile_privacy_backend.translationsWrapper .text-preview .map_logo_container {
     position: absolute;
@@ -555,7 +569,7 @@
 	left: 6px;
     width: 25px;
 	height: 100%;
-	background-color: #F93F00;
+	background-color: #f14307;
     -webkit-mask-image: url('../img/fox-black.svg');
     mask-image: url('../img/fox-black.svg');
 	mask-repeat: no-repeat;
@@ -650,6 +664,14 @@
 #my_agile_privacy_backend.translationsWrapper .modal-footer .btn-primary:active {
     background-color: #d93500;
     border-color: #d93500;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .map-tab-container {
+    height: 603px;
+}
+
+#my_agile_privacy_backend.translationsWrapper .text-preview .map-cookielist-overflow-container {
+    max-height: 307px;
 }
 
 

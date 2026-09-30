@@ -4,7 +4,7 @@ Donate link: https://www.myagileprivacy.com/en/
 Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
 Requires at least: 4.4.0
 Tested up to: 7.1
-Stable tag: 3.3.7
+Stable tag: 3.4.0
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -14,29 +14,41 @@ Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 1
 
 == Description ==
 
-**My Agile Privacy®** provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, and VCDPA.
+**My Agile Privacy®** is a **self-hosted** plugin that provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, and VCDPA.
 My Agile Privacy® is available in **Albanian, Azerbaijani, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Macedonian, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swedish, Turkish and Ukrainian**.  It supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
 [youtube https://youtu.be/l7960ISPTBw]
 
 == Key Features ==
-- ⭐ Easy to use
+- ⭐ Banner A/B testing: compare up to four banner designs on real visitors and apply the winner
 
-- 🚀 Highly customizable
+- 🚀 Easy to use
 
-- ⚡️ Options to accept, reject and revisit consent
+- ⚡️ Highly customizable
 
-- ⭐ Granular user consent
+- ⭐ Options to accept, reject and revisit consent
 
-- 🚀 Cookie consent and personal data consent management
+- 🚀 Granular user consent
 
-- ⚡️ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, VCDPA
+- ⚡️ Cookie consent and personal data consent management
 
-- ⭐ IAB TCF 2.3 support
+- ⭐ Support for GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, VCDPA
 
-- 🚀 Google Consent Mode v2, Clarity and Microsoft UET Consent Mode support
+- 🚀 IAB TCF 2.4 support
 
-- ⚡️ Multilingual support (WPML, Polylang, TranslatePress, Weglot, Falang)
+- ⚡️ Google Consent Mode v2, Clarity and Microsoft UET Consent Mode support
+
+- ⭐ Multilingual support at no extra cost (WPML, Polylang, TranslatePress, Weglot, Falang)
+
+- 🚀 IAB GPP support: US National section
+
+- ⚡️ Geolocation with per-country consent rules
+
+- ⭐ Consent statistics: opt-in rate, rejections and trends, by country and device
+
+- 🚀 WordPress Multisite support
+
+- ⚡️ Runs on PHP 5.6 through 8.x
 
 == Frequently Asked Questions ==
 
@@ -48,7 +60,26 @@ This plugin will:
 3. Help you stay compliant by blocking unwanted cookies and third-party scripts in line with privacy regulations.
 
 == Certified with Industry Standards ==
-My Agile Privacy® is certified by [IAB](https://iabeurope.eu/cmp-list/) and [Google](https://cmppartnerprogram.withgoogle.com/), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
+My Agile Privacy® is certified by [IAB](https://iabeurope.eu/cmp-list/), [Google](https://cmppartnerprogram.withgoogle.com/) and [Microsoft](https://help.ads.microsoft.com/#apex/ads/en/60119/1-500), ensuring that our solutions meet the highest industry standards. This certification underscores our commitment to delivering reliable, secure, and efficient tools that help you maintain compliance with ease and professionalism.
+
+== IAB Global Privacy Platform (GPP) ==
+Ad vendors stop guessing. My Agile Privacy® publishes the visitor's choice through the **IAB GPP** API, so every vendor on your page reads one signal instead of looking for cookies of its own.
+
+The string carries the **US National** section, and the European **TCF** section when IAB TCF is enabled. Our IAB CMP ID is **403**.
+
+The signal stays closed until the visitor answers, so vendors know when to wait, and it updates the moment they change their mind. A **Global Privacy Control** signal from the browser is honoured as an opt-out.
+
+== Geolocation ==
+Different countries, different rules. My Agile Privacy® resolves where the visitor is and applies the consent regime you set for that country: opt-in where consent must come first, opt-out where the law allows it.
+
+You decide which countries get which treatment. If the country cannot be determined, the strictest regime applies. A **Global Privacy Control** signal always wins: the banner is shown, and nothing is unblocked until the visitor chooses.
+
+== Consent Statistics ==
+Know how your banner actually performs. My Agile Privacy® counts how many visitors see the cookie banner and what they do next: consent, rejection, no choice, or implicit consent where geolocation applies it.
+
+You get the opt-in rate, the rejection rate and the interaction rate, the trend over time, and a breakdown by country and by device.
+
+Consent changes can also be sent to **Google Analytics 4** as events, when GA4 is installed on the site.
 
 == What Web Agencies Say ==
 
@@ -126,6 +157,18 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 7. Help Desk
 
 == Changelog ==
+
+= 3.4.0
+* Consent statistics: banner views, opt-in and rejection rates, trends by country and device
+* Geolocation: per-country consent regimes, with Global Privacy Control always taking precedence
+* Banner A/B testing: compare up to four banner designs and apply the winner
+* IAB GPP support: US National section, with the European TCF section when IAB TCF is enabled
+* IAB TCF 2.4 support, with official Feature texts and a data categories legend
+* Backup & Restore: a new Plugin Options tab exports and imports the plugin configuration
+* Frontend and backend optimizations for accessibility and speed
+* Improved compatibility with Jetpack Boost
+* Improved compatibility with PHP 8 up to 8.5, and with PHP 5.6 and older WordPress versions
+* Improved robustness with unexpected data and restrictive hosting configurations
 
 = 3.3.7
 * Tested for compatibility with WordPress 7.1

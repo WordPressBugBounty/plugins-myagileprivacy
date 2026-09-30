@@ -12,6 +12,88 @@ final class MAP_Update_Checker {
     public function __construct() {
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_update' ), 20 );
         add_filter( 'plugins_api',                           array( $this, 'plugin_info' ),      20, 3 );
+
+        // the link is refreshed before the core puts the site in maintenance for the update
+        add_action( 'pre_auto_update',                 array( $this, 'refresh_before_auto_update' ), 10, 2 );
+        add_action( 'wp_ajax_update-plugin',           array( $this, 'refresh_before_update' ), 0 );
+        add_action( 'admin_action_upgrade-plugin',     array( $this, 'refresh_before_update' ) );
+        add_action( 'admin_action_update-selected',    array( $this, 'refresh_before_update' ) );
+    }
+
+    /**
+     * Refreshes the package link before an automatic update of the advanced plugin.
+     *
+     * @param string $type
+     * @param object $item
+     */
+    public function refresh_before_auto_update( $type, $item ) {
+        if ( 'plugin' !== $type || ! is_object( $item ) || ! isset( $item->plugin ) ) { return; }
+        if ( MAP_Package_Installer::MAP_ADVANCED_BASENAME !== $item->plugin ) { return; }
+        if ( ! class_exists( 'MAP_Advanced_Trigger' ) ) { return; }
+
+        MAP_Advanced_Trigger::refresh_package_data();
+    }
+
+    /**
+     * Refreshes the package link before an update of the advanced plugin started from the dashboard.
+     */
+    public function refresh_before_update() {
+        if ( ! current_user_can( 'update_plugins' ) || ! class_exists( 'MAP_Advanced_Trigger' ) ) { return; }
+
+        $basename = MAP_Package_Installer::MAP_ADVANCED_BASENAME;
+        $plugins  = array();
+
+        foreach ( array( 'plugin', 'plugins', 'checked' ) as $key ) {
+            if ( ! isset( $_REQUEST[ $key ] ) ) { continue; }
+
+            $value = wp_unslash( $_REQUEST[ $key ] );
+            $value = is_array( $value ) ? $value : explode( ',', (string) $value );
+
+            foreach ( $value as $item ) {
+                if ( is_string( $item ) ) {
+                    $plugins[] = trim( $item );
+                }
+            }
+        }
+
+        if ( ! in_array( $basename, $plugins, true ) ) { return; }
+
+        // the core checks its own nonce right after this: only a valid one lets the sync start
+        $nonce = '';
+
+        if ( isset( $_REQUEST['_wpnonce'] ) && is_string( $_REQUEST['_wpnonce'] ) ) {
+            $nonce = $_REQUEST['_wpnonce'];
+        } elseif ( isset( $_REQUEST['_ajax_nonce'] ) && is_string( $_REQUEST['_ajax_nonce'] ) ) {
+            $nonce = $_REQUEST['_ajax_nonce'];
+        }
+
+        foreach ( array( 'updates', 'upgrade-plugin_' . $basename, 'bulk-update-plugins' ) as $nonce_action ) {
+            if ( wp_verify_nonce( $nonce, $nonce_action ) ) {
+                MAP_Advanced_Trigger::refresh_package_data();
+                return;
+            }
+        }
+    }
+
+    /**
+     * Swaps the package of an update of the advanced plugin for a link that can still be used:
+     * the one stored in the update transient may be hours old.
+     *
+     * @param  array $options  Upgrader package options.
+     * @return array
+     */
+    public static function fresh_package( $options ) {
+        if ( ! is_array( $options ) || ! isset( $options['hook_extra']['plugin'] ) ) { return $options; }
+        if ( MAP_Package_Installer::MAP_ADVANCED_BASENAME !== $options['hook_extra']['plugin'] ) { return $options; }
+        if ( ! class_exists( 'MAP_Advanced_Trigger' ) ) { return $options; }
+
+        $url = MAP_Advanced_Trigger::fresh_download_url();
+
+        if ( '' !== $url ) {
+            $options['package'] = $url;
+        }
+
+        return $options;
     }
 
     /**
@@ -90,3 +172,6 @@ final class MAP_Update_Checker {
         return $installer->get_installed_advanced_version();
     }
 }
+
+// every context: agency tools and WP-CLI update plugins outside wp-admin too
+add_filter( 'upgrader_package_options', array( 'MAP_Update_Checker', 'fresh_package' ) );

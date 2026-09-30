@@ -144,7 +144,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			{
 				foreach( $v as $value )
 				{
-					// At least one item found — not empty.
+					// At least one item found - not empty.
 					return false;
 				}
 			}
@@ -200,7 +200,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 
 			$with_no_cookies_class = ( $no_cookies && !$iab_tcf_context ) ? 'mapNoCookies' : '';
 			$with_css_effects_class = ( $s['with_css_effects'] == true ) ? 'withEffects' : '';
-			$map_shadow_class       = ( $s['cookie_banner_shadow'] == false ) ? '' : $s['cookie_banner_shadow'];
+			$map_shadow_class       = in_array( $s['cookie_banner_shadow'], array( 'map-shadow-soft', 'map-shadow-hard' ), true ) ? $s['cookie_banner_shadow'] : '';
 			$floating_banner        = ( $s['floating_banner'] == false ) ? '' : 'map_floating_banner';
 			$animation_class        = 'map_animation_'.$s['cookie_banner_animation'];
 
@@ -299,9 +299,9 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 
 			if( !$is_url && $page )
 			{
-				if( $this->is_wpml_enabled )    return get_permalink( icl_object_id( $page, 'page', true ) );
-				if( $this->is_polylang_enabled ) return get_permalink( pll_get_post( $page ) );
-				return get_permalink( $page );
+				if( $this->is_wpml_enabled )    return MyAgilePrivacy::get_published_page_url( icl_object_id( $page, 'page', true ) );
+				if( $this->is_polylang_enabled ) return MyAgilePrivacy::get_published_page_url( pll_get_post( $page ) );
+				return MyAgilePrivacy::get_published_page_url( $page );
 			}
 
 			return null;
@@ -324,9 +324,9 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 
 			if( !$is_url && $page )
 			{
-				if( $this->is_wpml_enabled )    return get_permalink( icl_object_id( $page, 'page', true ) );
-				if( $this->is_polylang_enabled ) return get_permalink( pll_get_post( $page ) );
-				return get_permalink( $page );
+				if( $this->is_wpml_enabled )    return MyAgilePrivacy::get_published_page_url( icl_object_id( $page, 'page', true ) );
+				if( $this->is_polylang_enabled ) return MyAgilePrivacy::get_published_page_url( pll_get_post( $page ) );
+				return MyAgilePrivacy::get_published_page_url( $page );
 			}
 
 			return null;
@@ -382,6 +382,13 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 		{
 			$default = '[myagileprivacy_cookie_accept][myagileprivacy_cookie_reject][myagileprivacy_cookie_customize]';
 			$order   = $this->the_settings['layer_1_button_order'];
+			$enums   = MyAgilePrivacy::get_banner_variant_enums();
+
+			if( !is_string( $order ) || !in_array( $order, $enums['layer_1_button_order'], true ) )
+			{
+				return $default;
+			}
+
 			$parts   = explode( '_', $order );
 
 			if( count( $parts ) == 3 )
@@ -882,7 +889,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 					$all_remote_ids[] = $the_remote_id;
 
 					//fallback if post_data->post_title empty
-					$cookie_display_title = !empty( $value['post_title'] ) ? $value['post_title'] : $value['post_data']->post_title;
+					$cookie_display_title = !empty( $value['post_title'] ) ? $value['post_title'] : ( ( isset( $value['post_data'] ) && is_object( $value['post_data'] ) ) ? $value['post_data']->post_title : '' );
 
 					$cleaned_cookie_name         = str_replace( '"', '', $cookie_display_title );
 					$the_post_is_readonly        = isset( $value['post_meta']['_map_is_readonly'][0] )                 ? $value['post_meta']['_map_is_readonly'][0]                 : false;
@@ -1023,7 +1030,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$t = $this->the_translations[ $this->current_lang ];
 
 			//fallback if post_data->post_title empty
-			$cookie_display_title = !empty( $value['post_title'] ) ? $value['post_title'] : $value['post_data']->post_title;
+			$cookie_display_title = !empty( $value['post_title'] ) ? $value['post_title'] : ( ( isset( $value['post_data'] ) && is_object( $value['post_data'] ) ) ? $value['post_data']->post_title : '' );
 
 			$html  = '<div class="map-tab-section map_cookie_description_wrapper '.esc_attr( $wrapper_added_class ).'" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">';
 			$html .= '<div class="map-tab-header map-standard-header '.esc_attr( $with_css_effects_class.$this_extra_header_class ).'">';
@@ -1047,7 +1054,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$html .= '</div>'; // map-tab-header
 
 			$html .= '<div class="map-tab-content'.esc_attr( $this_extra_content_class ).'" style="'.esc_attr( $this_content_display ).'">';
-			$html .= '<div data-nosnippet class="map-tab-pane map-fade">'.wp_kses_post( $value['post_content'] ).'</div>';
+			$html .= '<div data-nosnippet class="map-tab-pane map-fade">'.wp_kses_post( (string) $value['post_content'] ).'</div>';
 
 			if( isset( $s['pa'] ) && $s['pa'] == 1 && $this_to_show_clarity_consent_mode && is_array( $this->clarity_consent_mode_consents ) )
 			{
@@ -1089,7 +1096,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			}
 			elseif( $the_post_is_readonly == false && $the_post_installation_type == 'raw_code' && $the_post_raw_code )
 			{
-				$html .= '<textarea aria-hidden="true" aria-label="'.esc_attr( $cleaned_cookie_name ).' raw script" style="display:none;" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.htmlspecialchars_decode( stripslashes( $the_post_raw_code ), ENT_QUOTES ).'</textarea>';
+				$html .= '<textarea aria-hidden="true" aria-label="'.esc_attr( $cleaned_cookie_name ).' raw script" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.htmlspecialchars_decode( stripslashes( $the_post_raw_code ), ENT_QUOTES ).'</textarea>';
 			}
 
 			$html .= '</div>'; // map_cookie_description_wrapper
@@ -1126,7 +1133,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 							'</div>';
 						$html .= '</div>'; // map-switch
 					$html .= '</div>'; // map-tab-header
-					$html .= '<div class="map-tab-content" style="display: none;">';
+					$html .= '<div class="map-tab-content">';
 					$html .= '<div data-nosnippet="" class="map-tab-pane map-fade">'.esc_html( $vv['human_desc'] ).'</div>';
 					$html .= '</div>'; // map-tab-content
 			$html .= '</div>'; // map_consent_description_wrapper
@@ -1164,10 +1171,10 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$anchor_text = $anchor_texts[$anchor_text_index];
 
 			$is_pro         = isset( $s['pa'] ) && $s['pa'] == 1;
-			$img_pro        = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="111" height="50">';
-			$img_basic      = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="111" height="50">';
-			$img_pro_wide   = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40">';
-			$img_basic_wide = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40">';
+			$img_pro        = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
+			$img_basic      = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
+			$img_pro_wide   = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
+			$img_basic_wide = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
 
 			$html = '<div data-nosnippet class="modal_credits">';
 

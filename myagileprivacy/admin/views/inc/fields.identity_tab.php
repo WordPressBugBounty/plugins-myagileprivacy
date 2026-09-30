@@ -19,7 +19,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			class="form-control"
 			id="identity_name_field"
 			name="site_and_policy_settings[identity_name]"
-			value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_name'] ) ); ?>" />
+			value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_name'] ) ? (string) $site_and_policy_settings['identity_name'] : '' ) ); ?>" />
 
 		<div class="form-text">
 			<?php echo wp_kses_post( __( 'Insert here the name of the company or the person who is the owner of the website.', 'MAP_txt' ) ); ?>
@@ -40,7 +40,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			class="form-control"
 			id="identity_address_field"
 			name="site_and_policy_settings[identity_address]"
-			value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_address'] ) ); ?>" />
+			value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_address'] ) ? (string) $site_and_policy_settings['identity_address'] : '' ) ); ?>" />
 
 		<div class="form-text">
 			<?php echo wp_kses_post( __( 'Insert here the address of the company or person who owns the website.', 'MAP_txt' ) ); ?>
@@ -61,7 +61,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			class="form-control"
 			id="identity_vat_id_field"
 			name="site_and_policy_settings[identity_vat_id]"
-			value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_vat_id'] ) ); ?>" />
+			value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_vat_id'] ) ? (string) $site_and_policy_settings['identity_vat_id'] : '' ) ); ?>" />
 
 		<div class="form-text">
 			<?php echo wp_kses_post( __( 'Leave it blank, if not applicabile', 'MAP_txt' ) ); ?>.
@@ -82,7 +82,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			class="form-control"
 			id="identity_email_field"
 			name="site_and_policy_settings[identity_email]"
-			value="<?php echo esc_attr( stripslashes( $site_and_policy_settings['identity_email'] ) ); ?>" />
+			value="<?php echo esc_attr( stripslashes( is_scalar( $site_and_policy_settings['identity_email'] ) ? (string) $site_and_policy_settings['identity_email'] : '' ) ); ?>" />
 
 		<div class="form-text">
 			<?php echo wp_kses_post( __( 'Insert here the email where the user can contact you for questions about privacy and personal data use', 'MAP_txt' ) ); ?>.

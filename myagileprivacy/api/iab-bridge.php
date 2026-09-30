@@ -1,12 +1,15 @@
 <?php
-// IAB TCF localStorage bridge — no WP bootstrap.
+// IAB TCF localStorage bridge - no WP bootstrap.
 // Served inside a hidden iframe on the root cookie domain.
 // Accepts postMessage read/write/remove commands from any subdomain;
 // replies so the parent frame can share consent data across subdomains.
-header( 'Content-Type: text/html; charset=utf-8' );
-header_remove( 'X-Frame-Options' );
-header( 'Content-Security-Policy: frame-ancestors *' );
-header( 'Cache-Control: no-store' );
+if( !headers_sent() )
+{
+	header( 'Content-Type: text/html; charset=utf-8' );
+	header_remove( 'X-Frame-Options' );
+	header( 'Content-Security-Policy: frame-ancestors *' );
+	header( 'Cache-Control: no-store' );
+}
 ?><!DOCTYPE html>
 <html><head><meta charset="utf-8"></head><body>
 <script>

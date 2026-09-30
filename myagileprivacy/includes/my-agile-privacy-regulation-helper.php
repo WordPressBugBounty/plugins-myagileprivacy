@@ -204,9 +204,43 @@ final class MyAgilePrivacyRegulationHelper {
 		if( isset( $the_settings['site_and_policy_settings'] ) )
 		{
 			self::$site_and_policy_settings = $the_settings['site_and_policy_settings'];
+
+			if( is_array( self::$site_and_policy_settings ) )
+			{
+				$default_site_and_policy_settings = MyAgilePrivacy::get_default_settings( 'site_and_policy_settings' );
+
+				if( is_array( $default_site_and_policy_settings ) )
+				{
+					unset( $default_site_and_policy_settings['completion_percentage'] );
+
+					self::$site_and_policy_settings = self::$site_and_policy_settings + $default_site_and_policy_settings;
+
+					// read only: an array where the default is not one reads as the default
+					foreach( $default_site_and_policy_settings as $sp_key => $sp_default )
+					{
+						if( !is_array( $sp_default ) && is_array( self::$site_and_policy_settings[ $sp_key ] ) )
+						{
+							self::$site_and_policy_settings[ $sp_key ] = $sp_default;
+						}
+					}
+				}
+			}
 		}
 
-		self::$available_countries = MyAgilePrivacy::get_option( MAP_PLUGIN_COUNTRIES, null );
+		$available_countries = MyAgilePrivacy::get_option( MAP_PLUGIN_COUNTRIES, null );
+
+		self::$available_countries = array();
+
+		if( is_array( $available_countries ) )
+		{
+			foreach( $available_countries as $k => $v )
+			{
+				if( is_array( $v ) )
+				{
+					self::$available_countries[ $k ] = $v;
+				}
+			}
+		}
 	}
 
 	//getter class
@@ -425,7 +459,7 @@ final class MyAgilePrivacyRegulationHelper {
 		{
 			foreach( $results as $this_code )
 			{
-				$this_code = strtolower( trim( $this_code ) );
+				$this_code = strtolower( trim( (string) $this_code ) );
 
 				if( $this_code )
 				{
@@ -455,6 +489,11 @@ final class MyAgilePrivacyRegulationHelper {
 						) ? true : false;
 
 		$map_dpo_text_unset = ( !$map_dpo_text ) ? true : false;
+
+		$map_iab_tcf = ( $pa && isset( self::$the_settings['enable_iab_tcf'] ) && self::$the_settings['enable_iab_tcf'] ) ? true : false;
+
+		$map_white_label = ( isset( self::$the_settings['wl_b'] ) && self::$the_settings['wl_b'] ) ? true : false;
+		$map_white_label_off = ( !$map_white_label ) ? true : false;
 
 		$identity_name = (
 							isset( self::$site_and_policy_settings['identity_name'] ) &&
@@ -680,6 +719,42 @@ final class MyAgilePrivacyRegulationHelper {
 			$map_any_security_measure = true;
 		}
 
+		$map_any_marketing = false;
+
+		if(
+			$map_using_newsletter ||
+			$map_using_advertising
+		)
+		{
+			$map_any_marketing = true;
+		}
+
+		$map_any_minors_or_sensitive = false;
+
+		if(
+			$map_using_minors_data ||
+			$map_sensitive_data
+		)
+		{
+			$map_any_minors_or_sensitive = true;
+		}
+
+		$map_any_provided_data = false;
+
+		if(
+			$map_using_contact_forms ||
+			$map_accepting_payments ||
+			$map_account_reg ||
+			$map_using_newsletter ||
+			$map_accepting_reviews ||
+			$map_using_social_login
+		)
+		{
+			$map_any_provided_data = true;
+		}
+
+		$map_any_provided_data_off = ( !$map_any_provided_data ) ? true : false;
+
 		// True if at least one published cookie is not "necessary" (blockable), matching the banner
 		// (necessary only when _map_is_necessary === 'necessary'). Cached once per request; the cookie
 		// CPT is translate=0 so the count is language-stable.
@@ -769,7 +844,8 @@ final class MyAgilePrivacyRegulationHelper {
 		$last_update_timestamp_check = ( isset( self::$site_and_policy_settings['last_update_timestamp'] ) &&
 			self::$site_and_policy_settings['last_update_timestamp'] );
 		$cookie_reset_timestamp_check = ( isset( self::$the_settings['cookie_reset_timestamp'] ) && self::$the_settings['cookie_reset_timestamp'] );
-		$last_scan_date_internal_check = ( isset( self::$the_settings['last_scan_date_internal'] ) && self::$the_settings['last_scan_date_internal'] );
+		$scan_runtime = MyAgilePrivacy::get_scan_runtime();
+		$last_scan_date_internal_check = ( isset( $scan_runtime['last_scan_date_internal'] ) && $scan_runtime['last_scan_date_internal'] );
 
 
 		if( $last_update_timestamp_check ||
@@ -782,7 +858,7 @@ final class MyAgilePrivacyRegulationHelper {
 
 			$cookie_reset_timestamp = isset( self::$the_settings['cookie_reset_timestamp'] ) ? (int) self::$the_settings['cookie_reset_timestamp'] : 0;
 
-			$last_scan_date_internal = isset( self::$the_settings['last_scan_date_internal'] ) ? (int) self::$the_settings['last_scan_date_internal'] : 0;
+			$last_scan_date_internal = isset( $scan_runtime['last_scan_date_internal'] ) ? (int) $scan_runtime['last_scan_date_internal'] : 0;
 
 			//Keep only values > 0 (ignore null/zero/empty)
 			$date_values = array_filter(
@@ -904,6 +980,13 @@ final class MyAgilePrivacyRegulationHelper {
 			'map_system_access_limited'				=>	$map_system_access_limited,
 
             'map_any_security_measure'				=>	$map_any_security_measure,
+            'map_any_marketing'						=>	$map_any_marketing,
+            'map_any_minors_or_sensitive'			=>	$map_any_minors_or_sensitive,
+            'map_iab_tcf'							=>	$map_iab_tcf,
+            'map_white_label'						=>	$map_white_label,
+            'map_white_label_off'					=>	$map_white_label_off,
+            'map_any_provided_data'					=>	$map_any_provided_data,
+            'map_any_provided_data_off'				=>	$map_any_provided_data_off,
             'map_any_not_necessary_cookies'			=>	$map_any_not_necessary_cookies,
             'map_any_not_necessary_cookies_off'		=>	$map_any_not_necessary_cookies_off,
 

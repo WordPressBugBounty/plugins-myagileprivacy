@@ -18,9 +18,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			</h4>
 
 			<div class="row mb-4">
-				<label for="forced_auto_update_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Enable plugin auto update', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-6">
 
@@ -36,10 +36,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="forced_auto_update_field"
 								<?php checked( $the_settings['forced_auto_update'], true ); ?>>
 
-							<label for="forced_auto_update_field" class="me-3 label-checkbox"></label>
-
-							<label for="forced_auto_update_field">
-								<?php echo wp_kses_post( __( 'Yes, I would like to turn on automatic plugin updates.', 'MAP_txt' ) ); ?>
+							<label for="forced_auto_update_field" class="round-label"><span class="me-3 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, I would like to turn on automatic plugin updates.', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -53,9 +50,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 
 			<div class="row mb-4">
-				<label for="enable_metadata_sync_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Cookie metadata Sync', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-6">
 
@@ -71,10 +68,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="enable_metadata_sync_field"
 								<?php checked( $the_settings['enable_metadata_sync'], true ); ?>>
 
-							<label for="enable_metadata_sync_field" class="me-3 label-checkbox"></label>
-
-							<label for="enable_metadata_sync_field">
-								<?php  echo wp_kses_post( __( 'Yes, enable Cookie metadata synchronization.', 'MAP_txt' ) ); ?>
+							<label for="enable_metadata_sync_field" class="round-label"><span class="me-3 label-checkbox" aria-hidden="true"></span><?php  echo wp_kses_post( __( 'Yes, enable Cookie metadata synchronization.', 'MAP_txt' ) ); ?>
 							</label>
 						</div>
 					</div> <!-- ./ styled_radio -->
@@ -120,7 +114,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								$valid_options[ $this_language_key ] = $this_language_value;
 							}
 
-							$selected_value = $the_settings['default_locale'];
+							$selected_value = is_string( $the_settings['default_locale'] ) ? $the_settings['default_locale'] : '';
 
 							if( isset( $valid_options[ $selected_value ] ) )
 							{
@@ -155,9 +149,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<div class="row mb-4 <?php echo esc_attr( $this_added_class_second ) ; ?>">
 
-				<label for="enable_language_fallback_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Enable Fallback language', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-6">
 
@@ -175,11 +169,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="enable_language_fallback_field"
 								<?php checked( $the_settings['enable_language_fallback'], true ); ?>>
 
-							<label for="enable_language_fallback_field" class="me-3 label-checkbox"></label>
-
-							<label for="enable_language_fallback_field">
-								<?php  echo wp_kses_post( __( 'I would like to customize the default language fallback setting.', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="enable_language_fallback_field" class="round-label"><span class="me-3 label-checkbox" aria-hidden="true"></span><?php  echo wp_kses_post( __( 'I would like to customize the default language fallback setting.', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 					<div class="form-text">
@@ -194,7 +184,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<div class="row mb-4 language_fallback_locale displayNone">
 
 
-				<label for="default_locale_field" class="col-sm-5 col-form-label">
+				<label for="language_fallback_locale_field" class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Fallback language', 'MAP_txt' ) ); ?>
 				</label>
 
@@ -215,7 +205,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								$valid_options[ $this_language_key ] = $this_language_value;
 							}
 
-							$selected_value = $the_settings['language_fallback_locale'];
+							$selected_value = is_string( $the_settings['language_fallback_locale'] ) ? $the_settings['language_fallback_locale'] : '';
 
 							if( isset( $valid_options[ $selected_value ] ) )
 							{
@@ -270,9 +260,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- wrapping css checkbox -->
 			<div class="row mb-4">
-				<label for="wrap_shortcodes_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Enable policy wrapping for CSS customization purposes', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -287,11 +277,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="wrap_shortcodes_field"
 								<?php checked( $the_settings['wrap_shortcodes'], true ); ?>>
 
-							<label for="wrap_shortcodes_field" class="me-2 label-checkbox"></label>
-
-							<label for="wrap_shortcodes_field">
-								<?php echo wp_kses_post( __( 'Enable wrapping', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="wrap_shortcodes_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Enable wrapping', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 					<div class="form-text">
@@ -306,9 +292,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- force sync checkbox -->
 			<div class="row mb-4">
-				<label for="force_sync" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Force Cookies and Policy syncronization', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -321,11 +307,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								value="1"
 								id="force_sync">
 
-							<label for="force_sync" class="me-2 label-checkbox"></label>
-
-							<label for="force_sync">
-								<?php  echo wp_kses_post( __( 'Force Cookies and Policy syncronization', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="force_sync" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php  echo wp_kses_post( __( 'Force Cookies and Policy syncronization', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -343,9 +325,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- reset settings checkbox -->
 			<div class="row mb-4">
-				<label for="reset_settings" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php  echo wp_kses_post( __( 'Reset all settings', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
@@ -358,11 +340,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								value="1"
 								id="reset_settings">
 
-							<label for="reset_settings" class="me-2 label-checkbox"></label>
-
-							<label for="reset_settings">
-								<?php  echo wp_kses_post( __( 'Reset all settings', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="reset_settings" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php  echo wp_kses_post( __( 'Reset all settings', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -380,7 +358,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 	<div class="col-sm-4">
 		<?php
-			$tab = 'advanced';
 			include 'inc.admin_sidebar.php';
 		?>
 	</div>

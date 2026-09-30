@@ -10,7 +10,7 @@ $caller = 'dashboardOptionsWrapper';
 ?>
 
 <script type="text/javascript">
-	var map_leaveout_text = '<?php echo wp_kses_post( __( 'Warning: you have unsaved changes. If you leave this page, you will lose them. Do you really want to leave?', 'MAP_txt' ) ); ?>';
+	var map_leaveout_text = <?php echo wp_json_encode( __( 'Warning: you have unsaved changes. If you leave this page, you will lose them. Do you really want to leave?', 'MAP_txt' ) ); ?>;
 </script>
 
 <div class="container-fluid">
@@ -93,11 +93,11 @@ $caller = 'dashboardOptionsWrapper';
 						<?php endforeach; ?>
 
 						<?php if( ! empty( $hidden ) ) : ?>
-							<span class="badge rounded-pill bg-secondary"
+							<button type="button" class="badge rounded-pill bg-secondary border-0"
 								data-bs-toggle="tooltip"
 								title="<?php echo esc_attr( implode( ', ', $hidden) ); ?>">
 							+<?php echo count( $hidden ); ?>
-							</span>
+							</button>
 						<?php endif; ?>
 						</div>
 					<?php else: ?>
@@ -148,7 +148,7 @@ $caller = 'dashboardOptionsWrapper';
 							<div class="consistent-box">
 								<div class="row mt-3 mb-4">
 									<div class="col-12">
-										<div class="progress" style="height: 3rem;">
+										<div class="progress map-h-3rem">
 											<div class="progress-bar <?php echo esc_attr( $global_integrity_checks['summary']['status_class_name'] ); ?>" role="progressbar" style="width: <?php echo esc_attr( $global_integrity_checks['summary']['completion_percentage_width'] ); ?>%"><strong><?php echo wp_kses_post( __( 'Configuration completion status', 'MAP_txt' ) ); ?>: <?php echo esc_attr( $global_integrity_checks['summary']['completion_percentage'] ); ?>%</strong></div>
 										</div>
 									</div>
@@ -156,7 +156,7 @@ $caller = 'dashboardOptionsWrapper';
 								<div class="mb-3">
 									<button type="button" class="fake-save-button button-agile btn-md"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 									<span class="map_wait text-muted">
-										<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+										<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 									</span>
 								</div>
 								<div class="accordion" id="settingsAccordion">
@@ -251,7 +251,7 @@ $caller = 'dashboardOptionsWrapper';
 														<?php
 															if( $global_integrity_checks['dashboard_checks']['consent_mode']['is_skipped'] )
 															{
-																echo wp_kses_post( __( 'Consent Mode v2 is bypassed because you have chosen not to use Google products.', 'MAP_txt' ) );
+																echo wp_kses_post( __( 'Consent Mode v2 is bypassed because you have indicated that you do not use Google services that require it.', 'MAP_txt' ) );
 															} else
 															{
 																if( $global_integrity_checks['dashboard_checks']['consent_mode']['is_enabled'] ):
@@ -278,12 +278,13 @@ $caller = 'dashboardOptionsWrapper';
 																type="checkbox"
 																value="true"
 																id="bypass_cmode_enable_field"
+																aria-describedby="bypass_cmode_enable_help"
 																<?php checked( $the_settings['bypass_cmode_enable'], true ); ?>>
-															<label for="bypass_cmode_enable_field" class="me-2 label-checkbox"></label>
-															<label for="bypass_cmode_enable_field">
-																<?php echo esc_html__('I do not use Google products and I do not need Consent Mode v2', 'MAP_txt'); ?>
-															</label>
+															<label for="bypass_cmode_enable_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html__('I do not use Google services that require Consent Mode v2 (e.g. Analytics, Ads, Tag Manager)', 'MAP_txt'); ?></label>
 														</div>
+													</div>
+													<div class="form-text" id="bypass_cmode_enable_help">
+														<?php echo wp_kses_post( __( 'Hides the Consent Mode options and stops the related reminders. Enable it if the site does not use Google Analytics, Google Ads or Google Tag Manager.', 'MAP_txt' ) ); ?>
 													</div>
 												</div>
 
@@ -335,7 +336,7 @@ $caller = 'dashboardOptionsWrapper';
 									<div class="col-12">
 										<button type="submit" name="update_admin_settings_form" value="1" class="button-agile btn-md" id="map-save-button"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 										<span class="map_wait text-muted">
-											<i class="fas fa-spinner-third fa-fw fa-spin" style="--fa-animation-duration: 1s;"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+											<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 										</span>
 									</div>
 								</div>

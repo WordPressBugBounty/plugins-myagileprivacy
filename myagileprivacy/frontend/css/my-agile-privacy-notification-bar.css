@@ -38,3 +38,223 @@
 }
 
 /*eof notification bar*/
+
+/*signature class - do not remove*/
+.map-css-signature-my-agile-privacy-notification-bar { display: none !important; }
+
+/*bof card layout*/
+
+/*the bar is drawn over any theme: the page reaches none of its elements*/
+#mapx_notification_bar.mapx_nb--card,
+#mapx_notification_bar.mapx_nb--card::before,
+#mapx_notification_bar.mapx_nb--card::after {
+    all: initial !important;
+}
+
+#mapx_notification_bar.mapx_nb--card *,
+#mapx_notification_bar.mapx_nb--card *::before,
+#mapx_notification_bar.mapx_nb--card *::after {
+    all: unset !important;
+}
+
+#mapx_notification_bar.mapx_nb--card {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999999 !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    padding: 6px 16px !important;
+    color: #1d2327 !important;
+    background-color: #fff !important;
+    border-top: 1px solid #8c8f94 !important;
+    box-shadow: 0 -2px 8px rgba(16, 24, 40, .10) !important;
+    font-family: -apple-system, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+    max-height: 40vh !important;
+    overflow-y: auto !important;
+}
+
+/*the consent-again tab is fixed above the bar and would cover the last close button*/
+#mapx_notification_bar.mapx_nb--card.mapx_nb--has-tab {
+    padding-bottom: 56px !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_line {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/*colonna di larghezza fissa: le schede restano allineate qualunque sia la forma della mascotte*/
+#mapx_notification_bar.mapx_nb--card .mapx_nb_mascot {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 34px !important;
+    width: 34px !important;
+    line-height: 0 !important;
+}
+
+/*le due mascotte hanno proporzioni diverse: pareggiarle in altezza*/
+#mapx_notification_bar.mapx_nb--card .mapx_nb_mascot img {
+    display: block !important;
+    width: auto !important;
+    height: 34px !important;
+    max-width: 34px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: clip !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_mascot--round img {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_card {
+    position: relative !important;
+    flex: 1 1 auto !important;
+    display: block !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+    margin: 0 !important;
+    padding: 6px 36px 6px 12px !important;
+    color: #1d2327 !important;
+    background-color: #f4f8fb !important;
+    border: 1px solid #6f8fb0 !important;
+    border-radius: 3px !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_line--success .mapx_nb_card {
+    background-color: #f0faf0 !important;
+    border-color: #468f46 !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_line--warning .mapx_nb_card {
+    background-color: #fef9e7 !important;
+    border-color: #9c8829 !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_line--error .mapx_nb_card {
+    background-color: #fdf0f0 !important;
+    border-color: #b04c4d !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_badge {
+    margin-left: 6px !important;
+    font-weight: bold !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_proxification_success_true {
+    color: #155724 !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_proxification_success_false {
+    color: #721c24 !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close {
+    all: unset !important;
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    display: block !important;
+    padding: 2px 4px !important;
+    color: #50575e !important;
+    font-family: -apple-system, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close_all,
+#mapx_notification_bar.mapx_nb--card .mapx_close_notification_bar {
+    all: unset !important;
+    align-self: flex-end !important;
+    display: block !important;
+    padding: 2px 4px !important;
+    color: #50575e !important;
+    font-family: -apple-system, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close:hover,
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close_all:hover,
+#mapx_notification_bar.mapx_nb--card .mapx_close_notification_bar:hover {
+    color: #1d2327 !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close:focus,
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close_all:focus,
+#mapx_notification_bar.mapx_nb--card .mapx_close_notification_bar:focus {
+    outline: 2px solid #1d2327 !important;
+    outline-offset: 2px !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_close_all[hidden],
+#mapx_notification_bar.mapx_nb--card .mapx_close_notification_bar[hidden] {
+    display: none !important;
+}
+
+#mapx_notification_bar.mapx_nb--card .mapx_nb_sr,
+#mapx_nb_status {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+@media (max-width: 576px) {
+
+    #mapx_notification_bar.mapx_nb--card {
+        gap: 3px !important;
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+    }
+
+    #mapx_notification_bar.mapx_nb--card .mapx_nb_line {
+        gap: 10px !important;
+    }
+
+    #mapx_notification_bar.mapx_nb--card .mapx_nb_mascot {
+        flex: 0 0 28px !important;
+        width: 28px !important;
+    }
+
+    #mapx_notification_bar.mapx_nb--card .mapx_nb_mascot img {
+        height: 28px !important;
+        max-width: 28px !important;
+    }
+
+    #mapx_notification_bar.mapx_nb--card .mapx_nb_mascot--round img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    #mapx_notification_bar.mapx_nb--card .mapx_nb_card {
+        padding: 8px 32px 8px 10px !important;
+    }
+}
+
+/*eof card layout*/

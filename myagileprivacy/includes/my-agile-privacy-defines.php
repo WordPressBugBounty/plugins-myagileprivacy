@@ -1,4 +1,5 @@
 <?php
+if( !defined( 'ABSPATH' ) ) { exit; }
 
 /**
  * Core definitions
@@ -9,7 +10,7 @@
  * @subpackage MyAgilePrivacy/includes
  */
 
-define( 'MAP_PLUGIN_VERSION', '3.3.7' );
+define( 'MAP_PLUGIN_VERSION', '3.4.0' );
 define( 'MAP_PLUGIN_NAME', 'my-agile-privacy' );
 define( 'MAP_PLUGIN_SLUG', 'myagileprivacy' );
 define( 'MAP_USE_MINIFIED_FILES', true );
@@ -19,16 +20,19 @@ define( 'MAP_PLUGIN_TEXTDOMAIN', 'MAP_txt' );
 define( 'MAP_PLUGIN_DB_KEY_PREFIX', 'MyAgilePrivacy-' );
 define( 'MAP_PLUGIN_SETTINGS_FIELD', MAP_PLUGIN_DB_KEY_PREFIX . '1.0.0' );
 define( 'MAP_PLUGIN_JS_DETECTED_FIELDS', MAP_PLUGIN_DB_KEY_PREFIX . '_detected_fields' );
+define( 'MAP_DETECTED_KEY_PATTERN', '/^[A-Za-z0-9_.-]{1,64}$/' );
+define( 'MAP_DETECTED_KEYS_MAX', 300 );
 define( 'MAP_PLUGIN_RCONFIG', MAP_PLUGIN_DB_KEY_PREFIX . '_rconfig' );
 define( 'MAP_PLUGIN_L_ALLOWED', MAP_PLUGIN_DB_KEY_PREFIX . '_l_allowed' );
-define( 'MAP_PLUGIN_COMPLIANCE_REPORT', MAP_PLUGIN_DB_KEY_PREFIX . '_compliance_report' );
 define( 'MAP_PLUGIN_STATS', MAP_PLUGIN_DB_KEY_PREFIX . 'stats' );
 define( 'MAP_PLUGIN_DO_SYNC_NOW', MAP_PLUGIN_DB_KEY_PREFIX . 'do_sync_now' );
 define( 'MAP_PLUGIN_DO_SYNC_LAST_EXECUTION', MAP_PLUGIN_DB_KEY_PREFIX . 'do_sync_last_execution' );
 define( 'MAP_PLUGIN_VALIDATION_TIMESTAMP', MAP_PLUGIN_DB_KEY_PREFIX . 'validation_timestamp' );
 define( 'MAP_PLUGIN_DB_VERSION', MAP_PLUGIN_DB_KEY_PREFIX . 'db_version_number' );
 define( 'MAP_PLUGIN_DB_VERSION_NUMBER', 1 );
-define( 'MAP_PLUGIN_SYNC_IN_PROGRESS', MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
+define( 'MAP_PLUGIN_SYNC_LOCK', MAP_PLUGIN_DB_KEY_PREFIX . '_sync_lock' );
+define( 'MAP_SYNC_LOCK_TRESHOLD', 900 );
+define( 'MAP_PLUGIN_INSTALLED_VERSION', MAP_PLUGIN_DB_KEY_PREFIX . '_installed_version' );
 define( 'MAP_MANIFEST_ASSOC', MAP_PLUGIN_DB_KEY_PREFIX . 'manifest' );
 define( 'MAP_PLUGIN_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_countries' );
 define( 'MAP_PLUGIN_LOCALIZED_COUNTRIES', MAP_PLUGIN_DB_KEY_PREFIX . '_localized_countries' );
@@ -39,7 +43,6 @@ define( 'MAP_PAGE_SLUG', 'my-agile-privacy' );
 define( 'MAP_API_ENDPOINT', 'https://auth.myagileprivacy.com/wp_api' );
 define( 'MAP_INLINE_SCRIPT_EXTRA_ATTRS', 'data-no-minify="1" data-no-optimize="1" data-no-defer="1" consent-skip-blocker="1" nowprocket data-cfasync="false"' );
 define( 'MAP_LEGIT_SYNC_TRESHOLD', 10800 );
-define( 'MAP_AUTORESET_SYNC_TRESHOLD', 259200 ); // 3 days
 define( 'MAP_PLUGIN_ACTIVATION_DATE', MAP_PLUGIN_DB_KEY_PREFIX.'-activation_date' );
 define( 'MAP_REVIEW_STATUS', MAP_PLUGIN_DB_KEY_PREFIX.'-review_status' );
 define( 'MAP_NOTICE_LAST_SHOW_TIME', MAP_PLUGIN_DB_KEY_PREFIX.'-notice_last_show_time' );
@@ -50,22 +53,25 @@ define( 'MAP_ASSETS_EXCLUSION_PATTERNS', 'plugins/myagileprivacy/,wp-content/loc
 define( 'MAP_DB_PATCH_2_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_2_done' );
 define( 'MAP_DB_PATCH_3_DONE', MAP_PLUGIN_DB_KEY_PREFIX.'_patch_3_done' );
 define( 'MAP_EXPORT_FORMAT_VERSION', '2.0.0' );
-define( 'MAP_SUMMARY_VERSION', '2.0.0' );
+define( 'MAP_SUMMARY_VERSION', '2.2.0' );
 define( 'MAP_INTEGRITY_CHECK_VERSION', '2.0.0' );
-define( 'MAP_IAB_VENDOR_COUNT', '1730' );
-define( 'MAP_PLUGIN_JUST_UPDATED_TRANSIENT', 'map_just_updated' );
+define( 'MAP_IAB_VENDOR_COUNT', '1742' );
 define( 'MAP_EXPIRED_CALLBACK_URL_IT',      'https://www.myagileprivacy.com/helpdesk/perche-sul-mio-sito-compare-questa-icona/' );
 define( 'MAP_EXPIRED_CALLBACK_URL_DEFAULT', 'https://www.myagileprivacy.com/en/helpdesk/why-is-this-icon-showing-on-my-website/' );
 define( 'MAP_PLUGIN_PENDING_NOTICES',        MAP_PLUGIN_DB_KEY_PREFIX . '_pending_notices' );
 define( 'MAP_PLUGIN_ADVANCED_INSTALL_ERROR', MAP_PLUGIN_DB_KEY_PREFIX . '_advanced_install_error' );
 define( 'MAP_PLUGIN_GEO_RUNTIME',            MAP_PLUGIN_DB_KEY_PREFIX . '_geo_runtime' );
 define( 'MAP_PLUGIN_GTM_GATEWAY_DETECTED',   MAP_PLUGIN_DB_KEY_PREFIX . '_gtm_gateway_detected' );
+define( 'MAP_PLUGIN_SCAN_RUNTIME',           MAP_PLUGIN_DB_KEY_PREFIX . '_scan_runtime' );
 define( 'MAP_PLUGIN_CAPS_REGISTERED',        MAP_PLUGIN_DB_KEY_PREFIX . '_caps_registered' );
 define( 'MAP_PLUGIN_STATS_TABLE',            'map_stats_daily' );
 define( 'MAP_PLUGIN_STATS_SCHEMA_VERSION',   MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_schema' );
 define( 'MAP_PLUGIN_STATS_LAST_PRUNE',       MAP_PLUGIN_DB_KEY_PREFIX . '_stats_daily_last_prune' );
 define( 'MAP_PLUGIN_STATS_CELL_CEIL',        1000000000000 );
 define( 'MAP_PLUGIN_STATS_ROW_CAP',          500000 );
+define( 'MAP_PLUGIN_SPLIT_TEST',             MAP_PLUGIN_DB_KEY_PREFIX . '_split_test' );
+define( 'MAP_PLUGIN_AB_EVER_APPLIED',        MAP_PLUGIN_DB_KEY_PREFIX . '_ab_ever_applied' );
+define( 'MAP_PLUGIN_TRIAL_REQUESTED',        MAP_PLUGIN_DB_KEY_PREFIX . '_trial_requested' );
 $map_tunables = array(
 	'MAP_PLUGIN_JS_ERROR_TEXT_MAX' => 255,
 	'MAP_RATE_ALLOWANCE'           => 500,

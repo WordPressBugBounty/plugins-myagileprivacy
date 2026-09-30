@@ -24,20 +24,20 @@
 	$url        = 'https://www.myagileprivacy.com/?utm_source=referral&utm_medium=' . $utm_medium . '&utm_campaign=backend';
 	$banner_url = esc_attr( plugin_dir_url( __DIR__ ) ) . '../img/' . $banner;
 
-	echo '<a href="' . esc_url( $url ) . '" target="_blank"><img class="img-fluid" src="' . $banner_url . '" style="width:100%;"></a>';
+	echo '<a href="' . esc_url( $url ) . '" target="_blank"><img class="img-fluid map-w-100" src="' . $banner_url . '" alt="My Agile Privacy&reg;"></a>';
 ?>
 
 <div>
 
 	<div class="my-5 d-flex flex-row justify-content-center">
 
-		<a href="https://cmppartnerprogram.withgoogle.com/" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-official-CMP-partner.png"></a>
+		<a href="https://cmppartnerprogram.withgoogle.com/" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-official-CMP-partner.png" alt="<?php echo esc_attr( sprintf( __( '%s certified CMP partner', 'MAP_txt' ), 'Google' ) ); ?>"></a>
 
-		<a href="https://support.google.com/admanager/answer/13554116?hl=en&ref_topic=9760861&sjid=17685026765202216942-AP#zippy=,google-certified-cmps" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-cmp-badge.png"></a>
+		<a href="https://support.google.com/admanager/answer/13554116?hl=en&ref_topic=9760861&sjid=17685026765202216942-AP#zippy=,google-certified-cmps" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/google-cmp-badge.png" alt="<?php echo esc_attr( sprintf( __( '%s certified CMP', 'MAP_txt' ), 'Google' ) ); ?>"></a>
 
-		<a href="https://iabeurope.eu/cmp-list/" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/iab-banner.png"></a>
+		<a href="https://iabeurope.eu/cmp-list/" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/iab-banner.png" alt="IAB Europe Transparency &amp; Consent Framework"></a>
 
-		<a href="https://help.ads.microsoft.com/#apex/ads/en/60119/1-500" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/microsoft-uet-banner.png"></a>
+		<a href="https://help.ads.microsoft.com/#apex/ads/en/60119/1-500" target="_blank" rel="nofollow" class="map-partner-badge"><img src="<?php echo esc_attr( plugin_dir_url( __DIR__  ) ); ?>../img/microsoft-uet-banner.png" alt="<?php echo esc_attr( sprintf( __( '%s certified partner', 'MAP_txt' ), 'Microsoft UET' ) ); ?>"></a>
 
 	</div>
 </div>
@@ -46,7 +46,7 @@
 
 	$installed_html = '';
 
-	if( isset( $map_stats ) && $map_stats && $map_stats->active_installs )
+	if( isset( $map_stats ) && $map_stats && isset( $map_stats->active_installs ) && $map_stats->active_installs )
 	{
 		$installed_html = '<br><b>'.intval( $map_stats->active_installs ).'+</b>';
 
@@ -65,7 +65,7 @@
 	<div class="">
 		<a href="<?php echo esc_attr( admin_url('edit.php?post_type=my-agile-privacy-c&page=my-agile-privacy-c_helpdesk') ); ?>" class="btn btn-success d-flex justify-content-center align-items-center gap-4">
 			<i class="fa-regular fa-circle-question fa-xl"></i>
-			<span style="text-align: left;">
+			<span class="map-text-left">
 				<?php echo wp_kses_post( __( '<strong>Do you need support?</strong><br><u>Click here</u> and check the Help Desk section', 'MAP_txt' ) ); ?>
 
 			</span>

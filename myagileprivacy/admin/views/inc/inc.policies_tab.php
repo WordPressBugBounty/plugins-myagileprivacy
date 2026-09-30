@@ -28,13 +28,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- cookie policy url or page -->
 			<div class="row mb-4">
-				<label for="is_cookie_policy_url_field" class="col-sm-5 col-form-label">
+				<span id="is_cookie_policy_url_caption" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Url or Page ?', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="is_cookie_policy_url_caption">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_cookie_policy_url'] == true ): ?>
 								<input
@@ -50,11 +50,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									name="is_cookie_policy_url_field" value="true" />
 							<?php endif; ?>
 
-							<label for="is_cookie_policy_url_yes" class="me-2 label-radio"></label>
-
-							<label for="is_cookie_policy_url_yes">
-								<?php echo wp_kses_post( __( 'Url', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="is_cookie_policy_url_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Url', 'MAP_txt' ) ); ?></label>
 
 
 						</div>
@@ -77,11 +73,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									value="false" />
 							<?php endif; ?>
 
-							<label for="is_cookie_policy_url_no" class="me-2 label-radio"></label>
-
-							<label for="is_cookie_policy_url_no">
-								<?php echo wp_kses_post( __( 'Page', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="is_cookie_policy_url_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Page', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -104,7 +96,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						class="form-control"
 						id="cookie_policy_url_field"
 						name="cookie_policy_url_field"
-						value="<?php echo esc_attr ( stripslashes( $the_settings['cookie_policy_url'] ) ); ?>" />
+						value="<?php echo esc_attr ( stripslashes( (string) $the_settings['cookie_policy_url'] ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the cookie policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -128,12 +120,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						id="cookie_policy_page_field">
 						<option value="0">--<?php esc_attr_e('Select One', 'MAP_txt' ); ?>--</option>
 						<?php
-							foreach( $all_pages_for_policies_select as $page )
+							foreach( ( is_array( $all_pages_for_policies_select ) ? $all_pages_for_policies_select : array() ) as $page )
 							{
 								?>
 
 								<?php
-								if( $the_settings['cookie_policy_page']==$page->ID ):
+								if( MyAgilePrivacy::looseEqualsPhp8( $the_settings['cookie_policy_page'], $page->ID ) ):
 								?>
 									<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title); ?> </option>
 								<?php
@@ -157,9 +149,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 
 			<div class="row mb-4">
-				<label for="add_cookie_policy_to_first_layer_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Show the policy link in the banner', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
@@ -173,11 +165,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="add_cookie_policy_to_first_layer_field"
 								<?php checked( $the_settings['add_cookie_policy_to_first_layer'], true ); ?>>
 
-							<label for="add_cookie_policy_to_first_layer_field" class="me-2 label-checkbox"></label>
-
-							<label for="add_cookie_policy_to_first_layer_field">
-								<?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="add_cookie_policy_to_first_layer_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div>
 
@@ -215,13 +203,13 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 			<!-- personal data policy url or page -->
 			<div class="row mb-4">
-				<label for="is_personal_data_policy_url_field" class="col-sm-5 col-form-label">
+				<span id="is_personal_data_policy_url_caption" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Url or Page ?', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 
 				<div class="col-sm-7">
 
-					<div class="styled_radio d-inline-flex">
+					<div class="styled_radio d-inline-flex" role="radiogroup" aria-labelledby="is_personal_data_policy_url_caption">
 						<div class="round d-flex me-4">
 							<?php if( $the_settings['is_personal_data_policy_url'] == true ): ?>
 								<input
@@ -238,11 +226,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									value="true" />
 							<?php endif; ?>
 
-							<label for="is_personal_data_policy_url_yes" class="me-2 label-radio"></label>
-
-							<label for="is_personal_data_policy_url_yes">
-								<?php echo wp_kses_post( __( 'Url', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="is_personal_data_policy_url_yes" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Url', 'MAP_txt' ) ); ?></label>
 
 						</div>
 
@@ -264,11 +248,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 									value="false" />
 							<?php endif; ?>
 
-							<label for="is_personal_data_policy_url_no" class="me-2 label-radio"></label>
-
-							<label for="is_personal_data_policy_url_no">
-								<?php echo wp_kses_post( __( 'Page', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="is_personal_data_policy_url_no" class="round-label"><span class="me-2 label-radio" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Page', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div> <!-- ./ styled_radio -->
 
@@ -291,7 +271,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						class="form-control"
 						id="personal_data_policy_url_field"
 						name="personal_data_policy_url_field"
-						value="<?php echo esc_attr( stripslashes( $the_settings['personal_data_policy_url'] ) ); ?>" />
+						value="<?php echo esc_attr( stripslashes( (string) $the_settings['personal_data_policy_url'] ) ); ?>" />
 
 					<div class="form-text">
 						<?php echo wp_kses_post( __( "Insert here the URL to the personal data policy page.", 'MAP_txt' ) ); ?><br><br>
@@ -316,12 +296,12 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<option value="0">--<?php esc_attr_e('Select One', 'MAP_txt' ); ?>--</option>
 
 						<?php
-							foreach( $all_pages_for_policies_select as $page )
+							foreach( ( is_array( $all_pages_for_policies_select ) ? $all_pages_for_policies_select : array() ) as $page )
 							{
 								?>
 
 								<?php
-								if( $the_settings['personal_data_policy_page']==$page->ID ):
+								if( MyAgilePrivacy::looseEqualsPhp8( $the_settings['personal_data_policy_page'], $page->ID ) ):
 								?>
 									<option value="<?php echo esc_attr( $page->ID ); ?>" selected> <?php echo esc_attr( $page->post_title ); ?> </option>
 								<?php
@@ -346,9 +326,9 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 
 			<div class="row mb-4">
-				<label for="add_personal_policy_to_first_layer_field" class="col-sm-5 col-form-label">
+				<span class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Show the policy link in the banner', 'MAP_txt' ) ); ?>
-				</label>
+				</span>
 				<div class="col-sm-7">
 					<div class="styled_radio d-inline-flex">
 						<div class="round d-flex me-4">
@@ -362,11 +342,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 								id="add_personal_policy_to_first_layer_field"
 								<?php checked( $the_settings['add_personal_policy_to_first_layer'], true ); ?>>
 
-							<label for="add_personal_policy_to_first_layer_field" class="me-2 label-checkbox"></label>
-
-							<label for="add_personal_policy_to_first_layer_field">
-								<?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?>
-							</label>
+							<label for="add_personal_policy_to_first_layer_field" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Yes, show the policy link in the banner', 'MAP_txt' ) ); ?></label>
 						</div>
 					</div>
 
@@ -446,7 +422,6 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 	<div class="col-sm-4">
 	<?php
-		$tab = 'policies';
 		include 'inc.admin_sidebar.php';
 	?>
 	</div>

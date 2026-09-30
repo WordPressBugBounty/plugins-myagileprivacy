@@ -42,6 +42,10 @@ final class MyAgilePrivacyAdmin {
 	 */
 	private $version;
 
+	private $sync_lock_taken = false;
+
+	private $sync_lock_value = null;
+
 	/**
 	 * Constructor
 	 *
@@ -424,7 +428,7 @@ final class MyAgilePrivacyAdmin {
 	*/
 	public function admin_clear_logfile()
 	{
-		//clean logfile if it's stale and debugger is off
+		//clean logfile when debugger is off
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER == false )
 		{
 			if( defined( 'MAP_PLUGIN_NAME' ) )
@@ -439,10 +443,7 @@ final class MyAgilePrivacyAdmin {
 			$dirPath = WP_CONTENT_DIR . '/debug/';
 			$filePath = $dirPath.$plugin_name.'.txt';
 
-			$expiration_time_in_seconds = 60*60*24;
-			$max_age = time() - $expiration_time_in_seconds;
-
-			if( is_file( $filePath ) && filemtime( $filePath ) > $max_age )
+			if( is_file( $filePath ) )
 			{
 				wp_delete_file( $filePath );
 			}
@@ -493,12 +494,13 @@ final class MyAgilePrivacyAdmin {
 		$bases = array(
 			'my-agile-privacy-c_page_my-agile-privacy-c_settings',
 			'my-agile-privacy-c_page_my-agile-privacy-c_backup_restore',
-			'my-agile-privacy-c_page_my-agile-privacy-c_compliance_report',
 			'my-agile-privacy-c_page_my-agile-privacy-c_helpdesk',
 			'my-agile-privacy-c_page_my-agile-privacy-c_dashboard',
 			'my-agile-privacy-c_page_my-agile-privacy-c_stats',
+			'my-agile-privacy-c_page_my-agile-privacy-c_ab_test',
 			'my-agile-privacy-c_page_my-agile-privacy-c_translations',
 			'my-agile-privacy-c_page_my-agile-privacy-c_guided_wizard',
+			'my-agile-privacy-c_page_my-agile-privacy-c_trial',
 		);
 
 		if( isset( $screen->base ) && in_array( $screen->base, $bases, true ) )
@@ -538,11 +540,16 @@ final class MyAgilePrivacyAdmin {
 			}
 			elseif( is_string( $callback ) && false !== strpos( $callback, '::' ) )
 			{
-				$ref = new ReflectionMethod( $callback );
+				$callback_parts = explode( '::', $callback, 2 );
+				$ref = new ReflectionMethod( $callback_parts[0], $callback_parts[1] );
+			}
+			elseif( is_string( $callback ) || $callback instanceof Closure )
+			{
+				$ref = new ReflectionFunction( $callback );
 			}
 			else
 			{
-				$ref = new ReflectionFunction( $callback );
+				return true;
 			}
 
 			$file = (string) $ref->getFileName();
@@ -596,14 +603,27 @@ final class MyAgilePrivacyAdmin {
 
 		foreach( $hooks as $hook )
 		{
-			if( !isset( $wp_filter[ $hook ] ) || !is_object( $wp_filter[ $hook ] ) )
+			if( !isset( $wp_filter[ $hook ] ) )
+			{
+				continue;
+			}
+
+			if( is_object( $wp_filter[ $hook ] ) && isset( $wp_filter[ $hook ]->callbacks ) && is_array( $wp_filter[ $hook ]->callbacks ) )
+			{
+				$hook_callbacks = $wp_filter[ $hook ]->callbacks;
+			}
+			elseif( is_array( $wp_filter[ $hook ] ) )
+			{
+				$hook_callbacks = $wp_filter[ $hook ];
+			}
+			else
 			{
 				continue;
 			}
 
 			$to_remove = array();
 
-			foreach( $wp_filter[ $hook ]->callbacks as $priority => $callbacks )
+			foreach( $hook_callbacks as $priority => $callbacks )
 			{
 				foreach( $callbacks as $callback )
 				{
@@ -634,13 +654,6 @@ final class MyAgilePrivacyAdmin {
 
 		$do_load = false;
 
-		global $pagenow;
-		$current_page_settings = get_current_screen();
-		$current_page_post_type = $current_page_settings->post_type;
-		$current_page_base = $current_page_settings->base;
-
-		$current_post_type = get_post_type();
-
 		if( self::is_map_screen() )
 		{
 			$do_load = true;
@@ -667,14 +680,6 @@ final class MyAgilePrivacyAdmin {
 	{
 		$do_load = false;
 
-		global $pagenow;
-
-		$current_page_settings = get_current_screen();
-		$current_page_post_type = $current_page_settings->post_type;
-		$current_page_base = $current_page_settings->base;
-
-		$current_post_type = get_post_type();
-
 		if( self::is_map_screen() )
 		{
 			$do_load = true;
@@ -692,6 +697,28 @@ final class MyAgilePrivacyAdmin {
 				array(
 					'ajax_url' 						=> admin_url( 'admin-ajax.php' ),
 					'security' 						=> wp_create_nonce( 'check_license_status' ),
+					// own nonce: the trial family writes and reaches the network, the licence check
+					// only reads. ⚠️ wp_localize_script turns top level scalars into STRINGS: any
+					// value added here is compared in JS with == and never with ===
+					'trial_security' 				=> wp_create_nonce( 'map_request_trial' ),
+					'trial_b_security' 				=> wp_create_nonce( 'map_request_trial_b' ),
+			) );
+
+			// the outcome texts belong to the catalogue, not to the JavaScript
+			wp_localize_script( $this->plugin_name, 'map_trial_i18n',
+				array(
+					'invalid'     => __( 'Please fill in your name and a valid email address.', 'MAP_txt' ),
+					'sent'        => __( 'Done. We have sent a confirmation link to %s: open it to start the trial.', 'MAP_txt' ),
+					'refused'     => __( 'We cannot start a trial for this site.', 'MAP_txt' ),
+					'pending'     => __( 'A request is already waiting for confirmation. Check your inbox.', 'MAP_txt' ),
+					'unreachable' => __( 'We could not reach the server. Please try again in a few minutes.', 'MAP_txt' ),
+					'granted'     => __( 'Done. The paid features are on for this site: the page is reloading.', 'MAP_txt' ),
+					'no_site'     => __( 'This site is not connected to your licence yet. Save your settings first, then ask again.', 'MAP_txt' ),
+					'no_licence'  => __( 'Enter your licence code first.', 'MAP_txt' ),
+					'site_used'   => __( 'This site has already had its trial, and it cannot be reopened.', 'MAP_txt' ),
+					'family_used' => __( 'This site has already had its trial, and it cannot be reopened.', 'MAP_txt' ),
+					'cap_reached' => __( 'Your licence has used all of its trials. Contact us to try the paid features on another site.', 'MAP_txt' ),
+					'reseller'    => __( 'Your licence was sold to you by a reseller: ask them for the trial.', 'MAP_txt' ),
 			) );
 		}
 	}
@@ -744,7 +771,6 @@ final class MyAgilePrivacyAdmin {
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'do_cron_sync start' );
 
 		MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
-		MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
 
 		$multilang_enabled = MyAgilePrivacy::check_if_multilang_enabled();
 
@@ -765,6 +791,190 @@ final class MyAgilePrivacyAdmin {
 	* Function for calling remote sync via cronjob (triggered via wp_footer hook and do_cron_sync)
 	*/
 	public function triggered_do_cron_sync()
+	{
+		global $locale;
+
+		$sync_locale = $locale;
+
+		try
+		{
+			return $this->run_cron_sync();
+		}
+		catch( Exception $e )
+		{
+			$this->recover_failed_sync( $sync_locale, $e );
+		}
+		catch( Error $e )
+		{
+			$this->recover_failed_sync( $sync_locale, $e );
+		}
+
+		return null;
+	}
+
+
+	/**
+	* sanitize_textarea_field(), with the WordPress 4.7 body where the function is missing.
+	*/
+	private function sanitize_textarea_value( $str )
+	{
+		if( function_exists( 'sanitize_textarea_field' ) )
+		{
+			return sanitize_textarea_field( $str );
+		}
+
+		$filtered = wp_check_invalid_utf8( $str );
+
+		if( strpos( $filtered, '<' ) !== false )
+		{
+			$filtered = wp_pre_kses_less_than( $filtered );
+			$filtered = wp_strip_all_tags( $filtered, false );
+			$filtered = str_replace( "<\n", "&lt;\n", $filtered );
+		}
+
+		$filtered = trim( $filtered );
+
+		$found = false;
+
+		while( preg_match( '/%[a-f0-9]{2}/i', $filtered, $match ) )
+		{
+			$filtered = str_replace( $match[0], '', $filtered );
+			$found = true;
+		}
+
+		if( $found )
+		{
+			$filtered = trim( preg_replace( '/ +/', ' ', $filtered ) );
+		}
+
+		return apply_filters( 'sanitize_textarea_field', $filtered, $str );
+	}
+
+
+	/**
+	* Leaves the sync state consistent after an unexpected error.
+	*/
+	private function recover_failed_sync( $sync_locale, $e )
+	{
+		global $locale;
+
+		$locale = $sync_locale;
+
+		if( MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_NOW, 0 ) )
+		{
+			MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 0 );
+			MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, time() );
+
+			set_transient( 'map_sync_pause', 1, HOUR_IN_SECONDS );
+
+			MyAgilePrivacy::$doing_internal_write = false;
+		}
+
+		$this->release_sync_lock();
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'sync error: ' . get_class( $e ) . ': ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine() );
+	}
+
+	/**
+	* Whether the last sync is older than the expected interval.
+	*/
+	private function is_sync_stale( $last_execution, $now )
+	{
+		return !$last_execution || $now - (int) $last_execution > 82800;
+	}
+
+	/**
+	* Takes the sync lock; false when another request holds it.
+	*/
+	private function take_sync_lock()
+	{
+		global $wpdb;
+
+		if( $this->sync_lock_taken )
+		{
+			return true;
+		}
+
+		if( defined( 'MAP_DEV_MODE' ) && MAP_DEV_MODE )
+		{
+			$this->sync_lock_taken = true;
+			return true;
+		}
+
+		$now = time();
+
+		// the time of the take, made unique so that the release only removes this request's lock
+		$lock_value = sprintf( '%d.%06d', $now, mt_rand( 0, 999999 ) );
+
+		$affected = $wpdb->query( $wpdb->prepare(
+			"INSERT IGNORE INTO {$wpdb->options} ( option_name, option_value, autoload ) VALUES ( %s, %s, 'no' )",
+			MAP_PLUGIN_SYNC_LOCK,
+			$lock_value
+		) );
+
+		if( !$affected )
+		{
+			$held_since = $wpdb->get_var( $wpdb->prepare(
+				"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+				MAP_PLUGIN_SYNC_LOCK
+			) );
+
+			if( $held_since === null ||
+				( is_numeric( $held_since ) && $now - (int) $held_since <= MAP_SYNC_LOCK_TRESHOLD ) )
+			{
+				return false;
+			}
+
+			// only one of the requests that found it expired wins the swap
+			$affected = $wpdb->query( $wpdb->prepare(
+				"UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+				$lock_value,
+				MAP_PLUGIN_SYNC_LOCK,
+				$held_since
+			) );
+		}
+
+		MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_SYNC_LOCK );
+
+		$this->sync_lock_taken = ( $affected > 0 );
+		$this->sync_lock_value = $this->sync_lock_taken ? $lock_value : null;
+
+		return $this->sync_lock_taken;
+	}
+
+	/**
+	* Releases the sync lock taken by this request.
+	*/
+	private function release_sync_lock()
+	{
+		global $wpdb;
+
+		if( !$this->sync_lock_taken )
+		{
+			return;
+		}
+
+		// a lock taken over by another request after expiry is not ours to remove
+		if( $this->sync_lock_value !== null )
+		{
+			$wpdb->query( $wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
+				MAP_PLUGIN_SYNC_LOCK,
+				$this->sync_lock_value
+			) );
+
+			MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_SYNC_LOCK );
+		}
+
+		$this->sync_lock_taken = false;
+		$this->sync_lock_value = null;
+	}
+
+
+	/**
+	* Body of the remote sync.
+	*/
+	private function run_cron_sync()
 	{
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'start triggered_do_cron_sync' );
 
@@ -808,24 +1018,46 @@ final class MyAgilePrivacyAdmin {
 			}
 		}
 
-		$sync_last_execution = MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null );
-
 		//Force a sync if the last one is older than the expected interval.
-		if( $sync_last_execution )
-		{
-			if( $now - (int) $sync_last_execution > 82800 )
-			{
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'detected stale sync_last_execution' );
+		$do_sync_now = MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_NOW , 1 ) ||
+			$this->is_sync_stale( MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null ), $now );
 
-				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+		if( $do_sync_now && get_transient( 'map_sync_pause' ) )
+		{
+			$do_sync_now = 0;
+		}
+
+		$map_lock_busy = false;
+
+		if( $do_sync_now && !$this->take_sync_lock() )
+		{
+			$do_sync_now = 0;
+			$map_lock_busy = true;
+		}
+
+		// the request that held the lock may have completed the sync meanwhile
+		if( $do_sync_now )
+		{
+			wp_cache_delete( MAP_PLUGIN_DO_SYNC_NOW, 'options' );
+			wp_cache_delete( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
+
+			if( !MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_NOW, 0 ) )
+			{
+				if( $this->is_sync_stale( MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null ), time() ) )
+				{
+					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'detected stale sync_last_execution' );
+
+					// raised so that a failure is handled by recover_failed_sync()
+					MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+				}
+				else
+				{
+					$do_sync_now = 0;
+					$this->release_sync_lock();
+				}
 			}
 		}
-		else
-		{
-			MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
-		}
-
-		$do_sync_now = MyAgilePrivacy::get_option( MAP_PLUGIN_DO_SYNC_NOW , 1 );
 
 		if( $do_sync_now )
 		{
@@ -840,7 +1072,7 @@ final class MyAgilePrivacyAdmin {
 				if( MAP_DEV_MODE )
 				{
 					$manifest_filename = plugin_dir_path( MAP_PLUGIN_FILENAME ) .'dev/'.$manifest_file;
-					$manifest_content  = file_get_contents( $manifest_filename );
+					$manifest_content  = @file_get_contents( $manifest_filename );
 					$manifest          = ( $manifest_content !== false ) ? json_decode( $manifest_content, true ) : null;
 				}
 				else
@@ -848,11 +1080,11 @@ final class MyAgilePrivacyAdmin {
 					MyAgilePrivacy::download_remote_file( $cdn_basepath.$manifest_file, $manifest_file );
 
 					$manifest_filename = MyAgilePrivacy::get_base_directory_for_cache().$manifest_file;
-					$manifest_content  = file_get_contents( $manifest_filename );
+					$manifest_content  = @file_get_contents( $manifest_filename );
 					$manifest          = ( $manifest_content !== false ) ? json_decode( $manifest_content, true ) : null;
 				}
 
-				if( $manifest && isset( $manifest['manifest_version_file'] ) && isset( $manifest['files'] ) )
+				if( $manifest && isset( $manifest['manifest_version_file'] ) && isset( $manifest['files'] ) && is_array( $manifest['files'] ) )
 				{
 					if( isset( $rconfig['manifest_added_files'] ) &&
 						is_array( $rconfig['manifest_added_files'] ) &&
@@ -871,12 +1103,15 @@ final class MyAgilePrivacyAdmin {
 
 					foreach( $manifest['files'] as $remote_file => $remote_details )
 					{
+						if( !is_array( $remote_details ) || !isset( $remote_details['version'] ) || !is_string( $remote_details['version'] ) )
+						{
+							continue;
+						}
+
 						$version = $remote_details['version'];
-						$iab = $remote_details['iab'];
+						$iab = isset( $remote_details['iab'] ) ? $remote_details['iab'] : null;
 						$remote_url = $cdn_basepath . $remote_file;
-						$path_info = pathinfo( $remote_file );
 						$local_file = basename( $remote_file );
-						$local_file_with_version = $path_info['filename'] . '-' . $version . '.' . $path_info['extension'];
 
 						$this_item = array(
 							'filename'			=>	$local_file,
@@ -910,6 +1145,14 @@ final class MyAgilePrivacyAdmin {
 				{
 					MyAgilePrivacy::update_option( MAP_MANIFEST_ASSOC, null );
 				}
+
+				// whatever kept it out, a missing main script must not bring the sync back on every page
+				if( !MAP_DEV_MODE &&
+					!MyAgilePrivacy::cached_file_exists( 'cookie-shield.js' ) &&
+					!get_transient( 'map_download_brake' ) )
+				{
+					set_transient( 'map_download_brake', 1, 12 * HOUR_IN_SECONDS );
+				}
 			}
 
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'START triggered_do_cron_sync' );
@@ -918,6 +1161,17 @@ final class MyAgilePrivacyAdmin {
 			$the_settings = MyAgilePrivacy::get_settings();
 
 			$sync_result = $this->sync_cookies_and_fixed_texts( false );
+
+			// the new licence code gets its own sync: the raised flag stays
+			if( $sync_result === 'license_changed' )
+			{
+				$this->release_sync_lock();
+				return;
+			}
+
+			// reread from the database: the sync above ran long, and a save may have landed meanwhile
+			wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
 
 			$the_settings = MyAgilePrivacy::get_settings();
 
@@ -941,10 +1195,7 @@ final class MyAgilePrivacyAdmin {
 				}
 			}
 
-			$the_settings['last_sync'] = $this_sync_datetime_human;
-
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
-			$the_settings = MyAgilePrivacy::get_settings();
+			MyAgilePrivacy::update_scan_runtime( array( 'last_sync' => $this_sync_datetime_human ) );
 
 			//eof adjust last_sync data
 
@@ -953,12 +1204,11 @@ final class MyAgilePrivacyAdmin {
 			{
 				$now = time();
 
-				if( $the_settings['learning_mode_last_active_timestamp'] === null )
-				{
-					$the_settings['learning_mode_last_active_timestamp'] = $now;
+				$scan_runtime = MyAgilePrivacy::get_scan_runtime();
 
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
-					$the_settings = MyAgilePrivacy::get_settings();
+				if( $scan_runtime['learning_mode_last_active_timestamp'] === null )
+				{
+					MyAgilePrivacy::update_scan_runtime( array( 'learning_mode_last_active_timestamp' => $now ) );
 				}
 				else
 				{
@@ -966,14 +1216,14 @@ final class MyAgilePrivacyAdmin {
 
 					if( MAP_DEV_MODE )
 					{
-						if( $now - (int) $the_settings['learning_mode_last_active_timestamp'] > 3600 )
+						if( $now - (int) $scan_runtime['learning_mode_last_active_timestamp'] > 3600 )
 						{
 							$turn_to_live = true;
 						}
 					}
 					else
 					{
-						if( $now - (int) $the_settings['learning_mode_last_active_timestamp'] > 604800 )
+						if( $now - (int) $scan_runtime['learning_mode_last_active_timestamp'] > 604800 )
 						{
 							$turn_to_live = true;
 						}
@@ -981,8 +1231,14 @@ final class MyAgilePrivacyAdmin {
 
 					if( $turn_to_live )
 					{
+						MyAgilePrivacy::update_scan_runtime( array( 'learning_mode_last_active_timestamp' => null ) );
+
+						// reread right before writing the settings
+						wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+						wp_cache_delete( 'alloptions', 'options' );
+
 						//Transition scan mode to live.
-						$the_settings['learning_mode_last_active_timestamp'] = null;
+						$the_settings = MyAgilePrivacy::get_settings();
 						$the_settings['scan_mode'] = 'config_finished';
 
 						MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
@@ -999,6 +1255,9 @@ final class MyAgilePrivacyAdmin {
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'END triggered_do_cron_sync' );
 
 			$this->do_cron_sync_install_counter();
+
+			$this->release_sync_lock();
+			MAP_Admin_Notice_Manager::instance()->remove( 'map_sync_busy' );
 		}
 		else
 		{
@@ -1006,9 +1265,10 @@ final class MyAgilePrivacyAdmin {
 		}
 
 		//MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
-		//MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'end triggered_do_cron_sync' );
+
+		return $map_lock_busy ? 'busy' : null;
 	}
 
 	// Stores a content baseline for the post.
@@ -1053,6 +1313,23 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
+	* Snapshot of the grants carried by rconfig, for a before/after comparison
+	 * @access   private
+	 */
+	private static function map_rconfig_grants( $rconfig )
+	{
+		$keys = array( 'advanced_authorized', 'stats_auth', 'geo_auth', 'abtest_auth' );
+		$out  = array();
+
+		foreach( $keys as $key )
+		{
+			$out[ $key ] = ( is_array( $rconfig ) && isset( $rconfig[ $key ] ) && $rconfig[ $key ] === true );
+		}
+
+		return $out;
+	}
+
+	/**
 	* Function for executing remote sync
 	 * @access   public
 	 */
@@ -1061,35 +1338,13 @@ final class MyAgilePrivacyAdmin {
 		// Get settings
 		$the_settings = MyAgilePrivacy::get_settings();
 
-		$sync_in_progress = MyAgilePrivacy::get_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
+		// the footer sync arrives here already holding the lock
+		$map_own_sync_lock = !$this->sync_lock_taken;
 
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $sync_in_progress );
-
-		if( !( defined( 'MAP_DEV_MODE') && MAP_DEV_MODE ) )
+		if( $map_own_sync_lock && !$this->take_sync_lock() )
 		{
-			if( $sync_in_progress )
-			{
-				$do_block = true;
-
-				$now = strtotime( "now" );
-
-				if( $the_settings &&
-					( $the_settings['last_legit_sync'] ) &&
-					( $now - (int) $the_settings['last_legit_sync'] > MAP_AUTORESET_SYNC_TRESHOLD ) )
-				{
-					$do_block = false;
-
-					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "unsetting block" );
-				}
-
-				if( $do_block )
-				{
-					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "HALT sync_cookies_and_fixed_texts already in progress" );
-					return;
-				}
-			}
-
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 1 );
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "HALT sync_cookies_and_fixed_texts already in progress" );
+			return 'busy';
 		}
 
 		MyAgilePrivacy::$doing_internal_write = true;
@@ -1112,7 +1367,7 @@ final class MyAgilePrivacyAdmin {
 		}
 
 		$urlparts = wp_parse_url( home_url() );
-		$domain = $urlparts['host'];
+		$domain = ( is_array( $urlparts ) && isset( $urlparts['host'] ) ) ? $urlparts['host'] : '';
 
 		$bypass_cache_check = $bypass_cache;
 
@@ -1144,10 +1399,11 @@ final class MyAgilePrivacyAdmin {
 			'hash'				=>	$the_settings['license_code'],
 			'domain'			=>	$domain,
 			'locale'			=>	$locale,
+			// short fields first: a receiver that caps the number of fields drops the tail
+			'version'			=>	MAP_PLUGIN_VERSION,
+			'bypass_cache'		=>	$bypass_cache_check,
 			'options_summary'	=>	$this->get_options_summary(),
 			'server_data'		=>	MyAgilePrivacy::getServerFootPrint(),
-			'bypass_cache'		=>	$bypass_cache_check,
-			'version'			=>	MAP_PLUGIN_VERSION,
 		);
 
 		if( $currentAndSupportedLanguages['with_multilang'] &&
@@ -1162,11 +1418,21 @@ final class MyAgilePrivacyAdmin {
 
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $action_result );
 
+		// an answer about a licence code replaced during the call is discarded
+		wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		$map_code_check_settings = MyAgilePrivacy::get_settings();
+		$map_stored_license_code = ( isset( $map_code_check_settings['license_code'] ) && is_scalar( $map_code_check_settings['license_code'] ) ) ? (string) $map_code_check_settings['license_code'] : '';
+		$map_sent_license_code = ( isset( $data_to_send['hash'] ) && is_scalar( $data_to_send['hash'] ) ) ? (string) $data_to_send['hash'] : '';
+		$map_license_changed = ( $map_stored_license_code !== $map_sent_license_code );
+
 		$rr = false;
 		$pa = 0;
 		$is_dm = false;
 
-		if( !$action_result ||
+		if( $map_license_changed ||
+			!$action_result ||
 			!is_array( $action_result ) ||
 			isset( $action_result['internal_error_message'] )
 		)
@@ -1175,19 +1441,19 @@ final class MyAgilePrivacyAdmin {
 		}
 		else
 		{
-			if( $action_result['success'] )
+			if( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'success', false ) )
 			{
 				$rr = true;
 
 				$license_valid = true;
 				$grace_period = false;
 
-				if( $action_result['paid_license'] == 0 )
+				if( !( is_scalar( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'paid_license', 0 ) ) && MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'paid_license', 0 ) ) > 0 ) )
 				{
 					$license_user_status = 'Demo license';
 					$is_dm = true;
 
-					if( isset( $action_result['error_msg'] ) )
+					if( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) )
 					{
 						$license_valid = false;
 						$license_user_status = $action_result['error_msg'];
@@ -1200,7 +1466,7 @@ final class MyAgilePrivacyAdmin {
 						$license_user_status = 'Grace period - expiring soon';
 						$grace_period = true;
 					}
-					elseif( isset( $action_result['error_msg'] ) )
+					elseif( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) )
 					{
 						$license_user_status = $action_result['error_msg'];
 					}
@@ -1217,7 +1483,7 @@ final class MyAgilePrivacyAdmin {
 				$rr = true;
 				$license_valid = false;
 				$grace_period = false;
-				$license_user_status = $action_result['error_msg'];
+				$license_user_status = ( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) ) ? $action_result['error_msg'] : null;
 			}
 		}
 
@@ -1226,10 +1492,11 @@ final class MyAgilePrivacyAdmin {
 			// values before the sync, compared further down
 			$map_pre_sync_pa = ( isset( $the_settings['pa'] ) ) ? $the_settings['pa'] : 0;
 			$map_pre_sync_rconfig = MyAgilePrivacy::get_rconfig();
-			$map_pre_sync_authorized = ( is_array( $map_pre_sync_rconfig ) && isset( $map_pre_sync_rconfig['advanced_authorized'] ) && $map_pre_sync_rconfig['advanced_authorized'] === true );
+			$map_pre_sync_grants = self::map_rconfig_grants( $map_pre_sync_rconfig );
 
-			$customer_email = $action_result['customer_email'];
-			$summary_text = $action_result['summary_text'];
+			$customer_email = ( isset( $action_result['customer_email'] ) && is_string( $action_result['customer_email'] ) ) ? $action_result['customer_email'] : null;
+			$summary_text = ( isset( $action_result['summary_text'] ) && is_string( $action_result['summary_text'] ) ) ? $action_result['summary_text'] : null;
+			$license_name = ( isset( $action_result['license_name'] ) && is_string( $action_result['license_name'] ) ) ? $action_result['license_name'] : '';
 
 			$the_settings['license_user_status'] = $license_user_status;
 			$the_settings['is_dm'] = $is_dm;
@@ -1237,6 +1504,7 @@ final class MyAgilePrivacyAdmin {
 			$the_settings['grace_period'] = $grace_period;
 			$the_settings['customer_email'] = $customer_email;
 			$the_settings['summary_text'] = $summary_text;
+			$the_settings['license_name'] = $license_name;
 			$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
 			$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
 			$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
@@ -1244,19 +1512,64 @@ final class MyAgilePrivacyAdmin {
 			$the_settings['pa'] = $pa;
 			$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : array();
 			$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : array();
-			$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : array();
-			MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
-			MyAgilePrivacy::update_option( MAP_PLUGIN_L_ALLOWED, $l_allowed );
-			MyAgilePrivacy::update_option( MAP_PLUGIN_COMPLIANCE_REPORT, $compliance_report );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
-			$the_settings = MyAgilePrivacy::get_settings();
+			// reread from the database, so a save made during the remote call is not overwritten
+			wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
 
-			// refresh the cached frontend config when these values changed
-			$map_post_sync_authorized = ( is_array( $rconfig ) && isset( $rconfig['advanced_authorized'] ) && $rconfig['advanced_authorized'] === true );
-			if( $map_pre_sync_pa != $pa || $map_pre_sync_authorized !== $map_post_sync_authorized )
+			$map_fresh_settings = MyAgilePrivacy::get_settings();
+
+			$map_fresh_code = ( is_array( $map_fresh_settings ) && isset( $map_fresh_settings['license_code'] ) && is_scalar( $map_fresh_settings['license_code'] ) ) ? (string) $map_fresh_settings['license_code'] : '';
+			$map_license_changed = ( $map_fresh_code !== $map_sent_license_code );
+
+			if( !$map_license_changed )
 			{
-				MyAgilePrivacy::flush_json_cache();
+				MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
+				MyAgilePrivacy::update_option( MAP_PLUGIN_L_ALLOWED, $l_allowed );
+			}
+
+			if( !$map_license_changed && is_array( $map_fresh_settings ) )
+			{
+				$map_sync_owned_fields = array(
+					'customer_email', 'grace_period', 'is_dm', 'last_legit_sync', 'license_name',
+					'license_user_status', 'license_valid', 'pa', 'parse_config',
+					'parse_config_version_number', 'summary_text', 'wl_b',
+				);
+
+				foreach( $map_sync_owned_fields as $map_sync_field )
+				{
+					if( array_key_exists( $map_sync_field, $the_settings ) )
+					{
+						$map_fresh_settings[ $map_sync_field ] = $the_settings[ $map_sync_field ];
+					}
+				}
+
+				$the_settings = $map_fresh_settings;
+			}
+
+			if( $map_license_changed )
+			{
+				// the answer belongs to the previous code: nothing of it is written
+				$rr = false;
+				$rconfig = MyAgilePrivacy::get_rconfig();
+				$the_settings = MyAgilePrivacy::get_settings();
+			}
+			else
+			{
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+				$the_settings = MyAgilePrivacy::get_settings();
+
+				// refresh the cached frontend config when these values changed
+				$map_post_sync_grants = self::map_rconfig_grants( $rconfig );
+				if( $map_pre_sync_pa != $pa || $map_pre_sync_grants !== $map_post_sync_grants )
+				{
+					MyAgilePrivacy::flush_json_cache();
+				}
+
+				if( $pa != 1 )
+				{
+					MyAgilePrivacy::flush_manifest_file_cache();
+				}
 			}
 		}
 		else
@@ -1274,9 +1587,14 @@ final class MyAgilePrivacyAdmin {
 
 		if( $rr )
 		{
-			$cookies = $action_result['cookies'];
-			$fixed_text = $action_result['fixed_text'];
-			$countries = $action_result['countries'];
+			$cookies = ( isset( $action_result['cookies'] ) && is_array( $action_result['cookies'] ) ) ? $action_result['cookies'] : array();
+			$fixed_text = ( isset( $action_result['fixed_text'] ) && is_array( $action_result['fixed_text'] ) ) ? $action_result['fixed_text'] : array();
+			$countries = ( isset( $action_result['countries'] ) && is_array( $action_result['countries'] ) ) ? array_filter( $action_result['countries'], 'is_array' ) : null;
+
+			if( empty( $countries ) )
+			{
+				$countries = null;
+			}
 
 			$sync_datetime_human = strtotime( "now" );
 			$sync_datetime = time();
@@ -1298,8 +1616,8 @@ final class MyAgilePrivacyAdmin {
 			}
 
 			if( $action_result &&
-				$action_result['success'] &&
-				$action_result['valid_license']
+				MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'success', false ) &&
+				MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'valid_license', false )
 			)
 			{
 				//no action on error on multilang
@@ -1313,6 +1631,14 @@ final class MyAgilePrivacyAdmin {
 
 					foreach( $cookies as $k => $v )
 					{
+						// skip malformed entries
+						if( !is_array( $v ) ||
+							( isset( $v['name'] ) && !is_scalar( $v['name'] ) ) ||
+							( isset( $v['text'] ) && !is_scalar( $v['text'] ) ) )
+						{
+							continue;
+						}
+
 						if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $v );
 
 						$post_status_to_search = array( 'publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', '__expired', '__blocked', '__always_allowed', 'trash' );
@@ -1343,7 +1669,7 @@ final class MyAgilePrivacyAdmin {
 									if( is_array( $post_status_to_search ) &&
 										in_array( $this_post_status, $post_status_to_search ) )
 									{
-										update_post_meta( $main_post_id, "_map_country_code", isset( $v['country_code'] ) ? sanitize_key( $v['country_code'] ) : '' );
+										update_post_meta( $main_post_id, "_map_country_code", ( isset( $v['country_code'] ) && is_scalar( $v['country_code'] ) ) ? sanitize_key( (string) $v['country_code'] ) : '' );
 
 										$do_content_sync = false;
 										$do_crit_metadata_sync = false;
@@ -1399,7 +1725,7 @@ final class MyAgilePrivacyAdmin {
 											update_post_meta( $main_post_id, "_map_is_readonly", $v['is_readonly'] );
 											update_post_meta( $main_post_id, "_map_help_url", $v['help_url'] );
 											update_post_meta( $main_post_id, "_map_api_key", $v['api_key'] );
-											update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
+											if( isset( $v['source_hash'] ) ) update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
 											update_post_meta( $main_post_id, "_map_textual_hash", $v['textual_hash'] );
 											update_post_meta( $main_post_id, "_map_suggested_is_necessary", ( $v['is_necessary'] ) ? 'necessary' : 'not-necessary' );
 
@@ -1458,7 +1784,7 @@ final class MyAgilePrivacyAdmin {
 
 											update_post_meta( $main_post_id, "_map_api_key", $v['api_key'] );
 											update_post_meta( $main_post_id, "_map_help_url", $v['help_url'] );
-											update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
+											if( isset( $v['source_hash'] ) ) update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
 											update_post_meta( $main_post_id, "_map_textual_hash", $v['textual_hash'] );
 										}
 									}
@@ -1475,7 +1801,7 @@ final class MyAgilePrivacyAdmin {
 
 							$meta_input = array(
 								'_map_remote_id'					=>	$v['remote_id'],
-								'_map_country_code'					=>	isset( $v['country_code'] ) ? sanitize_key( $v['country_code'] ) : '',
+								'_map_country_code'					=>	( isset( $v['country_code'] ) && is_scalar( $v['country_code'] ) ) ? sanitize_key( (string) $v['country_code'] ) : '',
 								'_map_name'							=>	$v['name'],
 								'_map_is_free'						=>	$v['is_free'],
 								'_map_is_necessary'					=>	( $v['is_necessary'] ) ? 'necessary' : 'not-necessary',
@@ -1483,7 +1809,7 @@ final class MyAgilePrivacyAdmin {
 								'_map_is_readonly'					=>	$v['is_readonly'],
 								'_map_help_url'						=>	$v['help_url'],
 								'_map_api_key'						=>	$v['api_key'],
-								'_map_source_hash'					=>	$v['source_hash'],
+								'_map_source_hash'					=>	isset( $v['source_hash'] ) ? $v['source_hash'] : '',
 								'_map_textual_hash'					=>	$v['textual_hash'],
 								'_map_allow_sync'					=>	1,
 								'_map_page_reload_on_user_consent'	=>	$v['page_reload_on_user_consent'],
@@ -1524,6 +1850,14 @@ final class MyAgilePrivacyAdmin {
 
 					foreach( $fixed_text as $k => $v )
 					{
+						// skip malformed entries
+						if( !is_array( $v ) ||
+							( isset( $v['name'] ) && !is_scalar( $v['name'] ) ) ||
+							( isset( $v['text'] ) && !is_scalar( $v['text'] ) ) )
+						{
+							continue;
+						}
+
 						//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $v );
 
 						$cc_args = array(
@@ -1615,7 +1949,7 @@ final class MyAgilePrivacyAdmin {
 										}
 									}
 
-									update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
+									if( isset( $v['source_hash'] ) ) update_post_meta( $main_post_id, "_map_source_hash", $v['source_hash'] );
 									update_post_meta( $main_post_id, "_map_textual_hash", $v['textual_hash'] );
 								}
 							}
@@ -1639,7 +1973,7 @@ final class MyAgilePrivacyAdmin {
 															'_map_remote_id'			=>	$v['remote_id'],
 															'_map_name'					=>	$v['name'],
 															'_map_is_free'				=>	$v['is_free'],
-															'_map_source_hash'			=>	$v['source_hash'],
+															'_map_source_hash'			=>	isset( $v['source_hash'] ) ? $v['source_hash'] : '',
 															'_map_textual_hash'			=>	$v['textual_hash'],
 															'_map_allow_sync'			=>	1,
 															'_map_sync_datetime_human'	=>	$sync_datetime_human,
@@ -1667,8 +2001,8 @@ final class MyAgilePrivacyAdmin {
 
 			if(
 				!( $action_result &&
-					$action_result['success'] &&
-					$action_result['valid_license']
+					MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'success', false ) &&
+					MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'valid_license', false )
 				) || !$license_valid
 			)
 			{
@@ -1785,7 +2119,11 @@ final class MyAgilePrivacyAdmin {
 				}
 			}
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_COUNTRIES, $countries );
+			// an answer without the lists keeps the stored ones: empty lists would put every visitor in block
+			if( is_array( $countries ) )
+			{
+				MyAgilePrivacy::update_option( MAP_PLUGIN_COUNTRIES, $countries );
+			}
 
 			if( isset( $action_result['localized_countries'] ) )
 			{
@@ -1799,13 +2137,24 @@ final class MyAgilePrivacyAdmin {
 		{
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $rconfig['autoconsume_options'] );
 
-			$autoconsume_options = json_decode( $rconfig['autoconsume_options'], true );
+			$autoconsume_options = is_string( $rconfig['autoconsume_options'] ) ? json_decode( $rconfig['autoconsume_options'], true ) : null;
 
 			$rconfig['autoconsume_options'] = null;
 			MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
 
 			if( isset( $autoconsume_options['forced'] ) )
 			{
+				// reached on the failed call too, and after the import loop: the array in hand is old
+				wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+				wp_cache_delete( 'alloptions', 'options' );
+
+				$map_forced_fresh = MyAgilePrivacy::get_settings();
+
+				if( is_array( $map_forced_fresh ) )
+				{
+					$the_settings = $map_forced_fresh;
+				}
+
 				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_settings );
 
 				if( isset( $autoconsume_options['forced']['forced_auto_update'] ) )
@@ -1823,8 +2172,8 @@ final class MyAgilePrivacyAdmin {
 				if( isset( $autoconsume_options['forced']['learning_mode'] ) && $autoconsume_options['forced']['learning_mode'] == 1 )
 				{
 					$the_settings['scan_mode'] = 'learning_mode';
-					$the_settings['learning_mode_last_active_timestamp'] = null;
 					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+					MyAgilePrivacy::update_scan_runtime( array( 'learning_mode_last_active_timestamp' => null ) );
 				}
 
 				if( isset( $autoconsume_options['forced']['reset_consent'] ) && $autoconsume_options['forced']['reset_consent'] == 1 )
@@ -1834,7 +2183,7 @@ final class MyAgilePrivacyAdmin {
 					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				}
 
-				if( isset( $autoconsume_options['added_cookies'] ) && $autoconsume_options['added_cookies'] )
+				if( isset( $autoconsume_options['added_cookies'] ) && is_array( $autoconsume_options['added_cookies'] ) && $autoconsume_options['added_cookies'] )
 				{
 					$added_cookies = $autoconsume_options['added_cookies'];
 					$added_cookies = array_filter( $added_cookies );
@@ -1913,14 +2262,22 @@ final class MyAgilePrivacyAdmin {
 			}
 		}
 
-		MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
+		if( $map_own_sync_lock )
+		{
+			$this->release_sync_lock();
+		}
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( "END sync_cookies_and_fixed_texts" );
 
 		//note: any new return added to this function must reset this flag
 		MyAgilePrivacy::$doing_internal_write = false;
 
-		return true;
+		if( isset( $old_locale ) )
+		{
+			$locale = $old_locale;
+		}
+
+		return $map_license_changed ? 'license_changed' : true;
 	}
 
 
@@ -1931,7 +2288,10 @@ final class MyAgilePrivacyAdmin {
 	{
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		if( function_exists( 'set_time_limit' ) )
+		{
+			@set_time_limit( 0 );
+		}
 
 		$el  = 'post_' . $cpt;
 		$icl = $wpdb->prefix . 'icl_translations';
@@ -2119,15 +2479,33 @@ final class MyAgilePrivacyAdmin {
 
 			$cookies = json_decode( $file_content, true );
 
-			if( !is_array( $cookies ) || !isset( $cookies['standard'] ) || !isset( $cookies['custom'] ) )
+			if( !is_array( $cookies ) ||
+				!isset( $cookies['standard'] ) || !is_array( $cookies['standard'] ) ||
+				!isset( $cookies['custom'] ) || !is_array( $cookies['custom'] ) )
 			{
 				return false;
 			}
 
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
+			$map_scalar_keys = array( 'title', 'content', '_map_installation_type', '_map_code', '_map_raw_code', '_map_is_necessary', '_map_is_readonly', '_map_js_dependencies' );
+
 			foreach( $cookies['standard'] as $k => $v )
 			{
+				if( !is_array( $v ) )
+				{
+					continue;
+				}
+
+				// skip malformed entries
+				foreach( $map_scalar_keys as $map_scalar_key )
+				{
+					if( isset( $v[ $map_scalar_key ] ) && !is_scalar( $v[ $map_scalar_key ] ) )
+					{
+						continue 2;
+					}
+				}
+
 				$post_status_to_search = array( 'publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit' );
 
 				$cc_args = array(
@@ -2164,17 +2542,17 @@ final class MyAgilePrivacyAdmin {
 								wp_update_post( $my_post );
 
 								//wp slash because of wp_unslash on display
-								$this_map_translations = ( $v['_map_translations'] ) ? wp_slash( $v['_map_translations'] ) : null;
+								$this_map_translations = ( isset( $v['_map_translations'] ) && is_string( $v['_map_translations'] ) && $v['_map_translations'] !== '' ) ? wp_slash( $v['_map_translations'] ) : null;
 
-								update_post_meta( $main_post_id, "_map_installation_type", $v['_map_installation_type'] );
-								update_post_meta( $main_post_id, "_map_code", $v['_map_code'] );
-								update_post_meta( $main_post_id, "_map_raw_code", $v['_map_raw_code'] );
-								update_post_meta( $main_post_id, "_map_is_necessary", $v['_map_is_necessary'] );
-								update_post_meta( $main_post_id, "_map_is_readonly", $v['_map_is_readonly'] );
-								update_post_meta( $main_post_id, "_map_allow_sync", intval( $v['_map_allow_sync'] ) );
-								update_post_meta( $main_post_id, "_map_auto_detected", intval( $v['_map_auto_detected'] ) );
-								update_post_meta( $main_post_id, "_map_auto_detected_override", intval( $v['_map_auto_detected_override'] ) );
-								update_post_meta( $main_post_id, "_map_js_dependencies", $v['_map_js_dependencies'] );
+								update_post_meta( $main_post_id, "_map_installation_type", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_installation_type' ) );
+								update_post_meta( $main_post_id, "_map_code", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_code' ) );
+								update_post_meta( $main_post_id, "_map_raw_code", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_raw_code' ) );
+								update_post_meta( $main_post_id, "_map_is_necessary", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_is_necessary' ) );
+								update_post_meta( $main_post_id, "_map_is_readonly", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_is_readonly' ) );
+								update_post_meta( $main_post_id, "_map_allow_sync", MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_allow_sync' ) ) );
+								update_post_meta( $main_post_id, "_map_auto_detected", MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_auto_detected' ) ) );
+								update_post_meta( $main_post_id, "_map_auto_detected_override", MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_auto_detected_override' ) ) );
+								update_post_meta( $main_post_id, "_map_js_dependencies", MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_js_dependencies' ) );
 								update_post_meta( $main_post_id, "_map_translations", $this_map_translations );
 							}
 						}
@@ -2186,26 +2564,40 @@ final class MyAgilePrivacyAdmin {
 
 			foreach( $cookies['custom'] as $k => $v )
 			{
+				if( !is_array( $v ) )
+				{
+					continue;
+				}
+
+				// skip malformed entries
+				foreach( $map_scalar_keys as $map_scalar_key )
+				{
+					if( isset( $v[ $map_scalar_key ] ) && !is_scalar( $v[ $map_scalar_key ] ) )
+					{
+						continue 2;
+					}
+				}
+
 				//wp slash because of wp_unslash on display
-				$this_map_translations = ( $v['_map_translations'] ) ? wp_slash( $v['_map_translations'] ) : null;
+				$this_map_translations = ( isset( $v['_map_translations'] ) && is_string( $v['_map_translations'] ) && $v['_map_translations'] !== '' ) ? wp_slash( $v['_map_translations'] ) : null;
 
 				$new_post = array (
 					'post_type' 		=>	MAP_POST_TYPE_COOKIES,
-					'post_title' 		=>	$v['title'],
-					'post_content' 		=>	$v['content'],
+					'post_title' 		=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, 'title', '' ),
+					'post_content' 		=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, 'content', '' ),
 					'post_status' 		=>	'publish',
 					'comment_status' 	=>	'closed',
 					'ping_status' 		=>	'closed',
 					'meta_input'		=>	array(
-												'_map_installation_type'		=>	$v['_map_installation_type'],
-												'_map_code'						=>	$v['_map_code'],
-												'_map_raw_code'					=>	$v['_map_raw_code'],
-												'_map_is_necessary'				=>	$v['_map_is_necessary'],
-												'_map_is_readonly'				=>	$v['_map_is_readonly'],
-												'_map_allow_sync'				=>	intval( $v['_map_allow_sync'] ),
-												'_map_auto_detected'			=>	intval( $v['_map_auto_detected'] ),
-												'_map_auto_detected_override'	=>	intval( $v['_map_auto_detected_override'] ),
-												'_map_js_dependencies'			=>	$v['_map_js_dependencies'],
+												'_map_installation_type'		=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_installation_type' ),
+												'_map_code'						=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_code' ),
+												'_map_raw_code'					=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_raw_code' ),
+												'_map_is_necessary'				=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_is_necessary' ),
+												'_map_is_readonly'				=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_is_readonly' ),
+												'_map_allow_sync'				=>	MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_allow_sync' ) ),
+												'_map_auto_detected'			=>	MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_auto_detected' ) ),
+												'_map_auto_detected_override'	=>	MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $v,'_map_auto_detected_override' ) ),
+												'_map_js_dependencies'			=>	MyAgilePrivacy::nullCoalesceArrayItem( $v, '_map_js_dependencies' ),
 												'_map_translations'				=>	$this_map_translations,
 											)
 				);
@@ -2286,18 +2678,18 @@ final class MyAgilePrivacyAdmin {
 
 						if( $key )
 						{
-							$this_map_translations = MyAgilePrivacy::nullCoalesce( $all_meta['_map_translations'][0] ) ;
+							$this_map_translations = MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_translations' );
 
 							$elem_to_save = array(
-								'_map_installation_type'		=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_installation_type'][0], '' ),
-								'_map_code'						=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_code'][0], null ),
-								'_map_raw_code'					=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_raw_code'][0], null ),
-								'_map_is_necessary'				=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_is_necessary'][0], 'not-necessary' ),
-								'_map_is_readonly'				=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_is_readonly'][0], 0 ),
-								'_map_allow_sync'				=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_allow_sync'][0], 1 ),
-								'_map_auto_detected'			=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_auto_detected'][0], 0 ),
-								'_map_auto_detected_override'	=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_auto_detected_override'][0], 0 ),
-								'_map_js_dependencies'			=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_js_dependencies'][0], 0 ),
+								'_map_installation_type'		=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_installation_type', '' ),
+								'_map_code'						=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_code' ),
+								'_map_raw_code'					=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_raw_code' ),
+								'_map_is_necessary'				=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_is_necessary', 'not-necessary' ),
+								'_map_is_readonly'				=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_is_readonly', 0 ),
+								'_map_allow_sync'				=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_allow_sync', 1 ),
+								'_map_auto_detected'			=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_auto_detected', 0 ),
+								'_map_auto_detected_override'	=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_auto_detected_override', 0 ),
+								'_map_js_dependencies'			=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_js_dependencies', 0 ),
 								'_map_translations'				=>	$this_map_translations,
 							);
 
@@ -2305,22 +2697,22 @@ final class MyAgilePrivacyAdmin {
 						}
 						else
 						{
-							$this_map_translations = MyAgilePrivacy::nullCoalesce( $all_meta['_map_translations'][0] ) ;
+							$this_map_translations = MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_translations' );
 
 							if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $this_map_translations );
 
 							$elem_to_save = array(
 								'title'							=>	get_the_title( $main_post_id ),
 								'content'						=>	get_post_field( 'post_content', $main_post_id ),
-								'_map_installation_type'		=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_installation_type'][0], '' ),
-								'_map_code'						=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_code'][0], null ),
-								'_map_raw_code'					=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_raw_code'][0], null ),
-								'_map_is_necessary'				=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_is_necessary'][0], 'not-necessary' ),
+								'_map_installation_type'		=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_installation_type', '' ),
+								'_map_code'						=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_code' ),
+								'_map_raw_code'					=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_raw_code' ),
+								'_map_is_necessary'				=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_is_necessary', 'not-necessary' ),
 								'_map_is_readonly'				=>	0,
 								'_map_allow_sync'				=>	0,
 								'_map_auto_detected'			=>	0,
 								'_map_auto_detected_override'	=>	0,
-								'_map_js_dependencies'			=>	MyAgilePrivacy::nullCoalesce( $all_meta['_map_js_dependencies'][0], 0 ),
+								'_map_js_dependencies'			=>	MyAgilePrivacy::nullCoalesceMetaItem( $all_meta, '_map_js_dependencies', 0 ),
 								'_map_translations'				=>	$this_map_translations,
 							);
 
@@ -2335,10 +2727,13 @@ final class MyAgilePrivacyAdmin {
 			MyAgilePrivacy::internal_query_reset();
 		}
 
-		$json_data = json_encode( $export_data );
+		$json_data = MyAgilePrivacy::jsonEncodeSafe( $export_data );
 
-		header( 'Content-disposition: attachment; filename=export.json' );
-		header( 'Content-type: application/json' );
+		if( !headers_sent() )
+		{
+			header( 'Content-disposition: attachment; filename=export.json' );
+			header( 'Content-type: application/json' );
+		}
 
 		echo( $json_data );
 
@@ -2395,7 +2790,7 @@ final class MyAgilePrivacyAdmin {
 
 		$wp_admin_bar->add_menu( array(
 			'id'    => 'map_cookieshield',
-			'title' => '<img src="'. plugin_dir_url( __FILE__ ) . 'img/logo.png" style="max-height:18px;width:auto; margin-right:5px;" /> <span class="map_cookieshield_text_status">Cookie Shield: '.$cookie_shied_value.'</span>',
+			'title' => '<img src="'. plugin_dir_url( __FILE__ ) . 'img/logo.png" alt="" class="map_cookieshield_logo" /> <span class="map_cookieshield_text_status">Cookie Shield: '.$cookie_shied_value.'</span>',
 			'href'  => $this_href,
 			'meta'  => array(
 				'class' => esc_attr( $cookie_shield_raw_status )
@@ -2486,7 +2881,8 @@ final class MyAgilePrivacyAdmin {
 		$zip_support = MyAgilePrivacy::verify_zip_support();
 		$remote_download = MyAgilePrivacy::verify_remote_download();
 
-		$can_install_and_activate = $filesystem_write_access && $zip_support && $remote_download;
+		$can_install_and_activate = $filesystem_write_access && $zip_support && $remote_download &&
+			MyAgilePrivacy::verify_file_mods_allowed();
 
 		$other_data = array(
 			'map_version'					=>	MAP_PLUGIN_VERSION,
@@ -2544,7 +2940,7 @@ final class MyAgilePrivacyAdmin {
 		//eof
 
 		// Get settings
-		$the_settings = MyAgilePrivacy::get_settings();
+		$the_settings = array_merge( MyAgilePrivacy::get_settings(), MyAgilePrivacy::get_scan_runtime() );
 		$do_not_send_in_clear_settings_key = MyAgilePrivacy::get_do_not_send_in_clear_settings_key();
 
 		//purge do_not_send fields
@@ -2655,15 +3051,17 @@ final class MyAgilePrivacyAdmin {
 
 								$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? wp_unslash( json_decode( $all_meta["_map_translations"][0], true ) )  : null;
 
-								if( $this_map_translations_decoded )
+								if( $this_map_translations_decoded && is_array( $this_map_translations_decoded ) )
 								{
 									$recalculated_translations_hash = array();
 
 									foreach( $this_map_translations_decoded as $trans_key => $trans_item )
 									{
+										if( !is_array( $trans_item ) ) continue;
+
 										$hash_lang_item = array(
 											'key'	=>	$trans_key,
-											'hash'	=>	hash( 'sha256', $trans_item['name'].$trans_item['text'] )
+											'hash'	=>	hash( 'sha256', MyAgilePrivacy::nullCoalesceArrayItem( $trans_item, 'name', '' ).MyAgilePrivacy::nullCoalesceArrayItem( $trans_item, 'text', '' ) )
 										);
 
 										$recalculated_translations_hash[ $trans_key ] = $hash_lang_item;
@@ -2721,7 +3119,7 @@ final class MyAgilePrivacyAdmin {
 						//retrieve all meta, also customizations (punto c ecc)
 						$all_meta = get_post_meta( $main_post_id );
 
-						$key = $all_meta['_map_remote_id'][0];
+						$key = isset( $all_meta['_map_remote_id'][0] ) ? $all_meta['_map_remote_id'][0] : null;
 
 						if( $key )
 						{
@@ -2744,15 +3142,17 @@ final class MyAgilePrivacyAdmin {
 
 							$this_map_translations_decoded = ( isset( $all_meta["_map_translations"][0] ) ) ? wp_unslash( json_decode( $all_meta["_map_translations"][0], true ) )  : null;
 
-							if( $this_map_translations_decoded )
+							if( $this_map_translations_decoded && is_array( $this_map_translations_decoded ) )
 							{
 								$recalculated_translations_hash = array();
 
 								foreach( $this_map_translations_decoded as $trans_key => $trans_item )
 								{
+									if( !is_array( $trans_item ) ) continue;
+
 									$hash_lang_item = array(
 										'key'	=>	$trans_key,
-										'hash'	=>	hash( 'sha256', $trans_item['text'] )
+										'hash'	=>	hash( 'sha256', (string) MyAgilePrivacy::nullCoalesceArrayItem( $trans_item, 'text', '' ) )
 									);
 
 									$recalculated_translations_hash[ $trans_key ] = $hash_lang_item;
@@ -2775,13 +3175,23 @@ final class MyAgilePrivacyAdmin {
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $cookies );
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $policies );
 
+		$advanced_usage = ( function_exists( 'map_call_advanced_get_usage_facts' ) ) ? map_call_advanced_get_usage_facts() : array();
+
 		$output = array(
 			'cleaned_options' 	=>	$cleaned_options,
 			'cookies'			=>	$cookies,
 			'policies'			=>	$policies,
 			'other_data'		=>	$other_data,
 			'manifest_assoc'	=>	$manifest_assoc,
+			'advanced_usage'	=>	$advanced_usage,
 		);
+
+		$usage_extract = ( function_exists( 'map_call_advanced_get_usage_extract' ) ) ? map_call_advanced_get_usage_extract() : '';
+
+		if( $usage_extract !== '' )
+		{
+			$output = array( 'usage_extract' => $usage_extract ) + $output;
+		}
 
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $output );
 
@@ -2809,13 +3219,18 @@ final class MyAgilePrivacyAdmin {
 
 		if( isset( $_POST['action'] ) && $_POST['action'] == 'update_translations_form' )
 		{
-			$submitted_translations = isset($_POST['translations']) ? $_POST['translations'] : array();
+			$submitted_translations = ( isset( $_POST['translations'] ) && is_array( $_POST['translations'] ) ) ? $_POST['translations'] : array();
 			$sanitized_submitted_translations = array();
 
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $submitted_translations );
 
 			foreach( $submitted_translations as $lang => $translations )
 			{
+				if( !is_array( $translations ) )
+				{
+					continue;
+				}
+
 				if( !isset( $sanitized_submitted_translations[ $lang ] ) ||
 					!is_array( $sanitized_submitted_translations[ $lang ] ) )
 				{
@@ -2830,9 +3245,16 @@ final class MyAgilePrivacyAdmin {
 
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $sanitized_submitted_translations );
 
-			$the_settings['fixed_translations_encoded'] = json_encode( $sanitized_submitted_translations );
+			$map_fixed_translations_json = wp_json_encode( $sanitized_submitted_translations );
 
-			MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			if( false !== $map_fixed_translations_json )
+			{
+				$the_settings['fixed_translations_encoded'] = $map_fixed_translations_json;
+
+				$the_settings = $this->map_reconciled_settings( $the_settings, array( 'fixed_translations_encoded' ) );
+
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+			}
 		}
 
 		$answer = array(
@@ -2844,6 +3266,38 @@ final class MyAgilePrivacyAdmin {
 	    MyAgilePrivacy::flush_json_cache();
 
 		wp_send_json( $answer );
+	}
+
+
+	/**
+	 * Returns the settings reread from the database, with the caller's own fields carried over.
+	 *
+	 * @param array $current  the array the caller holds
+	 * @param array $owned    keys the caller is entitled to write
+	 * @return array
+	 */
+	private function map_reconciled_settings( $current, $owned )
+	{
+		// the delete is what makes the reread reach the database instead of the request cache
+		wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
+
+		$fresh = MyAgilePrivacy::get_settings();
+
+		if( !is_array( $fresh ) || !is_array( $current ) )
+		{
+			return $current;
+		}
+
+		foreach( array_unique( $owned ) as $field )
+		{
+			if( array_key_exists( $field, $current ) )
+			{
+				$fresh[ $field ] = $current[ $field ];
+			}
+		}
+
+		return $fresh;
 	}
 
 
@@ -2872,10 +3326,14 @@ final class MyAgilePrivacyAdmin {
 		$grace_period = false;
 		$customer_email = null;
 		$summary_text = null;
+		$license_name = '';
 
 		// Get settings
 		$the_settings = MyAgilePrivacy::get_settings();
 		$the_settings_save = $the_settings;
+
+		// keys this callback is entitled to write, collected as they are assigned
+		$map_owned_fields = array();
 
 		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $_POST );
 
@@ -2888,14 +3346,28 @@ final class MyAgilePrivacyAdmin {
 			// Check nonce:
 			check_admin_referer( 'myagileprivacy-update-' . MAP_PLUGIN_SETTINGS_FIELD );
 
-			$map_locked_keys = array( 'pa', 'license_valid', 'license_user_status', 'grace_period', 'wl_b', 'summary_text', 'customer_email', 'missing_api_support', 'missing_api_support_timestamp', 'missing_api_support_failures_count', 'missing_api_support_failures_window_start' );
+			$map_locked_keys = array( 'pa', 'license_valid', 'license_user_status', 'grace_period', 'wl_b', 'summary_text', 'customer_email', 'license_name', 'missing_api_support', 'missing_api_support_timestamp', 'missing_api_support_failures_count', 'missing_api_support_failures_window_start' );
 
 			// these keys keep their stored values
-			if( ! function_exists( 'map_is_advanced_active' ) || ! map_is_advanced_active() )
+			if( ! function_exists( 'map_stats_enabled' ) || ! map_stats_enabled() )
 			{
 				$map_locked_keys[] = 'stats_enabled';
 				$map_locked_keys[] = 'send_ga4_event_on_consent_change';
 			}
+
+			$map_ab_state  = function_exists( 'map_call_advanced_get_ab_state' ) ? map_call_advanced_get_ab_state() : array( 'running' => false, 'panel_url' => '' );
+			$map_ab_locked = ( isset( $map_ab_state['running'] ) && $map_ab_state['running'] );
+
+			$map_sync_busy = false;
+
+			// appearance keys keep their stored values while a test is running
+			if( $map_ab_locked )
+			{
+				$map_locked_keys = array_merge( $map_locked_keys, MyAgilePrivacy::get_banner_variant_keys() );
+				$map_locked_keys[] = 'stats_enabled';
+			}
+
+			$map_default_settings = MyAgilePrivacy::get_default_settings();
 
 			foreach( $the_settings as $key => $value )
 			{
@@ -2904,15 +3376,35 @@ final class MyAgilePrivacyAdmin {
 					continue;
 				}
 
-				if( isset( $_POST[$key] ) && is_array( $_POST[$key] ) )
+				$map_default_value = ( is_array( $map_default_settings ) && array_key_exists( $key, $map_default_settings ) ) ? $map_default_settings[ $key ] : null;
+
+				if( isset( $_POST[$key] ) && is_array( $_POST[$key] ) && is_array( $value ) )
 				{
+					$map_posted_value = $_POST[$key];
+
+					// a sub-key sent as an array where the default is not one keeps its stored value
+					if( is_array( $map_default_value ) )
+					{
+						foreach( $map_posted_value as $sub_key => $sub_value )
+						{
+							if( is_array( $sub_value ) &&
+								array_key_exists( $sub_key, $map_default_value ) &&
+								!is_array( $map_default_value[ $sub_key ] ) )
+							{
+								unset( $map_posted_value[ $sub_key ] );
+							}
+						}
+					}
+
 					//store sanitised values only
-					$the_settings[ $key ] = MyAgilePrivacy::sanitise_array_settings( $key, $_POST[$key] );
+					$the_settings[ $key ] = MyAgilePrivacy::sanitise_array_settings( $key, $map_posted_value );
+					$map_owned_fields[] = $key;
 				}
-				elseif( isset( $_POST[$key . '_field'] ) )
+				elseif( isset( $_POST[$key . '_field'] ) && !is_array( $_POST[$key . '_field'] ) && !is_array( $map_default_value ) )
 				{
 					//store sanitised values only
 					$the_settings[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $_POST[$key . '_field'] );
+					$map_owned_fields[] = $key;
 				}
 			};
 
@@ -2929,6 +3421,8 @@ final class MyAgilePrivacyAdmin {
 						$geo_fo_clean[ $iso_clean ] = ( $val === 'true' || $val === true );
 					}
 				}
+				// the key is not claimed here: the default is an array, so this branch runs on every
+				// save, and the loop above has already claimed it when the form actually sent it
 				$the_settings['site_and_policy_settings']['geo_force_optout'] = $geo_fo_clean;
 			}
 
@@ -2948,6 +3442,7 @@ final class MyAgilePrivacyAdmin {
 			)
 			{
 				$the_settings['scan_mode'] = 'learning_mode';
+				$map_owned_fields[] = 'scan_mode';
 			}
 
 			if( $the_settings_save['default_locale'] != $the_settings['default_locale'] )
@@ -2978,18 +3473,34 @@ final class MyAgilePrivacyAdmin {
 				$timestamp = time();
 
 				$the_settings['cookie_reset_timestamp'] = $timestamp;
+				$map_owned_fields[] = 'cookie_reset_timestamp';
 			}
 
 			if( isset( $_POST['reset_cookie_settings'] ) )
 			{
-				MyAgilePrivacy::dropCustomPostTypesPosts();
+				// the posts are removed only by a request that can rebuild them
+				if( !$this->take_sync_lock() )
+				{
+					$map_sync_busy = true;
+				}
+				else
+				{
+					try
+					{
+						// raised first, so that a failure below is rebuilt by the next page
+						MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
+						MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 
-				//refresh cookies (bypass_cache)
-				$this->sync_cookies_and_fixed_texts( true );
+						MyAgilePrivacy::dropCustomPostTypesPosts();
 
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
-				MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
-				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+						//refresh cookies (bypass_cache)
+						$this->sync_cookies_and_fixed_texts( true );
+					}
+					finally
+					{
+						$this->release_sync_lock();
+					}
+				}
 			}
 
 			if( isset( $_POST['reset_settings'] ) )
@@ -3003,6 +3514,7 @@ final class MyAgilePrivacyAdmin {
 					'grace_period',
 					'customer_email',
 					'summary_text',
+					'license_name',
 					'default_locale',
 					'website_name',
 					'identity_name',
@@ -3013,6 +3525,12 @@ final class MyAgilePrivacyAdmin {
 					'site_and_policy_settings',
 					'stats_enabled',
 				);
+
+				// appearance keys keep their stored values while a test is running
+				if( $map_ab_locked )
+				{
+					$do_not_reset_array = array_merge( $do_not_reset_array, MyAgilePrivacy::get_banner_variant_keys() );
+				}
 
 				foreach( $default_settings as $key => $value )
 				{
@@ -3025,6 +3543,7 @@ final class MyAgilePrivacyAdmin {
 								if( !is_array( $sub_value ) && !in_array( $sub_key, $do_not_reset_array ) )
 								{
 									$the_settings[ $key ][ $sub_key ] = MyAgilePrivacy::sanitise_settings( $sub_key, $sub_value );
+									$map_owned_fields[] = $key;
 								}
 							}
 						}
@@ -3034,11 +3553,13 @@ final class MyAgilePrivacyAdmin {
 						if( !in_array( $key, $do_not_reset_array ) )
 						{
 							$the_settings[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $value );
+							$map_owned_fields[] = $key;
 						}
 					}
 				}
 
 				MyAgilePrivacy::update_option( MAP_MANIFEST_ASSOC, null );
+				MyAgilePrivacy::update_option( MAP_PLUGIN_SCAN_RUNTIME, MyAgilePrivacy::get_scan_runtime_defaults() );
 			}
 
 			$rr = false;
@@ -3050,7 +3571,7 @@ final class MyAgilePrivacyAdmin {
 			if( !$the_settings['license_valid'] ||
 				!$the_settings_save['pa'] ||
 				( isset( $_POST['license_code_field'] ) &&
-					$the_settings_save['license_code'] != $_POST['license_code_field'] )
+					!MyAgilePrivacy::looseEqualsPhp8( $the_settings_save['license_code'], $_POST['license_code_field'] ) )
 			)
 			{
 				$missing_key = true;
@@ -3070,17 +3591,17 @@ final class MyAgilePrivacyAdmin {
 
 				//validation part
 				$urlparts = wp_parse_url( home_url() );
-				$domain = $urlparts['host'];
+				$domain = ( is_array( $urlparts ) && isset( $urlparts['host'] ) ) ? $urlparts['host'] : '';
 
 				$data_to_send = array(
 					'action'			=>	'validation',
 					'software_key'		=>	MAP_SOFTWARE_KEY,
 					'hash'				=>	sanitize_text_field( $_POST['license_code_field'] ),
 					'domain'			=>	$domain,
+					'version'			=>	MAP_PLUGIN_VERSION,
+					'bypass_cache'		=>	( $do_revalidation || $missing_key ) ? 1 : 0,
 					'options_summary'	=>	$this->get_options_summary(),
 					'server_data'		=>	MyAgilePrivacy::getServerFootPrint(),
-					'bypass_cache'		=>	( $do_revalidation || $missing_key ) ? 1 : 0,
-					'version'			=>	MAP_PLUGIN_VERSION,
 				);
 
 				//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $data_to_send );
@@ -3098,19 +3619,19 @@ final class MyAgilePrivacyAdmin {
 				}
 				else
 				{
-					if( $action_result['success'] )
+					if( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'success', false ) )
 					{
 						$rr = true;
 
 						$license_valid = true;
 						$grace_period = false;
 
-						if( $action_result['paid_license'] == 0 )
+						if( !( is_scalar( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'paid_license', 0 ) ) && MyAgilePrivacy::intvalPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $action_result, 'paid_license', 0 ) ) > 0 ) )
 						{
 							$license_user_status = 'Demo license';
 							$is_dm = true;
 
-							if( isset( $action_result['error_msg'] ) )
+							if( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) )
 							{
 								$license_valid = false;
 								$license_user_status = $action_result['error_msg'];
@@ -3123,7 +3644,7 @@ final class MyAgilePrivacyAdmin {
 								$license_user_status = 'Grace period - expiring soon';
 								$grace_period = true;
 							}
-							elseif( isset( $action_result['error_msg'] ) )
+							elseif( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) )
 							{
 								$license_user_status = $action_result['error_msg'];
 							}
@@ -3140,7 +3661,7 @@ final class MyAgilePrivacyAdmin {
 						$rr = true;
 						$license_valid = false;
 						$grace_period = false;
-						$license_user_status = $action_result['error_msg'];
+						$license_user_status = ( isset( $action_result['error_msg'] ) && is_string( $action_result['error_msg'] ) ) ? $action_result['error_msg'] : null;
 					}
 				}
 
@@ -3155,7 +3676,6 @@ final class MyAgilePrivacyAdmin {
 					if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'trigger cookie update via db and hooks' );
 
 					//trigger cookie update	via db and hooks
-					MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
 					MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null );
 					MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 				}
@@ -3163,14 +3683,31 @@ final class MyAgilePrivacyAdmin {
 
 			if( $do_clear_file_cache )
 			{
-				MyAgilePrivacy::flush_manifest_file_cache();
-				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+				// a running sync would switch the flag off after the files are gone
+				if( !$this->take_sync_lock() )
+				{
+					$map_sync_busy = true;
+				}
+				else
+				{
+					try
+					{
+						// raised first, so that a partial flush is rebuilt by the next page
+						MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+						MyAgilePrivacy::flush_manifest_file_cache();
+					}
+					finally
+					{
+						$this->release_sync_lock();
+					}
+				}
 			}
 
 			if( $rr )
 			{
-				$customer_email = $action_result['customer_email'];
-				$summary_text = $action_result['summary_text'];
+				$customer_email = ( isset( $action_result['customer_email'] ) && is_string( $action_result['customer_email'] ) ) ? $action_result['customer_email'] : null;
+				$summary_text = ( isset( $action_result['summary_text'] ) && is_string( $action_result['summary_text'] ) ) ? $action_result['summary_text'] : null;
+				$license_name = ( isset( $action_result['license_name'] ) && is_string( $action_result['license_name'] ) ) ? $action_result['license_name'] : '';
 
 				$the_settings['license_user_status'] = $license_user_status;
 				$the_settings['is_dm'] = $is_dm;
@@ -3178,18 +3715,32 @@ final class MyAgilePrivacyAdmin {
 				$the_settings['grace_period'] = $grace_period;
 				$the_settings['customer_email'] = $customer_email;
 				$the_settings['summary_text'] = $summary_text;
+				$the_settings['license_name'] = $license_name;
 				$the_settings['wl_b'] = ( isset( $action_result['wl_b'] ) ) ? $action_result['wl_b'] : 0;
 				$the_settings['parse_config'] = ( isset( $action_result['parse_config'] ) ) ? $action_result['parse_config'] : null;
 				$the_settings['parse_config_version_number'] = ( isset( $action_result['parse_config_version_number'] ) ) ? $action_result['parse_config_version_number'] : null;
 				$the_settings['last_legit_sync'] = strtotime( "now" );
 				$the_settings['pa'] = $pa;
+				$map_owned_fields = array_merge( $map_owned_fields, array(
+					'license_user_status', 'is_dm', 'license_valid', 'grace_period', 'customer_email',
+					'summary_text', 'license_name', 'wl_b', 'parse_config',
+					'parse_config_version_number', 'last_legit_sync', 'pa',
+				) );
+
 				$rconfig = ( isset( $action_result['rconfig'] ) ) ? $action_result['rconfig'] : array();
 				$l_allowed = ( isset( $action_result['l_allowed'] ) ) ? $action_result['l_allowed'] : array();
-				$compliance_report = ( isset( $action_result['compliance_report'] ) ) ? $action_result['compliance_report'] : array();
 
 				MyAgilePrivacy::update_option( MAP_PLUGIN_RCONFIG, $rconfig );
 				MyAgilePrivacy::update_option( MAP_PLUGIN_L_ALLOWED, $l_allowed );
-				MyAgilePrivacy::update_option( MAP_PLUGIN_COMPLIANCE_REPORT, $compliance_report );
+
+				// the remote call above took seconds: do not write back what was read before it
+				$the_settings = $this->map_reconciled_settings( $the_settings, $map_owned_fields );
+
+				if( $pa != 1 )
+				{
+					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+					MyAgilePrivacy::flush_manifest_file_cache();
+				}
 			}
 			else
 			{
@@ -3199,11 +3750,12 @@ final class MyAgilePrivacyAdmin {
 				$grace_period = $the_settings['grace_period'];
 				$customer_email = $the_settings['customer_email'];
 				$summary_text = $the_settings['summary_text'];
+				$license_name = $the_settings['license_name'];
 
 				$rconfig = MyAgilePrivacy::get_rconfig();
 			}
 
-			$lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && $rconfig['lc_hide_local'] == 1 ) ? 1 : 0;
+			$lc_hide_local = ( isset( $rconfig ) && isset( $rconfig['lc_hide_local'] ) && MyAgilePrivacy::looseEqualsPhp8( $rconfig['lc_hide_local'], 1 ) ) ? 1 : 0;
 			$lc_owner_description = ( isset( $rconfig ) && isset( $rconfig['lc_owner_description'] ) ) ? $rconfig['lc_owner_description'] : null;
 			$lc_owner_email = ( isset( $rconfig ) && isset( $rconfig['lc_owner_email'] ) ) ? $rconfig['lc_owner_email'] : null;
 			$lc_owner_website = ( isset( $rconfig ) && isset( $rconfig['lc_owner_website'] ) ) ? $rconfig['lc_owner_website'] : null;
@@ -3216,6 +3768,7 @@ final class MyAgilePrivacyAdmin {
 			)
 			{
 				$the_settings['dont_ask_license_code_timestamp'] = time();
+				$map_owned_fields[] = 'dont_ask_license_code_timestamp';
 			}
 
 			if(
@@ -3226,7 +3779,11 @@ final class MyAgilePrivacyAdmin {
 			)
 			{
 				$the_settings['dont_ask_license_code_timestamp'] = 0;
+				$map_owned_fields[] = 'dont_ask_license_code_timestamp';
 			}
+
+			// second pass: covers the branch where the call failed and never reconciled
+			$the_settings = $this->map_reconciled_settings( $the_settings, $map_owned_fields );
 
 			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $the_settings );
 
@@ -3237,14 +3794,20 @@ final class MyAgilePrivacyAdmin {
 
 			if( isset( $_POST['force_sync'] ) )
 			{
-				//reset sync in progress status var for forced sync
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
 				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_LAST_EXECUTION, null );
 				MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 
 				//refresh cookies (bypass_cache)
 				$sync_result = $this->sync_cookies_and_fixed_texts( true, true );
 
+				if( $sync_result === 'busy' )
+				{
+					$map_sync_busy = true;
+				}
+			}
+
+			if( isset( $_POST['force_sync'] ) && !$map_sync_busy )
+			{
 				//bof adjust last_sync data
 
 				$now = time();
@@ -3266,10 +3829,13 @@ final class MyAgilePrivacyAdmin {
 					}
 				}
 
-				$the_settings['last_sync'] = $this_sync_datetime_human;
+				// reread: the sync just above wrote fields that the old array would undo
+				wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
+				wp_cache_delete( 'alloptions', 'options' );
 
-				MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
 				$the_settings = MyAgilePrivacy::get_settings();
+
+				MyAgilePrivacy::update_scan_runtime( array( 'last_sync' => $this_sync_datetime_human ) );
 
 				//eof adjust last_sync data
 			}
@@ -3309,6 +3875,7 @@ final class MyAgilePrivacyAdmin {
 				'grace_period'				=>	$grace_period,
 				'customer_email'			=>	$customer_email,
 				'summary_text'				=>	$summary_text,
+				'license_name'				=>	$license_name,
 				'lc_hide_local'				=>	$lc_hide_local,
 				'lc_owner_description'		=>	$lc_owner_description,
 				'lc_owner_email'			=>	$lc_owner_email,
@@ -3318,6 +3885,27 @@ final class MyAgilePrivacyAdmin {
 				'cookie_shied_value' 		=>	$cookie_shied_value,
 				'internal_error_message'	=>	( $action_result && isset( $action_result['internal_error_message'] ) ) ? $action_result['internal_error_message'] : null,
 			);
+
+			if( $map_sync_busy )
+			{
+				$answer['sync_busy']         = true;
+				$answer['sync_busy_message'] = esc_html__( 'Settings saved. A synchronization is already running: try again in a few minutes.', 'MAP_txt' );
+			}
+
+			if( $map_ab_locked )
+			{
+				// the settings page is the only form carrying this field
+				if( isset( $_POST['with_css_effects_field'] ) )
+				{
+					$answer['ab_locked']         = true;
+					$answer['ab_locked_message'] = esc_html__( 'Settings saved. The graphic options did not change: a Banner A/B Test is running.', 'MAP_txt' );
+				}
+
+				if( isset( $_POST['stats_enabled_field'] ) )
+				{
+					$answer['ab_locked_stats'] = true;
+				}
+			}
 
 		    // Invalidate the JSON cache since cookie data has changed
 		    MyAgilePrivacy::flush_json_cache();
@@ -3348,7 +3936,12 @@ final class MyAgilePrivacyAdmin {
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		$regulation_config = $MyAgilePrivacyRegulationHelper->getRegulationForBackendEdit();
-		$regulation_config_encoded = json_encode( $regulation_config );
+		$regulation_config_encoded = MyAgilePrivacy::jsonEncodeSafe( $regulation_config );
+
+		if( false === $regulation_config_encoded )
+		{
+			$regulation_config_encoded = '{}';
+		}
 
 		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
 			strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )== 'xmlhttprequest' )
@@ -3417,7 +4010,7 @@ final class MyAgilePrivacyAdmin {
 
 					<div class="map-hero">
 						<div class="map-avatar">
-							<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
+							<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png" alt="">
 						</div>
 
 						<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
@@ -3567,8 +4160,6 @@ final class MyAgilePrivacyAdmin {
 	{
 		global $submenu;
 
-		$the_settings = MyAgilePrivacy::get_settings();
-
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		if( MyAgilePrivacy::map_can_edit() )
@@ -3611,18 +4202,6 @@ final class MyAgilePrivacyAdmin {
 			'edit.php?post_type='.MAP_POST_TYPE_POLICY
 		);
 
-		if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRATION )
-		{
-			add_submenu_page(
-				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-				__('Consent Statistics', 'MAP_txt'),
-				__('Consent Statistics', 'MAP_txt'),
-				MyAgilePrivacy::get_capability( 'options' ),
-				MAP_POST_TYPE_COOKIES.'_stats',
-				array( $this, 'stats_view' )
-			);
-		}
-
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
 			wp_kses_post( __( 'Texts and Translations', 'MAP_txt' ) ),
@@ -3632,6 +4211,23 @@ final class MyAgilePrivacyAdmin {
 			array( $this, 'translations_view' )
 		);
 
+		add_submenu_page(
+			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+			__('Consent Statistics', 'MAP_txt'),
+			__('Consent Statistics', 'MAP_txt'),
+			MyAgilePrivacy::get_capability( 'options' ),
+			MAP_POST_TYPE_COOKIES.'_stats',
+			array( $this, 'stats_view' )
+		);
+
+		add_submenu_page(
+			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
+			__('Banner A/B Test', 'MAP_txt'),
+			__('Banner A/B Test', 'MAP_txt'),
+			MyAgilePrivacy::get_capability( 'options' ),
+			MAP_POST_TYPE_COOKIES.'_ab_test',
+			array( $this, 'ab_test_view' )
+		);
 
 		add_submenu_page(
 			'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
@@ -3652,15 +4248,15 @@ final class MyAgilePrivacyAdmin {
 			array( $this, 'helpdesk_view' )
 		);
 
-		if( isset( $rconfig['display_compliance_report'] ) && $rconfig['display_compliance_report'] == 1 )
+		if( self::map_trial_offered() )
 		{
 			add_submenu_page(
 				'edit.php?post_type='.MAP_POST_TYPE_COOKIES,
-				wp_kses_post( __( 'Compliance Report', 'MAP_txt' ) ),
-				wp_kses_post( __( 'Compliance Report', 'MAP_txt' ) ),
+				wp_kses_post( __( 'Free trial', 'MAP_txt' ) ),
+				wp_kses_post( __( 'Free trial', 'MAP_txt' ) ),
 				MyAgilePrivacy::get_capability( 'options' ),
-				MAP_POST_TYPE_COOKIES.'_compliance_report',
-				array( $this, 'compliance_report_view' )
+				MAP_POST_TYPE_COOKIES.'_trial',
+				array( $this, 'trial_view' )
 			);
 		}
 
@@ -3772,42 +4368,7 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
-	* Compliance report view
-	*/
-	public function compliance_report_view()
-	{
-		// check user capabilities
-		if( !MyAgilePrivacy::map_can_edit() )
-		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'compliance_report_view -> missing user permission' );
-			return false;
-		}
-
-		// Get settings
-		$the_settings = MyAgilePrivacy::get_settings();
-		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
-		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
-		$rconfig = MyAgilePrivacy::get_rconfig();
-
-		if( !empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) &&
-			strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )== 'xmlhttprequest' )
-		{
-			exit();
-		}
-
-		$css_compatibility_fix = false;
-
-		if( isset( $GLOBALS['wp_version'] ) && version_compare( $GLOBALS['wp_version'], '4.2', '<' ) )
-		{
-			$css_compatibility_fix = true;
-		}
-
-		require_once plugin_dir_path( __FILE__ ).'views/compliance_report_html.php';
-	}
-
-
-	/**
-	* Help Desk report view
+	* Consent Statistics view
 	*/
 	public function stats_view()
 	{
@@ -3821,8 +4382,406 @@ final class MyAgilePrivacyAdmin {
 			return;
 		}
 
-		echo '<div class="wrap"><h1>' . esc_html__( 'Consent Statistics', 'MAP_txt' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Consent Statistics is a premium feature. Measure how visitors interact with your cookie banner — interaction, consent and opt-in rates, with no personal data collected. Upgrade your license to unlock it.', 'MAP_txt' ) . '</p></div>';
+		$this->map_render_upsell_page(
+			__( 'My Agile Privacy®: Consent Statistics', 'MAP_txt' ),
+			array(
+				__( 'Consent Statistics is a premium feature. Measure how visitors interact with your cookie banner - interaction, consent and opt-in rates, with no personal data collected. Upgrade your license to unlock it.', 'MAP_txt' ),
+			)
+		);
+	}
+
+	/**
+	 * Prints the attributes that freeze an appearance control.
+	 */
+	public static function print_ab_lock_attrs( $locked, $describedby )
+	{
+		if( !$locked )
+		{
+			return;
+		}
+
+		echo ' disabled aria-describedby="' . esc_attr( $describedby ) . '"';
+	}
+
+	public function ab_test_view()
+	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			return;
+		}
+
+		if( function_exists( 'map_call_advanced_render_ab_test' ) && map_call_advanced_render_ab_test() )
+		{
+			return;
+		}
+
+		$this->map_render_upsell_page(
+			__( 'My Agile Privacy®: Banner A/B Test', 'MAP_txt' ),
+			array(
+				__( 'Want to know which Banner configuration earns the most consent? Then activate the license: Banner A/B Test compares up to four configurations on real visitors and applies the winner with one click.', 'MAP_txt' ),
+			)
+		);
+	}
+
+	/**
+	 * Whether this site carries a paid licence. Read from the setting and not from the bridge, which
+	 * does not exist with MAP_ENABLE_ADVANCED_INTEGRATION off.
+	 */
+	private static function map_has_paid_license()
+	{
+		$settings = MyAgilePrivacy::get_settings();
+
+		return ( is_array( $settings ) && isset( $settings['pa'] ) && $settings['pa'] == 1 );
+	}
+
+	/**
+	 * Menu visibility for the "Free trial" item.
+	 */
+	private static function map_trial_offered()
+	{
+		// a trial of either kind keeps the item visible: a running trial B switches the three
+		// features on, and without this the page disappears exactly while it has something to say
+		if( self::map_trial_state() !== 'none' || self::map_trial_b_state() !== 'none' )
+		{
+			return true;
+		}
+
+		// 🔴 a paid licence with no trial to show has nothing on that page: what is left there is the
+		// form of the other trial, the one for sites without a licence, and the server refuses it on a
+		// domain that already carries a paying accreditation. Offering it invites a customer to fill in
+		// a form and be told no
+		if( self::map_has_paid_license() )
+		{
+			return false;
+		}
+
+		if( function_exists( 'map_stats_enabled' ) && map_stats_enabled() &&
+			function_exists( 'map_abtest_enabled' ) && map_abtest_enabled() &&
+			function_exists( 'map_geo_enabled' ) && map_geo_enabled() )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether to invite the visitor to ask for a trial. The menu item stays visible while a trial
+	 * runs - that page is where its state and end date are - but the invitation does not.
+	 */
+	public static function map_trial_invitable()
+	{
+		return ( self::map_trial_offered()
+					&& self::map_trial_state() === 'none'
+					&& self::map_trial_b_state() === 'none' );
+	}
+
+	/**
+	 * Trial state of this site: "active" while it runs, "requested" between the request and the
+	 * confirmation, "none" otherwise.
+	 */
+	public static function map_trial_state()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		// rconfig is saved verbatim: check the type before use
+		if( is_array( $rconfig ) && isset( $rconfig['is_trial'] ) && $rconfig['is_trial'] === true )
+		{
+			return 'active';
+		}
+
+		// a trial that is over, told apart from one never asked: the server sends both keys, and
+		// without the second the page would offer the form to someone the server will refuse
+		if( is_array( $rconfig ) && isset( $rconfig['trial_used'] ) && $rconfig['trial_used'] === true )
+		{
+			return 'finished';
+		}
+
+		$asked = get_option( MAP_PLUGIN_TRIAL_REQUESTED );
+
+		// the marker expires with the link it stands for: after that the site may ask again
+		if( $asked && MyAgilePrivacy::isNumericPhp8( $asked ) && ( time() - MyAgilePrivacy::intvalPhp8( $asked ) ) < ( 8 * HOUR_IN_SECONDS ) )
+		{
+			return 'requested';
+		}
+
+		return 'none';
+	}
+
+	/**
+	 * Trial B state for this site: active, available, used, or none. Never computed from dates here -
+	 * the server decides, against its own clock.
+	 */
+	public static function map_trial_b_state()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( !is_array( $rconfig ) )
+		{
+			return 'none';
+		}
+
+		// the server answers for THIS site, so used means used here. A running one arrives with its
+		// end date; without it the fifteen days are over
+		if( isset( $rconfig['trial_b_used'] ) && $rconfig['trial_b_used'] === true )
+		{
+			return ( self::map_trial_b_end() !== null ) ? 'active' : 'used';
+		}
+
+		if( isset( $rconfig['trial_b_available'] ) && $rconfig['trial_b_available'] === true )
+		{
+			return 'available';
+		}
+
+		return 'none';
+	}
+
+	/**
+	 * End date of a running trial B, as the server sent it, or null.
+	 */
+	public static function map_trial_b_end()
+	{
+		return self::map_trial_date_key( 'trial_b_until' );
+	}
+
+	/**
+	 * True when the licence was sold through a reseller: the page then sends the customer there.
+	 */
+	public static function map_trial_is_reseller()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		return ( is_array( $rconfig ) && isset( $rconfig['is_reseller'] ) && $rconfig['is_reseller'] === true );
+	}
+
+	/**
+	 * A date key of rconfig, only when it really looks like one. A string that is not a date gives
+	 * strtotime false, and date_i18n with false prints TODAY: the site would read "active until today".
+	 */
+	private static function map_trial_date_key( $key )
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( is_array( $rconfig ) && isset( $rconfig[ $key ] ) && is_string( $rconfig[ $key ] )
+			&& preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $rconfig[ $key ], $date_parts )
+			&& checkdate( (int) $date_parts[2], (int) $date_parts[3], (int) $date_parts[1] ) )
+		{
+			return $rconfig[ $key ];
+		}
+
+		return null;
+	}
+
+	/**
+	 * End date of a running trial, or null. Comes from the licence server, never computed locally:
+	 * two clocks are the defect that bit the other trial.
+	 */
+	public static function map_trial_end()
+	{
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		return self::map_trial_date_key( 'trial_end' );
+	}
+
+	/**
+	 * Renders the page of a feature that is not available.
+	 */
+	private function map_render_upsell_page( $title, $paragraphs )
+	{
+		// same grid, box and type as the Free trial page, so the premium screens read as one family
+		echo '<div class="wrap dashboardOptionsWrapper" id="my_agile_privacy_backend">';
+		echo '<h1>' . esc_html( $title ) . '</h1>';
+		echo '<div class="container-fluid"><div class="row"><div class="col-md-9"><div class="consistent-box">';
+		echo '<p><span class="badge rounded-pill forbiddenWarning bg-danger"><small>' . esc_html__( 'Premium Feature', 'MAP_txt' ) . '</small></span></p>';
+
+		$map_first = true;
+
+		foreach( $paragraphs as $map_paragraph )
+		{
+			// the opening line carries the promise: same weight it has on the trial page
+			echo '<p' . ( $map_first ? ' class="lead"' : '' ) . '>' . esc_html( $map_paragraph ) . '</p>';
+
+			$map_first = false;
+		}
+
+		if( self::map_trial_invitable() )
+		{
+			echo '<p class="mt-3"><a class="button-agile" href="' . esc_url( admin_url( 'edit.php?post_type=' . MAP_POST_TYPE_COOKIES . '&page=' . MAP_POST_TYPE_COOKIES . '_trial' ) ) . '">'
+			   . esc_html__( 'Request a free trial', 'MAP_txt' )
+			   . '</a></p>';
+		}
+		else
+		{
+			// inviting someone who is already on a trial to ask for one is the shortest path to a
+			// support ticket: say why the feature is off instead
+			echo '<div class="alert alert-info mt-3 mb-0">' . esc_html__( 'This feature is not available with your licence.', 'MAP_txt' ) . '</div>';
+		}
+
+		echo '</div></div></div></div>';
+		echo '</div>';
+	}
+
+
+	/**
+	 * Returns the domain the trial is requested for.
+	 */
+	public static function map_trial_domain()
+	{
+		$host = function_exists( 'get_site_url' ) ? get_site_url() : '';
+		$parts = parse_url( $host );
+
+		if( is_array( $parts ) && isset( $parts['host'] ) && $parts['host'] )
+		{
+			return $parts['host'];
+		}
+
+		return $host;
+	}
+
+	/**
+	 * Free trial request. Talks to the licence server; the trial is only created after the
+	 * requester confirms by email.
+	 */
+	public function map_request_trial()
+	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			wp_send_json_error( array( 'code' => 'forbidden' ), 403 );
+		}
+
+		// own nonce: this family writes and reaches the network, the licence check only reads
+		check_ajax_referer( 'map_request_trial', 'security' );
+
+		$name  = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$email = ( isset( $_POST['email'] ) && is_string( $_POST['email'] ) ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+		$type  = ( isset( $_POST['user_type'] ) && is_string( $_POST['user_type'] ) ) ? sanitize_key( wp_unslash( $_POST['user_type'] ) ) : '';
+
+		// the consent is OPTIONAL: the trial starts either way
+		$consent = ( isset( $_POST['marketing_consent'] ) && MyAgilePrivacy::looseEqualsPhp8( $_POST['marketing_consent'], 1 ) ) ? 1 : 0;
+
+		// strict rule on the name: it travels inside three messages signed by our domain, towards an
+		// address that may belong to a third party. No newlines, no markup, no length to hide in
+		$name = trim( preg_replace( '/[\r\n\t]+/', ' ', $name ) );
+		$name = preg_replace( '/\s{2,}/', ' ', $name );
+
+		if( function_exists( 'mb_substr' ) )
+		{
+			$name = mb_substr( $name, 0, 120 );
+		}
+		else
+		{
+			$name = substr( $name, 0, 120 );
+		}
+
+		if( $name === '' || !is_email( $email ) )
+		{
+			wp_send_json_error( array( 'code' => 'invalid' ), 400 );
+		}
+
+		if( $type !== 'azienda' && $type !== 'privato' )
+		{
+			$type = 'privato';
+		}
+
+		// the language is the one of the ADMINISTRATOR filling the form, not the site's:
+		// MyAgilePrivacy::get_locale() goes through get_user_locale() on WP 4.7 and later
+		$language = MAP_Helpdesk_Links::get_language_key();
+
+		$answer = MyAgilePrivacy::call_api( array(
+			'action'            => 'trial_request',
+			'software_key'      => 'map_wp',
+			'domain'            => self::map_trial_domain(),
+			'name'              => $name,
+			'email'             => $email,
+			'user_type'         => $type,
+			'language'          => $language,
+			'marketing_consent' => $consent,
+		) );
+
+		// the answer is saved verbatim nowhere and read defensively: an unusable response must not
+		// become a success, and must not throw on an array where a string is expected
+		if( !is_array( $answer ) || isset( $answer['internal_error_message'] ) )
+		{
+			wp_send_json_error( array( 'code' => 'unreachable' ), 502 );
+		}
+
+		if( empty( $answer['success'] ) )
+		{
+			$code = ( isset( $answer['code'] ) && is_string( $answer['code'] ) ) ? sanitize_key( $answer['code'] ) : 'refused';
+
+			wp_send_json_error( array( 'code' => $code ), 200 );
+		}
+
+		// remembered locally so the page does not offer a second request while the first link is
+		// still valid: the licence server knows nothing until the requester confirms
+		update_option( MAP_PLUGIN_TRIAL_REQUESTED, time() );
+
+		wp_send_json_success( array( 'email' => $email ) );
+	}
+
+	/**
+	 * Trial B request. The customer already holds a valid licence, so there is nothing to confirm by
+	 * mail: the answer is the grant itself.
+	 */
+	public function map_request_trial_b()
+	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			wp_send_json_error( array( 'code' => 'forbidden' ), 403 );
+		}
+
+		check_ajax_referer( 'map_request_trial_b', 'security' );
+
+		$settings = MyAgilePrivacy::get_settings();
+
+		$hash = ( is_array( $settings ) && isset( $settings['license_code'] ) ) ? trim( (string)$settings['license_code'] ) : '';
+
+		if( $hash === '' )
+		{
+			wp_send_json_error( array( 'code' => 'no_licence' ), 400 );
+		}
+
+		$answer = MyAgilePrivacy::call_api( array(
+			'action'       => 'trial_b_request',
+			'software_key' => 'map_wp',
+			'hash'         => $hash,
+			'domain'       => self::map_trial_domain(),
+		) );
+
+		if( !is_array( $answer ) || isset( $answer['internal_error_message'] ) )
+		{
+			wp_send_json_error( array( 'code' => 'unreachable' ), 502 );
+		}
+
+		if( empty( $answer['success'] ) )
+		{
+			$code = ( isset( $answer['code'] ) && is_string( $answer['code'] ) ) ? sanitize_key( $answer['code'] ) : 'refused';
+
+			wp_send_json_error( array( 'code' => $code ), 200 );
+		}
+
+		// the grant is already written on the server: without a resync the site would see nothing
+		// change for half a day while the fifteen days run
+		MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
+		delete_transient( 'map_sync_pause' );
+
+		// synced here and not left to admin_footer: the reload that follows draws the page before its footer
+		$this->triggered_do_cron_sync();
+
+		wp_send_json_success( array() );
+	}
+
+	/**
+	 * Renders the "Free trial" page.
+	 */
+	public function trial_view()
+	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			return;
+		}
+
+		require_once plugin_dir_path( __FILE__ ).'views/trial_html.php';
 	}
 
 	public function dashboard_view()
@@ -3882,12 +4841,11 @@ final class MyAgilePrivacyAdmin {
 		);
 		$last_scan_date_human = '-';
 
-		if( isset( $the_settings ) &&
-			isset( $the_settings['last_scan_date_internal'] ) &&
-			$the_settings['last_scan_date_internal']
-		)
+		$scan_runtime = MyAgilePrivacy::get_scan_runtime();
+
+		if( $scan_runtime['last_scan_date_internal'] )
 		{
-			$last_scan_date_human = $the_settings['last_scan_date_internal'];
+			$last_scan_date_human = $scan_runtime['last_scan_date_internal'];
 
 			$wp_date_format = MyAgilePrivacy::get_option( 'date_format', null );
 
@@ -3895,11 +4853,11 @@ final class MyAgilePrivacyAdmin {
 			{
 				if( function_exists( 'wp_date' ) )
 				{
-					$last_scan_date_human = wp_date( $wp_date_format, $the_settings['last_scan_date_internal'] );
+					$last_scan_date_human = wp_date( $wp_date_format, $scan_runtime['last_scan_date_internal'] );
 				}
 				else
 				{
-					$last_scan_date_human = date_i18n( $wp_date_format, $the_settings['last_scan_date_internal'] );
+					$last_scan_date_human = date_i18n( $wp_date_format, $scan_runtime['last_scan_date_internal'] );
 				}
 			}
 		}
@@ -4096,6 +5054,10 @@ final class MyAgilePrivacyAdmin {
 
 		// Get settings
 		$the_settings = MyAgilePrivacy::get_settings();
+
+		$map_ab_state  = function_exists( 'map_call_advanced_get_ab_state' ) ? map_call_advanced_get_ab_state() : array( 'running' => false, 'panel_url' => '' );
+		$map_ab_locked = ( isset( $map_ab_state['running'] ) && $map_ab_state['running'] );
+
 		$MyAgilePrivacyRegulationHelper = new MyAgilePrivacyRegulationHelper();
 		$site_and_policy_settings = $MyAgilePrivacyRegulationHelper->getSiteAndPolicySettings();
 
@@ -4165,40 +5127,7 @@ final class MyAgilePrivacyAdmin {
 		$the_translations = MyAgilePrivacy::getFixedTranslations();
 		$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
-		if( $currentAndSupportedLanguages['with_multilang'] )
-		{
-			//2 char version
-			$current_language_2char = $currentAndSupportedLanguages['current_language'];
-
-			//4 char version
-			$selected_lang = MyAgilePrivacy::translate2charTo4CharLangCode( $current_language_2char );
-
-			if( !$selected_lang &&
-				isset( $the_settings ) &&
-				isset( $the_settings['enable_language_fallback'] ) &&
-				$the_settings['enable_language_fallback'] &&
-				isset( $the_settings['language_fallback_locale'] ) &&
-				$the_settings['language_fallback_locale']
-			)
-			{
-				$selected_lang = $the_settings['language_fallback_locale'];
-			}
-
-			if( !$selected_lang )
-			{
-				$selected_lang = MyAgilePrivacy::translate2charTo4CharLangCode( $currentAndSupportedLanguages['multilang_default_lang'] );
-			}
-
-			if( !$selected_lang )
-			{
-				$selected_lang = 'en_US';
-			}
-		}
-		else
-		{
-			//4 char version
-			$selected_lang = $the_settings['default_locale'];
-		}
+		$selected_lang = MyAgilePrivacy::getCurrentLang4Char();
 
 		require_once plugin_dir_path( __FILE__ ).'views/admin_page_html.php';
 	}
@@ -4308,7 +5237,7 @@ final class MyAgilePrivacyAdmin {
 		<input
 			name="_map_remote_id"
 			value="<?php echo esc_attr( $_map_remote_id ); ?>"
-			style="width:95%;" />
+			class="map-w-95" />
 		<?php
 	}
 
@@ -4333,7 +5262,7 @@ final class MyAgilePrivacyAdmin {
 		<input
 			name="_map_name"
 			value="<?php echo esc_attr( $_map_name ); ?>"
-			style="width:95%;" />
+			class="map-w-95" />
 		<?php
 	}
 
@@ -4358,7 +5287,7 @@ final class MyAgilePrivacyAdmin {
 		<input
 			name="_map_is_free"
 			value="<?php echo esc_attr( $_map_is_free ); ?>"
-			style="width:95%;" />
+			class="map-w-95" />
 		<?php
 	}
 
@@ -4479,7 +5408,7 @@ final class MyAgilePrivacyAdmin {
 			) ? true : false;
 
 		?>
-		<div <?php if( $is_google_analytics_like || $is_video_key ) echo 'style="display:none;"';?>>
+		<div <?php if( $is_google_analytics_like || $is_video_key ) echo 'class="map-hidden"';?>>
 
 			<label class="mt-2" for="_map_is_necessary"><?php echo wp_kses_post( __( "Is necessary?", 'MAP_txt' ) ); ?></label>
 
@@ -4611,11 +5540,7 @@ final class MyAgilePrivacyAdmin {
 									data-hide-show-ref="map_auto_detected_override_wrapper"
 									<?php checked( $_map_auto_detected_override, true ); ?>>
 
-								<label for="_map_auto_detected_override" class="me-3 label-checkbox"></label>
-
-								<label for="_map_auto_detected_override">
-									<?php echo wp_kses_post( __( "Add custom code anyway.", 'MAP_txt' ) ); ?>
-								</label>
+								<label for="_map_auto_detected_override" class="round-label"><span class="me-3 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( "Add custom code anyway.", 'MAP_txt' ) ); ?></label>
 							</div>
 						</div> <!-- ./ styled_radio -->
 
@@ -4631,7 +5556,7 @@ final class MyAgilePrivacyAdmin {
 
 					<div class="col-sm-12">
 
-						<label class="col-form-label"><b><?php echo wp_kses_post( __( "Script Installation type", 'MAP_txt' ) ); ?></b></label>
+						<label for="_map_installation_type" class="col-form-label"><b><?php echo wp_kses_post( __( "Script Installation type", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="col-sm-7">
 
@@ -4711,18 +5636,18 @@ final class MyAgilePrivacyAdmin {
 
 					<div class="map_installation_type_wrapper displayNone" data-value="js_noscript">
 
-						<label><b><?php echo wp_kses_post( __( "Custom JavaScript Code", 'MAP_txt' ) ); ?></b></label>
+						<label for="_map_code"><b><?php echo wp_kses_post( __( "Custom JavaScript Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small mb-4">
-							<textarea name="_map_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_code ); ?></textarea>
+							<textarea id="_map_code" name="_map_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_code ); ?></textarea>
 
 							<pre class="line-numbers code-viewer code-viewer-small"><code class="language-js"><?php echo esc_attr( $_map_code ); ?></code></pre>
 						</div>
 
-						<label><b><?php echo wp_kses_post( __( "Noscript Code", 'MAP_txt' ) ); ?></b></label>
+						<label for="_map_noscript"><b><?php echo wp_kses_post( __( "Noscript Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small">
-							<textarea name="_map_noscript" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_noscript ); ?></textarea>
+							<textarea id="_map_noscript" name="_map_noscript" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_noscript ); ?></textarea>
 
 							<pre class="code-viewer code-viewer-small"><code class="line-numbers language-html"><?php echo esc_attr( $_map_noscript ); ?></code></pre>
 						</div>
@@ -4731,10 +5656,10 @@ final class MyAgilePrivacyAdmin {
 
 					<div class="map_installation_type_wrapper displayNone" data-value="raw_code">
 
-						<label><b><?php echo wp_kses_post( __( "Raw Html Code", 'MAP_txt' ) ); ?></b></label>
+						<label for="_map_raw_code"><b><?php echo wp_kses_post( __( "Raw Html Code", 'MAP_txt' ) ); ?></b></label>
 
 						<div class="position-relative code-block-container code-block-container-small">
-							<textarea name="_map_raw_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_raw_code ); ?></textarea>
+							<textarea id="_map_raw_code" name="_map_raw_code" class="code-editor code-editor-small" spellcheck="false"><?php echo esc_attr( $_map_raw_code ); ?></textarea>
 
 							<pre class="line-numbers code-viewer code-viewer-small"><code class="language-html"><?php echo esc_attr( $_map_raw_code ); ?></code></pre>
 						</div>
@@ -4796,8 +5721,8 @@ final class MyAgilePrivacyAdmin {
 							<?php if( count( $map_widget_langs ) > 1 ): ?>
 
 								<p class="map-widget-lang-row">
-									<label class="me-2"><b><?php echo wp_kses_post( __( "Language", 'MAP_txt' ) ); ?></b></label>
-									<select class="map-widget-lang-select mt-2 lh-sm">
+									<label for="map_widget_lang_select" class="me-2"><b><?php echo wp_kses_post( __( "Language", 'MAP_txt' ) ); ?></b></label>
+									<select id="map_widget_lang_select" class="map-widget-lang-select mt-2 lh-sm">
 										<?php foreach( $map_widget_langs as $map_widget_code => $map_widget_lang ): ?>
 											<option value="<?php echo esc_attr( $map_widget_code ); ?>"><?php echo esc_html( $map_widget_lang['label'] ); ?></option>
 										<?php endforeach; ?>
@@ -4859,24 +5784,26 @@ final class MyAgilePrivacyAdmin {
 								if( is_array( $_map_js_dependencies_array ) &&
 									!empty( $_map_js_dependencies_array ) ):
 									foreach( $_map_js_dependencies_array as $the_item ):
-										if( $the_item['value'] != '' ):
+										if( is_array( $the_item ) && isset( $the_item['value'] ) && !MyAgilePrivacy::looseEqualsPhp8( $the_item['value'], '' ) ):
 								?>
 										<div class="map-dependency-entry map-dynamic-entry mb-2 col-sm-12">
 											<div class="input-group">
 
 												<select
 													class="form-select2"
-													name="js_dependencies_type[]">
-													<option value="js_patterns_src" <?php selected( $the_item['type'], 'js_patterns_src' ); ?>>JavaScript script src path</option>
+													name="js_dependencies_type[]"
+													aria-label="<?php echo esc_attr__( 'Dependency type', 'MAP_txt' ); ?>">
+													<option value="js_patterns_src" <?php selected( isset( $the_item['type'] ) ? $the_item['type'] : '', 'js_patterns_src' ); ?>>JavaScript script src path</option>
 
-													<option value="js_patterns_code" <?php selected( $the_item['type'], 'js_patterns_code' ); ?>>JavaScript inline code</option>
+													<option value="js_patterns_code" <?php selected( isset( $the_item['type'] ) ? $the_item['type'] : '', 'js_patterns_code' ); ?>>JavaScript inline code</option>
 												</select>
 
 												<input
 													class="form-control is-valid"
 													name="js_dependencies_field[]"
 													value="<?php echo esc_attr( $the_item['value'] ); ?>" type="text"
-													autocomplete="off"/>
+													autocomplete="off"
+													aria-label="<?php echo esc_attr__( 'Dependency value', 'MAP_txt' ); ?>"/>
 												<button class="btn btn-danger map-btn-remove" type="button">-</button>
 											</div>
 										</div>
@@ -4890,7 +5817,8 @@ final class MyAgilePrivacyAdmin {
 									<div class="input-group">
 										<select
 											class="form-select"
-											name="js_dependencies_type[]">
+											name="js_dependencies_type[]"
+											aria-label="<?php echo esc_attr__( 'Dependency type', 'MAP_txt' ); ?>">
 											<option value="js_patterns_src">JavaScript script src path</option>
 											<option value="js_patterns_code">JavaScript inline code</option>
 										</select>
@@ -4899,7 +5827,8 @@ final class MyAgilePrivacyAdmin {
 											class="form-control"
 											name="js_dependencies_field[]"
 											type="text"
-											autocomplete="off"/>
+											autocomplete="off"
+											aria-label="<?php echo esc_attr__( 'Dependency value', 'MAP_txt' ); ?>"/>
 										<button class="btn btn-success map-btn-add" type="button">+</button>
 									</div>
 								</div>
@@ -4950,9 +5879,9 @@ final class MyAgilePrivacyAdmin {
 			update_post_meta( $main_post_id, "_map_installation_type", sanitize_text_field( $_POST["_map_installation_type"] ) );
 		}
 
-		if( isset( $_POST["_map_code"] ) )
+		if( isset( $_POST["_map_code"] ) && is_string( $_POST["_map_code"] ) )
 		{
-			update_post_meta( $main_post_id, "_map_code", sanitize_textarea_field( $_POST["_map_code"] ) );
+			update_post_meta( $main_post_id, "_map_code", $this->sanitize_textarea_value( $_POST["_map_code"] ) );
 		}
 
 		if( isset( $_POST["_map_raw_code"] ) && is_string( $_POST["_map_raw_code"] ) )
@@ -4999,7 +5928,12 @@ final class MyAgilePrivacyAdmin {
 
 			foreach( $_POST['js_dependencies_field'] as $index => $value )
 			{
-				$type = sanitize_text_field( $_POST['js_dependencies_type'][$index] );
+				if( !is_string( $value ) )
+				{
+					continue;
+				}
+
+				$type = ( isset( $_POST['js_dependencies_type'][$index] ) && is_string( $_POST['js_dependencies_type'][$index] ) ) ? sanitize_text_field( $_POST['js_dependencies_type'][$index] ) : '';
 				$value = str_replace( '"', '\"', stripslashes( sanitize_text_field( $value ) ) );
 				if( !empty( $value ) )
 				{
@@ -5010,33 +5944,69 @@ final class MyAgilePrivacyAdmin {
 				}
 			}
 
-			update_post_meta( $main_post_id, '_map_js_dependencies', json_encode( $js_dependencies ) );
+			$map_js_dependencies_json = wp_json_encode( $js_dependencies );
+
+			if( false !== $map_js_dependencies_json )
+			{
+				update_post_meta( $main_post_id, '_map_js_dependencies', $map_js_dependencies_json );
+			}
 		}
 
-		if( isset( $_POST["map_translations"] ) )
+		if( isset( $_POST["map_translations"] ) && is_array( $_POST["map_translations"] ) )
 		{
 			$translations = $_POST["map_translations"];
 			$sanitized_translations = array();
+
+			$stored_translations_raw = get_post_meta( $main_post_id, '_map_translations', true );
+			$stored_translations = is_string( $stored_translations_raw ) ? json_decode( $stored_translations_raw, true ) : null;
+
+			if( !is_array( $stored_translations ) )
+			{
+				$stored_translations = array();
+			}
 
 			$the_first_name = null;
 
 			foreach( $translations as $lang_code => $translation)
 			{
-				$the_name = sanitize_text_field( $translation['name'] );
-
-				if( !$the_first_name && $the_name)
+				if( !is_array( $translation ) )
 				{
-					$the_first_name = $the_name;
+					if( isset( $stored_translations[ $lang_code ] ) && is_array( $stored_translations[ $lang_code ] ) )
+					{
+						$sanitized_translations[ $lang_code ] = $stored_translations[ $lang_code ];
+					}
+
+					continue;
+				}
+
+				$the_name = '';
+
+				if( isset( $translation['name'] ) && is_string( $translation['name'] ) )
+				{
+					$the_name = sanitize_text_field( $translation['name'] );
+
+					if( !$the_first_name && $the_name)
+					{
+						$the_first_name = $the_name;
+					}
+				}
+				elseif( isset( $stored_translations[ $lang_code ]['name'] ) )
+				{
+					$the_name = $stored_translations[ $lang_code ]['name'];
 				}
 
 				$sanitized_translations[ $lang_code ] = array(
 					'name' 	=> 	$the_name,
-					'text' 	=> 	wp_kses_post( $translation['text'] )
+					'text' 	=> 	( isset( $translation['text'] ) && is_string( $translation['text'] ) ) ? wp_kses_post( $translation['text'] ) : ''
 				);
 			}
 
-			$json_translations = wp_slash( json_encode( $sanitized_translations ) );
-			update_post_meta( $main_post_id, '_map_translations', $json_translations );
+			$json_translations = wp_json_encode( $sanitized_translations );
+
+			if( false !== $json_translations )
+			{
+				update_post_meta( $main_post_id, '_map_translations', wp_slash( $json_translations ) );
+			}
 
 			//title align for manually added cookies
 			$main_post = get_post( $main_post_id );
@@ -5114,6 +6084,17 @@ final class MyAgilePrivacyAdmin {
 	*/
 	public function save_custom_metabox_policies( $main_post_id )
 	{
+		if( !MyAgilePrivacy::map_can_edit() )
+		{
+			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'save_custom_metabox_policies -> missing user permission' );
+			return false;
+		}
+
+		if( !isset( $_POST['_wpnonce'] ) || !wp_verify_nonce( $_POST['_wpnonce'], 'update-post_' . $main_post_id ) )
+		{
+			return false;
+		}
+
 		$rconfig = MyAgilePrivacy::get_rconfig();
 
 		global $post;
@@ -5146,20 +6127,42 @@ final class MyAgilePrivacyAdmin {
 			}
 		}
 
-		if( isset( $_POST['map_translations'] ) )
+		if( isset( $_POST['map_translations'] ) && is_array( $_POST['map_translations'] ) )
 		{
 			$translations = $_POST['map_translations'];
 			$sanitized_translations = array();
 
+			$stored_translations_raw = get_post_meta( $main_post_id, '_map_translations', true );
+			$stored_translations = is_string( $stored_translations_raw ) ? json_decode( $stored_translations_raw, true ) : null;
+
+			if( !is_array( $stored_translations ) )
+			{
+				$stored_translations = array();
+			}
+
 			foreach( $translations as $lang_code => $translation)
 			{
+				if( !is_array( $translation ) )
+				{
+					if( isset( $stored_translations[ $lang_code ] ) && is_array( $stored_translations[ $lang_code ] ) )
+					{
+						$sanitized_translations[ $lang_code ] = $stored_translations[ $lang_code ];
+					}
+
+					continue;
+				}
+
 				$sanitized_translations[ $lang_code ] = array(
-					'text' 	=> 	wp_kses_post( $translation['text'] )
+					'text' 	=> 	( isset( $translation['text'] ) && is_string( $translation['text'] ) ) ? wp_kses_post( $translation['text'] ) : ''
 				);
 			}
 
-			$json_translations = wp_slash( json_encode( $sanitized_translations ) );
-			update_post_meta( $main_post_id, '_map_translations', $json_translations );
+			$json_translations = wp_json_encode( $sanitized_translations );
+
+			if( false !== $json_translations )
+			{
+				update_post_meta( $main_post_id, '_map_translations', wp_slash( $json_translations ) );
+			}
 		}
 
 	    // Invalidate the JSON cache since cookie data has changed
@@ -5283,11 +6286,11 @@ final class MyAgilePrivacyAdmin {
 				if( isset( $custom["_map_auto_detected"] ) &&
 					$custom["_map_auto_detected"][0] == 1 )
 				{
-					echo "<span style='color:#3fe63f;' title='".esc_attr( __( 'Yes', 'MAP_txt' ) )."'>&#11044;</span>";
+					echo "<span class='map-dot map-dot-on' role='img' aria-label='".esc_attr( __( 'Yes', 'MAP_txt' ) )."' title='".esc_attr( __( 'Yes', 'MAP_txt' ) )."'>&#11044;</span>";
 				}
 				else
 				{
-					echo "<span style='color:#d0d0d0;' title='".esc_attr( __( 'No', 'MAP_txt' ) )."'>&#11044;</span>";
+					echo "<span class='map-dot map-dot-off' role='img' aria-label='".esc_attr( __( 'No', 'MAP_txt' ) )."' title='".esc_attr( __( 'No', 'MAP_txt' ) )."'>&#11044;</span>";
 				}
 				break;
 
@@ -5469,11 +6472,9 @@ final class MyAgilePrivacyAdmin {
 		if( $lang_code_2char )
 		{
 			$_map_translations = get_post_meta( $the_id, '_map_translations', true );
-			$translations = wp_unslash( json_decode( $_map_translations, true ) );
+			$translations = is_string( $_map_translations ) ? wp_unslash( json_decode( $_map_translations, true ) ) : null;
 
-			$translation = $translations[ $lang_code_2char ];
-
-			$content = $translation['text'];
+			$content = ( isset( $translations[ $lang_code_2char ]['text'] ) && is_string( $translations[ $lang_code_2char ]['text'] ) ) ? $translations[ $lang_code_2char ]['text'] : '';
 
 			//for accessing $the_translations
 			$current_lang = MyAgilePrivacy::translate2charTo4CharLangCode( $lang_code_2char );
@@ -5508,9 +6509,10 @@ final class MyAgilePrivacyAdmin {
 		global $my_admin_page;
 		$screen = get_current_screen();
 
-		if( is_admin() && ( $screen->id == MAP_POST_TYPE_POLICY ) )
+		if( is_admin() && is_object( $screen ) && ( $screen->id == MAP_POST_TYPE_POLICY ) )
 		{
-			function add_content_after_editor() {
+			if( !function_exists( 'map_policy_add_content_after_editor' ) ) {
+			function map_policy_add_content_after_editor() {
 				global $post;
 
 				if( !( isset( $post ) && is_object( $post ) && isset( $post->ID ) ) )
@@ -5521,11 +6523,13 @@ final class MyAgilePrivacyAdmin {
 				$the_id = $post->ID;
 
 				$_map_translations = get_post_meta( $the_id, '_map_translations', true );
-				$translations = wp_unslash( json_decode( $_map_translations, true ) );
+				$translations = is_string( $_map_translations ) ? wp_unslash( json_decode( $_map_translations, true ) ) : null;
 
 				$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
 				$_map_name = get_post_meta( $the_id, '_map_name', true );
+
+				$shortcode = '';
 
 				if( $_map_name )
 				{
@@ -5544,7 +6548,7 @@ final class MyAgilePrivacyAdmin {
 
 					<div class="map-hero">
 						<div class="map-avatar">
-							<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
+							<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png" alt="">
 						</div>
 
 						<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
@@ -5616,8 +6620,8 @@ final class MyAgilePrivacyAdmin {
 
 													?>
 														<li class="nav-item" role="presentation">
-															<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
-																<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+															<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+																<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag">
 																<?php echo esc_html( $this_label ); ?>
 															</button>
 														</li>
@@ -5646,12 +6650,12 @@ final class MyAgilePrivacyAdmin {
 														{
 															$translation = $translations[ $lang_data['2char'] ];
 
-															$this_text = $translation['text'];
+															$this_text = isset( $translation['text'] ) ? $translation['text'] : null;
 														}
 
 													?>
 														<div class="tab-pane fade <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" role="tabpanel" aria-labelledby="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab">
-															<label for="map_translations[<?php echo esc_attr( $lang_code_2char ); ?>][name]"><?php echo wp_kses_post( __( 'Policy Preview', 'MAP_txt' ) ); ?></label>
+															<span class="map-preview-caption"><?php echo wp_kses_post( __( 'Policy Preview', 'MAP_txt' ) ); ?></span>
 
 															<?php
 
@@ -5683,6 +6687,7 @@ final class MyAgilePrivacyAdmin {
 							</div>
 						</div>
 						<div class="map-wrap-editor displayNone">
+							<label for="content" class="screen-reader-text"><?php echo esc_html__( 'Policy text', 'MAP_txt' ); ?></label>
 							<div class="alert alert-warning" role="alert">
 								<?php echo wp_kses_post( __( 'Attention: Modifying the policy without specific expertise may result in loss of compliance.', 'MAP_txt' ) ); ?><br>
 								<?php echo wp_kses_post( __( 'By modifying the text, you assume all risks.', 'MAP_txt' ) ); ?><br>
@@ -5710,7 +6715,7 @@ final class MyAgilePrivacyAdmin {
 											?>
 												<li class="nav-item" role="presentation">
 													<button class="nav-link <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
-														<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+														<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag">
 														<?php echo esc_html( $this_label ); ?>
 													</button>
 												</li>
@@ -5729,7 +6734,7 @@ final class MyAgilePrivacyAdmin {
 												$lang_code_2char = $lang_data['2char'];
 												$active = $first ? 'show active' : '';
 												$this_name = null;
-												$this_text = null;
+												$this_text = '';
 												$this_label = ucfirst( $lang_data['en_label'] );
 
 												if( isset( $translations ) &&
@@ -5738,7 +6743,7 @@ final class MyAgilePrivacyAdmin {
 												{
 													$translation = $translations[ $lang_data['2char'] ];
 
-													$this_text = $translation['text'];
+													$this_text = isset( $translation['text'] ) ? $translation['text'] : '';
 												}
 
 											?>
@@ -5777,12 +6782,15 @@ final class MyAgilePrivacyAdmin {
 							endif;
 				}
 			}
+			}
 
-			function add_text_after_editor()
+			if( !function_exists( 'map_policy_add_text_after_editor' ) )
 			{
-				// Text to display after the editor
-				$text_after = '</div></div>';
-				echo $text_after;
+				function map_policy_add_text_after_editor()
+				{
+					// Text to display after the editor
+					echo '</div></div>';
+				}
 			}
 
 			if( ! function_exists( 'map_policy_strip_native_editor_content' ) )
@@ -5819,11 +6827,11 @@ final class MyAgilePrivacyAdmin {
 				add_filter( 'the_editor_content', 'map_policy_strip_native_editor_content', 9, 2 );
 			}
 
-			add_action( 'edit_form_after_title', 'add_content_after_editor' );
-			add_action( 'edit_form_after_editor', 'add_text_after_editor' );
+			add_action( 'edit_form_after_title', 'map_policy_add_content_after_editor' );
+			add_action( 'edit_form_after_editor', 'map_policy_add_text_after_editor' );
 		}
 
-		if( is_admin() && ( $screen->id == MAP_POST_TYPE_COOKIES ) )
+		if( is_admin() && is_object( $screen ) && ( $screen->id == MAP_POST_TYPE_COOKIES ) )
 		{
 			global $post;
 
@@ -5835,11 +6843,12 @@ final class MyAgilePrivacyAdmin {
 			$the_id = $post->ID;
 
 			$_map_translations = get_post_meta( $the_id, '_map_translations', true );
-			$translations = wp_unslash( json_decode( $_map_translations, true ) );
+			$translations = is_string( $_map_translations ) ? wp_unslash( json_decode( $_map_translations, true ) ) : null;
 
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
-			function add_content_after_editor()
+			if( !function_exists( 'map_cookie_add_content_after_editor' ) ) {
+			function map_cookie_add_content_after_editor()
 			{
 				global $post;
 
@@ -5851,14 +6860,14 @@ final class MyAgilePrivacyAdmin {
 				$the_id = $post->ID;
 
 				$_map_translations = get_post_meta( $the_id, '_map_translations', true );
-				$translations = wp_unslash( json_decode( $_map_translations, true ) );
+				$translations = is_string( $_map_translations ) ? wp_unslash( json_decode( $_map_translations, true ) ) : null;
 
 				$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
 				?>
 					<div class="map-hero">
 							<div class="map-avatar">
-								<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png">
+								<img src="<?php echo plugin_dir_url( __FILE__ ) ?>img/fox-profile.png" alt="">
 							</div>
 
 						<div id="_my_agile_privacy_backend" class="policyWrapperView postbox map_infobox">
@@ -5898,8 +6907,8 @@ final class MyAgilePrivacyAdmin {
 
 												?>
 													<li class="nav-item" role="presentation">
-														<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
-															<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+														<button class="nav-link <?php echo esc_attr( $active ); ?>" id="preview_<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="preview_<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
+															<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag">
 															<?php echo esc_html( $this_label ); ?>
 														</button>
 													</li>
@@ -5928,9 +6937,10 @@ final class MyAgilePrivacyAdmin {
 													{
 														$translation = $translations[ $lang_data['2char'] ];
 
-														$this_text = $translation['text'];
+														$this_text = isset( $translation['text'] ) ? $translation['text'] : null;
 
-														$_map_tr_baseline = json_decode( get_post_meta( $the_id, '_map_translations_baseline', true ), true );
+														$_map_tr_baseline_raw = get_post_meta( $the_id, '_map_translations_baseline', true );
+														$_map_tr_baseline = is_string( $_map_tr_baseline_raw ) ? json_decode( $_map_tr_baseline_raw, true ) : null;
 
 														if( is_string( $this_text ) &&
 															is_array( $_map_tr_baseline ) &&
@@ -5975,6 +6985,7 @@ final class MyAgilePrivacyAdmin {
 						</div>
 					</div>
 					<div class="map-wrap-editor displayNone">
+						<label for="content" class="screen-reader-text"><?php echo esc_html__( 'Cookie text', 'MAP_txt' ); ?></label>
 						<div class="alert alert-warning" role="alert">
 							<?php echo wp_kses_post( __( 'Attention: Modifying the cookie without specific expertise may result in loss of compliance.', 'MAP_txt' ) ); ?><br>
 							<?php echo wp_kses_post( __( 'By modifying the text, you assume all risks.', 'MAP_txt' ) ); ?><br>
@@ -6002,7 +7013,7 @@ final class MyAgilePrivacyAdmin {
 										?>
 											<li class="nav-item" role="presentation">
 												<button class="nav-link <?php echo esc_attr( $active ); ?>" id="<?php echo esc_attr( $lang_code_2char ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_attr( $lang_code_2char ); ?>-content" type="button" role="tab" aria-controls="<?php echo esc_attr( $lang_code_2char ); ?>-content" aria-selected="<?php echo esc_attr( $aria_selected ); ?>">
-													<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag" style="width:16px; height:auto; margin-right:5px; vertical-align:middle;">
+													<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'img/flags/' . $lang_code_2char . '.png' ); ?>" alt="<?php echo esc_attr( $this_label ); ?>" class="map-lang-flag">
 													<?php echo esc_html( $this_label ); ?>
 												</button>
 											</li>
@@ -6021,7 +7032,7 @@ final class MyAgilePrivacyAdmin {
 											$lang_code_2char = $lang_data['2char'];
 											$active = $first ? 'show active' : '';
 											$this_name = null;
-											$this_text = null;
+											$this_text = '';
 											$this_label = ucfirst( $lang_data['en_label'] );
 
 											if( isset( $translations ) &&
@@ -6030,7 +7041,7 @@ final class MyAgilePrivacyAdmin {
 											{
 												$translation = $translations[ $lang_data['2char'] ];
 
-												$this_text = $translation['text'];
+												$this_text = isset( $translation['text'] ) ? $translation['text'] : '';
 											}
 
 										?>
@@ -6069,16 +7080,19 @@ final class MyAgilePrivacyAdmin {
 						endif;
 
 			}
-
-			function add_text_after_editor()
-			{
-				// Text to display after the editor
-				$text_after = '</div></div>';
-				echo $text_after;
 			}
 
-			add_action( 'edit_form_after_title', 'add_content_after_editor' );
-			add_action( 'edit_form_after_editor', 'add_text_after_editor' );
+			if( !function_exists( 'map_cookie_add_text_after_editor' ) )
+			{
+				function map_cookie_add_text_after_editor()
+				{
+					// Text to display after the editor
+					echo '</div></div>';
+				}
+			}
+
+			add_action( 'edit_form_after_title', 'map_cookie_add_content_after_editor' );
+			add_action( 'edit_form_after_editor', 'map_cookie_add_text_after_editor' );
 		}
 	}
 
@@ -6194,7 +7208,7 @@ final class MyAgilePrivacyAdmin {
 			$review_url_key = 'en';
 		}
 
-		if( $locale && $review_urls && isset( $review_urls[ $review_url_key ] ) )
+		if( $locale && $review_urls && isset( $review_urls[ $review_url_key ] ) && is_string( $review_urls[ $review_url_key ] ) )
 		{
 			$review_url = $review_urls[ $review_url_key ];
 		}
@@ -6247,51 +7261,29 @@ final class MyAgilePrivacyAdmin {
 		wp_die();
 	}
 
-	//callback after plugin upgrade
-	public function plugin_upgrade_callback( $upgrader_object, $options )
-	{
-		if( isset( $options['type'] ) &&
-			$options['type'] == 'plugin' &&
-			isset( $options['action'] ) &&
-			$options['action'] == 'update' )
-		{
-			$plugin_name = 'myagileprivacy/my-agile-privacy.php';
-
-			$updated_plugins = array();
-
-			if( isset( $options['plugins'] ) &&
-				is_array( $options['plugins'] ) )
-			{
-				$updated_plugins = $options['plugins'];
-			}
-			else if( isset( $options['plugin'] ) &&
-				is_string( $options['plugin'] ) )
-			{
-				$updated_plugins = array( $options['plugin'] );
-			}
-
-			if( in_array( $plugin_name, $updated_plugins, true ) )
-			{
-				//flag the update so the post-update routine fires on the next request
-				set_transient( MAP_PLUGIN_JUST_UPDATED_TRANSIENT, 1, HOUR_IN_SECONDS );
-
-				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'plugin_upgrade_callback called after plugin update' );
-			}
-		}
-	}
-
 	//plugins_loaded callback: check whether a post-update routine needs to run
 	public function map_check_post_update_transient()
 	{
-		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_check_post_update_transient called - checking for transient' );
+		$installed_version = MyAgilePrivacy::get_option( MAP_PLUGIN_INSTALLED_VERSION, false );
+
+		if( $installed_version === MAP_PLUGIN_VERSION )
+		{
+			return;
+		}
+
+		// written before the routine, so the next requests do not repeat it
+		MyAgilePrivacy::update_option( MAP_PLUGIN_INSTALLED_VERSION, MAP_PLUGIN_VERSION );
+
+		// a new installation has nothing to refresh
+		if( $installed_version === false && !is_array( MyAgilePrivacy::get_option( MAP_PLUGIN_SETTINGS_FIELD, false ) ) )
+		{
+			return;
+		}
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_check_post_update_transient: version changed, calling post-update routine' );
 
 		//Runs the post-update routine once; it is idempotent.
-		if( delete_transient( MAP_PLUGIN_JUST_UPDATED_TRANSIENT ) )
-		{
-			if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( 'map_check_post_update_transient: transient found and deleted, calling post-update routine' );
-
-			$this->map_post_update_routine();
-		}
+		$this->map_post_update_routine();
 	}
 
 	//post-update routine: runs once on the first request after a MAP plugin update
@@ -6304,9 +7296,11 @@ final class MyAgilePrivacyAdmin {
 		MyAgilePrivacy::flush_json_cache();
 		MyAgilePrivacy::tryOtherPluginCacheClear();
 
-        MyAgilePrivacy::update_option( MAP_PLUGIN_SYNC_IN_PROGRESS, 0 );
         MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
         MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
 
+		// rows left by earlier versions
+		delete_option( MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
+		delete_transient( 'map_just_updated' );
 	}
 }
