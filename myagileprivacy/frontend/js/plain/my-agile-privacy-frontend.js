@@ -9,7 +9,7 @@ if( typeof map_ajax === 'undefined' )        { window.map_ajax = undefined; }
 var MAP_SYS = {
 	'plugin_version' 					: null,
 	'parse_config_version_number' 		: null,
-	'js_internal_version' 				: "3.0020",
+	'js_internal_version' 				: "3.0049",
 	'cookie_shield_version' 			: null,
 	'js_technology' 					: "plain",
 	'maplog' 							: "\x1b[40m\x1b[97m[MyAgilePrivacy]\x1b[0m ",
@@ -48,6 +48,7 @@ var MAP_SYS = {
 	'last_consent_modify_date'			: null,
 	'some_positive_consent_given'		: false,
 	'early_gcmode'						: false,
+	'reset_postfix_applied'				: false,
 	'frontend_regulation'				: null,
 	'geo_enabled'						: false,
 	'geo_sede_strong'					: false,
@@ -120,6 +121,140 @@ var MAP_SYS = {
 })(window);
 // eof MapLogger
 
+// cookie name suffix with a single leading underscore, derived from the banner settings, null when they cannot be read
+function map_reset_postfix( settings )
+{
+	try {
+		var s = ( typeof settings === 'string' ) ? JSON.parse( settings ) : settings;
+		if( !s || typeof s !== 'object' ) return null;
+		var t = s.cookie_reset_timestamp ? String( s.cookie_reset_timestamp ).replace( /^_+/, '' ) : '';
+		return t ? '_' + t : '';
+	}
+	catch( e )
+	{
+		return null;
+	}
+}
+
+// cookie name suffix of earlier versions without the shield, '' when there is none
+function map_legacy_reset_postfix( settings )
+{
+	try {
+		var s = ( typeof settings === 'string' ) ? JSON.parse( settings ) : settings;
+		if( !s || typeof s !== 'object' ) return '';
+		return s.cookie_reset_timestamp ? '_' + s.cookie_reset_timestamp : '';
+	}
+	catch( e )
+	{
+		return '';
+	}
+}
+
+function map_apply_reset_postfix( postfix )
+{
+	MAP_POSTFIX = postfix;
+	MAP_ACCEPTED_ALL_COOKIE_NAME = MAP_ACCEPTED_ALL_COOKIE_NAME + postfix;
+	MAP_ACCEPTED_SOMETHING_COOKIE_NAME = MAP_ACCEPTED_SOMETHING_COOKIE_NAME + postfix;
+	MAP_CONSENT_STATUS = MAP_CONSENT_STATUS + postfix;
+	MAP_MICROSOFT_CONSENT_STATUS = MAP_MICROSOFT_CONSENT_STATUS + postfix;
+	MAP_CLARITY_CONSENT_STATUS = MAP_CLARITY_CONSENT_STATUS + postfix;
+	MAP_USER_UUID = MAP_USER_UUID + postfix;
+	MAP_LAST_CONSENT_MODIFY_DATE = MAP_LAST_CONSENT_MODIFY_DATE + postfix;
+	MAP_SYS.reset_postfix_applied = true;
+}
+
+//name of the mark left by an implicit consent, with the current reset suffix
+function map_implicit_consent_name()
+{
+	return 'map_implicit_consent' + ( ( typeof MAP_POSTFIX === 'string' ) ? MAP_POSTFIX : '' );
+}
+
+//true when the last recorded choice is the implicit consent: the mark carries the date of that choice
+function map_implicit_consent_valid()
+{
+	try {
+		if( typeof MAP_Cookie === 'undefined' ) return false;
+
+		var mark = MAP_Cookie.read( map_implicit_consent_name() );
+
+		if( !mark ) return false;
+
+		// the date name carries the reset suffix without the shield and not with it
+		var postfix = ( typeof MAP_POSTFIX === 'string' ) ? MAP_POSTFIX : '';
+		var dates = [ MAP_Cookie.read( MAP_LAST_CONSENT_MODIFY_DATE ), MAP_Cookie.read( 'map_last_c_m_date' ), MAP_Cookie.read( 'map_last_c_m_date' + postfix ) ].filter( function( x ) { return !!x; } );
+
+		if( dates.indexOf( mark ) !== -1 ) return true;
+
+		// a removed date leaves the mark alone with the implicit consent
+		return !dates.length && MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '1';
+	}
+	catch( e )
+	{
+		return false;
+	}
+}
+
+//why a stored implicit consent no longer holds: 'gpc', 'block' or ''
+function map_implicit_consent_void()
+{
+	try {
+		if( !map_implicit_consent_valid() ) return '';
+		if( typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true ) return 'gpc';
+
+		var c = ( typeof map_full_config !== 'undefined' && map_full_config ) ? map_full_config : null;
+		if( !c || !c.geo_enabled ) return '';
+
+		var g = JSON.parse( MAP_Cookie.read( 'map_geo' ) || 'null' );
+		if( !g || !g.country || !g.native ) return '';
+		if( g.native === 'block' ) return 'block';
+		if( c.geo_sede_strong && !( c.geo_force_optout && c.geo_force_optout[ g.country ] ) ) return 'block';
+
+		return '';
+	}
+	catch( e )
+	{
+		return '';
+	}
+}
+
+//a stored consent state read back after a refusal of everything never grants anything
+function map_refusal_safe( consent )
+{
+	try {
+		if( !consent || typeof consent !== 'object' ) return consent;
+		if( MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) !== '-1' || MAP_Cookie.read( MAP_ACCEPTED_SOMETHING_COOKIE_NAME ) !== '-1' ) return consent;
+
+		// only the signals that the choices govern, the others are left as stored
+		var governed = {};
+		if( typeof MAP !== 'undefined' && MAP && MAP.consentModeServices )
+		{
+			Object.keys( MAP.consentModeServices ).forEach( function( v ) { MAP.consentModeServices[ v ].keys.forEach( function( k ) { governed[k] = true; } ); } );
+		}
+
+		var out = {};
+		Object.keys( consent ).forEach( function( k ) { out[k] = ( consent[k] === 'granted' && governed[k] ) ? 'denied' : consent[k]; } );
+
+		return out;
+	}
+	catch( e )
+	{
+		return consent;
+	}
+}
+
+//true when a stored choice exists and still holds, the condition to restore a stored consent state
+function map_stored_choice_holds()
+{
+	try {
+		return ( MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) || MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME ) ) &&
+			!map_implicit_consent_void();
+	}
+	catch( e )
+	{
+		return false;
+	}
+}
+
 if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 {
 	window.MAP_POSTFIX = '';
@@ -130,6 +265,9 @@ if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
 	window.MAP_CLARITY_CONSENT_STATUS = 'map_clarity_consent_status';
 	window.MAP_USER_UUID = 'map_user_uuid';
 	window.MAP_LAST_CONSENT_MODIFY_DATE = 'map_last_c_m_date';
+
+	var map_eval_postfix = ( typeof map_cookiebar_settings !== 'undefined' ) ? map_reset_postfix( map_cookiebar_settings ) : null;
+	if( map_eval_postfix !== null ) map_apply_reset_postfix( map_eval_postfix );
 
 	MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 }
@@ -158,12 +296,56 @@ if( typeof MAP_Cookie === 'undefined' )
 			return this._isNoSetResult;
 		},
 		_cookie_cache: {},
+		// bare and lower case, '' when there is none
+		_effectiveDomain: function( domain ) {
+			var e = domain || ( typeof MAP_SYS !== 'undefined' && MAP_SYS ? MAP_SYS.cookie_domain : null ) ||
+				( typeof map_full_config !== 'undefined' && map_full_config ? map_full_config.cookie_domain : null );
+			if( typeof e !== 'string' || e === '' ) return '';
+			return ( e.charAt( 0 ) === '.' ? e.substring( 1 ) : e ).toLowerCase();
+		},
+		_domainApplies: function( domain ) {
+			var bare = this._effectiveDomain( domain );
+			var host = window.location.hostname;
+			if( bare === '' ) return false;
+			return host === bare || ( host.length > bare.length && host.slice( -( bare.length + 1 ) ) === '.' + bare );
+		},
+		// host-only when the page host is not under the domain
 		_buildDomainStr: function( domain ) {
-			var effectiveDomain = domain || MAP_SYS?.cookie_domain ||
-				( typeof map_full_config !== 'undefined' ? map_full_config?.cookie_domain : null );
-			if( !effectiveDomain ) return '';
-			var d = effectiveDomain.charAt(0) === '.' ? effectiveDomain : '.' + effectiveDomain;
-			return '; domain=' + d;
+			return this._domainApplies( domain ) ? '; domain=.' + this._effectiveDomain( domain ) : '';
+		},
+		_cleanupAllowed: function( domain ) {
+			return this._domainApplies( domain ) && typeof map_full_config !== 'undefined' && !!map_full_config && !!map_full_config.cookie_domain_tracked;
+		},
+		// only the names this plugin writes, with or without the reset suffix
+		_isOwnName: function( name ) {
+			return typeof name === 'string' && /^(map_(accepted_all_cookie_policy|accepted_something_cookie_policy|consent_status|microsoft_consent_status|clarity_consent_status|user_uuid|last_c_m_date|implicit_consent|cookie_\d+)(_\w+)?|map_geo|map_geo_tp|map_tp|map_gtm_gw_reported|map_banner_variant|MAP_GMTString(_\w+)?)$/.test( name );
+		},
+		// removes the legacy host-only variant of the same name, never through _buildDomainStr
+		_killHostOnly: function( name ) {
+			try {
+				document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + this._buildSecurityStr();
+				if( this._cookie_cache ) delete this._cookie_cache[name];
+			}
+			catch( e )
+			{
+				MapLogger.debug( e );
+			}
+		},
+		dropHostOnlyDuplicates: function() {
+			try {
+				if( this._isUserAgentNoCookieSet() || !this._cleanupAllowed() ) return;
+				var seen = Object.create( null );
+				var list = this.getCookieNameList();
+				for( var i = 0; i < list.length; i++ )
+				{
+					if( this._isOwnName( list[i] ) && seen[ list[i] ] ) this._killHostOnly( list[i] );
+					seen[ list[i] ] = 1;
+				}
+			}
+			catch( e )
+			{
+				MapLogger.debug( e );
+			}
 		},
 		_buildSecurityStr: function() {
 			var sameSite = '; SameSite=Lax';
@@ -182,6 +364,7 @@ if( typeof MAP_Cookie === 'undefined' )
 					var expires = "; expires=" + date.toGMTString();
 				} else
 					var expires = "";
+				if( this._cleanupAllowed( domain ) && this._isOwnName( name ) ) this._killHostOnly( name );
 				document.cookie = name + "=" + ( "" + value ).replace( /[;\r\n]/g, "" ) + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
 				if( this._cookie_cache ) delete this._cookie_cache[name];
 			}
@@ -198,6 +381,7 @@ if( typeof MAP_Cookie === 'undefined' )
 			}
 			try {
 				var expires = "; expires=" + GMTString;
+				if( this._cleanupAllowed( domain ) && this._isOwnName( name ) ) this._killHostOnly( name );
 				document.cookie = name + "=" + ( "" + value ).replace( /[;\r\n]/g, "" ) + expires + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
 				if( this._cookie_cache ) delete this._cookie_cache[name];
 			}
@@ -238,6 +422,7 @@ if( typeof MAP_Cookie === 'undefined' )
 		delete: function( name, domain ) {
 			var expirationDate = new Date();
 			expirationDate.setTime( expirationDate.getTime() - 3600000 ); // One hour ago
+			if( this._cleanupAllowed( domain ) && this._isOwnName( name ) ) this._killHostOnly( name );
 			document.cookie = name + "=; expires=" + expirationDate.toUTCString() + "; path=/" + this._buildDomainStr( domain ) + this._buildSecurityStr();
 			if( this._cookie_cache ) delete this._cookie_cache[name];
 		},
@@ -259,6 +444,50 @@ if( typeof MAP_Cookie === 'undefined' )
 		}
 	};
 }
+
+// before the first read, with this copy or the shield one
+if( typeof MAP_Cookie.dropHostOnlyDuplicates === 'function' )
+{
+	MAP_Cookie.dropHostOnlyDuplicates();
+}
+
+// true when the item is active for this visitor, false when not, null when unknown.
+window.MAP_isKeyAccepted = function( api_key )
+{
+	try {
+
+		var cfg = ( typeof map_full_config !== 'undefined' && map_full_config ) ? map_full_config : null;
+		var key_map = cfg ? cfg.cookie_api_key_remote_id_map_active : null;
+
+		if( typeof api_key !== 'string' || !/^[A-Za-z0-9_-]+$/.test( api_key ) ) return null;
+		if( !key_map || typeof key_map !== 'object' || typeof key_map[ api_key ] !== 'string' ) return null;
+
+		// an implicit consent that no longer holds grants nothing
+		var voided = !!map_implicit_consent_void();
+
+		if( !voided && MAP_Cookie.read( key_map[ api_key ] ) == '1' ) return true;
+
+		var postfix = cfg.cookie_reset_timestamp ? '_' + cfg.cookie_reset_timestamp : '';
+
+		if( !voided && MAP_Cookie.read( 'map_accepted_all_cookie_policy' + postfix ) == '1' ) return true;
+
+		if( api_key === 'google_analytics' &&
+			Array.isArray( cfg.cookie_api_key_not_to_block ) &&
+			cfg.cookie_api_key_not_to_block.includes( 'google_analytics' ) )
+		{
+			return true;
+		}
+
+		var $wrapper = document.querySelector( '.map_cookie_description_wrapper[data-cookie-api-key="' + api_key + '"]' );
+
+		return !!( $wrapper && $wrapper.classList.contains( '_always_on' ) );
+	}
+	catch( error )
+	{
+		console.error( error );
+		return null;
+	}
+};
 
 var MAP =
 {
@@ -384,25 +613,11 @@ var MAP =
 				MAP_SYS.map_debug = true;
 			}
 
-			if( !!this?.settings?.cookie_reset_timestamp &&
-				this.settings.cookie_reset_timestamp )
+			if( !( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) && !MAP_SYS.reset_postfix_applied )
 			{
-				if(!( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
-				{
-					MAP_POSTFIX = '_' + this.settings.cookie_reset_timestamp;
-					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
-				}
-			}
-
-			if(!( typeof MAP_JSCOOKIE_SHIELD !== 'undefined' && MAP_JSCOOKIE_SHIELD ) )
-			{
-				MAP_ACCEPTED_ALL_COOKIE_NAME = MAP_ACCEPTED_ALL_COOKIE_NAME + MAP_POSTFIX;
-				MAP_ACCEPTED_SOMETHING_COOKIE_NAME = MAP_ACCEPTED_SOMETHING_COOKIE_NAME + MAP_POSTFIX;
-				MAP_CONSENT_STATUS = MAP_CONSENT_STATUS + MAP_POSTFIX;
-				MAP_MICROSOFT_CONSENT_STATUS = MAP_MICROSOFT_CONSENT_STATUS + MAP_POSTFIX;
-				MAP_CLARITY_CONSENT_STATUS = MAP_CLARITY_CONSENT_STATUS + MAP_POSTFIX;
-				MAP_USER_UUID = MAP_USER_UUID + MAP_POSTFIX;
-				MAP_LAST_CONSENT_MODIFY_DATE = MAP_LAST_CONSENT_MODIFY_DATE + MAP_POSTFIX;
+				var map_set_postfix = map_reset_postfix( this.settings );
+				map_apply_reset_postfix( map_set_postfix === null ? '' : map_set_postfix );
+				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'MAP_POSTFIX=' + MAP_POSTFIX );
 			}
 
 			if( MAP_SYS?.map_debug && !!this?.settings.cookie_reset_timestamp &&
@@ -420,11 +635,18 @@ var MAP =
 
 			this.bar_open = false;
 
+			this.bar_blocked = false;
+
+			this.hidden_help_return = null;
+
+			this.settings_return = null;
+
 			this.settings = args.settings;
 
 			this.bar_elm = document.querySelector( this.settings.notify_div_id );
 			this.showagain_elm = document.querySelector( "#" + this.settings.showagain_div_id );
 			this.settingsModal = document.querySelector( '#mapSettingsPopup' );
+			this.setupSettingsDialog();
 			this.blocked_content_notification = document.querySelector( '#map-blocked-content-notification-area' );
 
 			if( this.blocked_content_notification )
@@ -450,6 +672,25 @@ var MAP =
 				MapLogger.groupEnd();
 			}
 
+			if( typeof MAP_Cookie.dropHostOnlyDuplicates === 'function' ) MAP_Cookie.dropHostOnlyDuplicates();
+
+			this.reconcileImplicitConsent();
+
+			// consent records are kept only alongside a choice
+			try {
+				if( typeof MAP_Cookie.delete === 'function' &&
+					!MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
+					!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME ) )
+				{
+					if( MAP_Cookie.exists( MAP_USER_UUID ) ) MAP_Cookie.delete( MAP_USER_UUID );
+					if( MAP_Cookie.exists( MAP_LAST_CONSENT_MODIFY_DATE ) ) MAP_Cookie.delete( MAP_LAST_CONSENT_MODIFY_DATE );
+				}
+			}
+			catch( e )
+			{
+				MapLogger.debug( e );
+			}
+
 			this.retrieveLastConsentDate();
 			this.retrieveLastConsentUUID();
 			this.loadDependencies();
@@ -463,8 +704,6 @@ var MAP =
 				MAP.mapGeoInit();
 			}
 
-			this.attachAnimations();
-
 			this.initted = true;
 
 			this.optimizeMobile();
@@ -475,6 +714,53 @@ var MAP =
 			window.addEventListener( 'resize', function() {
 				that.optimizeMobile();
 			});
+
+			//late stylesheets and fonts change the button widths without a resize
+			if( typeof ResizeObserver !== 'undefined' )
+			{
+				var last_bar_width = -1;
+
+				new ResizeObserver( function() {
+					if( that.bar_open && !that.isBarRendered() )
+					{
+						that.markBarHiddenByOthers();
+						return;
+					}
+
+					if( that.bar_open && that.bar_elm.offsetWidth != last_bar_width )
+					{
+						last_bar_width = that.bar_elm.offsetWidth;
+						that.layoutConsentButtons();
+						that.capNotificationMessage();
+					}
+				}).observe( this.bar_elm );
+			}
+
+			if( document.fonts && document.fonts.ready )
+			{
+				document.fonts.ready.then( function() {
+					if( that.bar_open )
+					{
+						that.layoutConsentButtons();
+						that.capNotificationMessage();
+					}
+				});
+			}
+
+			if( this.map_notification_message )
+			{
+				this.map_notification_message.addEventListener( 'scroll', function() {
+					that.updateMessageScrollState();
+				}, { passive: true } );
+
+				//text written into the banner after it opened
+				if( typeof MutationObserver !== 'undefined' )
+				{
+					new MutationObserver( function() {
+						if( that.bar_open ) that.capNotificationMessage();
+					}).observe( this.map_notification_message, { childList: true, subtree: true, characterData: true } );
+				}
+			}
 
 			document.body.addEventListener( 'MAP_SHIELD_CONTENT_BLOCKED', function() {
 				that.createInlineNotify();
@@ -905,7 +1191,7 @@ var MAP =
 	},
 
 	//f for updating given consent (Clarity)
-	updateClarityConsent: function( key, value, updateStatusCookie = false)
+	updateClarityConsent: function( key, value, updateStatusCookie = false, isRestore = false )
 	{
 		//for preserving scope
 		var that = this;
@@ -944,7 +1230,7 @@ var MAP =
 					that.saveClarityConsentStatusToCookie( MAP_SYS?.current_cconsent );
 				}
 
-				that.updateLastConsentRecords();
+				if( !isRestore ) that.updateLastConsentRecords();
 
 				return true;
 			}
@@ -959,7 +1245,7 @@ var MAP =
 	},
 
 	//f for updating given consent (Microsoft)
-	updateMicrosoftConsent: function( key, value, updateStatusCookie = false)
+	updateMicrosoftConsent: function( key, value, updateStatusCookie = false, isRestore = false )
 	{
 		//for preserving scope
 		var that = this;
@@ -986,7 +1272,7 @@ var MAP =
 					that.saveMicrosoftConsentStatusToCookie( MAP_SYS?.current_mconsent );
 				}
 
-				that.updateLastConsentRecords();
+				if( !isRestore ) that.updateLastConsentRecords();
 
 				return true;
 			}
@@ -1128,8 +1414,88 @@ var MAP =
 		}
 	},
 
+	//f for updating several given consents at once (Google)
+	updateGoogleConsentbyKeyValues: function( newConsent, updateStatusCookie = false )
+	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			if( MAP_SYS?.cmode_v2 && newConsent && typeof newConsent === 'object' && Object.keys( newConsent ).length > 0 )
+			{
+				var dispatchEvents = false;
+
+				if( MAP_SYS?.cmode_v2_implementation_type === 'native' )
+				{
+					if( typeof gtag === 'function' )
+					{
+						gtag( 'consent', 'update', newConsent );
+					}
+					else
+					{
+						MapLogger.warn( MAP_SYS.maplog + 'consent update LOST: gtag unavailable', newConsent );
+					}
+
+					dispatchEvents = true;
+				}
+
+				if( MAP_SYS?.cmode_v2_implementation_type === 'gtm' )
+				{
+					//guard over empty array
+					if( typeof window.gTagManagerConsentListeners !== 'undefined' &&
+						Array.isArray( window.gTagManagerConsentListeners ) &&
+						window.gTagManagerConsentListeners.length > 0 )
+					{
+						window.gTagManagerConsentListeners.forEach( ( callback ) => {
+							callback( newConsent );
+						});
+					}
+					else if( typeof gtag === 'function' )
+					{
+						//fallback
+						gtag( 'consent', 'update', newConsent );
+					}
+
+					dispatchEvents = true;
+				}
+
+				var currentGConsent = {...MAP_SYS?.current_gconsent};
+
+				Object.keys( newConsent ).forEach( function( key ) {
+
+					currentGConsent[key] = newConsent[key];
+
+					//Dispatch events
+					if( dispatchEvents )
+					{
+						that.dispatchConsentEvents( 'myagileprivacy_gcmode_consent_', key + '_status', newConsent[key] );
+					}
+				});
+
+				MAP_SYS.current_gconsent = currentGConsent;
+
+				if( updateStatusCookie )
+				{
+					that.saveGoogleConsentStatusToCookie( MAP_SYS?.current_gconsent );
+				}
+
+				that.updateLastConsentRecords();
+
+				return true;
+			}
+
+			return false;
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
 	//f for updating given consent by full object (Google)
-	updateGoogleConsentbyObj: function( newConsent, updateStatusCookie = false)
+	updateGoogleConsentbyObj: function( newConsent, updateStatusCookie = false, isRestore = false )
 	{
 		//for preserving scope
 		var that = this;
@@ -1175,7 +1541,7 @@ var MAP =
 					that.saveGoogleConsentStatusToCookie( MAP_SYS?.current_gconsent );
 				}
 
-				that.updateLastConsentRecords();
+				if( !isRestore ) that.updateLastConsentRecords();
 
 				return true;
 			}
@@ -1318,7 +1684,7 @@ var MAP =
 
 			if( cookieValue )
 			{
-				var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+				var this_gconsent = map_refusal_safe( that.parseGoogleConsentStatus( cookieValue ) );
 
 				return this_gconsent;
 			}
@@ -1406,7 +1772,7 @@ var MAP =
 
 				if( cookieValue )
 				{
-					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+					var this_gconsent = that.maskedStoredConsent( 'google', cookieValue );
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_gconsent = {...this_gconsent};
 				}
@@ -1414,26 +1780,34 @@ var MAP =
 
 			if( MAP_SYS.cmode_v2 && MAP_SYS.cmode_v2_implementation_type == 'native' )
 			{
-				if( typeof map_full_config.early_gcmode !== 'undefined' && map_full_config.early_gcmode
-				)
+				var map_early_gcmode = ( typeof map_full_config.early_gcmode !== 'undefined' && map_full_config.early_gcmode );
+				var map_early_ready = ( typeof early_starting_gconsent !== 'undefined' && early_starting_gconsent );
+
+				if( map_early_gcmode && map_early_ready )
 				{
-					if( typeof early_starting_gconsent !== 'undefined' && early_starting_gconsent )
-					{
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (native) via early consent' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (native) via early consent' );
 
-						//save starting consent
-						MAP_SYS.starting_gconsent = early_starting_gconsent;
+					//save starting consent
+					MAP_SYS.starting_gconsent = window.early_starting_gconsent;
 
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (native)' );
+					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default consent (native)' );
 
-						//setting initial current_gconsent value (deep copy using spread operator)
-						MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
+					//setting initial current_gconsent value (deep copy using spread operator)
+					MAP_SYS.current_gconsent = { ...MAP_SYS.starting_gconsent };
 
-						MAP_SYS.early_gcmode = true;
-					}
+					MAP_SYS.early_gcmode = true;
 				}
 				else
 				{
+					// no default was sent before this script
+					if( map_early_gcmode )
+					{
+						window.dataLayer = window.dataLayer || [];
+						if( typeof window.gtag !== 'function' ) window.gtag = function(){ window.dataLayer.push( arguments ); };
+						window.gtag( 'set', 'developer_id.dY2ZhMm', true );
+						if( map_full_config.enable_cmode_url_passthrough ) window.gtag( 'set', 'url_passthrough', true );
+					}
+
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting default value for consent mode (native)' );
 
 					//save starting consent
@@ -1460,20 +1834,23 @@ var MAP =
 					{
 						console.error( error );
 					}
+
+					if( map_early_gcmode ) window.early_starting_gconsent = MAP_SYS.starting_gconsent;
 				}
 
 				var cookieValue = MAP_Cookie.read( MAP_CONSENT_STATUS );
 
-				if( cookieValue )
+				// the stored state is restored only alongside a choice that still holds
+				if( cookieValue && map_stored_choice_holds() )
 				{
-					var this_gconsent = that.parseGoogleConsentStatus( cookieValue );
+					var this_gconsent = that.maskedStoredConsent( 'google', cookieValue );
 
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_gconsent = { ...this_gconsent };
 
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'setting consent with value=' + cookieValue );
 
-					that.updateGoogleConsentbyObj( this_gconsent, false );
+					that.updateGoogleConsentbyObj( this_gconsent, false, true );
 				}
 				else
 				{
@@ -1487,6 +1864,333 @@ var MAP =
 		catch( error )
 		{
 			console.error( error );
+		}
+	},
+
+	//the four signals of the Google switches set to one value, {} without Consent Mode
+	googleConsentForAll: function( value )
+	{
+		var out = {};
+
+		if( !MAP_SYS?.cmode_v2 ) return out;
+
+		[ 'ad_storage', 'ad_user_data', 'ad_personalization', 'analytics_storage' ].forEach( function( k ) { out[k] = value; } );
+
+		return out;
+	},
+
+	//for each Consent Mode, the signals that an accepted service grants when the panel has no switches for it
+	consentModeServices: {
+		google: {
+			flag: 'cmode_v2',
+			cls: 'map-consent-google',
+			keys: [ 'ad_storage', 'ad_user_data', 'ad_personalization', 'analytics_storage' ],
+			services: {
+				google_analytics: [ 'analytics_storage' ],
+				my_agile_pixel_ga: [ 'analytics_storage' ],
+				google_tag_manager: [ 'ad_storage', 'ad_user_data', 'ad_personalization', 'analytics_storage' ],
+				stape: [ 'ad_storage', 'ad_user_data', 'ad_personalization', 'analytics_storage' ]
+			}
+		},
+		clarity: {
+			flag: 'clarity_cmode',
+			cls: 'map-consent-clarity',
+			keys: [ 'clarity_ad_storage', 'clarity_analytics_storage' ],
+			services: { microsoft_clarity: [ 'clarity_ad_storage', 'clarity_analytics_storage' ] }
+		},
+		microsoft: {
+			flag: 'microsoft_cmode',
+			cls: 'map-consent-microsoft',
+			keys: [ 'microsoft_ad_storage' ],
+			services: { microsoft_ads: [ 'microsoft_ad_storage' ] }
+		}
+	},
+
+	//signals of a choice ('accept', 'reject', 'partial' on apiKey) without the switches of a Consent Mode: null with the switches, {} when no signal changes
+	consentWithoutSwitches: function( vendor, choice, apiKey )
+	{
+		try {
+			var rule = this.consentModeServices[ vendor ];
+
+			if( !rule || !MAP_SYS?.[ rule.flag ] || !this.settingsModal ) return null;
+			if( this.settingsModal.querySelector( '.map-consent-mode-preference-checkbox.' + rule.cls ) ) return null;
+
+			var out = {};
+
+			if( choice === 'reject' )
+			{
+				rule.keys.forEach( function( k ) { out[k] = 'denied'; } );
+				return out;
+			}
+
+			// a partial choice on a service that grants none of these signals leaves them as they are
+			if( choice === 'partial' && !Object.prototype.hasOwnProperty.call( rule.services, apiKey ) ) return out;
+
+			var acceptedAll = ( choice === 'accept' ) || MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '1';
+
+			this.settingsModal.querySelectorAll( '.map_cookie_description_wrapper[data-cookie-api-key]' ).forEach( function( wrapper ) {
+				var signals = rule.services[ wrapper.getAttribute( 'data-cookie-api-key' ) ];
+
+				if( !signals ) return;
+
+				var index = wrapper.getAttribute( 'data-cookie-baseindex' );
+				// a necessary service always counts as accepted; a refusal has already returned above
+				var accepted = acceptedAll || wrapper.classList.contains( '_always_on' ) || ( !!index && MAP_Cookie.read( 'map_cookie_' + index + MAP_POSTFIX ) === '1' );
+
+				signals.forEach( function( k ) { if( out[k] !== 'granted' ) out[k] = accepted ? 'granted' : 'denied'; } );
+			});
+
+			return out;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return null;
+		}
+	},
+
+	//applies a choice made without switches to the given Consent Modes, a partial one only where a signal changes
+	applyConsentWithoutSwitches: function( choice, apiKey, isRestore, vendors )
+	{
+		var that = this;
+
+		try {
+			( vendors || [ 'google', 'clarity', 'microsoft' ] ).forEach( function( vendor ) {
+				var consent = that.consentWithoutSwitches( vendor, choice, apiKey );
+
+				if( !consent ) return;
+
+				var current = { google: MAP_SYS.current_gconsent, clarity: MAP_SYS.current_cconsent, microsoft: MAP_SYS.current_mconsent }[ vendor ] || {};
+				var keys = Object.keys( consent ).filter( function( k ) { return choice !== 'partial' || current[k] !== consent[k]; } );
+
+				if( !keys.length ) return;
+
+				if( vendor === 'google' )
+				{
+					var changed = {};
+					keys.forEach( function( k ) { changed[k] = consent[k]; } );
+
+					if( isRestore === true ) that.updateGoogleConsentbyObj( { ...current, ...changed }, true, true );
+					else that.updateGoogleConsentbyKeyValues( changed, true );
+
+					return;
+				}
+
+				keys.forEach( function( k ) {
+					if( vendor === 'clarity' ) that.updateClarityConsent( k, consent[k], true, isRestore === true );
+					else that.updateMicrosoftConsent( k, consent[k], true, isRestore === true );
+				});
+			});
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//removes a cookie, also with an earlier copy of MAP_Cookie
+	dropCookie: function( name )
+	{
+		if( typeof MAP_Cookie.delete === 'function' ) MAP_Cookie.delete( name );
+		else MAP_Cookie.set( name, '', -1 );
+	},
+
+	//checks a stored implicit consent against the privacy signal and the geo zone
+	reconcileImplicitConsent: function()
+	{
+		try {
+			if( this.isSplitPreview() ) return '';
+
+			var why = map_implicit_consent_void();
+
+			if( why === 'gpc' ) this.refuseImplicitConsent();
+			if( why === 'block' ) this.revokeImplicitConsent();
+
+			return why;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return '';
+		}
+	},
+
+	//turns an implicit consent into a refusal, as no choice event
+	refuseImplicitConsent: function()
+	{
+		var that = this;
+
+		try {
+			MapLogger.log( 'MAP-GEO', 'implicit consent with GPC → refusal' );
+
+			var googleConsent = {};
+
+			that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
+				elem.value = '0';
+				MAP.mapSyncSlider( elem );
+
+				var consent_key = elem.getAttribute( 'data-consent-key' );
+
+				if( elem.classList.contains( 'map-consent-clarity' ) ) that.updateClarityConsent( consent_key, 'denied', true, true );
+				if( elem.classList.contains( 'map-consent-microsoft' ) ) that.updateMicrosoftConsent( consent_key, 'denied', true, true );
+				if( elem.classList.contains( 'map-consent-google' ) ) googleConsent[consent_key] = 'denied';
+			});
+
+			if( !Object.keys( googleConsent ).length ) googleConsent = that.consentWithoutSwitches( 'google', 'reject' ) || {};
+
+			that.applyConsentWithoutSwitches( 'reject', null, true, [ 'clarity', 'microsoft' ] );
+
+			// sent even when unchanged: an earlier restore may have granted
+			if( Object.keys( googleConsent ).length ) that.updateGoogleConsentbyObj( { ...( MAP_SYS.current_gconsent || {} ), ...googleConsent }, true, true );
+
+			that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach( function( elem ) {
+				MAP_Cookie.set( 'map_cookie_' + elem.getAttribute( 'data-cookie-baseindex' ) + MAP_POSTFIX, '-1', MAP_SYS.map_cookie_expire );
+				elem.value = '0';
+				MAP.mapSyncSlider( elem );
+			});
+
+			MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+			MAP_Cookie.set( MAP_ACCEPTED_SOMETHING_COOKIE_NAME, '-1', MAP_SYS.map_cookie_expire );
+
+			if( typeof window.MAPUpdateGPP === 'function' ) window.MAPUpdateGPP( true );
+
+			// last, so that a refusal stopped halfway is tried again on the next page
+			that.dropCookie( map_implicit_consent_name() );
+
+			if( typeof window.CookieShield?.resetAcceptedAllCache === 'function' ) window.CookieShield.resetAcceptedAllCache();
+
+			(async() => {
+				while( !MAP_SYS.map_document_load )
+				{
+					await new Promise( resolve => setTimeout( resolve, 10 ) );
+				}
+
+				if( typeof window.MAPIABTCF_denyAllConsent === 'function' )
+				{
+					window.MAPIABTCF_denyAllConsent( true );
+					that.updateSomeConsentGivenStatus();
+				}
+			})();
+
+			return true;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
+		}
+	},
+
+	//withdraws an implicit consent: no choice is left and the banner asks again
+	revokeImplicitConsent: function()
+	{
+		var that = this;
+
+		try {
+			MapLogger.log( 'MAP-GEO', 'implicit consent outside a no-block zone → withdrawn' );
+
+			[ [ MAP_SYS.starting_cconsent, 'updateClarityConsent' ], [ MAP_SYS.starting_mconsent, 'updateMicrosoftConsent' ] ].forEach( function( pair ) {
+				if( pair[0] && typeof pair[0] === 'object' )
+				{
+					Object.keys( pair[0] ).forEach( function( k ) { that[ pair[1] ]( k, pair[0][k], true, true ); } );
+				}
+			});
+
+			var def = ( MAP_SYS?.cmode_v2_implementation_type === 'native' && map_full_config?.cmode_v2_default_consent_obj && typeof map_full_config.cmode_v2_default_consent_obj === 'object' ) ?
+				map_full_config.cmode_v2_default_consent_obj : that.googleConsentForAll( 'denied' );
+
+			// sent even when unchanged: an earlier restore may have granted
+			if( MAP_SYS?.cmode_v2 && def && Object.keys( def ).length ) that.updateGoogleConsentbyObj( { ...( MAP_SYS.current_gconsent || {} ), ...def }, true, true );
+
+			var mine = new RegExp( '^map_cookie_\\d+' + String( MAP_POSTFIX || '' ).replace( /[^\w]/g, '\\$&' ) + '$' );
+			var list = ( typeof MAP_Cookie.getCookieNameList === 'function' ) ? MAP_Cookie.getCookieNameList() : [];
+
+			list.forEach( function( name ) { if( mine.test( name ) ) that.dropCookie( name ); } );
+
+			[ MAP_ACCEPTED_ALL_COOKIE_NAME, MAP_ACCEPTED_SOMETHING_COOKIE_NAME, MAP_USER_UUID, MAP_LAST_CONSENT_MODIFY_DATE, map_implicit_consent_name() ].forEach( function( name ) {
+				if( MAP_Cookie.exists( name ) ) that.dropCookie( name );
+			});
+
+			MAP_SYS.user_uuid = null;
+			MAP_SYS.last_consent_modify_date = null;
+
+			that.settingsModal.querySelectorAll( '.map-user-preference-checkbox, .map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
+				elem.value = '0';
+				MAP.mapSyncSlider( elem );
+			});
+
+			if( typeof window.CookieShield?.resetAcceptedAllCache === 'function' ) window.CookieShield.resetAcceptedAllCache();
+
+			that.updateSomeConsentGivenStatus();
+
+			return true;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
+		}
+	},
+
+	//stored state of a Consent Mode read back for a restore: after a refusal of everything nothing granted, and the cookie follows
+	maskedStoredConsent: function( vendor, cookieValue )
+	{
+		var parsed = ( vendor === 'clarity' ) ? this.parseClarityConsentStatus( cookieValue ) :
+			( ( vendor === 'microsoft' ) ? this.parseMicrosoftConsentStatus( cookieValue ) : this.parseGoogleConsentStatus( cookieValue ) );
+		var masked = map_refusal_safe( parsed );
+
+		try {
+			if( masked && JSON.stringify( masked ) !== JSON.stringify( parsed ) )
+			{
+				if( vendor === 'clarity' ) this.saveClarityConsentStatusToCookie( masked );
+				else if( vendor === 'microsoft' ) this.saveMicrosoftConsentStatusToCookie( masked );
+				else this.saveGoogleConsentStatusToCookie( masked );
+			}
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+
+		return masked;
+	},
+
+	//brings every active Consent Mode to the signals of a refusal, sending only what changes and without recording a choice
+	applyRefusalSignals: function()
+	{
+		var that = this;
+
+		try {
+			Object.keys( that.consentModeServices ).forEach( function( vendor ) {
+				var rule = that.consentModeServices[ vendor ];
+
+				if( !MAP_SYS?.[ rule.flag ] ) return;
+
+				var current = { google: MAP_SYS.current_gconsent, clarity: MAP_SYS.current_cconsent, microsoft: MAP_SYS.current_mconsent }[ vendor ] || {};
+				var keys = rule.keys.filter( function( k ) { return current[k] !== 'denied'; } );
+
+				if( !keys.length ) return;
+
+				if( vendor === 'google' )
+				{
+					var changed = {};
+					keys.forEach( function( k ) { changed[k] = 'denied'; } );
+					that.updateGoogleConsentbyObj( { ...current, ...changed }, true, true );
+					return;
+				}
+
+				keys.forEach( function( k ) {
+					if( vendor === 'clarity' ) that.updateClarityConsent( k, 'denied', true, true );
+					else that.updateMicrosoftConsent( k, 'denied', true, true );
+				});
+			});
+
+			return true;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
 		}
 	},
 
@@ -1516,9 +2220,10 @@ var MAP =
 
 				var cookieValue = MAP_Cookie.read( MAP_CLARITY_CONSENT_STATUS );
 
-				if( cookieValue )
+				// the stored state is restored only alongside a choice that still holds
+				if( cookieValue && map_stored_choice_holds() )
 				{
-					var this_cconsent = that.parseClarityConsentStatus( cookieValue );
+					var this_cconsent = that.maskedStoredConsent( 'clarity', cookieValue );
 
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_cconsent = { ...this_cconsent };
@@ -1623,9 +2328,10 @@ var MAP =
 
 				var cookieValue = MAP_Cookie.read( MAP_MICROSOFT_CONSENT_STATUS );
 
-				if( cookieValue )
+				// the stored state is restored only alongside a choice that still holds
+				if( cookieValue && map_stored_choice_holds() )
 				{
-					var this_mconsent = that.parseMicrosoftConsentStatus( cookieValue );
+					var this_mconsent = that.maskedStoredConsent( 'microsoft', cookieValue );
 
 					//setting initial current_gconsent value (deep copy using spread operator)
 					MAP_SYS.current_mconsent = { ...this_mconsent };
@@ -1690,6 +2396,63 @@ var MAP =
 		}
 	},
 
+	//earlier suffix of this site's consent cookies, '' when there is none or it is the current one
+	legacyResetPostfix : function()
+	{
+		var legacy = map_legacy_reset_postfix( this.settings );
+		var current = ( typeof MAP_POSTFIX === 'string' ) ? MAP_POSTFIX : '';
+
+		return ( legacy && legacy !== current ) ? legacy : '';
+	},
+
+	//true when the only choice is a refusal saved under the earlier cookie name
+	legacyRefusal : function()
+	{
+		try {
+			var settings = this.settings || ( ( typeof map_cookiebar_settings !== 'undefined' ) ? map_cookiebar_settings : null );
+			var legacy = map_legacy_reset_postfix( settings );
+			var current = ( typeof MAP_POSTFIX === 'string' ) ? MAP_POSTFIX : '';
+
+			return !!legacy && legacy !== current &&
+				!MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) &&
+				!MAP_Cookie.exists( MAP_ACCEPTED_SOMETHING_COOKIE_NAME ) &&
+				MAP_Cookie.read( 'map_accepted_all_cookie_policy' + legacy ) === '-1';
+		}
+		catch( e )
+		{
+			return false;
+		}
+	},
+
+	//removes the consent cookies of this site named with an earlier suffix
+	dropLegacyResetCookies : function()
+	{
+		try {
+			if( typeof MAP_Cookie.getCookieNameList !== 'function' || typeof MAP_Cookie.delete !== 'function' ) return;
+
+			var legacy = this.legacyResetPostfix();
+
+			if( !legacy ) return;
+
+			var list = MAP_Cookie.getCookieNameList();
+
+			for( var i = 0; i < list.length; i++ )
+			{
+				var name = list[i];
+				var base = ( name.length > legacy.length && name.slice( -legacy.length ) === legacy ) ? name.slice( 0, -legacy.length ) : '';
+
+				if( /^map_(accepted_all_cookie_policy|accepted_something_cookie_policy|consent_status|microsoft_consent_status|clarity_consent_status|user_uuid|last_c_m_date|implicit_consent|cookie_\d+)$/.test( base ) )
+				{
+					MAP_Cookie.delete( name );
+				}
+			}
+		}
+		catch( e )
+		{
+			MapLogger.debug( e );
+		}
+	},
+
 	//memorize last consent modification date, uuid generation eventually
 	updateLastConsentRecords : function()
 	{
@@ -1699,6 +2462,11 @@ var MAP =
 		try {
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'updateLastConsentRecords' );
+
+			that.dropLegacyResetCookies();
+
+			// a recorded choice replaces an implicit consent
+			if( MAP_Cookie.exists( map_implicit_consent_name() ) ) that.dropCookie( map_implicit_consent_name() );
 
 			let date = new Date();
 			let dateString = date.toISOString();
@@ -1909,6 +2677,17 @@ var MAP =
 					e.preventDefault();
 					e.stopImmediatePropagation();
 
+					if( that.isBarHiddenByOthers() )
+					{
+						that.markBarHiddenByOthers();
+						that.openHiddenBannerHelp( $this );
+						return;
+					}
+
+					that.bar_blocked = false;
+
+					if( window.MAPIABTCF_ui_guard === true && typeof window.MAPIABTCF_showCMPUI === 'function' ) { window.MAPIABTCF_showCMPUI(); }
+
 					that.dispatchConsentEvents( 'myagileprivacy_resurface' );
 
 					//animation
@@ -1926,7 +2705,7 @@ var MAP =
 						MAP.bar_elm.focus();
 					}, 150 );
 
-					anime( {
+					map_animate({
 						targets: MAP.showagain_elm,
 						easing: 'easeInOutQuad',
 						duration: 150,
@@ -1979,7 +2758,7 @@ var MAP =
 									}
 
 									MAP.bar_elm.style.display = 'block';
-									anime( animation_params );
+									map_animate(animation_params );
 									break;
 
 								case 'fade':
@@ -1989,7 +2768,7 @@ var MAP =
 									animation_params['opacity'] = '1';
 									animation_params['duration'] = '500';
 
-									anime( animation_params );
+									map_animate(animation_params );
 
 									break;
 
@@ -1998,7 +2777,7 @@ var MAP =
 									MAP.bar_elm.style.display = 'block';
 
 									animation_params['scale'] = '1';
-									anime( animation_params );
+									map_animate(animation_params );
 
 									break;
 
@@ -2030,6 +2809,17 @@ var MAP =
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
+				if( that.isBarHiddenByOthers() )
+				{
+					that.markBarHiddenByOthers();
+					that.openHiddenBannerHelp();
+					return;
+				}
+
+				that.bar_blocked = false;
+
+				if( window.MAPIABTCF_ui_guard === true && typeof window.MAPIABTCF_showCMPUI === 'function' ) { window.MAPIABTCF_showCMPUI(); }
+
 				//animation
 				var that_animation = MAP.bar_elm.getAttribute('data-animation');
 				var that_id_selector = '#' + MAP.bar_elm.getAttribute('id');
@@ -2044,7 +2834,7 @@ var MAP =
 					MAP.showagain_elm.style.display = 'none';
 				}, 150 );
 
-				anime( {
+				map_animate({
 					targets: MAP.showagain_elm,
 					easing: 'easeInOutQuad',
 					duration: 150,
@@ -2095,7 +2885,7 @@ var MAP =
 								}
 
 								MAP.bar_elm.style.display = 'block';
-								anime( animation_params );
+								map_animate(animation_params );
 								break;
 
 							case 'fade':
@@ -2105,7 +2895,7 @@ var MAP =
 								animation_params['opacity'] = '1';
 								animation_params['duration'] = '500';
 
-								anime( animation_params );
+								map_animate(animation_params );
 
 								break;
 
@@ -2114,7 +2904,7 @@ var MAP =
 								MAP.bar_elm.style.display = 'block';
 
 								animation_params['scale'] = '1';
-								anime( animation_params );
+								map_animate(animation_params );
 								break;
 
 							default: // no animation -> value = "none"
@@ -2157,6 +2947,13 @@ var MAP =
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggered showConsentAgain' );
 					e.preventDefault();
 					e.stopImmediatePropagation();
+
+					if( that.isBarHiddenByOthers() )
+					{
+						that.markBarHiddenByOthers();
+						that.openHiddenBannerHelp( targetElement );
+						return;
+					}
 
 					that.dispatchConsentEvents( 'myagileprivacy_resurface' );
 
@@ -2376,29 +3173,26 @@ var MAP =
 							window.MAPIABTCF_ensureFullInit();
 						}
 
-						MAP.settingsModal.classList.add( 'map-show' );
-						MAP.settingsModal.style.opacity = 0;
-						MAP.settingsModal.offsetWidth; // Trigger a reflow to ensure the transition starts
-						MAP.settingsModal.style.transition = 'opacity 1s';
-						MAP.settingsModal.style.opacity = 1;
+						MAP.openSettingsPopup( $this );
 
-						MAP.settingsModal.classList.remove( 'map-blowup', 'map-out' );
-						MAP.settingsModal.classList.add( 'map-blowup' );
-
-						MAP.settingsModal.focus();
-
-						document.body.classList.add( 'map-modal-open' );
-
-						document.querySelector( '.map-settings-overlay' ).classList.add( 'map-show' );
-
-						if( !document.querySelector( '.map-settings-mobile' ).offsetWidth )
+						var mapSettingsMobile = document.querySelector( '.map-settings-mobile' );
+						if( mapSettingsMobile && mapSettingsMobile.offsetWidth === 0 && mapSettingsMobile.offsetHeight === 0 )
 						{
-							MAP.settingsModal.querySelector( '.map-nav-link' ).click();
+							var firstNavLink = MAP.settingsModal.querySelector( '.map-nav-link' );
+							if( firstNavLink )
+							{
+								firstNavLink.click();
+							}
 						}
 
 						$map_consent_extrawrapper.querySelectorAll( '.map-wrappertab-navigation li a[href="#map-privacy-iab-tcf-wrapper"]' ).forEach( function( $_this ) {
 							$_this.click();
 						});
+
+						if( MAP.isIabPaneWithoutTabs() )
+						{
+							MAP.showIabPane();
+						}
 
 					});
 				});
@@ -2411,19 +3205,7 @@ var MAP =
 						e.preventDefault();
 						e.stopImmediatePropagation();
 
-						MAP.settingsModal.classList.add('map-show');
-						MAP.settingsModal.style.opacity = 0;
-
-						MAP.settingsModal.offsetWidth; // Trigger a reflow to ensure the transition starts
-						MAP.settingsModal.style.transition = 'opacity 1s';
-						MAP.settingsModal.style.opacity = 1;
-
-						MAP.settingsModal.classList.remove( 'map-blowup', 'map-out' );
-						MAP.settingsModal.classList.add( 'map-blowup' );
-
-						document.body.classList.add( 'map-modal-open' );
-
-						document.querySelector( '.map-settings-overlay' ).classList.add( 'map-show' );
+						MAP.openSettingsPopup( $this );
 
 						var mapSettingsMobile = document.querySelector( '.map-settings-mobile' );
 						if( mapSettingsMobile && mapSettingsMobile.offsetWidth === 0 && mapSettingsMobile.offsetHeight === 0)
@@ -2438,6 +3220,11 @@ var MAP =
 						$map_consent_extrawrapper.querySelectorAll( '.map-wrappertab-navigation li a[href="#map-privacy-iab-tcf-wrapper"]' ).forEach( function( $_this ) {
 							$_this.click();
 						});
+
+						if( MAP.isIabPaneWithoutTabs() )
+						{
+							MAP.showIabPane();
+						}
 
 						// Ensure full init (vendor DOM) is complete before trying to click
 						// the vendor list button and scroll to it
@@ -2469,6 +3256,7 @@ var MAP =
 						if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
 						{
 							window.MAPIABTCF_ensureFullInit().then( function() {
+								MAP.mapSyncAllSliders();
 								setTimeout( _doVendorScroll, 200 );
 							});
 						}
@@ -2499,31 +3287,7 @@ var MAP =
 
 						if( tabHref == 'map-privacy-iab-tcf-wrapper')
 						{
-							(async() => {
-
-								while( !MAP_SYS.map_document_load )
-								{
-									//MapLogger.log( 'not defined yet' );
-									await new Promise( resolve => setTimeout( resolve, 10 ) );
-								}
-
-								// Ensure vendor-list.json and googleVendors.json are fetched
-								// and the full vendor DOM is rendered before showing the CMP UI
-								if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
-								{
-									window.MAPIABTCF_ensureFullInit().then( function() {
-										if( typeof window.MAPIABTCF_showCMPUI === 'function' )
-										{
-											window.MAPIABTCF_showCMPUI();
-										}
-									});
-								}
-								else if( typeof window.MAPIABTCF_showCMPUI === 'function' )
-								{
-									window.MAPIABTCF_showCMPUI();
-								}
-
-							})();
+							MAP.showIabPane();
 						}
 						else
 						{
@@ -2744,6 +3508,8 @@ var MAP =
 
 				that.dispatchConsentEvents( 'myagileprivacy_cookie_accept' );
 
+				var googleConsent = {};
+
 				//check consent-mode checkbox
 				that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
 					elem.value = '1';
@@ -2763,10 +3529,17 @@ var MAP =
 
 					if( elem.classList.contains( 'map-consent-google' ) )
 					{
-						that.updateGoogleConsentbyKeyValue( consent_key, 'granted', true );
+						googleConsent[consent_key] = 'granted';
 					}
 
 				});
+
+				// without switches in the panel the services of each Consent Mode decide
+				if( !Object.keys( googleConsent ).length ) googleConsent = that.consentWithoutSwitches( 'google', 'accept' ) || {};
+				that.applyConsentWithoutSwitches( 'accept', null, false, [ 'clarity', 'microsoft' ] );
+
+				// one update for all the keys
+				that.updateGoogleConsentbyKeyValues( googleConsent, true );
 
 				//check user-preference checkbox
 				that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach( function( elem ) {
@@ -2784,6 +3557,7 @@ var MAP =
 				//check iab-preference checkbox
 				that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
 
+					elem.classList.remove( 'map-flags' ); // a choice on everything is never partial
 					elem.value = '1';
 					MAP.mapSyncSlider( elem );
 				});
@@ -2826,6 +3600,8 @@ var MAP =
 
 					that.dispatchConsentEvents( 'myagileprivacy_cookie_reject' );
 
+					var googleConsent = {};
+
 					//uncheck consent-mode checkbox
 					that.settingsModal.querySelectorAll( '.map-consent-mode-preference-checkbox' ).forEach( function( elem ) {
 
@@ -2846,10 +3622,17 @@ var MAP =
 
 						if( elem.classList.contains( 'map-consent-google' ) )
 						{
-							that.updateGoogleConsentbyKeyValue( consent_key, 'denied', true );
+							googleConsent[consent_key] = 'denied';
 						}
 
 					});
+
+					// without switches in the panel the refusal covers every signal of each Consent Mode
+					if( !Object.keys( googleConsent ).length ) googleConsent = that.consentWithoutSwitches( 'google', 'reject' ) || {};
+					that.applyConsentWithoutSwitches( 'reject', null, false, [ 'clarity', 'microsoft' ] );
+
+					// one update for all the keys
+					that.updateGoogleConsentbyKeyValues( googleConsent, true );
 
 					//uncheck user-preference checkbox
 					that.settingsModal.querySelectorAll( '.map-user-preference-checkbox' ).forEach( function( elem ) {
@@ -2865,6 +3648,7 @@ var MAP =
 					//uncheck iab-preference checkbox
 					that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( elem ) {
 
+						elem.classList.remove( 'map-flags' ); // a choice on everything is never partial
 						elem.value = '0';
 						MAP.mapSyncSlider( elem );
 					});
@@ -2899,18 +3683,7 @@ var MAP =
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
-				MAP.settingsModal.classList.add( 'map-show' );
-				MAP.settingsModal.style.opacity = 0;
-				MAP.settingsModal.offsetWidth; // Trigger a reflow to ensure the transition starts
-				MAP.settingsModal.style.transition = 'opacity 1s';
-				MAP.settingsModal.style.opacity = 1;
-
-				MAP.settingsModal.classList.remove( 'map-blowup', 'map-out' );
-				MAP.settingsModal.classList.add( 'map-blowup' );
-
-				document.body.classList.add( 'map-modal-open' );
-
-				document.querySelector( '.map-settings-overlay' ).classList.add( 'map-show' );
+				MAP.openSettingsPopup( that.customize_button );
 
 				var mapSettingsMobile = document.querySelector( '.map-settings-mobile' );
 
@@ -2934,6 +3707,11 @@ var MAP =
 					}
 				}
 
+				if( MAP.isIabPaneWithoutTabs() )
+				{
+					MAP.showIabPane();
+				}
+
 				that.dispatchConsentEvents( 'myagileprivacy_cookie_customize' );
 
 			});
@@ -2945,7 +3723,7 @@ var MAP =
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
-				MAP.closeSettingsPopup();
+				MAP.closeSettingsPopup( 'close' );
 				MAP.hideBar();
 
 			});
@@ -2992,27 +3770,6 @@ var MAP =
 
 			//for preserving scope
 			var that = this;
-
-			//usability fix - align hidden input - label (aria-checked)
-			document.querySelectorAll( 'input[type="hidden"][id]' ).forEach( function( checkbox ) {
-			  var id = checkbox.id;
-			  if( !id ) return;
-			  document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
-				label.setAttribute( 'aria-checked', checkbox.value === '1' ? 'true' : 'false' );
-			  });
-			});
-
-			//usability fix - keep hidden input - label aligned (aria-checked)
-			that.settingsModal.addEventListener( 'map:toggle', function( e ) {
-			  if( e.target.matches( 'input[type="hidden"][id]' ) ) {
-				var id = e.target.id;
-				if( !id ) return;
-
-				document.querySelectorAll( `div[data-label-for="${id}"]` ).forEach( function( label ) {
-				  label.setAttribute( 'aria-checked', e.target.value === '1' ? 'true' : 'false' );
-				});
-			  }
-			});
 
 			//usability fix - clickable elements with keydown
 			const usability_fix_items = [ that.accept_button,
@@ -3103,57 +3860,6 @@ var MAP =
 		}
 	},
 
-	attachAnimations: function()
-	{
-		try {
-
-			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function attachAnimations' );
-
-			//for preserving scope
-			var that = this;
-
-			if( that.bar_elm.querySelector( '#map-accept-button' ).getAttribute( 'data-animate' ) == 'true' )
-			{
-				var acceptButton = document.querySelector( '#map-accept-button' );
-
-				var animation = acceptButton.getAttribute( 'data-animation-effect' );
-
-				var delay = parseInt(acceptButton.getAttribute( 'data-animation-delay'), 10 ) * 1000;
-
-				var repeat = parseInt(acceptButton.getAttribute( 'data-animation-repeat' ), 10 );
-
-				var all_animation_classes = ['animate__animated', animation] ;
-
-				var iteration_counter = 0;
-
-				var animInterval = setInterval( function() {
-					if(iteration_counter == repeat)
-					{
-						clearInterval( animInterval );
-					}
-					else
-					{
-						acceptButton.classList.add( ...all_animation_classes );
-
-						setTimeout( function() {
-
-							acceptButton.classList.remove( ...all_animation_classes );
-							iteration_counter ++;
-
-						}, 900 );
-					}
-
-				}, delay );
-
-			}
-
-		}
-		catch( error )
-		{
-			console.error( error );
-		}
-	},
-
 	checkBlockedContent: function()
 	{
 		try {
@@ -3163,7 +3869,7 @@ var MAP =
 			//for preserving scope
 			var that = this;
 
-			var $map_blocked_content = document.querySelectorAll( '.map_blocked_content:not(._is_activated)' );
+			var $map_blocked_content = document.querySelectorAll( '.map_blocked_content:not(._is_activated):not(._map_jq_wait)' );
 
 			if( !!$map_blocked_content && $map_blocked_content?.length )
 			{
@@ -3223,7 +3929,7 @@ var MAP =
 							that.map_blocked_elems_desc.style.opacity = 0;
 							that.map_blocked_elems_desc.style.display = 'block';
 
-							anime( {
+							map_animate({
 								targets: that.map_blocked_elems_desc,
 								easing: 'easeInOutQuad',
 								duration: 150,
@@ -3250,7 +3956,7 @@ var MAP =
 								that.blocked_content_notification.style.opacity = 0;
 								that.blocked_content_notification.style.display = 'block';
 
-								anime( {
+								map_animate({
 									targets: that.blocked_content_notification,
 									easing: 'easeInOutQuad',
 									duration: 150,
@@ -3268,7 +3974,7 @@ var MAP =
 											that.blocked_content_notification.style.display = 'none';
 										}, 150 );
 
-										anime( {
+										map_animate({
 											targets: that.blocked_content_notification,
 											easing: 'easeInOutQuad',
 											duration: 150,
@@ -3299,7 +4005,7 @@ var MAP =
 						that.blocked_content_notification.style.display = 'none';
 					}, 150 );
 
-					anime( {
+					map_animate({
 						targets: that.blocked_content_notification,
 						easing: 'easeInOutQuad',
 						duration: 150,
@@ -3328,6 +4034,14 @@ var MAP =
 
 			//for preserving scope
 			var that = this;
+
+			if( that.isBarHiddenByOthers() )
+			{
+				that.markBarHiddenByOthers();
+				return;
+			}
+
+			that.bar_blocked = false;
 
 			//animation
 			var that_animation = that.bar_elm.getAttribute( 'data-animation' );
@@ -3383,7 +4097,7 @@ var MAP =
 
 					element.style.display = 'block';
 
-					anime( animation_params );
+					map_animate(animation_params );
 					break;
 
 				case 'fade':
@@ -3394,7 +4108,7 @@ var MAP =
 					animation_params['opacity'] = '1';
 					animation_params['duration'] = '500';
 
-					anime( animation_params );
+					map_animate(animation_params );
 
 					break;
 
@@ -3404,7 +4118,7 @@ var MAP =
 					element.style.display = 'block';
 
 					animation_params['scale'] = '1';
-					anime( animation_params );
+					map_animate(animation_params );
 
 					break;
 
@@ -3415,16 +4129,16 @@ var MAP =
 			}
 
 			setTimeout( function() {
-				that.showagain_elm.style.display = 'none';
+				if( !that.bar_blocked ) that.showagain_elm.style.display = 'none';
 			}, 150 );
 
-			anime( {
+			map_animate({
 				targets: that.showagain_elm,
 				easing: 'easeInOutQuad',
 				duration: 150,
 				opacity: 0,
 				complete: function( anim ) {
-					that.showagain_elm.style.display = 'none';
+					if( !that.bar_blocked ) that.showagain_elm.style.display = 'none';
 				}
 			} );
 
@@ -3436,6 +4150,174 @@ var MAP =
 
 			that.optimizeMobile();
 
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	isBarRendered: function()
+	{
+		var content = this.bar_elm.querySelector( '#my-agile-privacy-notification-content' );
+
+		return this.bar_elm.getClientRects().length > 0 &&
+			( !content || content.getClientRects().length > 0 );
+	},
+
+	//probes the bar synchronously: no frame is painted in between
+	isBarHiddenByOthers: function()
+	{
+		try {
+
+			if( this.bar_open ) return !this.isBarRendered();
+
+			var previous = this.bar_elm.style.display;
+
+			this.bar_elm.style.display = 'block';
+
+			var hidden = !this.isBarRendered();
+
+			this.bar_elm.style.display = previous;
+
+			return hidden;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
+		}
+	},
+
+	markBarHiddenByOthers: function()
+	{
+		try {
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function markBarHiddenByOthers' );
+
+			if( this.bar_blocked ) return;
+
+			var was_open = this.bar_open;
+
+			this.bar_blocked = true;
+			this.bar_open = false;
+
+			map_animate_remove(this.bar_elm );
+			map_animate_remove(this.showagain_elm );
+
+			this.bar_elm.style.display = 'none';
+
+			var this_showagain_tab = Boolean( this.settings.showagain_tab );
+
+			if( !this_showagain_tab &&
+				!document.querySelector( '.showConsentAgain:not(.map_custom_notify):not(.map_inline_notify)' ) )
+			{
+				this_showagain_tab = true;
+			}
+
+			if( this_showagain_tab )
+			{
+				this.showagain_elm.style.opacity = 1;
+				this.showagain_elm.style.display = 'block';
+			}
+
+			if( was_open )
+			{
+				this.dispatchConsentEvents( 'myagileprivacy_bar_hidden' );
+			}
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	openHiddenBannerHelp: function( trigger )
+	{
+		try {
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function openHiddenBannerHelp' );
+
+			//for preserving scope
+			var that = this;
+
+			var help = document.getElementById( 'map-hidden-banner-help' );
+
+			if( !help ) return false;
+
+			var dialog = help.querySelector( '.map-hidden-banner-help-dialog' );
+
+			if( help.getAttribute( 'data-map-bound' ) !== '1' )
+			{
+				help.setAttribute( 'data-map-bound', '1' );
+
+				help.querySelectorAll( '.map-hidden-banner-help-close, .map-hidden-banner-help-backdrop' ).forEach( function( $this ) {
+					$this.addEventListener( 'click', function( e ) {
+						e.preventDefault();
+						that.closeHiddenBannerHelp();
+					});
+				});
+
+				help.addEventListener( 'keydown', function( e ) {
+
+					if( e.key === 'Escape' || e.key === 'Esc' )
+					{
+						e.preventDefault();
+						that.closeHiddenBannerHelp();
+						return;
+					}
+
+					if( e.key !== 'Tab' ) return;
+
+					var buttons = dialog.querySelectorAll( 'button' );
+
+					if( !buttons.length ) return;
+
+					var first = buttons[0];
+					var last = buttons[ buttons.length - 1 ];
+
+					if( e.shiftKey && ( document.activeElement === first || document.activeElement === dialog ) )
+					{
+						e.preventDefault();
+						last.focus();
+					}
+					else if( !e.shiftKey && document.activeElement === last )
+					{
+						e.preventDefault();
+						first.focus();
+					}
+				});
+			}
+
+			that.hidden_help_return = trigger || document.activeElement;
+
+			help.classList.add( 'map-show' );
+
+			dialog.focus();
+
+			return true;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
+		}
+	},
+
+	closeHiddenBannerHelp: function()
+	{
+		try {
+
+			var help = document.getElementById( 'map-hidden-banner-help' );
+
+			if( help ) help.classList.remove( 'map-show' );
+
+			if( this.hidden_help_return && typeof this.hidden_help_return.focus === 'function' )
+			{
+				this.hidden_help_return.focus();
+			}
+
+			this.hidden_help_return = null;
 		}
 		catch( error )
 		{
@@ -3466,7 +4348,7 @@ var MAP =
 				that.showagain_elm.style.opacity = 0;
 				that.showagain_elm.style.display = 'block';
 
-				anime( {
+				map_animate({
 					targets: this.showagain_elm,
 					easing: 'easeInOutQuad',
 					duration: 150,
@@ -3482,7 +4364,7 @@ var MAP =
 				}, 150 );
 
 				//hide
-				anime( {
+				map_animate({
 					targets: this.showagain_elm,
 					easing: 'easeInOutQuad',
 					duration: 150,
@@ -3537,7 +4419,7 @@ var MAP =
 						animation_params['right'] = '-100vw';
 					}
 
-					anime( animation_params );
+					map_animate(animation_params );
 					break;
 
 				case 'fade':
@@ -3545,14 +4427,14 @@ var MAP =
 					animation_params['opacity'] = '0';
 					animation_params['duration'] = '500';
 
-					anime( animation_params );
+					map_animate(animation_params );
 
 					break;
 
 				case 'zoom':
 
 					animation_params['scale'] = '0';
-					anime( animation_params );
+					map_animate(animation_params );
 
 
 					break;
@@ -3607,17 +4489,9 @@ var MAP =
 				if( that.bar_open )
 				{
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'optimizing for mobile view' );
-					var viewport_width  = window.visualViewport ? window.visualViewport.width  : window.innerWidth;
-					var viewport_height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-					if( viewport_width <= 450 )
+					if( that.isNarrowViewport() )
 					{
-						var internal_height = Math.floor( viewport_height * 0.30 );
-
-						if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'map mobile optimizing: viewport_width=' + viewport_width + ', viewport_height=' + viewport_height + ', internal_height=' + internal_height );
 						that.map_notification_message.classList.add( 'extraNarrow' );
-						that.map_notification_message.style.maxHeight = internal_height + 'px';
-						that.map_notification_message.scrollTop = 0;
 
 						//map_flex and extraNarrow are tied attributes
 						if( !that.map_notification_message.classList.contains( 'map-iab-context' ) )
@@ -3633,9 +4507,10 @@ var MAP =
 						{
 							that.map_notification_message.classList.add( 'map_flex' );
 						}
-
-						that.map_notification_message.style.maxHeight = '';
 					}
+
+					that.layoutConsentButtons();
+					that.capNotificationMessage();
 				}
 				that.setOverflowMaxHeight();
 
@@ -3656,6 +4531,187 @@ var MAP =
 			}
 		};
 		setTimeout( function() { _optimize( true ); }, 1 );
+	},
+
+	//three, two or one consent buttons per row on narrow screens, all of the same size
+	layoutConsentButtons: function()
+	{
+		//for preserving scope
+		var that = this;
+
+		try
+		{
+			var container = that.bar_elm ? that.bar_elm.querySelector( '.map_notification_container' ) : null;
+
+			if( !container || container.clientWidth == 0 ) return;
+
+			var buttons = [];
+
+			for( var i = 0; i < container.children.length; i++ )
+			{
+				if( container.children[i].tagName == 'A' ) buttons.push( container.children[i] );
+			}
+
+			container.classList.remove( 'map-buttons-two-rows', 'map-buttons-stacked' );
+
+			if( !that.isNarrowViewport() || buttons.length != 3 ) return;
+
+			var container_style = window.getComputedStyle( container );
+			var gap = parseFloat( container_style.columnGap ) || 0;
+			var available = container.clientWidth - ( parseFloat( container_style.paddingLeft ) || 0 ) - ( parseFloat( container_style.paddingRight ) || 0 );
+			var widest = 0;
+
+			buttons.forEach( function( button ) {
+				button.style.setProperty( 'white-space', 'nowrap', 'important' );
+				button.style.setProperty( 'width', 'max-content', 'important' );
+				widest = Math.max( widest, button.offsetWidth );
+				button.style.removeProperty( 'white-space' );
+				button.style.removeProperty( 'width' );
+			});
+
+			if( widest > ( available - gap ) / 2 + 0.5 )
+			{
+				container.classList.add( 'map-buttons-stacked' );
+			}
+			else if( widest > ( available - 2 * gap ) / 3 + 0.5 )
+			{
+				container.classList.add( 'map-buttons-two-rows' );
+			}
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'consent buttons layout: available=' + available + ', widest=' + widest + ', classes=' + container.className );
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//same threshold as the stylesheet
+	isNarrowViewport: function()
+	{
+		return window.matchMedia ? window.matchMedia( '(max-width: 450px)' ).matches : ( window.innerWidth <= 450 );
+	},
+
+	//same threshold as the stylesheet
+	isShortViewport: function()
+	{
+		return window.matchMedia ? window.matchMedia( '(max-height: 500px)' ).matches : ( window.innerHeight <= 500 );
+	},
+
+	//the banner fits the screen: on narrow or short screens the text shows four whole lines at most and scrolls, the policy links stay visible
+	capNotificationMessage: function()
+	{
+		//for preserving scope
+		var that = this;
+
+		try
+		{
+			var message = that.map_notification_message;
+
+			if( !message || !that.bar_elm ) return;
+
+			var is_compact = that.isNarrowViewport() || that.isShortViewport();
+			var links = that.bar_elm.querySelector( '.map-modal-cookie-policy-link' );
+
+			if( links && is_compact && links.parentNode === message ) message.parentNode.insertBefore( links, message.nextSibling );
+			if( links && !is_compact && links.parentNode !== message ) message.appendChild( links );
+
+			var previous_scroll = message.scrollTop;
+
+			that.bar_elm.style.removeProperty( 'max-height' );
+			that.bar_elm.style.removeProperty( 'overflow-y' );
+			message.style.removeProperty( 'max-height' );
+
+			var message_style = window.getComputedStyle( message );
+			var line = parseFloat( message_style.lineHeight );
+
+			if( !( line > 0 ) ) line = ( parseFloat( message_style.fontSize ) || 15 ) * 1.4;
+
+			var viewport_height = window.innerHeight;
+
+			//a floating banner keeps 3vh from the edge
+			var limit = Math.floor( viewport_height * ( that.bar_elm.classList.contains( 'map_floating_banner' ) ? 0.94 : 1 ) );
+			var room = limit - ( that.bar_elm.offsetHeight - message.offsetHeight );
+			var cap = null;
+
+			if( is_compact )
+			{
+				cap = Math.min( 4 * line, viewport_height * 0.3, room );
+			}
+			else if( message.scrollHeight > room )
+			{
+				cap = room;
+			}
+
+			if( cap === null )
+			{
+				message.classList.remove( 'map-scroll' );
+			}
+			else
+			{
+				cap = Math.max( line, Math.floor( cap / line + 0.01 ) * line );
+				message.style.setProperty( 'max-height', cap + 'px', 'important' );
+				message.classList.add( 'map-scroll' );
+			}
+
+			if( that.message_cap !== cap )
+			{
+				message.scrollTop = 0;
+				that.message_cap = cap;
+			}
+			else
+			{
+				message.scrollTop = previous_scroll;
+			}
+
+			//last resort: the whole banner scrolls rather than leave the screen
+			if( that.bar_elm.offsetHeight > limit )
+			{
+				that.bar_elm.style.setProperty( 'max-height', limit + 'px', 'important' );
+				that.bar_elm.style.setProperty( 'overflow-y', 'auto', 'important' );
+			}
+
+			that.updateMessageScrollState();
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'notification message cap: line=' + line + ', cap=' + cap + ', content=' + message.scrollHeight );
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	//keyboard access and the fade follow the text that is still hidden
+	updateMessageScrollState: function()
+	{
+		var message = this.map_notification_message;
+
+		if( !message ) return;
+
+		if( !message.classList.contains( 'map-scroll' ) )
+		{
+			if( document.activeElement === message ) this.bar_elm.focus();
+
+			message.removeAttribute( 'tabindex' );
+			message.classList.remove( 'map-more' );
+
+			return;
+		}
+
+		var scrolls = message.scrollHeight > message.clientHeight + 1;
+
+		if( scrolls )
+		{
+			message.setAttribute( 'tabindex', '0' );
+		}
+		else
+		{
+			if( document.activeElement === message ) this.bar_elm.focus();
+
+			message.removeAttribute( 'tabindex' );
+		}
+
+		message.classList.toggle( 'map-more', scrolls && message.scrollTop + message.clientHeight < message.scrollHeight - 2 );
 	},
 
 	accept_close: function()
@@ -3710,7 +4766,7 @@ var MAP =
 						animation_params['right'] = '-100vw';
 					}
 
-					anime( animation_params );
+					map_animate(animation_params );
 				break;
 
 				case 'fade':
@@ -3718,14 +4774,14 @@ var MAP =
 					animation_params['opacity'] = '0';
 					animation_params['duration'] = '500';
 
-					anime( animation_params );
+					map_animate(animation_params );
 
 				break;
 
 				case 'zoom':
 
 					animation_params['scale'] = '0';
-					anime( animation_params );
+					map_animate(animation_params );
 
 				break;
 
@@ -3734,6 +4790,7 @@ var MAP =
 				break;
 			}
 
+			that.bar_open = false;
 			that.dispatchConsentEvents( 'myagileprivacy_bar_hidden' );
 
 			var this_showagain_tab = Boolean( that.settings.showagain_tab );
@@ -3749,7 +4806,7 @@ var MAP =
 				that.showagain_elm.style.opacity = 0;
 				that.showagain_elm.style.display = 'block';
 
-				anime( {
+				map_animate({
 					targets: that.showagain_elm,
 					easing: 'easeInOutQuad',
 					duration: 150,
@@ -3839,7 +4896,7 @@ var MAP =
 						animation_params['right'] = '-100vw';
 					}
 
-					anime( animation_params );
+					map_animate(animation_params );
 					break;
 
 				case 'fade':
@@ -3847,14 +4904,14 @@ var MAP =
 					animation_params['opacity'] = '0';
 					animation_params['duration'] = '500';
 
-					anime( animation_params );
+					map_animate(animation_params );
 
 					break;
 
 				case 'zoom':
 
 					animation_params['scale'] = '0';
-					anime( animation_params );
+					map_animate(animation_params );
 
 
 					break;
@@ -3881,7 +4938,7 @@ var MAP =
 				that.showagain_elm.style.opacity = 0;
 				that.showagain_elm.style.display = 'block';
 
-				anime( {
+				map_animate({
 					targets: that.showagain_elm,
 					easing: 'easeInOutQuad',
 					duration: 150,
@@ -3948,7 +5005,8 @@ var MAP =
 				var cookieName = 'map_cookie_' + baseIndex + MAP_POSTFIX;
 				var api_key = $this.getAttribute('data-cookie-api-key');
 
-				var cookieValue = MAP_Cookie.read( cookieName );
+				var consent = that.entryConsent( $this );
+				var cookieValue = consent.cookieValue;
 
 				if( $this.classList &&
 					do_calc_need_reload &&
@@ -3961,35 +5019,11 @@ var MAP =
 
 				if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'debug ' + api_key + ' ' + cookieName + ' ' + cookieValue );
 
-				var always_on = false;
-				var activate_anyway = false;
+				var always_on = consent.always_on;
+				var activate_anyway = consent.activate_anyway;
+				var accepted_all = consent.accepted_all;
 
-				if( $this.classList.contains( '_always_on' ) )
-				{
-					always_on = true;
-				}
-
-				//advanced consent mode ga4
-				if( api_key == 'google_analytics' &&
-					typeof map_full_config !== 'undefined' &&
-					typeof map_full_config.cookie_api_key_not_to_block !== 'undefined'
-					&& map_full_config?.cookie_api_key_not_to_block?.includes( 'google_analytics' )
-				)
-				{
-					activate_anyway = true;
-				}
-
-				var accepted_all = false;
-
-				if( ( MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) && MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) == '1' ) )
-				{
-					accepted_all = true;
-				}
-
-				if( cookieValue == "1" ||
-					always_on ||
-					activate_anyway ||
-					accepted_all )
+				if( consent.ok )
 				{
 					if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + '-->activating api_key=' + api_key + ' cookieName=' + cookieName + ' cookieValue=' + cookieValue + ' always_on=' + always_on + ' accepted_all=' + accepted_all );
 
@@ -4002,45 +5036,19 @@ var MAP =
 						$this.classList.add( '_is_activated' );
 					}
 
-					if( $this.classList.contains( '_with_code' ) )
+					var jq_pending = that.entryPendingScripts( $this, baseIndex, api_key );
+					var jq_held = MAP_JQ_WAIT.held( jq_pending );
+					var jq_hold = !jq_held && MAP_JQ_WAIT.needs( jq_pending );
+					var run_scripts = !jq_held && !jq_hold;
+
+					//only the service scripts that use the delayed jQuery wait for it
+					var twin_inline = that.pixelTwinInline( api_key );
+					var twin_jq = twin_inline.filter( function( n ) { return MAP_JQ_WAIT.needs( [ n ] ); } );
+					var twin_now = twin_inline.filter( function( n ) { return twin_jq.indexOf( n ) < 0; } );
+
+					if( run_scripts )
 					{
-						var $the_script = document.querySelector( 'script.my_agile_privacy_activate._js_noscript_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
-
-						var $the_raw_script = document.querySelector( 'textarea.my_agile_privacy_activate._raw_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
-
-						if( $the_script )
-						{
-							if( !$the_script.classList.contains( '_is_activated' ) )
-							{
-								$the_script.classList.add( '_is_activated' );
-
-								var script = document.createElement( 'script' );
-								script.className = '_is_activated';
-								script.innerHTML = $the_script.innerHTML;
-
-								if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
-
-								document.head.appendChild( script );
-							}
-						}
-
-						if( $the_raw_script )
-						{
-							if( !$the_raw_script.classList.contains( '_is_activated' ) )
-							{
-								$the_raw_script.classList.add( '_is_activated' );
-
-								var the_raw_script = $the_raw_script.value;
-
-								if( MAP_SYS?.map_debug ) MapLogger.debug( the_raw_script );
-
-								var range = document.createRange();
-								range.selectNode( document.getElementsByTagName("body")[0] );
-								var documentFragment = range.createContextualFragment( the_raw_script );
-								document.body.appendChild( documentFragment );
-							}
-
-						}
+						that.unblockEntryCode( $this, baseIndex );
 					}
 
 					if( !!api_key )
@@ -4067,186 +5075,25 @@ var MAP =
 
 						//eof custom notify
 
-						var $map_src_script_blocked = document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_src_script_blocked[data-cookie-api-key="'+api_key+'"]' );
+						if( run_scripts )
+						{
+							that.unblockEntryScripts( api_key, once_functions_to_execute, twin_now );
+						}
+						else if( twin_now.length )
+						{
+							that.unblockEntryScripts( null, once_functions_to_execute, twin_now );
+						}
 
-						var $map_inline_script_blocked = document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_inline_script_blocked[data-cookie-api-key="'+api_key+'"]' );
+						if( twin_jq.length )
+						{
+							that.holdTwinInline( $this, api_key, twin_jq );
+						}
 
 						var $iframe_src_blocked = document.querySelectorAll( 'iframe.my_agile_privacy_activate.autoscan_mode.iframe_src_blocked[data-cookie-api-key="'+api_key+'"]' );
 
 						var $css_href_blocked = document.querySelectorAll( 'link.my_agile_privacy_activate.autoscan_mode.css_href_blocked[data-cookie-api-key="'+api_key+'"]' );
 
-						var $img_src_blocked = document.querySelectorAll( 'img.my_agile_privacy_activate.autoscan_mode.img_src_blocked[data-cookie-api-key="'+api_key+'"]' );
-
-						var do_trigger_dom_content_loaded_event = false;
-
-						if( !!$map_src_script_blocked && $map_src_script_blocked?.length )
-						{
-							$map_src_script_blocked.forEach( function( $_this ) {
-
-								let old_script_type = $_this.getAttribute( 'type' );
-								let new_script_type = 'text/javascript';
-
-								if( typeof old_script_type !== 'undefined' &&
-									old_script_type &&
-									old_script_type == 'module' )
-								{
-									new_script_type = 'module';
-								}
-
-								if( !$_this.classList.contains( '_is_activated' ) )
-								{
-									$_this.classList.add( '_is_activated' );
-
-									if( $_this.classList.contains( 'custom_patch_apply' ) )
-									{
-										var classes = $_this.className.split(' ');
-
-										classes.forEach( function(v) {
-											if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
-												setTimeout( function() {
-													window[v]();
-												}, 4000 );
-											}
-										});
-									}
-
-									if( $_this.classList.contains( 'once_custom_patch_apply' ) )
-									{
-										var classes = $_this.className.split(' ');
-
-										classes.forEach( function(v) {
-											if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
-												if( !once_functions_to_execute.includes( v )) {
-													once_functions_to_execute.push( v );
-												}
-											}
-										});
-									}
-
-									if( $_this.classList.contains( 'mapWait' ) )
-									{
-										do_trigger_dom_content_loaded_event = true;
-
-										setTimeout( function() {
-
-											//prevent block using createElementBackup
-											var script = ( typeof document.createElementBackup === 'function' )
-											    ? document.createElementBackup( 'script' )
-											    : document.createElement( 'script' );
-
-											script.className = '_is_activated';
-											script.setAttribute( 'type',new_script_type );
-
-											script = cloneNodeAttributeToAnother( $_this, script );
-
-											var blocked_src = $_this.getAttribute( 'unblocked_src' );
-
-											if( blocked_src )
-											{
-												script.src = blocked_src;
-											}
-
-											$_this.insertAdjacentElement( 'afterend', script );
-
-											$_this.classList.add( '_is_activated' );
-
-										}, 1000);
-									}
-									else
-									{
-										//prevent block using createElementBackup
-										var script = ( typeof document.createElementBackup === 'function' )
-										    ? document.createElementBackup( 'script' )
-										    : document.createElement( 'script' );
-
-										script.className = '_is_activated';
-										script.setAttribute( 'type',new_script_type );
-
-										script = cloneNodeAttributeToAnother( $_this, script );
-
-										var blocked_src = $_this.getAttribute( 'unblocked_src' );
-
-										if( blocked_src )
-										{
-											script.src = blocked_src;
-										}
-
-										$_this.insertAdjacentElement( 'afterend', script );
-									}
-								}
-
-							});
-
-						}
-
-						if( !!$map_inline_script_blocked && $map_inline_script_blocked?.length )
-						{
-							$map_inline_script_blocked.forEach( function( $_this ) {
-
-								if( !$_this.classList.contains( '_is_activated' ) )
-								{
-									$_this.classList.add( '_is_activated' );
-
-									if( $_this.classList.contains( 'custom_patch_apply' ) )
-									{
-										var classes = $_this.className.split(' ');
-
-										classes.forEach( function(v) {
-											if( v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function' )
-											{
-												setTimeout( function() {
-													window[v]();
-												}, 2200);
-											}
-										});
-									}
-
-									if( $_this.classList.contains( 'once_custom_patch_apply' ) )
-									{
-										var classes = $_this.className.split(' ');
-
-										classes.forEach( function(v) {
-											if( v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function' )
-											{
-												if(!once_functions_to_execute.includes( v )) {
-													once_functions_to_execute.push( v );
-												}
-											}
-										});
-									}
-
-									if( $_this.classList.contains( 'mapWait' ) )
-									{
-										do_trigger_dom_content_loaded_event = true;
-
-										setTimeout( function() {
-											var script = document.createElement( 'script' );
-											script.className = '_is_activated';
-											script.innerHTML = $_this.innerHTML;
-
-											if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
-
-											document.head.appendChild( script );
-
-											$_this.classList.add( '_is_activated' );
-
-										}, 1000);
-									}
-									else
-									{
-										var script = document.createElement( 'script' );
-										script.className = '_is_activated';
-										script.innerHTML = $_this.innerHTML;
-
-										if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
-
-										document.head.appendChild( script );
-									}
-								}
-
-							});
-
-						}
+						var $img_src_blocked = document.querySelectorAll( 'img.my_agile_privacy_activate.autoscan_mode.img_src_blocked[data-cookie-api-key="'+api_key+'"], img[unblocked_src][data-cookie-api-key="'+api_key+'"]:not(._is_activated), img[unblocked_srcset][data-cookie-api-key="'+api_key+'"]:not(._is_activated)' );
 
 						if( !!$iframe_src_blocked && $iframe_src_blocked?.length )
 						{
@@ -4293,32 +5140,51 @@ var MAP =
 								{
 									$_this.classList.add( '_is_activated' );
 
-									$_this.setAttribute( 'src', $_this.getAttribute( 'unblocked_src' ) );
+									var $picture = $_this.parentElement;
+
+									if( !!$picture && $picture.tagName === 'PICTURE' )
+									{
+										$picture.querySelectorAll( 'source[unblocked_srcset]' ).forEach( function( $_source ) {
+
+											if( $_source.hasAttribute( 'unblocked_sizes' ) )
+											{
+												$_source.setAttribute( 'sizes', $_source.getAttribute( 'unblocked_sizes' ) );
+											}
+
+											$_source.setAttribute( 'srcset', $_source.getAttribute( 'unblocked_srcset' ) );
+										});
+									}
+
+									if( $_this.hasAttribute( 'unblocked_sizes' ) )
+									{
+										$_this.setAttribute( 'sizes', $_this.getAttribute( 'unblocked_sizes' ) );
+									}
+
+									if( $_this.hasAttribute( 'unblocked_srcset' ) )
+									{
+										$_this.setAttribute( 'srcset', $_this.getAttribute( 'unblocked_srcset' ) );
+									}
+
+									if( $_this.getAttribute( 'unblocked_src' ) )
+									{
+										$_this.setAttribute( 'src', $_this.getAttribute( 'unblocked_src' ) );
+									}
 								}
 							});
 						}
+					}
 
-						if( do_trigger_dom_content_loaded_event )
-						{
-							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggering do_trigger_dom_content_loaded_event' );
-
-							var count = 0;
-
-							var timerId = setInterval(function () {
-							  document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
-
-							  count++;
-							  if( count >= 3 )
-							  {
-							    clearInterval( timerId );
-							  }
-							}, 1100);
-						}
+					if( jq_hold )
+					{
+						that.holdEntry( $this, baseIndex, api_key, jq_pending );
 					}
 				}
 				else
 				{
 					$this.classList.remove( '_is_activated' );
+
+					that.entryPendingScripts( $this, baseIndex, api_key ).forEach( function( n ) { n.classList.remove( '_map_jq_wait' ); } );
+					that.pixelTwinInline( api_key, true ).forEach( function( n ) { n.classList.remove( '_map_jq_wait' ); } );
 				}
 
 			});
@@ -4356,6 +5222,438 @@ var MAP =
 		catch( error )
 		{
 			console.error( error );
+		}
+	},
+
+	//consent of a preferences entry
+	entryConsent: function( $this )
+	{
+		var baseIndex = $this.getAttribute('data-cookie-baseindex');
+		var cookieName = 'map_cookie_' + baseIndex + MAP_POSTFIX;
+		var api_key = $this.getAttribute('data-cookie-api-key');
+
+		var cookieValue = MAP_Cookie.read( cookieName );
+
+		var always_on = false;
+		var activate_anyway = false;
+
+		if( $this.classList.contains( '_always_on' ) )
+		{
+			always_on = true;
+		}
+
+		//advanced consent mode ga4
+		if( api_key == 'google_analytics' &&
+			typeof map_full_config !== 'undefined' &&
+			typeof map_full_config.cookie_api_key_not_to_block !== 'undefined'
+			&& map_full_config?.cookie_api_key_not_to_block?.includes( 'google_analytics' )
+		)
+		{
+			activate_anyway = true;
+		}
+
+		var accepted_all = false;
+
+		if( ( MAP_Cookie.exists( MAP_ACCEPTED_ALL_COOKIE_NAME ) && MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) == '1' ) )
+		{
+			accepted_all = true;
+		}
+
+		return {
+			ok: ( cookieValue == "1" || always_on || activate_anyway || accepted_all ),
+			cookieValue: cookieValue,
+			always_on: always_on,
+			activate_anyway: activate_anyway,
+			accepted_all: accepted_all
+		};
+	},
+
+	//held script nodes of an entry not yet run
+	entryPendingScripts: function( $this, baseIndex, api_key )
+	{
+		var list = [];
+
+		try {
+			var sel = [];
+
+			if( $this.classList.contains( '_with_code' ) )
+			{
+				sel.push( 'script.my_agile_privacy_activate._js_noscript_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
+				sel.push( 'textarea.my_agile_privacy_activate._raw_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
+			}
+
+			if( !!api_key )
+			{
+				sel.push( 'script.my_agile_privacy_activate.autoscan_mode.map_src_script_blocked[data-cookie-api-key="'+api_key+'"]' );
+				sel.push( 'script.my_agile_privacy_activate.autoscan_mode.map_inline_script_blocked[data-cookie-api-key="'+api_key+'"]' );
+			}
+
+			if( sel.length )
+			{
+				document.querySelectorAll( sel.join( ', ' ) ).forEach( function( n ) {
+					if( !n.classList.contains( '_is_activated' ) ) list.push( n );
+				});
+			}
+		}
+		catch( error )
+		{
+			console.debug( error );
+		}
+
+		return list;
+	},
+
+	//held inline scripts tied to a My Agile Pixel channel
+	pixelTwinInline: function( api_key, with_queued )
+	{
+		var out = [];
+
+		try {
+			var twins = { 'my_agile_pixel_fbq': 'facebook_remarketing', 'my_agile_pixel_ga': 'google_analytics', 'my_agile_pixel_tiktok': 'tik_tok' };
+			var twin = ( typeof api_key === 'string' && Object.prototype.hasOwnProperty.call( twins, api_key ) ) ? twins[ api_key ] : null;
+			var cfg = ( typeof map_full_config !== 'undefined' && map_full_config && typeof map_full_config === 'object' ) ? map_full_config : null;
+
+			if( !twin || !cfg ) return out;
+
+			var silent = cfg.cookie_api_key_remote_id_map_blocked_without_notification;
+			var active = cfg.cookie_api_key_remote_id_map_active;
+
+			if( !silent || typeof silent !== 'object' || !silent[ twin ] ) return out;
+			if( active && typeof active === 'object' && active[ twin ] ) return out;
+			if( !document.querySelector( 'script.map_inline_script_blocked[data-cookie-api-key="' + api_key + '"]' ) ) return out;
+
+			document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_inline_script_blocked[data-cookie-api-key="' + twin + '"]' ).forEach( function( n ) {
+				if( !n.classList.contains( '_is_activated' ) && ( with_queued || !n.classList.contains( '_map_jq_wait' ) ) ) out.push( n );
+			});
+		}
+		catch( error )
+		{
+			console.debug( error );
+		}
+
+		return out;
+	},
+
+	//runs the service scripts of a My Agile Pixel channel when the page's jQuery is there
+	holdTwinInline: function( $this, api_key, nodes )
+	{
+		var that = this;
+
+		MAP_JQ_WAIT.hold( {
+			nodes: nodes,
+			consent: function() { return that.entryConsent( $this ).ok; },
+			run: function() {
+				var once_functions_to_execute = [];
+
+				that.unblockEntryScripts( null, once_functions_to_execute, that.pixelTwinInline( api_key ) );
+
+				once_functions_to_execute.forEach( function(v) {
+					setTimeout( function() {
+						window[v]();
+					}, 1000 );
+				});
+			}
+		} );
+	},
+
+	//runs an entry's scripts when the page's jQuery is there
+	holdEntry: function( $this, baseIndex, api_key, nodes )
+	{
+		var that = this;
+
+		MAP_JQ_WAIT.hold( {
+			nodes: nodes,
+			consent: function() { return that.entryConsent( $this ).ok; },
+			run: function() {
+				var once_functions_to_execute = [];
+
+				that.unblockEntryCode( $this, baseIndex );
+
+				if( !!api_key )
+				{
+					that.unblockEntryScripts( api_key, once_functions_to_execute, that.pixelTwinInline( api_key ) );
+				}
+
+				once_functions_to_execute.forEach( function(v) {
+					setTimeout( function() {
+						window[v]();
+					}, 1000 );
+				});
+			},
+			drop: function() { that.checkBlockedContent(); }
+		} );
+	},
+
+	//custom code of an entry
+	unblockEntryCode: function( $this, baseIndex )
+	{
+		if( $this.classList.contains( '_with_code' ) )
+		{
+			var $the_script = document.querySelector( 'script.my_agile_privacy_activate._js_noscript_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
+
+			var $the_raw_script = document.querySelector( 'textarea.my_agile_privacy_activate._raw_type_mode[data-cookie-baseindex="'+baseIndex+'"]' );
+
+			if( $the_script )
+			{
+				if( !$the_script.classList.contains( '_is_activated' ) )
+				{
+					$the_script.classList.add( '_is_activated' );
+
+					var script = document.createElement( 'script' );
+					script.className = '_is_activated';
+					script.innerHTML = $the_script.innerHTML;
+
+					if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
+
+					MAP_WRITE_REPLAY.run( null, script, false, function() { document.head.appendChild( script ); } );
+				}
+			}
+
+			if( $the_raw_script )
+			{
+				if( !$the_raw_script.classList.contains( '_is_activated' ) )
+				{
+					$the_raw_script.classList.add( '_is_activated' );
+
+					var the_raw_script = $the_raw_script.value;
+
+					if( MAP_SYS?.map_debug ) MapLogger.debug( the_raw_script );
+
+					var range = document.createRange();
+					range.selectNode( document.getElementsByTagName("body")[0] );
+					var documentFragment = range.createContextualFragment( the_raw_script );
+					MAP_WRITE_REPLAY.fragment( documentFragment, function() { document.body.appendChild( documentFragment ); } );
+				}
+
+			}
+		}
+	},
+
+	//held scripts of a service key
+	unblockEntryScripts: function( api_key, once_functions_to_execute, extra_inline )
+	{
+		var $map_src_script_blocked = api_key ? document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_src_script_blocked[data-cookie-api-key="'+api_key+'"]' ) : [];
+
+		var $map_inline_script_blocked = api_key ? Array.prototype.slice.call( document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_inline_script_blocked[data-cookie-api-key="'+api_key+'"]' ) ) : [];
+
+		var extra = Array.isArray( extra_inline ) ? extra_inline : [];
+
+		//extra inline scripts run first
+		var extra_wait = extra.some( function( n ) { return n.classList.contains( 'mapWait' ); } );
+
+		$map_inline_script_blocked = extra.concat( $map_inline_script_blocked );
+
+		//a clone keeps the browser's own record of whether the node already ran
+		var runnable = function( n ) {
+			if( extra.indexOf( n ) < 0 || ( typeof CookieShield === 'object' && CookieShield && typeof CookieShield.isHeldBeforeRun === 'function' && CookieShield.isHeldBeforeRun( n ) ) )
+			{
+				var s = document.createElement( 'script' );
+				s.innerHTML = n.innerHTML;
+				return s;
+			}
+
+			var c = n.cloneNode( true );
+			while( c.attributes.length ) c.removeAttribute( c.attributes[ 0 ].name );
+			return c;
+		};
+
+		var do_trigger_dom_content_loaded_event = false;
+
+		if( !!$map_src_script_blocked && $map_src_script_blocked?.length )
+		{
+			$map_src_script_blocked.forEach( function( $_this ) {
+
+				let old_script_type = $_this.getAttribute( 'data-map-held-type' ) || $_this.getAttribute( 'type' );
+				let new_script_type = 'text/javascript';
+
+				if( typeof old_script_type !== 'undefined' &&
+					old_script_type &&
+					old_script_type == 'module' )
+				{
+					new_script_type = 'module';
+				}
+
+				if( !$_this.classList.contains( '_is_activated' ) )
+				{
+					$_this.classList.add( '_is_activated' );
+
+					if( $_this.classList.contains( 'custom_patch_apply' ) )
+					{
+						var classes = $_this.className.split(' ');
+
+						classes.forEach( function(v) {
+							if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
+								setTimeout( function() {
+									window[v]();
+								}, 4000 );
+							}
+						});
+					}
+
+					if( $_this.classList.contains( 'once_custom_patch_apply' ) )
+					{
+						var classes = $_this.className.split(' ');
+
+						classes.forEach( function(v) {
+							if(v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function') {
+								if( !once_functions_to_execute.includes( v )) {
+									once_functions_to_execute.push( v );
+								}
+							}
+						});
+					}
+
+					if( $_this.classList.contains( 'mapWait' ) )
+					{
+						do_trigger_dom_content_loaded_event = true;
+
+						setTimeout( function() {
+
+							//prevent block using createElementBackup
+							var script = ( typeof document.createElementBackup === 'function' )
+							    ? document.createElementBackup( 'script' )
+							    : document.createElement( 'script' );
+
+							script.className = '_is_activated';
+							script.setAttribute( 'type',new_script_type );
+
+							script = cloneNodeAttributeToAnother( $_this, script );
+
+							var blocked_src = $_this.getAttribute( 'unblocked_src' );
+
+							if( blocked_src )
+							{
+								script.src = blocked_src;
+							}
+
+							MAP_WRITE_REPLAY.run( $_this, script, true, function() { $_this.insertAdjacentElement( 'afterend', script ); } );
+
+							$_this.classList.add( '_is_activated' );
+
+						}, 1000);
+					}
+					else
+					{
+						//prevent block using createElementBackup
+						var script = ( typeof document.createElementBackup === 'function' )
+						    ? document.createElementBackup( 'script' )
+						    : document.createElement( 'script' );
+
+						script.className = '_is_activated';
+						script.setAttribute( 'type',new_script_type );
+
+						script = cloneNodeAttributeToAnother( $_this, script );
+
+						var blocked_src = $_this.getAttribute( 'unblocked_src' );
+
+						if( blocked_src )
+						{
+							script.src = blocked_src;
+						}
+
+						MAP_WRITE_REPLAY.run( $_this, script, true, function() { $_this.insertAdjacentElement( 'afterend', script ); } );
+					}
+				}
+
+			});
+
+		}
+
+		if( !!$map_inline_script_blocked && $map_inline_script_blocked?.length )
+		{
+			$map_inline_script_blocked.forEach( function( $_this ) {
+
+				if( !$_this.classList.contains( '_is_activated' ) )
+				{
+					$_this.classList.add( '_is_activated' );
+
+					if( $_this.classList.contains( 'custom_patch_apply' ) )
+					{
+						var classes = $_this.className.split(' ');
+
+						classes.forEach( function(v) {
+							if( v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function' )
+							{
+								setTimeout( function() {
+									window[v]();
+								}, 2200);
+							}
+						});
+					}
+
+					if( $_this.classList.contains( 'once_custom_patch_apply' ) )
+					{
+						var classes = $_this.className.split(' ');
+
+						classes.forEach( function(v) {
+							if( v && v != '' && v.startsWith('map_trigger_custom_patch_') && typeof window[v] === 'function' )
+							{
+								if(!once_functions_to_execute.includes( v )) {
+									once_functions_to_execute.push( v );
+								}
+							}
+						});
+					}
+
+					if( $_this.classList.contains( 'mapWait' ) || ( extra_wait && extra.indexOf( $_this ) < 0 ) )
+					{
+						if( $_this.classList.contains( 'mapWait' ) ) do_trigger_dom_content_loaded_event = true;
+
+						setTimeout( function() {
+							var script = runnable( $_this );
+							script.className = '_is_activated';
+
+							if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
+
+							MAP_WRITE_REPLAY.run( $_this, script, false, function() { document.head.appendChild( script ); } );
+
+							$_this.classList.add( '_is_activated' );
+
+						}, 1000);
+					}
+					else
+					{
+						var script = runnable( $_this );
+						script.className = '_is_activated';
+
+						if( MAP_SYS?.map_debug ) MapLogger.debug( script.innerHTML );
+
+						MAP_WRITE_REPLAY.run( $_this, script, false, function() { document.head.appendChild( script ); } );
+					}
+				}
+
+			});
+
+		}
+
+		if( do_trigger_dom_content_loaded_event )
+		{
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'triggering do_trigger_dom_content_loaded_event' );
+
+			var count = 0;
+			var replica = MAP_DCL_REPLICA.arm();
+
+			var timerId = setInterval(function () {
+			  count++;
+			  if( count >= 3 )
+			  {
+			    clearInterval( timerId );
+			  }
+
+			  if( replica.on && replica.active() )
+			  {
+			    try { replica.tick(); } catch( e ) { console.debug( e ); }
+			  }
+			  else
+			  {
+			    document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+			  }
+
+			  if( count >= 3 )
+			  {
+			    replica.done();
+			  }
+			}, 1100);
 		}
 	},
 
@@ -4454,6 +5752,9 @@ var MAP =
 						}
 
 						that.updateSomeConsentGivenStatus();
+
+						var toggledWrapper = $this.closest( '.map_cookie_description_wrapper[data-cookie-api-key]' );
+						that.applyConsentWithoutSwitches( 'partial', toggledWrapper ? toggledWrapper.getAttribute( 'data-cookie-api-key' ) : null );
 
 						that.tryToUnblockScripts( true, cookieName );
 
@@ -4607,6 +5908,12 @@ var MAP =
 						var iab_category = $this.getAttribute( 'data-iab-category' );
 						var iab_key = $this.getAttribute( 'data-iab-key' );
 
+						// the master switch is all or none
+						if( iab_category === 'googleVendorsAcceptAll' )
+						{
+							$this.classList.remove( 'map-flags' );
+						}
+
 						if( $this.value === '1' )
 						{
 							if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + `setting 1 to iab_category=${iab_category} , iab_key=${iab_key}` );
@@ -4686,7 +5993,11 @@ var MAP =
 							window.CookieShield.resetAcceptedAllCache();
 						}
 
+						// without switches in the panel it counts as the banner's «Accept»
+						that.applyConsentWithoutSwitches( 'accept', null, false );
+
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox ').forEach(function( $_this ) {
+							$_this.classList.remove( 'map-flags' ); // a choice on everything is never partial
 							$_this.value = '1';
 							MAP.mapSyncSlider( $_this );
 						});
@@ -4729,7 +6040,11 @@ var MAP =
 							window.CookieShield.resetAcceptedAllCache();
 						}
 
+						// without switches in the panel it counts as the banner's «Reject»
+						that.applyConsentWithoutSwitches( 'reject', null, false );
+
 						that.settingsModal.querySelectorAll( '.map-user-iab-preference-checkbox' ).forEach( function( $elem ) {
+							$elem.classList.remove( 'map-flags' ); // a choice on everything is never partial
 							$elem.value = '0';
 							MAP.mapSyncSlider( $elem );
 						});
@@ -5640,8 +6955,364 @@ var MAP =
 		}
 	},
 
-	closeSettingsPopup: function()
+	setupSettingsDialog: function()
 	{
+		//for preserving scope
+		var that = this;
+
+		try {
+
+			var modal = that.settingsModal;
+
+			if( !modal ) return;
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function setupSettingsDialog' );
+
+			// cached markup may carry older attributes: always overwrite
+			modal.setAttribute( 'tabindex', '-1' );
+
+			var title = modal.querySelector( '.map-privacy-overview .map-h4-heading' );
+
+			if( title )
+			{
+				title.setAttribute( 'id', 'map-settings-title' );
+				modal.setAttribute( 'aria-labelledby', 'map-settings-title' );
+			}
+
+			if( that.bar_elm )
+			{
+				that.bar_elm.querySelectorAll( '.map-accept-button, .map-reject-button, .map-customize-button' ).forEach( function( $_this ) {
+					$_this.removeAttribute( 'aria-pressed' );
+				});
+
+				var customize = that.bar_elm.querySelector( '.map-customize-button' );
+
+				if( customize )
+				{
+					customize.setAttribute( 'aria-haspopup', 'dialog' );
+				}
+			}
+
+			if( !that.isSettingsPopupOpen() )
+			{
+				that.markSettingsPopupClosed();
+			}
+
+			if( modal.getAttribute( 'data-map-dialog-bound' ) === '1' ) return;
+
+			modal.setAttribute( 'data-map-dialog-bound', '1' );
+
+			modal.addEventListener( 'keydown', function( e ) {
+
+				if( !that.isSettingsPopupOpen() ) return;
+
+				if( e.key === 'Escape' || e.key === 'Esc' )
+				{
+					// the info overlay handles its own Escape
+					if( that.isInfoOverlayShown() ) return;
+
+					e.preventDefault();
+					that.closeSettingsPopup( 'escape' );
+					return;
+				}
+
+				if( e.key !== 'Tab' ) return;
+
+				var ends = that.getFocusEnds( modal );
+
+				if( !ends.first )
+				{
+					e.preventDefault();
+					modal.focus();
+					return;
+				}
+
+				if( e.shiftKey && ( document.activeElement === ends.first || document.activeElement === modal ) )
+				{
+					e.preventDefault();
+					ends.last.focus();
+				}
+				else if( !e.shiftKey && document.activeElement === ends.last )
+				{
+					e.preventDefault();
+					ends.first.focus();
+				}
+			});
+
+			document.addEventListener( 'keydown', function( e ) {
+
+				try {
+
+					if( e.defaultPrevented || !that.isSettingsPopupOpen() ) return;
+
+					var is_tab = ( e.key === 'Tab' );
+					var is_escape = ( e.key === 'Escape' || e.key === 'Esc' );
+
+					if( !is_tab && !is_escape ) return;
+
+					var active = document.activeElement;
+					var on_body = ( !active || active === document.body || active === document.documentElement );
+
+					if( that.isInfoOverlayShown() )
+					{
+						if( !is_tab ) return;
+
+						var overlay = document.getElementById( 'map-info-overlay' );
+
+						if( on_body )
+						{
+							e.preventDefault();
+							overlay.focus();
+							return;
+						}
+
+						if( !overlay.contains( active ) ) return;
+
+						var overlay_ends = that.getFocusEnds( overlay );
+
+						if( e.shiftKey && active === overlay )
+						{
+							e.preventDefault();
+							( overlay_ends.last || overlay ).focus();
+						}
+						else if( !e.shiftKey && ( !overlay_ends.last || active === overlay_ends.last ) )
+						{
+							e.preventDefault();
+							overlay.focus();
+						}
+
+						return;
+					}
+
+					if( !on_body ) return;
+
+					e.preventDefault();
+
+					if( is_escape )
+					{
+						that.closeSettingsPopup( 'escape' );
+						return;
+					}
+
+					var ends = that.getFocusEnds( modal );
+					var target = e.shiftKey ? ends.last : ends.first;
+
+					( target || modal ).focus();
+				}
+				catch( error )
+				{
+					console.error( error );
+				}
+			});
+
+			document.addEventListener( 'focusin', function( e ) {
+
+				try {
+
+					if( !that.isSettingsPopupOpen() ) return;
+
+					var overlay = document.getElementById( 'map-info-overlay' );
+					var in_overlay = !!( overlay && overlay.contains( e.target ) );
+
+					if( that.isInfoOverlayShown() )
+					{
+						if( !in_overlay ) overlay.focus();
+						return;
+					}
+
+					if( in_overlay || modal.contains( e.target ) ) return;
+
+					var ends = that.getFocusEnds( modal );
+
+					// focus that left backwards lands before the dialog in document order
+					var backwards = !!( modal.compareDocumentPosition( e.target ) & Node.DOCUMENT_POSITION_PRECEDING );
+
+					( ( backwards ? ends.last : ends.first ) || modal ).focus();
+				}
+				catch( error )
+				{
+					console.error( error );
+				}
+			});
+
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	isSettingsPopupOpen: function()
+	{
+		return !!( this.settingsModal && this.settingsModal.classList.contains( 'map-show' ) );
+	},
+
+	isInfoOverlayShown: function()
+	{
+		var overlay = document.getElementById( 'map-info-overlay' );
+
+		return !!( overlay && overlay.style.display === 'block' );
+	},
+
+	//first and last keyboard-reachable elements, measured on every call
+	getFocusEnds: function( root )
+	{
+		var ends = { first: null, last: null };
+
+		try {
+
+			var nodes = root.querySelectorAll( 'a[href], area[href], button, input, select, textarea, iframe, [tabindex], [contenteditable="true"]' );
+
+			var reachable = function( el ) {
+				return el.tabIndex >= 0 &&
+					!el.disabled &&
+					el.type !== 'hidden' &&
+					el.getClientRects().length > 0 &&
+					window.getComputedStyle( el ).visibility !== 'hidden';
+			};
+
+			for( var i = 0; i < nodes.length; i++ )
+			{
+				if( reachable( nodes[ i ] ) )
+				{
+					ends.first = nodes[ i ];
+					break;
+				}
+			}
+
+			for( var j = nodes.length - 1; j >= 0; j-- )
+			{
+				if( reachable( nodes[ j ] ) )
+				{
+					ends.last = nodes[ j ];
+					break;
+				}
+			}
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+
+		return ends;
+	},
+
+	openSettingsPopup: function( opener )
+	{
+		try {
+
+			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function openSettingsPopup' );
+
+			var modal = this.settingsModal;
+
+			if( !modal ) return false;
+
+			if( !this.isSettingsPopupOpen() )
+			{
+				this.settings_return = opener || document.activeElement;
+			}
+
+			// before any click() or focus() on its content
+			modal.removeAttribute( 'inert' );
+			modal.setAttribute( 'aria-modal', 'true' );
+
+			modal.classList.add( 'map-show' );
+			modal.style.opacity = 0;
+			modal.offsetWidth; // Trigger a reflow to ensure the transition starts
+			modal.style.transition = 'opacity 1s';
+			modal.style.opacity = 1;
+
+			modal.classList.remove( 'map-blowup', 'map-out' );
+			modal.classList.add( 'map-blowup' );
+
+			document.body.classList.add( 'map-modal-open' );
+
+			var settings_overlay = document.querySelector( '.map-settings-overlay' );
+
+			if( settings_overlay )
+			{
+				settings_overlay.classList.add( 'map-show' );
+			}
+
+			modal.focus();
+
+			this.mapSyncAllSliders();
+
+			return true;
+		}
+		catch( error )
+		{
+			console.error( error );
+			return false;
+		}
+	},
+
+	// second layer without tabs, with the IAB pane already active
+	isIabPaneWithoutTabs: function()
+	{
+		var modal = this.settingsModal;
+
+		return !!( modal &&
+			modal.querySelector( '.map-consent-extrawrapper' ) &&
+			!modal.querySelector( '.map-wrappertab-navigation' ) &&
+			modal.querySelector( '#map-privacy-iab-tcf-wrapper.map-wrappertab-active' ) );
+	},
+
+	showIabPane: function()
+	{
+		(async() => {
+
+			try {
+
+				while( !MAP_SYS.map_document_load )
+				{
+					await new Promise( resolve => setTimeout( resolve, 10 ) );
+				}
+
+				// full vendor list rendered before the CMP UI is announced
+				if( typeof window.MAPIABTCF_ensureFullInit === 'function' )
+				{
+					window.MAPIABTCF_ensureFullInit().then( function() {
+						MAP.mapSyncAllSliders();
+
+						// only if the IAB pane is still on screen when the load ends
+						var iab_on_screen = MAP.isSettingsPopupOpen() &&
+							!!document.querySelector( '#map-privacy-iab-tcf-wrapper.map-wrappertab-active' );
+
+						if( iab_on_screen && typeof window.MAPIABTCF_showCMPUI === 'function' )
+						{
+							window.MAPIABTCF_showCMPUI();
+						}
+					});
+				}
+				else if( typeof window.MAPIABTCF_showCMPUI === 'function' )
+				{
+					window.MAPIABTCF_showCMPUI();
+				}
+			}
+			catch( error )
+			{
+				console.error( error );
+			}
+
+		})();
+	},
+
+	markSettingsPopupClosed: function()
+	{
+		var modal = this.settingsModal;
+
+		if( !modal || this.isSettingsPopupOpen() ) return;
+
+		modal.setAttribute( 'inert', '' );
+		modal.removeAttribute( 'aria-modal' );
+	},
+
+	closeSettingsPopup: function( why )
+	{
+		//for preserving scope
+		var that = this;
+
 		try {
 
 			if( MAP_SYS?.map_debug ) MapLogger.debug( MAP_SYS.maplog + 'internal function closeSettingsPopup' );
@@ -5652,6 +7323,50 @@ var MAP =
 			document.querySelectorAll( '.map-settings-overlay' ).forEach(function( $_this ) {
 				$_this.classList.remove( 'map-show' );
 			});
+
+			var back = this.settings_return;
+
+			this.settings_return = null;
+
+			var visible = function( el ) {
+				return !!( el && el.isConnected && typeof el.focus === 'function' && el.getClientRects().length > 0 );
+			};
+
+			// focus leaves the dialog before it becomes inert
+			if( why === 'escape' )
+			{
+				var target = [ back, this.bar_elm ].find( visible );
+
+				if( target )
+				{
+					target.focus();
+				}
+
+				this.markSettingsPopupClosed();
+
+				return;
+			}
+
+			// after hideBar() has removed the bar, when the caller hides it
+			setTimeout( function() {
+
+				if( that.isSettingsPopupOpen() ) return;
+
+				var widget = that.showagain_elm ? that.showagain_elm.querySelector( '.showConsent' ) : null;
+				var target = [ back, widget, that.bar_elm ].find( visible );
+
+				if( target )
+				{
+					target.focus();
+				}
+				else if( that.settingsModal.contains( document.activeElement ) )
+				{
+					document.activeElement.blur();
+				}
+
+				that.markSettingsPopupClosed();
+
+			}, 200 );
 
 			(async() => {
 
@@ -6264,6 +7979,65 @@ var MAP =
 			{
 				slider.classList.remove( 'map-slider-on' );
 			}
+
+			MAP.mapSyncAria( input, slider );
+
+			// the IAB bundle changes map-flags right after this call
+			Promise.resolve().then( function() { MAP.mapSyncAria( input, slider ); } );
+		}
+	},
+
+	// aria-checked from the hidden input value
+	mapSyncAria: function( input, slider )
+	{
+		try {
+
+			var state = 'false';
+
+			if( input.value === '1' )
+			{
+				state = input.classList.contains( 'map-flags' ) ? 'mixed' : 'true';
+			}
+
+			if( slider.getAttribute( 'aria-checked' ) !== state )
+			{
+				slider.setAttribute( 'aria-checked', state );
+			}
+		}
+		catch( error )
+		{
+			console.error( error );
+		}
+	},
+
+	// aria-checked of every switch in the settings popup
+	mapSyncAllSliders: function()
+	{
+		try {
+
+			var modal = this.settingsModal;
+
+			if( !modal ) return;
+
+			modal.querySelectorAll( '.map-slider[role="checkbox"]' ).forEach( function( slider ) {
+
+				var input = slider.previousElementSibling;
+
+				if( !input || input.tagName !== 'INPUT' )
+				{
+					var mapForClass = [...slider.classList].find( cls => cls.startsWith( 'map-for-' ) );
+					input = mapForClass ? document.getElementById( mapForClass.replace( 'map-for-', '' ) ) : null;
+				}
+
+				if( input )
+				{
+					MAP.mapSyncAria( input, slider );
+				}
+			});
+		}
+		catch( error )
+		{
+			console.error( error );
 		}
 	},
 
@@ -6342,6 +8116,8 @@ var MAP =
 		MAP_SYS.geo_resolved = true;
 		MapLogger.log( 'MAP-GEO', 'mapGeoFailClosed: geo resolution failed → block (opt-in)' );
 
+		this.mapGeoWithdrawImplicit();
+
 		if( MAP_SYS.geo_bar_deferred )
 		{
 			MAP_SYS.geo_bar_deferred = false;
@@ -6365,9 +8141,68 @@ var MAP =
 		var testQs   = test ? ( 'map_geo_test=' + encodeURIComponent( test ) ) : '';
 		var apiUrl   = test ? ( map_ajax.advanced_api_url + ( map_ajax.advanced_api_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.advanced_api_url;
 
+		var budgetMs = 3000;
+		var apiMs    = 1500;
+
+		// one outcome per page; a valid answer that arrives later is kept for the next page
+		var settled    = false;
+		var applied    = false;
+		var late       = null;
+		var lateSource = '';
+		var guard      = null;
+
+		var finish = function( fn )
+		{
+			if( settled ) { return; }
+			settled = true;
+			clearTimeout( guard );
+			fn();
+		};
+
+		var failClosed = function()
+		{
+			finish( function() { that.mapGeoFailClosed(); } );
+		};
+
+		var keepLate = function( data, source )
+		{
+			if( ! ( data && data.country && data.native ) ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: late ' + source + ' answer invalid → ignored', data ); return; }
+
+			if( lateSource === 'wp-ajax' && source !== 'wp-ajax' ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: late ' + source + ' answer ignored, wp-ajax answer already kept', data ); return; }
+
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: late ' + source + ' answer kept for the next page, not applied', data );
+
+			if( late === null )
+			{
+				window.addEventListener( 'pagehide', function()
+				{
+					if( applied || ! late ) { return; }
+					try { MAP_Cookie.set( 'map_geo', JSON.stringify( { country: late.country, native: late.native } ), 7 ); }
+					catch( e ) { MapLogger.debug( e ); }
+				} );
+			}
+
+			late       = data;
+			lateSource = source;
+		};
+
+		var settle = function( data, source )
+		{
+			if( settled ) { keepLate( data, source ); return; }
+			applied = !! ( data && data.country && data.native );
+			finish( function() { that.mapGeoHandleResult( data ); } );
+		};
+
+		guard = setTimeout( function()
+		{
+			if( settled ) { return; }
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: timeout after ' + budgetMs + ' ms → fail-closed (block)' );
+			failClosed();
+		}, budgetMs );
+
 		var viaAjax = function()
 		{
-			if( ! map_ajax.ajax_url ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: no ajax_url → fail-closed (block)' ); that.mapGeoFailClosed(); return; }
+			if( ! map_ajax.ajax_url ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: no ajax_url → fail-closed (block)' ); failClosed(); return; }
 
 			var ajaxUrl = test ? ( map_ajax.ajax_url + ( map_ajax.ajax_url.indexOf('?') === -1 ? '?' : '&' ) + testQs ) : map_ajax.ajax_url;
 
@@ -6382,8 +8217,8 @@ var MAP =
 				} )
 			} )
 			.then( function( resp ) { return resp.json(); } )
-			.then( function( data ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax OK', data ); that.mapGeoHandleResult( data ); } )
-			.catch( function( err2 ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax failed → fail-closed (block)', String( err2 ) ); that.mapGeoFailClosed(); } );
+			.then( function( data ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax OK', data ); settle( data, 'wp-ajax' ); } )
+			.catch( function( err2 ) { MapLogger.log( 'MAP-GEO', 'mapGeoResolve: wp-ajax failed → fail-closed (block)', String( err2 ) ); failClosed(); } );
 		};
 
 		// the fast endpoint failed on an earlier page of this browser
@@ -6396,30 +8231,54 @@ var MAP =
 
 		MapLogger.log( 'MAP-GEO', 'mapGeoResolve: calling advanced-api.php', { url: apiUrl, test: test || '(none)' } );
 
-		fetch( apiUrl, {
+		var apiOver    = false;
+		var apiTimer   = null;
+		var controller = ( typeof AbortController !== 'undefined' ) ? new AbortController() : null;
+
+		var apiFailed = function( why )
+		{
+			if( apiOver ) { return; }
+			apiOver = true;
+			clearTimeout( apiTimer );
+
+			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php failed → fallback wp-ajax', why );
+
+			// remembered in the browser, so the next pages go straight to the fallback route
+			MAP_Cookie.set( MAP_GEO_TRANSPORT_COOKIE_NAME, '1', 7 );
+
+			viaAjax();
+		};
+
+		apiTimer = setTimeout( function()
+		{
+			apiFailed( 'timeout after ' + apiMs + ' ms' );
+			if( controller ) { try { controller.abort(); } catch( e ) { MapLogger.debug( e ); } }
+		}, apiMs );
+
+		var apiOptions = {
 			method  : 'POST',
 			headers : { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body    : new URLSearchParams( {
 				action        : 'map_resolve_geo',
 				map_api_token : map_ajax.api_token
 			} )
-		} )
+		};
+
+		if( controller ) { apiOptions.signal = controller.signal; }
+
+		fetch( apiUrl, apiOptions )
 		.then( function( resp ) {
 			if( ! resp.ok ) { throw new Error( 'advanced-api.php ' + resp.status ); }
 			return resp.json();
 		} )
 		.then( function( data ) {
+			if( apiOver ) { keepLate( data, 'advanced-api.php' ); return; }
+			apiOver = true;
+			clearTimeout( apiTimer );
 			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php OK', data );
-			that.mapGeoHandleResult( data );
+			settle( data, 'advanced-api.php' );
 		} )
-		.catch( function( err ) {
-			MapLogger.log( 'MAP-GEO', 'mapGeoResolve: advanced-api.php failed → fallback wp-ajax', String( err ) );
-
-			// remembered in the browser, so the next pages go straight to the fallback route
-			MAP_Cookie.set( MAP_GEO_TRANSPORT_COOKIE_NAME, '1', 7 );
-
-			viaAjax();
-		} );
+		.catch( function( err ) { apiFailed( String( err ) ); } );
 	},
 
 	/**
@@ -6475,10 +8334,18 @@ var MAP =
 
 			if( MAP_SYS.geo_eff_type === 'noblock' )
 			{
+				// a refusal saved under the earlier cookie name counts as well
+				var legacyOptOut = this.legacyRefusal();
+
 				// Absolute precedence: respect pre-existing opt-out or GPC signal.
 				if( MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) === '-1' )
 				{
 					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block but pre-existing opt-out (-1) → respect, no unblock' );
+				}
+				else if( legacyOptOut )
+				{
+					MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block but opt-out (-1) under the earlier name → respect, no unblock' );
+					this.applyRefusalSignals();
 				}
 				else if( typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true )
 				{
@@ -6510,26 +8377,38 @@ var MAP =
 					{
 						// Fallback: minimal implicit consent (no granular UI sync).
 						MAP_Cookie.set( MAP_ACCEPTED_ALL_COOKIE_NAME, '1', MAP_SYS.map_cookie_expire );
-						this.saveGoogleConsentStatusToCookie( {
-							ad_storage          : 'granted',
-							ad_user_data        : 'granted',
-							ad_personalization  : 'granted',
-							analytics_storage   : 'granted'
-						} );
-						this.updateGoogleConsentbyObj( {
-							ad_storage          : 'granted',
-							ad_user_data        : 'granted',
-							ad_personalization  : 'granted',
-							analytics_storage   : 'granted'
-						}, false );
+						var implicitGConsent = this.consentWithoutSwitches( 'google', 'accept' );
+						if( !implicitGConsent )
+						{
+							implicitGConsent = {
+								ad_storage          : 'granted',
+								ad_user_data        : 'granted',
+								ad_personalization  : 'granted',
+								analytics_storage   : 'granted'
+							};
+						}
+						var recorded = false;
+						if( Object.keys( implicitGConsent ).length )
+						{
+							implicitGConsent = { ...( MAP_SYS.current_gconsent || {} ), ...implicitGConsent };
+							this.saveGoogleConsentStatusToCookie( implicitGConsent );
+							recorded = this.updateGoogleConsentbyObj( { ...implicitGConsent }, false );
+						}
+						if( recorded !== true ) this.updateLastConsentRecords();
 						MapLogger.log( 'MAP-GEO', 'mapGeoApply: no-block → implicit consent set (fallback minimal), unblocking scripts' );
 						this.tryToUnblockScripts( true, null );
 					}
+
+					// marks the consent as implicit with the date of the choice just recorded
+					var implicitDate = MAP_Cookie.read( MAP_LAST_CONSENT_MODIFY_DATE );
+					if( implicitDate ) MAP_Cookie.set( map_implicit_consent_name(), implicitDate, MAP_SYS.map_cookie_expire );
 				}
 			}
 			else
 			{
 				MapLogger.log( 'MAP-GEO', 'mapGeoApply: effType=block → prior blocking stays' );
+
+				this.mapGeoWithdrawImplicit();
 			}
 
 			// Finalize the banner now that the geo zone is known. Only when toggleBar()
@@ -6544,6 +8423,17 @@ var MAP =
 			}
 		}
 		catch( error ) { MapLogger.log( 'MAP-GEO', 'mapGeoApply: ERROR', error ); console.error( error ); }
+	},
+
+	// an implicit consent does not hold outside a no-block zone
+	mapGeoWithdrawImplicit: function()
+	{
+		if( this.isSplitPreview() ) return;
+
+		if( map_implicit_consent_valid() && this.revokeImplicitConsent() && ! MAP_SYS.geo_bar_deferred )
+		{
+			this.toggleBar();
+		}
 	},
 
 	/**
@@ -6569,6 +8459,8 @@ var MAP =
 document.addEventListener( 'DOMContentLoaded', function() {
 
 	try {
+
+		MAP_DCL_REPLICA.start();
 
 		if( typeof map_cookiebar_settings !== 'undefined' )
 		{
@@ -6607,7 +8499,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
 });
 
-//initialises the banner, waiting for the configuration to be settled
+//initializes the banner, waiting for the configuration to be settled
 function map_init_banner()
 {
 	if( MAP_SYS.map_initted )              { return; }
@@ -6740,6 +8632,8 @@ function map_on_document_load_event()
 {
 	try {
 
+		MAP_DCL_REPLICA.start();
+
 		MAP_SYS.map_document_load = true;
 
 		if( !MAP_SYS.map_initted &&
@@ -6784,7 +8678,11 @@ function cloneNodeAttributeToAnother( $source, dest )
 		'unblocked_src',
 		'class',
 		'data-cookie-api-key',
-		'data-friendly_name'
+		'data-friendly_name',
+		'data-map-held-type',
+		//a marker that belongs to the original node only
+		'data-mapx-gads',
+		'data-map-static-block-processed'
 	];
 
 	for( var att, i = 0, atts = $source.attributes, n = atts.length; i < n; i++ )
@@ -6799,6 +8697,1274 @@ function cloneNodeAttributeToAnother( $source, dest )
 
 	return dest;
 }
+
+//f. animation through anime when present, final state otherwise
+function map_animate( params )
+{
+	if( typeof anime === 'function' ) return anime( params );
+
+	try {
+		var targets = params.targets;
+		var elems = [];
+
+		if( typeof targets === 'string' ) elems = document.querySelectorAll( targets );
+		else if( targets && typeof targets.length === 'number' && !targets.nodeType ) elems = targets;
+		else if( targets ) elems = [ targets ];
+
+		for( var i = 0; i < elems.length; i++ )
+		{
+			var el = elems[ i ];
+			if( !el || !el.style ) continue;
+
+			[ 'opacity', 'top', 'left', 'right', 'bottom' ].forEach( function( prop ) {
+				if( typeof params[ prop ] !== 'undefined' ) el.style[ prop ] = String( params[ prop ] );
+			} );
+
+			if( typeof params.scale !== 'undefined' ) el.style.transform = 'scale(' + params.scale + ')';
+		}
+
+		if( typeof params.complete === 'function' ) params.complete( null );
+	}
+	catch( e )
+	{
+		console.debug( e );
+	}
+
+	return null;
+}
+
+//f. stops running animations when anime is present
+function map_animate_remove( targets )
+{
+	if( typeof anime === 'function' && typeof anime.remove === 'function' ) anime.remove( targets );
+}
+
+//replays the DOMContentLoaded calls of unblocked scripts to late registrants only
+var MAP_DCL_REPLICA = ( function() {
+	'use strict';
+
+	var registry = [];
+	var installed = false;
+	var passthrough = false;
+	var permanent = false;
+	var tried = false;
+	var open = 0;
+	var mine = {};
+
+	var marks = window.MAP_DCL_MARKS;
+	if( !( marks && typeof marks === 'object' && marks.seen && typeof marks.seen === 'object' ) )
+	{
+		marks = window.MAP_DCL_MARKS = { seen: { doc: false, win: false } };
+	}
+	var seen = marks.seen;
+
+	function hasOwn( o, k ) { return Object.prototype.hasOwnProperty.call( o, k ); }
+
+	//original method, resolved up the target's prototype chain at call time
+	function original( t, k )
+	{
+		var p = null;
+		try {
+			p = Object.getPrototypeOf( t );
+			while( p && !hasOwn( p, k ) ) p = Object.getPrototypeOf( p );
+		} catch( e ) { p = null; }
+		return p ? p[ k ] : EventTarget.prototype[ k ];
+	}
+
+	function nativeAdd( t, type, l, o ) { return original( t, 'addEventListener' ).call( t, type, l, o ); }
+	function nativeRemove( t, type, l, o ) { return original( t, 'removeEventListener' ).call( t, type, l, o ); }
+
+	function captureOf( o )
+	{
+		if( o === null || o === undefined ) return false;
+		if( typeof o === 'object' || typeof o === 'function' ) return !!o.capture;
+		return !!o;
+	}
+	function isListener( l ) { return typeof l === 'function' || ( !!l && typeof l === 'object' ); }
+	function aborted( r ) { return !!( r.signal && r.signal.aborted ); }
+	function mark( t ) { if( t === document ) seen.doc = true; else if( t === window ) seen.win = true; }
+
+	function report( err )
+	{
+		try {
+			if( typeof window.reportError === 'function' ) { window.reportError( err ); return; }
+		} catch( e ) {}
+		setTimeout( function() { throw err; }, 0 );
+	}
+
+	//an entry leaves the registry with its abort listener and, when asked, its consumer
+	function drop( r, withConsumer )
+	{
+		var i = registry.indexOf( r );
+		if( i >= 0 ) registry.splice( i, 1 );
+		if( withConsumer && r.consumer ) { try { nativeRemove( r.t, 'DOMContentLoaded', r.consumer, r.c ); } catch( e ) {} }
+		if( r.onAbort ) { try { EventTarget.prototype.removeEventListener.call( r.signal, 'abort', r.onAbort ); } catch( e ) {} r.onAbort = null; }
+	}
+
+	function find( t, l, c )
+	{
+		for( var i = 0; i < registry.length; i++ )
+		{
+			var r = registry[ i ];
+			if( r.t === t && r.l === l && r.c === c )
+			{
+				if( aborted( r ) ) { drop( r, true ); i--; continue; }
+				return r;
+			}
+		}
+		return null;
+	}
+
+	function makeAdd()
+	{
+		return function addEventListener( type, listener ) {
+			var options = arguments[ 2 ];
+			var target = ( this !== undefined && this !== null ) ? this : window;
+			var entry = null;
+
+			if( installed && !passthrough && type === 'DOMContentLoaded' && isListener( listener ) && ( target === document || target === window ) )
+			{
+				var c = captureOf( options );
+				var signal = ( options && typeof options === 'object' && options.signal ) ? options.signal : null;
+
+				if( !( target === window && !c ) && !( signal && signal.aborted ) && find( target, listener, c ) === null )
+				{
+					var ok = true;
+					var dormant = false;
+
+					if( document.readyState === 'loading' ) ok = false;
+					else if( hasOwn( document, 'readyState' ) && document.readyState !== 'complete' )
+					{
+						if( target === document ? seen.doc : seen.win ) dormant = true;
+						else ok = false;
+					}
+
+					if( ok )
+					{
+						entry = { t: target, l: listener, c: c, once: !!( options && typeof options === 'object' && options.once ), signal: signal, consumer: null, onAbort: null, dormant: dormant };
+
+						if( entry.once )
+						{
+							var owner = entry;
+							owner.consumer = function() { drop( owner, false ); };
+							try { nativeAdd( target, 'DOMContentLoaded', owner.consumer, signal ? { capture: c, once: true, signal: signal } : { capture: c, once: true } ); }
+							catch( e ) { owner.consumer = null; }
+						}
+					}
+				}
+			}
+
+			var result = original( target, 'addEventListener' ).apply( target, arguments );
+
+			if( entry )
+			{
+				registry.push( entry );
+
+				if( entry.signal && typeof entry.signal.aborted === 'boolean' )
+				{
+					var aborting = entry;
+					aborting.onAbort = function() { drop( aborting, false ); };
+					try { EventTarget.prototype.addEventListener.call( aborting.signal, 'abort', aborting.onAbort, { once: true } ); }
+					catch( e ) { aborting.onAbort = null; }
+				}
+			}
+
+			return result;
+		};
+	}
+
+	function makeRemove()
+	{
+		return function removeEventListener( type, listener ) {
+			var options = arguments[ 2 ];
+			var target = ( this !== undefined && this !== null ) ? this : window;
+			var result = original( target, 'removeEventListener' ).apply( target, arguments );
+
+			if( type === 'DOMContentLoaded' )
+			{
+				var r = find( target, listener, captureOf( options ) );
+				if( r ) drop( r, true );
+			}
+
+			return result;
+		};
+	}
+
+	function restore()
+	{
+		var clean = true;
+
+		[ [ document, 'addEventListener', mine.da ], [ window, 'addEventListener', mine.wa ], [ document, 'removeEventListener', mine.dr ], [ window, 'removeEventListener', mine.wr ] ].forEach( function( x ) {
+			try {
+				if( x[ 2 ] && x[ 0 ][ x[ 1 ] ] === x[ 2 ] ) delete x[ 0 ][ x[ 1 ] ];
+				else if( x[ 2 ] && hasOwn( x[ 0 ], x[ 1 ] ) ) clean = false;
+			} catch( e ) { clean = false; }
+		});
+
+		registry.slice().forEach( function( r ) { drop( r, true ); } );
+		installed = false;
+		if( !clean ) passthrough = true;
+	}
+
+	function install()
+	{
+		if( hasOwn( document, 'addEventListener' ) || hasOwn( window, 'addEventListener' ) ||
+			hasOwn( document, 'removeEventListener' ) || hasOwn( window, 'removeEventListener' ) ) return false;
+
+		try {
+			mine.da = makeAdd();
+			mine.wa = makeAdd();
+			mine.dr = makeRemove();
+			mine.wr = makeRemove();
+			document.addEventListener = mine.da;
+			window.addEventListener = mine.wa;
+			document.removeEventListener = mine.dr;
+			window.removeEventListener = mine.wr;
+			if( document.addEventListener !== mine.da || window.addEventListener !== mine.wa ||
+				document.removeEventListener !== mine.dr || window.removeEventListener !== mine.wr ) { restore(); return false; }
+		}
+		catch( e )
+		{
+			try { restore(); } catch( e2 ) {}
+			return false;
+		}
+
+		installed = true;
+		return true;
+	}
+
+	function blockedWait()
+	{
+		try {
+			return document.querySelectorAll( 'script.my_agile_privacy_activate.autoscan_mode.map_src_script_blocked.mapWait[data-cookie-api-key]:not(._is_activated), script.my_agile_privacy_activate.autoscan_mode.map_inline_script_blocked.mapWait[data-cookie-api-key]:not(._is_activated)' ).length > 0;
+		} catch( e ) { return false; }
+	}
+
+	//a shield pattern still able to block a script as mapWait
+	function configWait()
+	{
+		try {
+			var cfg = ( typeof map_full_config !== 'undefined' && map_full_config ) ? map_full_config : null;
+			var added = cfg ? cfg.shield_added_pattern : null;
+			if( !added || typeof added !== 'object' ) return false;
+
+			var key_map = ( cfg.cookie_api_key_remote_id_map_active && typeof cfg.cookie_api_key_remote_id_map_active === 'object' ) ? cfg.cookie_api_key_remote_id_map_active : {};
+			var without_notification = ( cfg.cookie_api_key_remote_id_map_blocked_without_notification && typeof cfg.cookie_api_key_remote_id_map_blocked_without_notification === 'object' ) ? cfg.cookie_api_key_remote_id_map_blocked_without_notification : {};
+			var not_to_block = Array.isArray( cfg.cookie_api_key_not_to_block ) ? cfg.cookie_api_key_not_to_block : [];
+			var accepted_all = MAP_Cookie.read( MAP_ACCEPTED_ALL_COOKIE_NAME ) == '1';
+			var lists = [ added.js_patterns_src, added.js_patterns_code ];
+
+			for( var i = 0; i < lists.length; i++ )
+			{
+				if( !Array.isArray( lists[ i ] ) ) continue;
+
+				for( var j = 0; j < lists[ i ].length; j++ )
+				{
+					var item = lists[ i ][ j ];
+					if( !item || typeof item.on_block_add_classes !== 'string' ) continue;
+					if( ( ' ' + item.on_block_add_classes + ' ' ).indexOf( ' mapWait ' ) < 0 ) continue;
+
+					if( typeof item.key !== 'string' || not_to_block.indexOf( item.key ) >= 0 ) continue;
+
+					//same outcome as the shield: blocked unless accepted, an unknown key only when blocked without notification
+					if( typeof key_map[ item.key ] === 'string' )
+					{
+						if( !( MAP_Cookie.read( key_map[ item.key ] ) == '1' || accepted_all ) ) return true;
+					}
+					else if( without_notification[ item.key ] )
+					{
+						return true;
+					}
+				}
+			}
+		} catch( e ) {}
+
+		return false;
+	}
+
+	function fixedEvent()
+	{
+		var ev = new Event( 'DOMContentLoaded' );
+		var state = { current: null, immediate: false };
+		var stopImmediate = ev.stopImmediatePropagation;
+
+		Object.defineProperty( ev, 'target', { get: function() { return document; } } );
+		Object.defineProperty( ev, 'srcElement', { get: function() { return document; } } );
+		Object.defineProperty( ev, 'currentTarget', { get: function() { return state.current; } } );
+		Object.defineProperty( ev, 'eventPhase', { get: function() { return state.current === window ? 1 : ( state.current ? 2 : 0 ); } } );
+		Object.defineProperty( ev, 'stopImmediatePropagation', { value: function() { state.immediate = true; return stopImmediate.call( ev ); } } );
+
+		return { ev: ev, state: state };
+	}
+
+	function live( r, awake )
+	{
+		if( r.dormant )
+		{
+			if( !awake ) return false;
+			r.dormant = false;
+		}
+		return true;
+	}
+
+	function callOne( r, fixed )
+	{
+		if( registry.indexOf( r ) < 0 ) return;
+		if( aborted( r ) ) { drop( r, true ); return; }
+
+		if( r.once )
+		{
+			drop( r, true );
+			try { nativeRemove( r.t, 'DOMContentLoaded', r.l, r.c ); } catch( e ) {}
+		}
+
+		fixed.state.current = r.t;
+
+		try {
+			if( typeof r.l === 'function' ) r.l.call( r.t, fixed.ev );
+			else if( typeof r.l.handleEvent === 'function' ) r.l.handleEvent( fixed.ev );
+			else throw new TypeError( 'handleEvent is not a function' );
+		}
+		catch( err ) { report( err ); }
+	}
+
+	//one instant: window capture, document capture, document bubble, each photographed when reached
+	function tick()
+	{
+		var fixed = fixedEvent();
+		var awake = document.readyState === 'complete';
+		var phases = [
+			function( r ) { return r.t === window && r.c; },
+			function( r ) { return r.t === document && r.c; },
+			function( r ) { return r.t === document && !r.c; }
+		];
+
+		for( var p = 0; p < phases.length; p++ )
+		{
+			if( p > 0 && fixed.ev.cancelBubble ) return;
+
+			var list = registry.filter( function( r ) { return phases[ p ]( r ) && live( r, awake ); } );
+
+			for( var i = 0; i < list.length; i++ )
+			{
+				callOne( list[ i ], fixed );
+				if( fixed.state.immediate ) return;
+			}
+		}
+	}
+
+	function probe( e ) { if( e.type === 'DOMContentLoaded' ) return; mark( e.target ); }
+	function annotate( e ) { mark( e.target ); }
+
+	try {
+		document.addEventListener( 'DOMContentLoaded', probe );
+		window.addEventListener( 'DOMContentLoaded', probe );
+	} catch( e ) {}
+
+	try { nativeAdd( window, 'rocket-DOMContentLoaded', annotate, true ); } catch( e ) {}
+
+	return {
+		//once per page, at the start of the frontend
+		start: function() {
+			if( tried ) return;
+			tried = true;
+			try {
+				var cfg = configWait();
+				if( !cfg && !blockedWait() ) return;
+				if( install() && cfg ) permanent = true;
+			} catch( e ) { console.debug( e ); }
+		},
+		//the handle stays bound to this instance, even if the frontend is evaluated again
+		arm: function() {
+			var handle = {
+				on: installed,
+				active: function() { return installed; },
+				tick: tick,
+				done: function() {
+					if( !handle.on ) return;
+					handle.on = false;
+					open--;
+					if( open <= 0 && installed )
+					{
+						open = 0;
+						if( !permanent && !blockedWait() ) restore();
+					}
+				}
+			};
+			if( installed ) open++;
+			return handle;
+		}
+	};
+} )();
+
+//places what a re-executed script writes where the parser would have placed it
+var MAP_WRITE_REPLAY = ( function() {
+	'use strict';
+
+	var HTML_NS = 'http://www.w3.org/1999/xhtml';
+	var RAW = { script: 1, style: 1, textarea: 1, title: 1, iframe: 1, noscript: 1, xmp: 1, noembed: 1, noframes: 1, plaintext: 1 };
+	var EMPTY = { area: 1, base: 1, br: 1, col: 1, embed: 1, hr: 1, img: 1, input: 1, link: 1, meta: 1, param: 1, source: 1, track: 1, wbr: 1, keygen: 1, basefont: 1, bgsound: 1, frame: 1, html: 1, head: 1, body: 1 };
+	var SIBLING = { p: 1, li: 1, option: 1, optgroup: 1, dt: 1, dd: 1, tr: 1, td: 1, th: 1 };
+	var WAIT_MS = 10000;
+	var JS_TYPES = [ '', 'text/javascript', 'application/javascript', 'application/ecmascript', 'application/x-ecmascript', 'application/x-javascript', 'text/ecmascript', 'text/javascript1.0', 'text/javascript1.1', 'text/javascript1.2', 'text/javascript1.3', 'text/javascript1.4', 'text/javascript1.5', 'text/jscript', 'text/livescript', 'text/x-ecmascript', 'text/x-javascript' ];
+
+	var contexts = ( typeof WeakMap === 'function' ) ? new WeakMap() : null;
+	var installed = null;
+	var open = 0;
+	var headTail = null;
+	var idle = function() {};
+
+	function hasOwn( o, k ) { return Object.prototype.hasOwnProperty.call( o, k ); }
+	function isSpace( c ) { return c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\f'; }
+	function isAlpha( c ) { return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ); }
+
+	//end of a tag from the first character after its name: { end, self }, or null while the tag is incomplete
+	function tagEnd( s, j )
+	{
+		var n = s.length;
+		var self = false;
+
+		while( j < n )
+		{
+			var c = s.charAt( j );
+
+			if( c === '>' ) return { end: j + 1, self: self };
+			if( c === '/' ) { self = true; j++; continue; }
+
+			self = false;
+
+			if( isSpace( c ) ) { j++; continue; }
+
+			j++;
+			while( j < n && !isSpace( s.charAt( j ) ) && '/>='.indexOf( s.charAt( j ) ) < 0 ) j++;
+			while( j < n && isSpace( s.charAt( j ) ) ) j++;
+
+			if( j < n && s.charAt( j ) === '=' )
+			{
+				j++;
+				while( j < n && isSpace( s.charAt( j ) ) ) j++;
+				if( j >= n ) return null;
+
+				var q = s.charAt( j );
+
+				if( q === '"' || q === "'" )
+				{
+					var e = s.indexOf( q, j + 1 );
+					if( e < 0 ) return null;
+					j = e + 1;
+				}
+				else if( q !== '>' )
+				{
+					while( j < n && !isSpace( s.charAt( j ) ) && s.charAt( j ) !== '>' ) j++;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	//end of the tag that closes a script whose text starts at i, through its escaped states: { end, self }, or null while still open
+	function scriptShut( s, i )
+	{
+		var low = s.slice( i ).replace( /[A-Z]+/g, function( x ) { return x.toLowerCase(); } );
+		var state = 0;
+		var at = 0;
+
+		while( true )
+		{
+			var lt = low.indexOf( '<', at );
+			var dd = state ? low.indexOf( '-->', at ) : -1;
+
+			if( dd >= 0 && ( lt < 0 || dd < lt ) ) { state = 0; at = dd + 3; continue; }
+			if( lt < 0 ) return null;
+
+			at = lt + 1;
+
+			if( state === 0 && low.substr( lt, 4 ) === '<!--' ) { state = 1; at = lt + 2; continue; }
+
+			var closing = low.charAt( lt + 1 ) === '/';
+			var p = lt + ( closing ? 2 : 1 );
+
+			if( low.substr( p, 6 ) !== 'script' ) continue;
+			if( p + 6 >= low.length ) return null;
+
+			var ac = low.charAt( p + 6 );
+
+			if( !isSpace( ac ) && ac !== '/' && ac !== '>' ) continue;
+
+			at = p + 6;
+
+			if( !closing ) { if( state === 1 ) state = 2; continue; }
+			if( state === 2 ) { state = 1; continue; }
+
+			return tagEnd( s, i + p + 6 );
+		}
+	}
+
+	//true when no tag, comment, raw text or non-void element is left open; the scan resumes from st
+	function complete( s, st )
+	{
+		var stack = st.stack;
+		var n = s.length;
+		var i = st.pos;
+
+		while( i < n )
+		{
+			var lt = s.indexOf( '<', i );
+			if( lt < 0 ) { i = n; break; }
+
+			st.pos = lt;
+			i = lt + 1;
+			if( i >= n ) return false;
+
+			var c = s.charAt( i );
+
+			if( c === '!' && s.substr( i + 1, 2 ) === '--' )
+			{
+				var ce = s.indexOf( '-->', i + 1 );
+				if( ce < 0 ) return false;
+				i = ce + 3;
+				continue;
+			}
+
+			if( c === '!' || c === '?' )
+			{
+				var be = s.indexOf( '>', i );
+				if( be < 0 ) return false;
+				i = be + 1;
+				continue;
+			}
+
+			var closing = false;
+
+			if( c === '/' )
+			{
+				if( i + 1 >= n ) return false;
+
+				if( !isAlpha( s.charAt( i + 1 ) ) )
+				{
+					var xe = s.indexOf( '>', i );
+					if( xe < 0 ) return false;
+					i = xe + 1;
+					continue;
+				}
+
+				closing = true;
+				i++;
+			}
+			else if( !isAlpha( c ) )
+			{
+				continue;
+			}
+
+			var j = i;
+			while( j < n && !isSpace( s.charAt( j ) ) && s.charAt( j ) !== '/' && s.charAt( j ) !== '>' ) j++;
+			if( j >= n ) return false;
+
+			var name = s.slice( i, j ).toLowerCase();
+			var t = tagEnd( s, j );
+			if( !t ) return false;
+			i = t.end;
+
+			if( closing )
+			{
+				var k = stack.lastIndexOf( name );
+				if( k >= 0 ) stack.length = k;
+				continue;
+			}
+
+			if( name === 'script' )
+			{
+				var sc = scriptShut( s, i );
+				if( !sc ) return false;
+				i = sc.end;
+				continue;
+			}
+
+			if( RAW[ name ] )
+			{
+				var tail = s.slice( i ).replace( /[A-Z]+/g, function( x ) { return x.toLowerCase(); } );
+				var from = 0;
+				var shut = null;
+
+				while( shut === null )
+				{
+					var r = tail.indexOf( '</' + name, from );
+					if( r < 0 ) return false;
+
+					var after = i + r + 2 + name.length;
+					if( after >= n ) return false;
+
+					var ac = s.charAt( after );
+
+					if( isSpace( ac ) || ac === '/' || ac === '>' )
+					{
+						shut = tagEnd( s, after );
+						if( !shut ) return false;
+					}
+					else
+					{
+						from = r + 2 + name.length;
+					}
+				}
+
+				i = shut.end;
+				continue;
+			}
+
+			if( EMPTY[ name ] ) continue;
+			if( t.self && ( name === 'svg' || name === 'math' || stack.indexOf( 'svg' ) >= 0 || stack.indexOf( 'math' ) >= 0 ) ) continue;
+			if( SIBLING[ name ] && stack.length && stack[ stack.length - 1 ] === name ) continue;
+
+			stack.push( name );
+		}
+
+		st.pos = i;
+		return stack.length === 0;
+	}
+
+	//how the parser would run the script: 'classic', 'module' or null
+	function kind( s )
+	{
+		var t = s.getAttribute( 'type' );
+		var l = s.getAttribute( 'language' );
+
+		if( t === null && l !== null && l !== '' ) t = ( 'text/' + l ).toLowerCase();
+		else t = ( t === null ) ? '' : String( t ).toLowerCase();
+
+		if( t === 'module' ) return 'module';
+		if( s.getAttribute( 'type' ) !== null ) t = t.trim();
+		if( JS_TYPES.indexOf( t ) < 0 || s.hasAttribute( 'nomodule' ) ) return null;
+
+		if( s.hasAttribute( 'for' ) && s.hasAttribute( 'event' ) )
+		{
+			var f = String( s.getAttribute( 'for' ) ).trim().toLowerCase();
+			var e = String( s.getAttribute( 'event' ) ).trim().toLowerCase();
+
+			if( f !== 'window' || ( e !== 'onload' && e !== 'onload()' ) ) return null;
+		}
+
+		return 'classic';
+	}
+
+	//an external script that will fire load or error
+	function runs( s )
+	{
+		return s.isConnected && s.hasAttribute( 'src' ) && kind( s ) !== null;
+	}
+
+	function blocking( s )
+	{
+		return runs( s ) && kind( s ) === 'classic' && !s.hasAttribute( 'async' );
+	}
+
+	//a script that never loads stops holding the queue
+	function guard( ctx )
+	{
+		ctx.timer = setTimeout( function() { finish( ctx ); }, WAIT_MS );
+	}
+
+	function makeWrite( orig, ln )
+	{
+		return function write() {
+			var cs = document.currentScript;
+			var ctx = ( this === document && cs && contexts ) ? contexts.get( cs ) : null;
+
+			if( !ctx || ctx.closed ) return orig.apply( this, arguments );
+
+			ctx.buf += Array.prototype.map.call( arguments, String ).join( '' ) + ( ln ? '\n' : '' );
+
+			if( complete( ctx.buf, ctx.scan ) ) flush( ctx );
+		};
+	}
+
+	function uninstall()
+	{
+		var x = installed;
+		if( !x ) return;
+
+		installed = null;
+
+		[ [ 'write', x.w ], [ 'writeln', x.wl ] ].forEach( function( p ) {
+			try {
+				if( !p[ 1 ].mine || document[ p[ 0 ] ] !== p[ 1 ].mine ) return;
+				if( p[ 1 ].own ) document[ p[ 0 ] ] = p[ 1 ].orig;
+				else delete document[ p[ 0 ] ];
+			} catch( e ) {}
+		});
+	}
+
+	//own properties on document only, never on the prototype
+	function install()
+	{
+		if( installed ) return true;
+		if( !contexts ) return false;
+
+		try {
+			var x = {
+				w: { own: hasOwn( document, 'write' ), orig: document.write, mine: null },
+				wl: { own: hasOwn( document, 'writeln' ), orig: document.writeln, mine: null }
+			};
+
+			if( typeof x.w.orig !== 'function' || typeof x.wl.orig !== 'function' ) return false;
+
+			x.w.mine = makeWrite( x.w.orig, false );
+			x.wl.mine = makeWrite( x.wl.orig, true );
+			installed = x;
+
+			document.write = x.w.mine;
+			document.writeln = x.wl.mine;
+
+			if( document.write !== x.w.mine || document.writeln !== x.wl.mine ) { uninstall(); return false; }
+		}
+		catch( e )
+		{
+			uninstall();
+			return false;
+		}
+
+		return true;
+	}
+
+	//empty text node after the anchor; for an anchor in the head, at the start of the body
+	function mark( anchor )
+	{
+		var body = document.body;
+		var b = document.createTextNode( '' );
+
+		if( anchor && anchor.parentNode && !( document.head && document.head.contains( anchor ) ) )
+		{
+			anchor.parentNode.insertBefore( b, anchor.nextSibling );
+			return b;
+		}
+
+		if( !body ) return null;
+
+		if( anchor && anchor.parentNode )
+		{
+			body.insertBefore( b, ( headTail && headTail.parentNode === body ) ? headTail.nextSibling : body.firstChild );
+			headTail = b;
+			return b;
+		}
+
+		body.appendChild( b );
+		return b;
+	}
+
+	function make( script, parent, bookmark )
+	{
+		var ctx = { parent: parent, bookmark: bookmark, buf: '', scan: { pos: 0, stack: [] }, queue: [], waiting: null, ended: false, closed: false, draining: false, timer: null };
+
+		contexts.set( script, ctx );
+		open++;
+
+		return ctx;
+	}
+
+	//parsed in the page's context, scripts taken out, inserted before the bookmark
+	function flush( ctx )
+	{
+		var html = ctx.buf;
+		ctx.buf = '';
+		ctx.scan = { pos: 0, stack: [] };
+
+		if( html === '' ) return;
+
+		var b = ctx.bookmark;
+		var at = ( b && b.isConnected ) ? b : null;
+		var host = ( at && at.parentNode && at.parentNode.nodeType === 1 ) ? at.parentNode : document.body;
+
+		if( !host ) return;
+
+		var range = document.createRange();
+		range.selectNodeContents( host );
+
+		var frag = range.createContextualFragment( html );
+		var found = frag.querySelectorAll( 'script' );
+
+		for( var i = 0; i < found.length; i++ )
+		{
+			var ph = document.createComment( '' );
+			found[ i ].parentNode.replaceChild( ph, found[ i ] );
+
+			if( found[ i ].namespaceURI === HTML_NS ) ctx.queue.push( { ph: ph, el: found[ i ] } );
+		}
+
+		if( at ) at.parentNode.insertBefore( frag, at );
+		else document.body.appendChild( frag );
+
+		drain( ctx );
+	}
+
+	//a written script recreated through the page's createElement, in place of its placeholder
+	function start( ctx, item )
+	{
+		var ph = item.ph;
+		var el = item.el;
+
+		if( !ph.parentNode ) return;
+
+		var s = document.createElement( 'script' );
+		var a = el.attributes;
+
+		for( var i = 0; i < a.length; i++ )
+		{
+			try { s.setAttribute( a[ i ].name, a[ i ].value ); } catch( e ) {}
+		}
+
+		if( el.nonce && !s.nonce ) s.nonce = el.nonce;
+
+		s.text = el.text;
+
+		var child = make( s, ctx, document.createTextNode( '' ) );
+		var done = function() { finish( child ); };
+
+		ph.parentNode.insertBefore( child.bookmark, ph.nextSibling );
+		s.addEventListener( 'load', done );
+		s.addEventListener( 'error', done );
+
+		ph.parentNode.replaceChild( s, ph );
+
+		if( runs( s ) )
+		{
+			guard( child );
+			if( blocking( s ) ) ctx.waiting = child;
+		}
+		else
+		{
+			//an inline script that has run is not taken up again
+			if( !s.hasAttribute( 'src' ) && kind( s ) !== null ) s.classList.add( '_is_activated' );
+
+			finish( child );
+			if( !child.closed ) ctx.waiting = child;
+		}
+	}
+
+	function drain( ctx )
+	{
+		if( ctx.draining ) return;
+
+		ctx.draining = true;
+
+		try {
+			while( !ctx.waiting && ctx.queue.length )
+			{
+				try { start( ctx, ctx.queue.shift() ); }
+				catch( e ) { console.error( e ); }
+			}
+		}
+		finally {
+			ctx.draining = false;
+		}
+
+		settle( ctx );
+	}
+
+	function finish( ctx )
+	{
+		if( ctx.ended ) return;
+
+		ctx.ended = true;
+
+		if( ctx.buf !== '' )
+		{
+			try { flush( ctx ); } catch( e ) { console.error( e ); }
+		}
+
+		settle( ctx );
+	}
+
+	function settle( ctx )
+	{
+		if( ctx.closed || !ctx.ended || ctx.waiting || ctx.queue.length || ctx.draining ) return;
+
+		ctx.closed = true;
+
+		if( ctx.timer ) clearTimeout( ctx.timer );
+
+		var b = ctx.bookmark;
+
+		if( b === headTail ) headTail = b.previousSibling;
+		if( b && b.parentNode ) b.parentNode.removeChild( b );
+
+		open--;
+
+		var p = ctx.parent;
+
+		if( p && p.waiting === ctx )
+		{
+			p.waiting = null;
+			drain( p );
+		}
+
+		if( open <= 0 )
+		{
+			open = 0;
+			uninstall();
+		}
+	}
+
+	//called right before the script enters the page; the returned function marks its end
+	function begin( anchor, script, external )
+	{
+		try {
+			if( !script || !install() ) return idle;
+
+			var b = mark( anchor );
+
+			if( !b )
+			{
+				if( open <= 0 ) uninstall();
+				return idle;
+			}
+
+			var ctx = make( script, null, b );
+
+			if( external )
+			{
+				var done = function() { finish( ctx ); };
+				script.addEventListener( 'load', done );
+				script.addEventListener( 'error', done );
+				guard( ctx );
+			}
+
+			return function() { finish( ctx ); };
+		}
+		catch( e )
+		{
+			console.debug( e );
+			return idle;
+		}
+	}
+
+	return {
+		begin: begin,
+		//true for a type attribute value the parser runs as a classic script
+		jsType: function( t ) { return JS_TYPES.indexOf( String( t ).trim().toLowerCase() ) >= 0; },
+		//inserts a re-executed script; an inline one ends with the insertion, an external one with its load or error
+		run: function( anchor, script, external, insert ) {
+			var end = begin( anchor, script, external );
+
+			try { insert(); }
+			catch( e ) { end(); throw e; }
+
+			if( !external || !runs( script ) ) end();
+		},
+		//each script of the fragment is its own anchor
+		fragment: function( frag, insert ) {
+			var ends = [];
+
+			try {
+				var found = frag.querySelectorAll( 'script' );
+
+				for( var i = 0; i < found.length; i++ )
+				{
+					if( found[ i ].namespaceURI !== HTML_NS ) continue;
+
+					var ext = found[ i ].hasAttribute( 'src' );
+					ends.push( { s: found[ i ], ext: ext, end: begin( found[ i ], found[ i ], ext ) } );
+				}
+			}
+			catch( e ) { console.debug( e ); }
+
+			try { insert(); }
+			finally {
+				ends.forEach( function( x ) { if( !x.ext || !runs( x.s ) ) x.end(); } );
+			}
+		}
+	};
+} )();
+
+//holds the scripts of a service until the page's delayed jQuery has arrived
+var MAP_JQ_WAIT = ( function() {
+	'use strict';
+
+	var AFTER_JQ_MS = 10000;
+	var NO_JQ_MS = 10000;
+	var POLL_MS = 100;
+	var IDLE_POLL_MS = 500;
+	var jsType = MAP_WRITE_REPLAY.jsType;
+	var CORE = /(^|\/)jquery(-\d+(\.\d+)*)?(\.slim)?(\.min)?\.js([?#]|$)/i;
+	var USES = /\bjQuery\b|(^|[^\w$.'"])\$\s*(\(|\.[A-Za-z_])/;
+	var SRC_IN_CODE = /<script\b[^>]*?\bsrc\s*=\s*["']?([^"'\s>]+)/gi;
+	var TAGS = 'script[id="jquery-core-js"], script[src*="jquery" i], script[data-src*="jquery" i], script[data-rocket-src*="jquery" i]';
+
+	//shared by every evaluation of this file
+	var st = window.MAP_JQ_WAIT_STATE;
+
+	if( !( st && typeof st === 'object' && Array.isArray( st.queue ) ) )
+	{
+		st = window.MAP_JQ_WAIT_STATE = { queue: [], timer: null, listening: false, seq: 0, ends: { rocket: 0, ls: 0 }, seen: 0, gone: 0 };
+	}
+
+	//a full jQuery, not a stub that only queues ready callbacks
+	function real()
+	{
+		try {
+			var j = window.jQuery;
+			return typeof j === 'function' && !!j.fn && typeof j.fn.jquery === 'string';
+		} catch( e ) { return false; }
+	}
+
+	//the page's own jQuery tags, never one held by the plugin
+	function tags()
+	{
+		var out = [];
+
+		try {
+			document.querySelectorAll( TAGS ).forEach( function( s ) {
+				if( s.classList.contains( 'my_agile_privacy_activate' ) ) return;
+
+				if( s.id === 'jquery-core-js' ||
+					CORE.test( s.getAttribute( 'src' ) || '' ) ||
+					CORE.test( s.getAttribute( 'data-src' ) || '' ) ||
+					CORE.test( s.getAttribute( 'data-rocket-src' ) || '' ) ) out.push( s );
+			});
+		} catch( e ) {}
+
+		return out;
+	}
+
+	//a tag an optimizer has not run yet
+	function delayed( s )
+	{
+		if( !s.hasAttribute( 'src' ) && ( s.hasAttribute( 'data-src' ) || s.hasAttribute( 'data-rocket-src' ) ) ) return true;
+
+		var t = s.getAttribute( 'type' );
+		if( t === null ) return false;
+
+		t = String( t ).trim().toLowerCase();
+		return t !== 'module' && !jsType( t );
+	}
+
+	//remembers that the page's jQuery went through an optimizer's queue, and through LiteSpeed's
+	function observe( ts )
+	{
+		try {
+			if( real() ) return;
+			( ts || tags() ).forEach( function( s ) {
+				if( !delayed( s ) ) return;
+				st.delayedSeen = true;
+				var t = String( s.getAttribute( 'type' ) || '' ).trim().toLowerCase();
+				if( t === 'litespeed/javascript' ) st.lsSeen = true;
+				if( s.hasAttribute( 'data-rocket-src' ) || /rocketlazyloadscript$/.test( t ) ) st.rocketSeen = true;
+			});
+		} catch( e ) { console.debug( e ); }
+	}
+
+	function waiting()
+	{
+		if( real() ) return false;
+		var ts = tags();
+		observe( ts );
+		return ts.length > 0;
+	}
+
+	//a path segment named after jQuery
+	function usesFile( u )
+	{
+		if( typeof u !== 'string' || !u ) return false;
+
+		var p = u.replace( /^([a-z][\w+.-]*:)?\/\/[^\/]*/i, '' ).split( /[?#]/ )[ 0 ].split( '/' );
+
+		for( var i = 0; i < p.length; i++ )
+		{
+			var x = p[ i ].toLowerCase();
+			if( x === 'jquery' || x.indexOf( 'jquery.' ) === 0 || x.indexOf( 'jquery-' ) === 0 ) return true;
+		}
+
+		return false;
+	}
+
+	function uses( n )
+	{
+		try {
+			if( n.tagName === 'TEXTAREA' )
+			{
+				var code = String( n.value || '' );
+				if( USES.test( code ) ) return true;
+
+				SRC_IN_CODE.lastIndex = 0;
+				var m;
+				while( ( m = SRC_IN_CODE.exec( code ) ) !== null )
+				{
+					if( usesFile( m[ 1 ] ) ) return true;
+				}
+				return false;
+			}
+
+			if( n.classList.contains( 'map_src_script_blocked' ) )
+			{
+				return n.classList.contains( 'map_needs_jquery' ) || usesFile( n.getAttribute( 'unblocked_src' ) );
+			}
+
+			return USES.test( n.textContent || '' );
+		} catch( e ) { return false; }
+	}
+
+	//Rocket's queue, only when it delayed jQuery
+	function rocketQueue()
+	{
+		if( !st.rocketSeen ) return false;
+		try { return !!document.querySelector( 'script[type$="rocketlazyloadscript"], script[data-rocket-status]' ); } catch( e ) { return false; }
+	}
+
+	//LiteSpeed's queue, only when it delayed jQuery and has not finished
+	function liteSpeedQueue()
+	{
+		return typeof window.litespeed_load_delayed_js === 'function' && !!st.lsSeen && !st.ends.ls;
+	}
+
+	//jQuery has run, but the queue that delayed it has not finished yet
+	function queueOpen()
+	{
+		if( !st.delayedSeen || st.stalled || !real() ) return false;
+		return liteSpeedQueue() || ( !st.ends.rocket && rocketQueue() );
+	}
+
+	function stop()
+	{
+		if( st.timer !== null )
+		{
+			clearTimeout( st.timer );
+			st.timer = null;
+		}
+	}
+
+	function release( g )
+	{
+		g.nodes.forEach( function( n ) { try { n.classList.remove( '_map_jq_wait' ); } catch( e ) {} } );
+
+		var ok = false;
+		try { ok = !!g.consent(); } catch( e ) { console.debug( e ); }
+
+		try {
+			if( ok ) g.run();
+			else if( typeof g.drop === 'function' ) g.drop();
+		}
+		catch( e ) { console.error( e ); }
+	}
+
+	//the head of the queue decides for the whole queue; true while a jQuery tag is still delayed
+	function decide()
+	{
+		if( !st.queue.length ) { stop(); return false; }
+
+		var now = Date.now();
+		var j = real();
+		var ts = j ? [] : tags();
+		var held = false;
+
+		for( var i = 0; i < ts.length; i++ )
+		{
+			if( delayed( ts[ i ] ) ) { held = true; break; }
+		}
+
+		if( held ) observe( ts );
+
+		if( j ) { if( !st.seen ) st.seen = now; } else { st.seen = 0; }
+		if( !j && !held ) { if( !st.gone ) st.gone = now; } else { st.gone = 0; }
+
+		var h = st.queue[ 0 ];
+		var finished = ( h.rocket && st.ends.rocket > h.seq ) ||
+			( h.ls && st.ends.ls > h.seq );
+		var late = j && now - st.seen >= AFTER_JQ_MS;
+		var go = finished ||
+			( j && !h.rocket && !h.ls ) ||
+			late ||
+			( !j && !held && now - st.gone >= NO_JQ_MS );
+
+		if( !go ) return held;
+
+		//a queue that did not finish within the margin is not waited for again
+		if( late && !finished && ( h.rocket || h.ls ) ) st.stalled = true;
+
+		stop();
+		st.queue.splice( 0 ).forEach( release );
+		return false;
+	}
+
+	//a failing check releases as without the wait, so the queue never stays held
+	function check()
+	{
+		try { return decide(); }
+		catch( e )
+		{
+			console.debug( e );
+			stop();
+			st.queue.splice( 0 ).forEach( release );
+			return false;
+		}
+	}
+
+	function tick()
+	{
+		st.timer = null;
+		var held = check();
+		if( st.queue.length && st.timer === null ) st.timer = setTimeout( tick, held ? IDLE_POLL_MS : POLL_MS );
+	}
+
+	//a group that cannot be queued runs as without the wait
+	function hold( g )
+	{
+		try {
+			if( !st.queue.length ) { st.seen = 0; st.gone = 0; }
+
+			g.seq = ++st.seq;
+			g.rocket = rocketQueue();
+			g.ls = liteSpeedQueue();
+			g.nodes.forEach( function( n ) { n.classList.add( '_map_jq_wait' ); } );
+
+			st.queue.push( g );
+
+			if( st.timer === null ) st.timer = setTimeout( tick, POLL_MS );
+		}
+		catch( e )
+		{
+			console.debug( e );
+			if( st.queue.indexOf( g ) < 0 ) release( g );
+		}
+	}
+
+	if( !st.listening )
+	{
+		st.listening = true;
+
+		var ended = function( k ) {
+			return function() {
+				st.ends[ k ] = ++st.seq;
+				if( st.queue.length ) setTimeout( check, 0 );
+			};
+		};
+
+		try {
+			window.addEventListener( 'rocket-allScriptsLoaded', ended( 'rocket' ) );
+			window.addEventListener( 'DOMContentLiteSpeedLoaded', ended( 'ls' ) );
+			document.addEventListener( 'DOMContentLiteSpeedLoaded', ended( 'ls' ) );
+		} catch( e ) { console.debug( e ); }
+	}
+
+	//own guard: an older evaluation may have set listening without this
+	if( !st.observing )
+	{
+		st.observing = true;
+		document.addEventListener( 'DOMContentLoaded', function() { observe(); } );
+	}
+
+	observe();
+
+	return {
+		held: function( list ) {
+			return list.some( function( n ) { return n.classList.contains( '_map_jq_wait' ); } );
+		},
+		//a failing check means no wait, as without it
+		needs: function( list ) {
+			try { return list.length > 0 && list.some( uses ) && ( waiting() || st.queue.length > 0 || queueOpen() ); }
+			catch( e ) { console.debug( e ); return false; }
+		},
+		hold: hold
+	};
+} )();
 
 //f. for dom element recreating and previous event removal
 function internalRecreateNode( el, withChildren ){
@@ -6819,13 +9985,103 @@ function internalRecreateNode( el, withChildren ){
 	}
 }
 
+//f. swaps two nodes without the change event a browser fires on a focused field taken out of the page
+function map_replace_quietly( fresh, old )
+{
+	var quiet = function( e ) { if( e.isTrusted ) e.stopImmediatePropagation(); };
+	document.addEventListener( 'change', quiet, true );
+	try {
+		old.parentNode.replaceChild( fresh, old );
+	}
+	finally {
+		document.removeEventListener( 'change', quiet, true );
+	}
+}
+
+//f. puts a form's clone in its place, keeping what the visitor already entered and the focus
+function map_carry_form_state( form, clone )
+{
+	var fields_selector = 'input, select, textarea, button';
+	var from = form.querySelectorAll( fields_selector );
+	var to = clone.querySelectorAll( fields_selector );
+	var focus_index = -1;
+	var selection = null;
+
+	for( var i = 0; i < from.length && i < to.length; i++ )
+	{
+		try {
+			if( from[ i ].tagName === 'SELECT' )
+			{
+				for( var j = 0; j < from[ i ].options.length && j < to[ i ].options.length; j++ )
+				{
+					to[ i ].options[ j ].selected = from[ i ].options[ j ].selected;
+				}
+			}
+			else if( from[ i ].type === 'file' && from[ i ].files && from[ i ].files.length )
+			{
+				to[ i ].files = from[ i ].files;
+			}
+
+			if( from[ i ] === document.activeElement )
+			{
+				focus_index = i;
+				if( typeof from[ i ].selectionStart === 'number' ) selection = [ from[ i ].selectionStart, from[ i ].selectionEnd ];
+			}
+		}
+		catch( e ) {
+			console.debug( e );
+		}
+	}
+
+	map_replace_quietly( clone, form );
+
+	if( focus_index >= 0 && to[ focus_index ] )
+	{
+		var target = to[ focus_index ];
+
+		try {
+			target.focus( { preventScroll: true } );
+			if( selection )
+			{
+				target.setSelectionRange( selection[ 0 ], selection[ 1 ] );
+			}
+			else if( target.tagName === 'INPUT' && ( target.type === 'email' || target.type === 'number' ) && !( target.validity && target.validity.badInput ) )
+			{
+				//no caret api on these types: the caret goes back to the end
+				var value = target.value;
+				target.value = '';
+				target.value = value;
+			}
+		}
+		catch( e ) {
+			console.debug( e );
+		}
+	}
+}
+
 //wpcf7
 function map_trigger_custom_patch_1()
 {
 	MapLogger.debug( MAP_SYS.maplog + 'map_trigger_custom_patch_1' );
 
+	var recreated = [];
+	var focused = document.activeElement;
+
 	try {
-		internalRecreateNode( document.querySelector( 'form.wpcf7-form' ), true );
+		if( typeof wpcf7 === 'object' && wpcf7 && typeof wpcf7.init === 'function' )
+		{
+			//every form recreated, without the spinners already added
+			document.querySelectorAll( '.wpcf7 > form' ).forEach( function( form ) {
+				var clone = form.cloneNode( true );
+				clone.querySelectorAll( '.wpcf7-spinner' ).forEach( function( spinner ) { spinner.remove(); } );
+				map_carry_form_state( form, clone );
+				recreated.push( [ clone, form ] );
+			});
+		}
+		else
+		{
+			internalRecreateNode( document.querySelector( 'form.wpcf7-form' ), true );
+		}
 	}
 	catch ( e ) {
 		console.debug( e );
@@ -6834,6 +10090,23 @@ function map_trigger_custom_patch_1()
 	const c = new CustomEvent("DOMContentLoaded", {
 	});
 	document.dispatchEvent(c);
+
+	//a clone left uninitialized gets its original form back, which still holds what the visitor entered
+	recreated.forEach( function( pair ) {
+		try {
+			if( !pair[ 0 ].wpcf7 && pair[ 0 ].parentNode )
+			{
+				var focus_back = pair[ 0 ].contains( document.activeElement );
+
+				map_replace_quietly( pair[ 1 ], pair[ 0 ] );
+
+				if( focus_back && focused && pair[ 1 ].contains( focused ) ) focused.focus( { preventScroll: true } );
+			}
+		}
+		catch( e ) {
+			console.debug( e );
+		}
+	});
 
 	/*
 	try {

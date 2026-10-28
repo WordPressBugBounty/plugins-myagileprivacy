@@ -6,6 +6,24 @@
 	}
 
 	$contact_us_url = MAP_Helpdesk_Links::get( 'contact' );
+
+	$map_pe_pa = ( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1 );
+	$map_pe_texts = MyAgilePrivacy::get_email_consent_texts();
+	$map_pe_tabs = array();
+	$map_pe_current = null;
+
+	if( !empty( $map_pe_texts ) )
+	{
+		$map_pe_context = MyAgilePrivacy::getCurrentAndSupportedLanguages();
+		$map_pe_tabs = MyAgilePrivacy::get_email_consent_text_tabs( $map_pe_texts, isset( $map_pe_context['supported_languages'] ) ? $map_pe_context['supported_languages'] : array() );
+		$map_pe_current = MyAgilePrivacy::getCurrentLang4Char();
+
+		if( !empty( $map_pe_tabs ) && !isset( $map_pe_tabs[ $map_pe_current ] ) )
+		{
+			reset( $map_pe_tabs );
+			$map_pe_current = key( $map_pe_tabs );
+		}
+	}
 ?>
 
 <script type="text/javascript">
@@ -52,22 +70,22 @@
 					</div>
 					<div class="d-flex justify-content-between mt-2">
 						<small class="text-muted step-indicator active" data-step="1">
-							<i class="fa-regular fa-globe"></i> <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?>
+							<i class="fa-solid fa-globe"></i> <?php echo wp_kses_post( __( 'Policy Assistant', 'MAP_txt' ) ); ?>
 						</small>
 						<small class="text-muted step-indicator" data-step="2">
-							<i class="fa-regular fa-globe"></i> <?php echo wp_kses_post( __( 'Localization', 'MAP_txt' ) ); ?>
+							<i class="fa-solid fa-globe"></i> <?php echo wp_kses_post( __( 'Localization', 'MAP_txt' ) ); ?>
 						</small>
 						<small class="text-muted step-indicator" data-step="3">
 							<i class="fa-regular fa-address-card"></i> <?php echo wp_kses_post( __( 'Identity', 'MAP_txt' ) ); ?>
 						</small>
 						<small class="text-muted step-indicator" data-step="4">
-							<i class="fa-regular fa-browser"></i> <?php echo wp_kses_post( __( 'Site Features', 'MAP_txt' ) ); ?>
+							<i class="fa-regular fa-window-maximize"></i> <?php echo wp_kses_post( __( 'Site Features', 'MAP_txt' ) ); ?>
 						</small>
 						<small class="text-muted step-indicator" data-step="5">
-							<i class="fa-regular fa-share-nodes"></i> <?php echo wp_kses_post( __( 'Data Sharing', 'MAP_txt' ) ); ?>
+							<i class="fa-solid fa-share-nodes"></i> <?php echo wp_kses_post( __( 'Data Sharing', 'MAP_txt' ) ); ?>
 						</small>
 						<small class="text-muted step-indicator" data-step="6">
-							<i class="fa-regular fa-shield"></i> <?php echo wp_kses_post( __( 'Protection Systems', 'MAP_txt' ) ); ?>
+							<i class="fa-solid fa-shield"></i> <?php echo wp_kses_post( __( 'Protection Systems', 'MAP_txt' ) ); ?>
 						</small>
 					</div>
 				</div>
@@ -279,7 +297,7 @@
 											?>
 										</select>
 
-										<p class="text-muted small mt-1" id="customer_location_help"><?php echo wp_kses_post( __( 'Consider the countries of the people your site is aimed at or whose behaviour it monitors (for example through profiling or behavioural advertising), not every country from which it can be visited. If in doubt, select the country: the card of each regulation, below, explains when it applies, and only the regulations you confirm are added to your policies.', 'MAP_txt' ) ); ?> <?php echo wp_kses_post( __( 'These selections determine which regulations are considered for your policies; they do not change how the cookie banner behaves for visitors.', 'MAP_txt' ) ); ?></p>
+										<p class="text-muted small mt-1" id="customer_location_help"><?php echo wp_kses_post( __( 'Consider the countries of the people your site is aimed at or whose behavior it monitors (for example through profiling or behavioral advertising), not every country from which it can be visited. If in doubt, select the country: the card of each regulation, below, explains when it applies, and only the regulations you confirm are added to your policies.', 'MAP_txt' ) ); ?> <?php echo wp_kses_post( __( 'These selections determine which regulations are considered for your policies; they do not change how the cookie banner behaves for visitors.', 'MAP_txt' ) ); ?></p>
 
 									</div>
 								</div>
@@ -853,7 +871,7 @@
 								: array();
 						?>
 						<div class="mapgeo-section">
-							<h4 class="mb-1"><?php echo wp_kses_post( __( 'Banner behaviour by geographic area', 'MAP_txt' ) ); ?></h4>
+							<h4 class="mb-1"><?php echo wp_kses_post( __( 'Banner behavior by geographic area', 'MAP_txt' ) ); ?></h4>
 							<p class="text-muted small"><?php echo wp_kses_post( __( 'Depending on your company location, the Cookie Banner may behave differently for visitors from different areas. The summary below shows the behavior for the selected areas. "Other countries" shows the behavior for visitors not in the list.', 'MAP_txt' ) ); ?></p>
 						</div>
 
@@ -1544,7 +1562,7 @@
 														<?php echo wp_kses_post( __( 'No numerical thresholds.', 'MAP_txt' ) ); ?>
 													</li>
 													<li>
-														<?php echo wp_kses_post( __( 'Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent.', 'MAP_txt' ) ); ?>
+														<?php echo wp_kses_post( __( 'Entities that qualify as a small business under the federal Small Business Act are largely exempt from the law, but may not sell sensitive data without the consumer\'s prior consent.', 'MAP_txt' ) ); ?>
 													</li>
 												</ul>
 												<p class="mt-2 mb-0">
@@ -1897,7 +1915,7 @@
 												</p>
 
 												<p class="mb-0">
-													<?php echo wp_kses_post( __( 'No numerical thresholds. Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent.', 'MAP_txt' ) ); ?>
+													<?php echo wp_kses_post( __( 'No numerical thresholds. Entities that qualify as a small business under the U.S. Small Business Administration (SBA) definition are largely exempt from the law, but may not sell sensitive data without the consumer\'s prior consent.', 'MAP_txt' ) ); ?>
 												</p>
 												<p class="mt-2 mb-0">
 													<?php echo wp_kses_post( __( 'The small business exemption refers to US federal SBA criteria, which include a place of business in the United States, the industry size standard and the affiliation rules: it has not been clarified how these state laws apply them to a business with no place of business in the United States, so a case-by-case assessment is needed.', 'MAP_txt' ) ); ?>
@@ -2432,7 +2450,7 @@
 
 					</div>
 					<!-- Step 4: Site Features -->
-					<div class="wizard-step" id="step-4">
+					<div class="wizard-step" id="step-4" data-map-pa="<?php echo esc_attr( $map_pe_pa ? '1' : '0' ); ?>">
 						<div class="row">
 							<div class="col-12">
 								<h3><?php echo wp_kses_post( __( 'Site Features', 'MAP_txt' ) ); ?></h3>
@@ -2463,7 +2481,7 @@
 
 
 												<label for="site_features_contact_forms" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Contact forms', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Forms that collect user information, such as names, email addresses, and phone numbers, as well as user requests.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Forms that collect user information, such as names, email addresses, and phone numbers, as well as user requests.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2485,7 +2503,7 @@
 													/>
 
 												<label for="site_features_payments" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Payments', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Online payment processing, e-commerce transactions, credit card transactions, and financial data handling.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Online payment processing, e-commerce transactions, credit card transactions, and financial data handling.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2502,7 +2520,7 @@
 													/>
 
 												<label for="site_features_account_reg" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Account registration', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'User registration, user accounts and login, user profiles, and membership areas.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'User registration, user accounts and login, user profiles, and membership areas.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2521,7 +2539,7 @@
 													/>
 
 												<label for="site_features_newsletter" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Newsletter', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Email marketing and newsletters, postal mailings (direct mail), SMS/MMS, other messaging services.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Email marketing and newsletters, postal mailings (direct mail), SMS/MMS, other messaging services.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2540,9 +2558,118 @@
 													/>
 
 												<label for="site_features_show_marketing_data_retention" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'I retain data for a maximum of 24 months from the last meaningful interaction', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'By "last meaningful interaction" we mean, for example, opening a communication, clicking within a communication, or submitting a request through the website.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'By "last meaningful interaction" we mean, for example, a request submitted through the website or a reply to a communication received that shows an interest in continuing to receive them. Email opens and clicks do not count.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
+
+										<div class="styled_radio ms-5 map-pe-row displayNone <?php if( !$map_pe_pa ){ echo 'forbiddenArea'; } ?>" id="map_pe_row_tracking">
+											<div class="round d-flex me-4 align-items-center">
+
+												<input type="hidden" name="site_and_policy_settings[site_features_newsletter_tracking]" value="false" id="site_features_newsletter_tracking_no">
+
+												<input
+													type="checkbox"
+													id="site_features_newsletter_tracking"
+													name="site_and_policy_settings[site_features_newsletter_tracking]"
+													value="true"
+													aria-describedby="site_features_newsletter_tracking_help"
+													<?php checked( $site_and_policy_settings['site_features_newsletter_tracking'], true ); ?>
+													/>
+
+												<label for="site_features_newsletter_tracking" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html( __( 'Newsletters contain a pixel that detects opens, only for recipients who give their optional consent', 'MAP_txt' ) ); ?></label>
+											</div>
+											<div class="map-pe-help" id="site_features_newsletter_tracking_help">
+												<p><?php echo esc_html( __( 'A tiny, invisible image (tracking pixel) is downloaded when the message is opened and records the date, time, device and IP address of each recipient. The data is used only to measure how effective the communications are, not to profile, personalize content or change how often messages are sent.', 'MAP_txt' ) ); ?></p>
+												<p><?php echo esc_html( __( 'Consent is required even if you only look at overall campaign statistics, such as the open rate: platforms use a different pixel for each recipient, and this Privacy Policy applies to recipients in every country, including France, where the CNIL does not exempt aggregate statistics. Without consent the message must not contain the pixel.', 'MAP_txt' ) ); ?></p>
+												<p><?php echo esc_html( __( 'If your platform tracks clicks only, this setup is not supported: turn off click tracking.', 'MAP_txt' ) ); ?></p>
+											</div>
+										</div>
+
+										<div class="styled_radio map-pe-row map-pe-child displayNone <?php if( !$map_pe_pa ){ echo 'forbiddenArea'; } ?>" id="map_pe_row_clicks">
+											<div class="round d-flex me-4 align-items-center">
+
+												<input type="hidden" name="site_and_policy_settings[site_features_newsletter_click_tracking]" value="false" id="site_features_newsletter_click_tracking_no">
+
+												<input
+													type="checkbox"
+													id="site_features_newsletter_click_tracking"
+													name="site_and_policy_settings[site_features_newsletter_click_tracking]"
+													value="true"
+													aria-describedby="site_features_newsletter_click_tracking_help"
+													<?php checked( $site_and_policy_settings['site_features_newsletter_click_tracking'], true ); ?>
+													/>
+
+												<label for="site_features_newsletter_click_tracking" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html( __( 'Newsletter links are tracked too (clicks)', 'MAP_txt' ) ); ?></label>
+											</div>
+											<div class="map-pe-help" id="site_features_newsletter_click_tracking_help">
+												<p><?php echo esc_html( __( 'Links in the messages go through tracked addresses that record which link each recipient clicked, with the date, time, browser and IP address.', 'MAP_txt' ) ); ?></p>
+											</div>
+										</div>
+
+										<p class="ms-5 map-pe-note displayNone" id="map_pe_no_tracking"><span class="map-pe-if-service-off"><?php echo esc_html( __( 'You have not indicated pixels in the newsletters: your emails must contain neither pixels nor tracked links, not even for overall statistics only. Many platforms turn them on by themselves: in the platform, turn off open and click tracking, including in automated and transactional emails.', 'MAP_txt' ) ); ?></span><span class="map-pe-if-service-on displayNone"><?php echo esc_html( __( 'You have not indicated pixels in the newsletters: your emails must contain neither pixels nor tracked links, not even for overall statistics only. Many platforms turn them on by themselves: in the platform, turn off open and click tracking, including in automated and transactional emails, except for the date-only pixel in the service emails indicated below.', 'MAP_txt' ) ); ?></span></p>
+
+										<?php if( !empty( $map_pe_tabs ) ): ?><div class="ms-5 map-pe-row displayNone" id="map_pe_texts_row">
+											<button type="button" class="button-agile-outline btn-sm" id="map_pe_texts_btn" aria-haspopup="dialog" aria-controls="map_pe_texts_modal"><?php echo esc_html( __( 'Texts for the sign-up form…', 'MAP_txt' ) ); ?></button>
+										</div><?php endif; ?>
+
+										<div class="styled_radio map-pe-row displayNone <?php if( !$map_pe_pa ){ echo 'forbiddenArea'; } ?>" id="map_pe_row_service">
+											<div class="round d-flex me-4 align-items-center">
+
+												<input type="hidden" name="site_and_policy_settings[site_features_service_email_tracking]" value="false" id="site_features_service_email_tracking_no">
+
+												<input
+													type="checkbox"
+													id="site_features_service_email_tracking"
+													name="site_and_policy_settings[site_features_service_email_tracking]"
+													value="true"
+													aria-describedby="site_features_service_email_tracking_help"
+													<?php checked( $site_and_policy_settings['site_features_service_email_tracking'], true ); ?>
+													/>
+
+												<label for="site_features_service_email_tracking" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><span class="map-pe-if-account"><?php echo esc_html( __( 'Account authentication emails or legally required communications contain a pixel that stores only the date of the last open', 'MAP_txt' ) ); ?></span><span class="map-pe-if-noaccount displayNone"><?php echo esc_html( __( 'Legally required communications contain a pixel that stores only the date of the last open', 'MAP_txt' ) ); ?></span></label>
+											</div>
+											<div class="map-pe-help" id="site_features_service_email_tracking_help">
+												<p class="map-pe-if-account"><?php echo esc_html( __( 'Without consent only when strictly necessary: for account security (for example activation or password reset) or to help document the opening of a communication you are required by law to send for a requested service (for example a data breach notification). These emails contain no promotional messages. Time, IP address and device data must not be stored or used: if the pixel is used to recognize the device or the IP address (for example to flag logins from an unknown device), this option does not cover it and must not be turned on for those emails.', 'MAP_txt' ) ); ?></p>
+												<p class="map-pe-if-noaccount displayNone"><?php echo esc_html( __( 'Without consent only when strictly necessary to help document the opening of a communication you are required by law to send for a requested service (for example a data breach notification). These emails contain no promotional messages. Time, IP address and device data must not be stored or used. Authentication emails are included only if the site allows account registration (checkbox above).', 'MAP_txt' ) ); ?></p>
+												<p class="map-pe-if-uk displayNone"><span class="map-pe-if-account"><?php echo esc_html( __( 'In the United Kingdom the exemption for legally required communications applies only if the pixel is the only reasonable way to meet the obligation: as a rule, remove it from legal notices and keep it only in authentication emails.', 'MAP_txt' ) ); ?></span><span class="map-pe-if-noaccount displayNone"><?php echo esc_html( __( 'In the United Kingdom the exemption for legally required communications applies only if the pixel is the only reasonable way to meet the obligation: as a rule, remove it and do not turn on this option.', 'MAP_txt' ) ); ?></span></p>
+											</div>
+										</div>
+
+										<div class="map-pe-requirements displayNone" id="map_pe_requirements">
+											<p class="map-pe-req-lead"><?php echo esc_html( __( 'Before you continue, check that you and your sending platform meet these requirements:', 'MAP_txt' ) ); ?></p>
+											<div class="map-pe-if-track">
+												<p class="map-pe-req-title"><?php echo esc_html( __( 'Newsletter tracking', 'MAP_txt' ) ); ?></p>
+												<ul class="map-pe-list">
+													<li><?php echo esc_html( __( 'Recipients who have not given consent, or have withdrawn it, receive messages without pixels or tracked links, except for the personal links to unsubscribe or manage consents.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'Every message contains a link to withdraw only the tracking consent, without logging in or entering the address again.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'After withdrawal, opens and clicks of messages already sent are no longer recorded (links still lead to their page) and the tracking data collected is deleted or anonymized.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'In the sends after withdrawal the pixel is actually removed from the message: turning off statistics is not enough.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'Subscribers already on the list are not tracked until they consent: the consent request and the notice of the new Privacy Policy are sent without pixels or tracked links, except for the personal link to give consent, and no reply counts as a refusal.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'Opens and clicks are not used to segment recipients, personalize content, change the frequency or timing of sends, suspend those who do not open or locate recipients from their IP address: in the platform, turn off automatic rules based on opens (inactive contact cleanup, best-time sending, re-engagement automations).', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'The pixel and the tracked links use a random code instead of the email address: the address does not appear in the request.', 'MAP_txt' ) ); ?></li>
+												</ul>
+											</div>
+											<div class="map-pe-if-service">
+												<p class="map-pe-req-title"><?php echo esc_html( __( 'Pixels in service emails', 'MAP_txt' ) ); ?></p>
+												<ul class="map-pe-list">
+													<li><?php echo esc_html( __( 'The pixel is only in the emails of a closed list you have defined, each with the reason why it is strictly necessary.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'These emails contain no promotional messages.', 'MAP_txt' ) ); ?></li>
+													<li><?php echo esc_html( __( 'Only the date of the last open is stored, replaced at each new open; time, IP address and device data are not stored or used, not even in the logs and statistics of the platform. Have the platform confirm this in writing: if it does not guarantee it, do not put the pixel in these emails.', 'MAP_txt' ) ); ?></li>
+													<li><span class="map-pe-if-account"><?php echo esc_html( __( 'The date is deleted when it is no longer needed for account security or to help document the opening.', 'MAP_txt' ) ); ?></span><span class="map-pe-if-noaccount displayNone"><?php echo esc_html( __( 'The date is deleted when it is no longer needed to help document the opening.', 'MAP_txt' ) ); ?></span></li>
+													<li><?php echo esc_html( __( 'If a recipient objects, you no longer record the open date for them (remove the pixel or exclude them from the tracking), unless there are overriding legitimate grounds, to be documented.', 'MAP_txt' ) ); ?></li>
+												</ul>
+											</div>
+											<ul class="map-pe-list">
+												<li><span class="map-pe-if-clicks displayNone"><?php echo esc_html( __( 'The platform processes the data collected by the pixels and the tracked links only on your behalf, as a processor under an agreement pursuant to Art. 28 GDPR.', 'MAP_txt' ) ); ?></span><span class="map-pe-if-noclicks"><?php echo esc_html( __( 'The platform processes the data collected by the pixels only on your behalf, as a processor under an agreement pursuant to Art. 28 GDPR.', 'MAP_txt' ) ); ?></span></li>
+											</ul>
+											<div class="styled_radio">
+												<div class="round d-flex me-4 align-items-center">
+													<input type="checkbox" id="map_pe_confirm" value="1" aria-describedby="map_pe_status" />
+													<label for="map_pe_confirm" class="round-label map-pe-confirm-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo esc_html( __( 'I confirm that my sending platform and I meet the requirements above', 'MAP_txt' ) ); ?></label>
+												</div>
+											</div>
+										</div>
+										<p class="map-pe-status" id="map_pe_status" role="status" data-map-pe-blocked="<?php echo esc_attr( __( 'To continue, confirm the requirements above.', 'MAP_txt' ) ); ?>"></p>
 
 
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2559,7 +2686,7 @@
 													/>
 
 												<label for="site_features_reviews_collect" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Reviews / Feedback collection', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Customer reviews, ratings, testimonials, surveys, and feedback forms.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Customer reviews, ratings, testimonials, surveys, and feedback forms.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2576,7 +2703,7 @@
 													/>
 
 												<label for="site_features_minors_data" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Processing of minors\' personal data', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection of personal data of users under 18.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection of personal data of users under 18.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2593,7 +2720,7 @@
 													/>
 
 												<label for="site_features_social_login" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Social login', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site allows sign-in or registration via social accounts.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site allows sign-in or registration via social accounts.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2610,7 +2737,7 @@
 													/>
 
 												<label for="site_features_advertising" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Advertising and marketing partners', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site runs advertising and/or shares data with commercial or affiliate partners for marketing or advertising purposes.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Enable if the site runs advertising and/or shares data with commercial or affiliate partners for marketing or advertising purposes.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2627,7 +2754,7 @@
 													/>
 
 												<label for="site_features_sensitive_data" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Processing of special categories of personal data', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection and processing of special categories of personal data.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Collection and processing of special categories of personal data.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="mt-2">
@@ -2894,7 +3021,7 @@
 
 												<label for="protection_system_https" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Communication encryption (https)', 'MAP_txt' ) ); ?></label>
 
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Communications between your browser and the site are protected by HTTPS encryption, which prevents the interception or tampering of data exchanged while you browse.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Communications between your browser and the site are protected by HTTPS encryption, which prevents the interception or tampering of data exchanged while you browse.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 
@@ -2916,7 +3043,7 @@
 													/>
 
 												<label for="protection_system_log_control" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Log monitoring', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'The system logs and monitors access and activity to detect suspicious or unauthorized attempts and ensure data security.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'The system logs and monitors access and activity to detect suspicious or unauthorized attempts and ensure data security.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2933,7 +3060,7 @@
 													/>
 
 												<label for="protection_system_backup" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Periodic backups', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Data is regularly backed up and stored to protect it against accidental loss or technical incidents.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Data is regularly backed up and stored to protect it against accidental loss or technical incidents.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 
 											</div>
 										</div>
@@ -2951,7 +3078,7 @@
 													/>
 
 												<label for="protection_system_audit" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Security audits and checks', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Regular security assessments and tests are conducted to identify and address potential system vulnerabilities.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Regular security assessments and tests are conducted to identify and address potential system vulnerabilities.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 										<div class="styled_radio <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
@@ -2968,7 +3095,7 @@
 													/>
 
 												<label for="protection_system_access_limited" class="round-label"><span class="me-2 label-checkbox" aria-hidden="true"></span><?php echo wp_kses_post( __( 'Restriction of data access to duly authorized subjects only', 'MAP_txt' ) ); ?></label>
-												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Tick this if access to the site\'s data is limited to those who need it. For example: admin area accessible only to the owner and the appointed web provider, personal accounts that are not shared, strong passwords, no unused accounts or accounts with more permissions than needed.', 'MAP_txt' ) ); ?>"><i class="fa-regular fa-circle-info" aria-hidden="true"></i></button>
+												<button type="button" class="btn btn-link py-0 px-1 ms-1 text-muted lh-1" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo esc_attr( __( 'Tick this if access to the site\'s data is limited to those who need it. For example: admin area accessible only to the owner and the appointed web provider, personal accounts that are not shared, strong passwords, no unused accounts or accounts with more permissions than needed.', 'MAP_txt' ) ); ?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
 											</div>
 										</div>
 									</div>
@@ -3023,8 +3150,8 @@
 								<div class="whats-next">
 									<h5><?php echo wp_kses_post( __( 'What happens next?', 'MAP_txt' ) ); ?></h5>
 									<ul class="mb-0">
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'Your Privacy Policies are already updated.', 'MAP_txt' ) ); ?></li>
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'You can further customize settings in the main plugin panel.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'Your Privacy Policies are already updated.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'You can further customize settings in the main plugin panel.', 'MAP_txt' ) ); ?></li>
 									</ul>
 								</div>
 							</div>
@@ -3033,14 +3160,14 @@
 								<div class="whats-next">
 									<h5 class="alt_bg"><?php echo wp_kses_post( __( 'What Steps Should I Take Now?', 'MAP_txt' ) ); ?></h5>
 									<ul class="mb-4">
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'First, create the Cookie Policy and Privacy Policy pages. Then insert the corresponding shortcode into each page.', 'MAP_txt' ) ); ?></li>
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'If these pages don’t exist yet, create and publish them, then add the relevant shortcodes to the page content.', 'MAP_txt' ) ); ?></li>
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'You can find the shortcodes on the page shown below.', 'MAP_txt' ) ); ?></li>
-										<li class="mb-2"><i class="fa-regular fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'Final step: Go to the link below to complete the association.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'First, create the Cookie Policy and Privacy Policy pages. Then insert the corresponding shortcode into each page.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'If these pages don’t exist yet, create and publish them, then add the relevant shortcodes to the page content.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'You can find the shortcodes on the page shown below.', 'MAP_txt' ) ); ?></li>
+										<li class="mb-2"><i class="fa-solid fa-arrow-right text-primary me-2"></i> <?php echo wp_kses_post( __( 'Final step: Go to the link below to complete the association.', 'MAP_txt' ) ); ?></li>
 									</ul>
 									<div class="text-center">
 										<a href="<?php echo esc_url( add_query_arg( array( 'post_type' => 'my-agile-privacy-c', 'page' => 'my-agile-privacy-c_settings' ), admin_url( 'edit.php' ) ) ); ?>#policies" class="button-agile me-3">
-											<i class="fa-regular fa-cog"></i> <?php echo wp_kses_post( __( 'Go to Settings > Policy Tab', 'MAP_txt' ) ); ?>
+											<i class="fa-solid fa-cog"></i> <?php echo wp_kses_post( __( 'Go to Settings > Policy Tab', 'MAP_txt' ) ); ?>
 										</a>
 									</div>
 								</div>
@@ -3054,24 +3181,24 @@
 					<div class="row">
 						<div class="col-6">
 							<button type="button" class="button-agile-outline map-wizard-prev-btn displayNone" id="wizard-prev-btn">
-								<i class="fa-regular fa-arrow-left"></i> <?php echo wp_kses_post( __( 'Previous', 'MAP_txt' ) ); ?>
+								<i class="fa-solid fa-arrow-left"></i> <?php echo wp_kses_post( __( 'Previous', 'MAP_txt' ) ); ?>
 							</button>
 						</div>
 						<div class="col-6 text-end">
 							<span class="map_wait text-muted ms-2">
-								<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+								<i class="fas fa-circle-notch fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 							</span>
 
 							<button type="button" class="button-agile map-wizard-next-btn-first-step displayNone" id="wizard-next-btn-first-step">
-								<?php echo wp_kses_post( __( 'Next', 'MAP_txt' ) ); ?> <i class="fa-regular fa-arrow-right"></i>
+								<?php echo wp_kses_post( __( 'Next', 'MAP_txt' ) ); ?> <i class="fa-solid fa-arrow-right"></i>
 							</button>
 
 							<button type="button" class="button-agile map-wizard-next-btn displayNone" id="wizard-next-btn">
-								<?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?> <i class="fa-regular fa-arrow-right"></i>
+								<?php echo wp_kses_post( __( 'Save & Next', 'MAP_txt' ) ); ?> <i class="fa-solid fa-arrow-right"></i>
 							</button>
 
 							<button type="submit" name="update_guided_wizard_form" class="button-agile map-wizard-finish-btn displayNone" id="wizard-finish-btn">
-								<i class="fa-regular fa-check"></i> <?php echo wp_kses_post( __( 'Complete Configuration', 'MAP_txt' ) ); ?>
+								<i class="fa-solid fa-check"></i> <?php echo wp_kses_post( __( 'Complete Configuration', 'MAP_txt' ) ); ?>
 							</button>
 						</div>
 					</div>
@@ -3079,6 +3206,84 @@
 			</div> <!-- /.container-fluid -->
 		</form>
 	</div> <!-- consistent-box -->
+
+<?php if( !empty( $map_pe_tabs ) ): ?>
+<div class="modal fade map-pe-modal" id="map_pe_texts_modal" tabindex="-1" aria-labelledby="map_pe_texts_modal_title">
+	<div class="modal-dialog modal-lg modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title h5" id="map_pe_texts_modal_title"><?php echo esc_html( __( 'Texts for the sign-up form', 'MAP_txt' ) ); ?></h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo esc_attr( __( 'Close', 'MAP_txt' ) ); ?>"></button>
+			</div>
+			<div class="modal-body">
+				<p><?php echo esc_html( __( 'Copy these checkboxes into the form people use to subscribe to the newsletter.', 'MAP_txt' ) ); ?></p>
+				<p class="map-pe-lang-row">
+					<?php if( count( $map_pe_tabs ) > 1 ): ?>
+						<label for="map_pe_lang_select"><?php echo esc_html( __( 'Language of the texts:', 'MAP_txt' ) ); ?></label>
+						<select id="map_pe_lang_select" class="map-pe-lang-select">
+							<?php foreach( $map_pe_tabs as $map_pe_code => $map_pe_tab ): ?>
+								<option value="<?php echo esc_attr( $map_pe_code ); ?>" <?php selected( $map_pe_code, $map_pe_current ); ?>><?php echo esc_html( $map_pe_tab['label'] ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					<?php else: ?>
+						<?php echo esc_html( __( 'Language of the texts:', 'MAP_txt' ) ); ?> <strong><?php echo esc_html( $map_pe_tabs[ $map_pe_current ]['label'] ); ?></strong>
+					<?php endif; ?>
+					<?php echo esc_html( __( '(in every language you have the form in)', 'MAP_txt' ) ); ?>
+				</p>
+
+				<?php foreach( $map_pe_tabs as $map_pe_code => $map_pe_tab ): ?>
+				<div class="map-pe-lang<?php echo ( $map_pe_code === $map_pe_current ) ? '' : ' displayNone'; ?>" data-map-pe-lang="<?php echo esc_attr( $map_pe_code ); ?>">
+					<?php if( $map_pe_tab['fallback'] ): ?><p class="map-pe-fallback"><?php echo esc_html( __( 'These texts are not available in this language yet: the English version is shown.', 'MAP_txt' ) ); ?></p><?php endif; ?>
+					<div class="map-pe-box">
+						<div class="map-pe-box-head">
+							<p class="map-pe-box-title" id="map_pe_title_newsletter_<?php echo esc_attr( $map_pe_code ); ?>"><?php echo esc_html( __( 'Checkbox 1 · Newsletter (required to subscribe)', 'MAP_txt' ) ); ?></p>
+							<button type="button" class="button-agile-outline btn-sm map-pe-copy" aria-describedby="map_pe_title_newsletter_<?php echo esc_attr( $map_pe_code ); ?>" data-map-pe-copied="<?php echo esc_attr( __( 'Copied', 'MAP_txt' ) ); ?>"><?php echo esc_html( __( 'Copy', 'MAP_txt' ) ); ?></button>
+						</div>
+						<p class="map-pe-text" lang="<?php echo esc_attr( $map_pe_tab['lang'] ); ?>"><span aria-hidden="true">☐ </span><span class="map-pe-copy-src"><?php echo esc_html( $map_pe_tab['texts']['newsletter'] ); ?></span></p>
+					</div>
+					<div class="map-pe-box map-pe-if-track">
+						<div class="map-pe-box-head">
+							<p class="map-pe-box-title" id="map_pe_title_tracking_<?php echo esc_attr( $map_pe_code ); ?>"><?php /* translators: %s: short title of the tracking checkbox */ echo esc_html( sprintf( __( 'Checkbox 2 · %s', 'MAP_txt' ), $map_pe_tab['texts']['tracking_title'] ) ); ?></p>
+							<button type="button" class="button-agile-outline btn-sm map-pe-copy" aria-describedby="map_pe_title_tracking_<?php echo esc_attr( $map_pe_code ); ?>" data-map-pe-copied="<?php echo esc_attr( __( 'Copied', 'MAP_txt' ) ); ?>"><?php echo esc_html( __( 'Copy', 'MAP_txt' ) ); ?></button>
+						</div>
+						<p class="map-pe-text" lang="<?php echo esc_attr( $map_pe_tab['lang'] ); ?>"><span aria-hidden="true">☐ </span><span class="map-pe-copy-src map-pe-if-noclicks"><?php echo esc_html( $map_pe_tab['texts']['tracking'] ); ?></span><span class="map-pe-copy-src map-pe-if-clicks displayNone"><?php echo esc_html( $map_pe_tab['texts']['tracking_clicks'] ); ?></span></p>
+						<p class="map-pe-variant"><span class="map-pe-if-clicks displayNone"><?php echo esc_html( __( 'Version with opens and clicks (because you also turned on click tracking).', 'MAP_txt' ) ); ?></span><span class="map-pe-if-noclicks"><?php echo esc_html( __( 'Version with opens only.', 'MAP_txt' ) ); ?></span></p>
+					</div>
+				</div>
+				<?php endforeach; ?>
+
+				<p class="map-pe-note map-pe-if-notrack displayNone"><span class="map-pe-if-service-off"><?php echo esc_html( __( 'You have not indicated pixels in the newsletters: checkbox 1 is enough. Your emails must contain neither pixels nor tracked links, not even for overall statistics only: many platforms turn them on by themselves, so in the platform turn off open and click tracking, including in automated and transactional emails.', 'MAP_txt' ) ); ?></span><span class="map-pe-if-service-on displayNone"><?php echo esc_html( __( 'You have not indicated pixels in the newsletters: checkbox 1 is enough. Your emails must contain neither pixels nor tracked links, not even for overall statistics only: many platforms turn them on by themselves, so in the platform turn off open and click tracking, including in automated and transactional emails, except for the date-only pixel in service emails.', 'MAP_txt' ) ); ?></span></p>
+
+				<p class="map-pe-note map-pe-if-service displayNone"><?php echo esc_html( __( 'Service emails: no checkbox in the form. The pixel goes only in the emails of your closed list, without promotional messages, and only the date of the last open is stored.', 'MAP_txt' ) ); ?></p>
+
+				<div class="map-pe-doi">
+					<p class="map-pe-req-title"><?php echo esc_html( __( 'Recommended in any case: double confirmation (double opt-in)', 'MAP_txt' ) ); ?></p>
+					<p><?php echo esc_html( __( 'After sign-up, send an email with a confirmation link, without pixels, without promotional content and without tracked links other than the confirmation link. Activate the subscription, and any tracking, only when the person clicks the link. This way you know that the address really belongs to the person who signed up and you have stronger proof of consent. Also keep the date and time of the confirmation.', 'MAP_txt' ) ); ?></p>
+				</div>
+
+				<p class="map-pe-req-title"><?php echo esc_html( __( 'How to use them', 'MAP_txt' ) ); ?></p>
+				<ul class="map-pe-list map-pe-if-track">
+					<li><?php echo esc_html( __( 'Two separate checkboxes, none of them pre-checked. The tracking checkbox is optional: the subscription works even if it is not checked.', 'MAP_txt' ) ); ?></li>
+					<li><?php echo esc_html( __( 'Put the link to the Privacy Policy next to the checkboxes (point c for the newsletter, section 4 for tracking): it must be readable before subscribing.', 'MAP_txt' ) ); ?></li>
+					<li><?php echo esc_html( __( 'Send pixels and tracked links only to those who checked the tracking checkbox; send communications to everyone else without pixels or tracked links.', 'MAP_txt' ) ); ?></li>
+					<li><?php echo esc_html( __( 'In every email include a link to withdraw tracking only, without logging in or entering the address again.', 'MAP_txt' ) ); ?></li>
+					<li><?php echo esc_html( __( 'Subscribers already on the list: do not track them until they give consent; ask for it with an email without pixels or tracked links.', 'MAP_txt' ) ); ?></li>
+				</ul>
+				<ul class="map-pe-list map-pe-if-single">
+					<li><?php echo esc_html( __( 'Checkbox not pre-checked.', 'MAP_txt' ) ); ?></li>
+					<li><?php echo esc_html( __( 'Put the link to the Privacy Policy next to the checkbox (point c): it must be readable before subscribing.', 'MAP_txt' ) ); ?></li>
+				</ul>
+
+				<p class="map-pe-help-link"><?php map_render_helpdesk_link( 'contact_forms', __( 'How to make contact forms compliant', 'MAP_txt' ) ); ?></p>
+				<p class="map-pe-copy-status" id="map_pe_copy_status" role="status" data-map-pe-copy-failed="<?php echo esc_attr( __( 'Copy failed: select the text and copy it manually.', 'MAP_txt' ) ); ?>"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="button-agile" data-bs-dismiss="modal"><?php echo esc_html( __( 'Close', 'MAP_txt' ) ); ?></button>
+			</div>
+		</div>
+	</div>
+</div>
+<?php endif; ?>
 
 <?php if( function_exists( 'map_geo_enabled' ) && map_geo_enabled() ) : ?>
 <p id="dbip-attribution" class="text-muted small mt-2 displayNone"><?php echo wp_kses_post( __( 'Geolocation provided by <a href="https://db-ip.com" target="_blank" rel="noopener noreferrer">DB-IP.com</a> (CC BY 4.0).', 'MAP_txt' ) ); ?></p>

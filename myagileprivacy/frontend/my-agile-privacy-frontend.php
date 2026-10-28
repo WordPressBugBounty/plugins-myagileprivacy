@@ -87,7 +87,13 @@ final class MyAgilePrivacyFrontend {
 	private $saved_post;
 	private $head_script;
 	private $pending_detected_fields = null;
+	private $pending_html_scan_state = null;
 	private $shutdown_passed = false;
+	private $scan_dom = null;
+	private $scan_saved_output = null;
+	private $html_head_done = false;
+	private $scripts_enqueued = false;
+	private $early_gcmode_shield_handle = '';
 
 	/**
 	 * Initialize the class and set its properties.
@@ -308,7 +314,7 @@ final class MyAgilePrivacyFrontend {
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_accept_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_accept_link_color'] ).' !important' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="accept" id="map-accept-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
+		$link_tag = '<a role="button" tabindex="0" data-map_action="accept" id="map-accept-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] ) $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -351,7 +357,7 @@ final class MyAgilePrivacyFrontend {
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_reject_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_reject_link_color'] ).' !important' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="reject" id="map-reject-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
+		$link_tag = '<a role="button" tabindex="0" data-map_action="reject" id="map-reject-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] )  $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -395,7 +401,7 @@ final class MyAgilePrivacyFrontend {
 		// colore icona = colore testo
 		$icon_background_style = ( $the_settings['button_customize_link_color'] != "" ) ? ' background-color:'.esc_attr( $the_settings['button_customize_link_color'] ).' !important ' : '';
 
-		$link_tag = '<a role="button" tabindex="0" aria-pressed="false" data-map_action="customize" id="map-customize-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
+		$link_tag = '<a role="button" tabindex="0" aria-haspopup="dialog" data-map_action="customize" id="map-customize-button"'. $class.' style="'.esc_attr( $margin_style ).'; '. esc_attr( $color_style ).'; '.esc_attr( $background_style) .'; '.esc_attr( $border_radius_style ).'; '.esc_attr( $text_size_style ).'; '.esc_attr( $text_lineheight_style ).';">';
 
 		if( $the_settings['show_buttons_icons'] ) $link_tag .= '<span style=" '.esc_attr( $icon_background_style ).';"></span>';
 		$link_tag .= esc_html( $the_text ) . '</a>';
@@ -968,7 +974,7 @@ final class MyAgilePrivacyFrontend {
 	    {
 	        $skip = MyAgilePrivacy::check_buffer_skip_conditions( true );
 
-	        if( $skip == 'true' )
+	        if( $skip == 'true' || !$this->scripts_enqueued )
 	        {
 	            return;
 	        }
@@ -1154,8 +1160,8 @@ final class MyAgilePrivacyFrontend {
 	public function wp_head_inject()
 	{
 		$skip = MyAgilePrivacy::check_buffer_skip_conditions( false );
-
-		if( $skip == 'false' )
+		// the page filter already carries the head
+		if( $skip == 'false' && !$this->head_script )
 		{
 			echo $this->get_head_script_string( false );
 		}
@@ -1370,11 +1376,49 @@ final class MyAgilePrivacyFrontend {
 	//add script attributes
 	public function add_script_attributes( $tag, $handle, $src )
 	{
-	    if( strpos( $handle, $this->plugin_name ) !== false )
+	    if( is_string( $tag ) && is_string( $handle ) && strpos( $handle, $this->plugin_name ) !== false )
 	    {
-	        $tag = str_replace( ' src=', ' ' . MAP_INLINE_SCRIPT_EXTRA_ATTRS . ' src=', $tag );
+	        $new_tag = preg_replace( '#^(?:\s*<script\b(?![^>]*\ssrc=)[^>]*>.*?</script>)*\s*\K<script\b(?=[^>]*\ssrc=)#is', '<script ' . MAP_INLINE_SCRIPT_EXTRA_ATTRS, $tag, 1 );
+
+	        $tag = is_string( $new_tag ) ? $new_tag : $tag;
 	    }
+
 	    return $tag;
+	}
+
+	/**
+	 * Adds jquery to the queued frontend handles, when it is still registered.
+	 * @access   public
+	 */
+	public function add_legacy_jquery_dependency()
+	{
+		if( !function_exists( 'wp_scripts' ) || !wp_script_is( 'jquery', 'registered' ) )
+		{
+			return;
+		}
+
+		$map_scripts = wp_scripts();
+
+		foreach( (array) $map_scripts->queue as $handle )
+		{
+			if( !is_string( $handle ) ||
+				strpos( $handle, $this->plugin_name ) !== 0 ||
+				!isset( $map_scripts->registered[ $handle ] ) )
+			{
+				continue;
+			}
+
+			$map_script = $map_scripts->registered[ $handle ];
+
+			if( !is_array( $map_script->deps ) ||
+				in_array( 'jquery', $map_script->deps, true ) ||
+				( is_string( $map_script->src ) && substr( $map_script->src, -11 ) === 'js/empty.js' ) )
+			{
+				continue;
+			}
+
+			array_unshift( $map_script->deps, 'jquery' );
+		}
 	}
 
 	/**
@@ -1399,8 +1443,10 @@ final class MyAgilePrivacyFrontend {
 				return;
 			}
 
+			$this->scripts_enqueued = true;
+
 			$post_mode = false;
-			$post_mode_deps = array( 'jquery', $this->plugin_name, $this->plugin_name.'-anime' );
+			$post_mode_deps = array( $this->plugin_name, $this->plugin_name.'-anime' );
 
 			if( $skip == 'true_due_to_post' )
 			{
@@ -1424,10 +1470,45 @@ final class MyAgilePrivacyFrontend {
 					}
 				}
 
+				$map_enqueued_keys = array();
+
 				foreach( $blocks_to_inject['enqueue'] as $k => $elem )
 				{
-					wp_enqueue_script( $this->plugin_name.'_enqueue_'.$k, $elem, array( 'jquery' ), $this->version, false );
+					$map_enqueue_ver = $this->version;
+
+					if( is_array( $elem ) )
+					{
+						if( !isset( $elem['src'], $elem['ver'] ) || !is_string( $elem['src'] ) || !is_string( $elem['ver'] ) )
+						{
+							continue;
+						}
+
+						$map_enqueue_ver = $elem['ver'];
+						$elem            = $elem['src'];
+					}
+
+					wp_enqueue_script( $this->plugin_name.'_enqueue_'.$k, $elem, array(), $map_enqueue_ver, false );
 					$post_mode_deps[] = $this->plugin_name.'_enqueue_'.$k;
+					$map_enqueued_keys[] = $k;
+				}
+
+				// attached once the handles exist
+				$map_early = $this->early_gcmode_block_target( $blocks_to_inject, $map_enqueued_keys );
+
+				if( null !== $map_early )
+				{
+					if( function_exists( 'wp_add_inline_script' ) )
+					{
+						wp_add_inline_script( $map_early['handle'], $map_early['code'], 'after' );
+					}
+					else
+					{
+						$map_scripts = wp_scripts();
+						$map_script_data = $map_scripts->get_data( $map_early['handle'], 'data' );
+						$map_scripts->add_data( $map_early['handle'], 'data', ( $map_script_data ? $map_script_data . "\n" : '' ) . $map_early['code'] );
+					}
+
+					$this->early_gcmode_shield_handle = $map_early['handle'];
 				}
 			}
 
@@ -1440,18 +1521,20 @@ final class MyAgilePrivacyFrontend {
 
 			$js_frontend_filepath = "js/plain/my-agile-privacy-frontend$minified_filename_add.js";
 
-			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array( 'jquery' ), $this->version, false );
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name.'-anime', plugin_dir_url(__FILE__) . 'js/anime.min.js', array(), $this->version, false );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url(__FILE__) . $js_frontend_filepath, array(), $this->version, false );
 
 			if( $post_mode )
 			{
 				wp_enqueue_script( $this->plugin_name.'-postmode', plugin_dir_url(__FILE__) . $js_frontend_filepath, $post_mode_deps, $this->version, false );
 			}
 
-			if( has_filter( 'script_loader_tag' ) )
+			if( MyAgilePrivacy::is_legacy_mode_configured( $the_settings, $rconfig ) )
 			{
-				add_filter( 'script_loader_tag', array( $this, 'add_script_attributes' ), 10, 3 );
+				add_action( 'wp_print_scripts', array( $this, 'add_legacy_jquery_dependency' ), 999 );
 			}
+
+			add_filter( 'script_loader_tag', array( $this, 'add_script_attributes' ), 10, 3 );
 
 			$json_settings = $this->getJsonSettings();
 
@@ -1526,12 +1609,22 @@ final class MyAgilePrivacyFrontend {
 			$inline_id = $id;
 		}
 
+		$early = ( $inline_id !== '' &&
+			is_string( $this->early_gcmode_shield_handle ) &&
+			$this->early_gcmode_shield_handle !== '' &&
+			$inline_id === $this->early_gcmode_shield_handle . '-js-after' );
+
 		// Only target inline scripts tied to this handle.
 		// WP uses "{$handle}-js-extra|before|after".
 		$prefix = $this->plugin_name . '-js-';
-		if( $inline_id === '' || strpos( $inline_id, $prefix ) !== 0 )
+		if( $inline_id === '' || ( !$early && strpos( $inline_id, $prefix ) !== 0 ) )
 		{
 			return $attributes;
+		}
+
+		if( $early )
+		{
+			$attributes['class'] = ( isset( $attributes['class'] ) && is_string( $attributes['class'] ) && $attributes['class'] !== '' ) ? $attributes['class'] . ' map_early_gcmode' : 'map_early_gcmode';
 		}
 
 		// Parse the attributes string constant into an associative array.
@@ -1951,7 +2044,6 @@ final class MyAgilePrivacyFrontend {
 
 					$_map_js_dependencies_array = json_decode( $_map_js_dependencies , true );
 
-
 					if( $the_post_api_key &&
 						is_array( $_map_js_dependencies_array ) &&
 						!empty( $_map_js_dependencies_array ) )
@@ -1985,21 +2077,22 @@ final class MyAgilePrivacyFrontend {
 										$parse_config['scripts_src_block'][] = $item;
 
 										break;
+									case 'js_patterns_code':
+										$this->ao_code_patterns[] = array( $the_post_api_key, $single_map_js_dependencies['value'] );
+										break;
 								}
 							}
 						}
 					}
 				}
 			}
-
 			//bof _map_js_dependencies inject
-
+			//video mode script entries
+			$parse_config = $this->map_add_video_api_entries( $parse_config );
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $parse_config );
-
 			$currentAndSupportedLanguages = MyAgilePrivacy::getCurrentAndSupportedLanguages();
 
 			//check if exists
-
 			$cc_args = array(
 				'posts_per_page'   			=> 	-1,
 				'post_type'        			=>	MAP_POST_TYPE_COOKIES,
@@ -2086,10 +2179,11 @@ final class MyAgilePrivacyFrontend {
 				MyAgilePrivacy::internal_query_reset();
 			}
 
+			$this->map_read_blocked_silent_keys();
+			$this->ao_select_code_patterns( $key_to_enable, $key_to_not_block, $key_to_always_allow );
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $key_to_enable );
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $key_to_always_allow );
 			//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $friendly_name_map );
-
 			foreach( $parse_config as $k => &$v )
 			{
 				foreach( $v as $kk => &$vv )
@@ -2121,6 +2215,7 @@ final class MyAgilePrivacyFrontend {
 					{
 						$vv['always_allowed'] = true;
 					}
+					$vv['blocked_without_notification'] = $this->map_is_blocked_silent_entry( $vv );
 				}
 			}
 
@@ -2130,10 +2225,7 @@ final class MyAgilePrivacyFrontend {
 
 			$logic_legacy_mode = false;
 
-			if( $rconfig &&
-				isset( $rconfig['js_legacy_mode'] ) &&
-				$rconfig['js_legacy_mode'] == 1 ||
-				( $the_settings['scanner_compatibility_mode'] && $the_settings['forced_legacy_mode'] ) ||
+			if( MyAgilePrivacy::is_legacy_mode_configured( $the_settings, $rconfig ) ||
 				MyAgilePrivacy::get_scan_runtime()['missing_cookie_shield']
 			)
 			{
@@ -2156,6 +2248,8 @@ final class MyAgilePrivacyFrontend {
 
 			add_action( 'shutdown', array( $this, 'map_run_pending_writes' ), 2 );
 
+			$this->map_register_rocket_catalog();
+			$this->map_register_ao_catalog();
 			ob_start( array( $this, 'map_callback' ) );
 		}
 	}
@@ -2196,15 +2290,21 @@ final class MyAgilePrivacyFrontend {
 	{
 		$this->shutdown_passed = true;
 
-		if( null === $this->pending_detected_fields )
+		if( null !== $this->pending_detected_fields )
 		{
-			return;
+			$detected_fields = $this->pending_detected_fields;
+			$this->pending_detected_fields = null;
+
+			MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, $detected_fields );
 		}
 
-		$detected_fields = $this->pending_detected_fields;
-		$this->pending_detected_fields = null;
+		if( null !== $this->pending_html_scan_state )
+		{
+			$html_scan_state = $this->pending_html_scan_state;
+			$this->pending_html_scan_state = null;
 
-		MyAgilePrivacy::update_option( MAP_PLUGIN_JS_DETECTED_FIELDS, $detected_fields );
+			$this->map_write_html_scan_state( $html_scan_state );
+		}
 	}
 
 	/**
@@ -2313,9 +2413,11 @@ final class MyAgilePrivacyFrontend {
 	    $scheme    = is_ssl() ? 'https' : 'http';
 	    $cache_key = 'json_ajax_script_' . $lang . '_' . $blog_id . '_' . $scheme;
 
+	    $adv = $this->json_cache_adv_state();
+
 	    if( !$skip_json_cache_read )
 	    {
-	        $cached = MyAgilePrivacy::get_json_cache( $cache_key );
+	        $cached = MyAgilePrivacy::get_json_cache( $cache_key, $adv );
 	        if( $cached !== false )
 	        {
 	            return $cached;
@@ -2335,10 +2437,34 @@ final class MyAgilePrivacyFrontend {
 
 	    if( !$skip_json_cache )
 	    {
-	        MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data );
+	        MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data, 21600, $adv );
 	    }
 
 	    return $fresh_data;
+	}
+
+	/**
+	 * State of the optional modules that the cached head and map_ajax entries depend on.
+	 * @access private
+	 */
+	private function json_cache_adv_state( $scan_off = false )
+	{
+	    $adv = '0';
+
+	    if( function_exists( 'map_is_advanced_active' ) && map_is_advanced_active() )
+	    {
+	        $adv_version = function_exists( 'map_call_advanced_get_bundle_version' ) ? map_call_advanced_get_bundle_version() : '';
+
+	        $adv = '1:' . ( is_string( $adv_version ) ? $adv_version : '' );
+	    }
+
+	    $adv .= ( function_exists( 'map_bot_detection_on' ) && map_bot_detection_on() ) ? ':b1' : ':b0';
+	    $adv .= $scan_off ? ':o' : '';
+	    $cookie_domain = MyAgilePrivacy::get_cookie_domain_state( MyAgilePrivacy::get_rconfig() );
+
+	    $adv .= ':d' . $cookie_domain;
+
+	    return $adv;
 	}
 
 	/**
@@ -2384,9 +2510,11 @@ final class MyAgilePrivacyFrontend {
 
 	    $cache_key = 'head_script_' . ( $block_mode ? 'block' : 'string' ) . '_' . MyAgilePrivacy::get_json_cache_variant_segment() . $lang. '_' .$blog_id.'_'.$scheme;
 
+	    $adv = $this->json_cache_adv_state( isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] == 'turned_off' );
+
 	    if( !$skip_json_cache_read )
 	    {
-		    $cached = MyAgilePrivacy::get_json_cache( $cache_key );
+		    $cached = MyAgilePrivacy::get_json_cache( $cache_key, $adv );
 
 		    if( $cached !== false )
 		    {
@@ -2398,7 +2526,7 @@ final class MyAgilePrivacyFrontend {
 
 	    if( !$skip_json_cache )
 	    {
-	    	MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data );
+	    	MyAgilePrivacy::set_json_cache( $cache_key, $fresh_data, 21600, $adv );
 	    }
 
 	    return $fresh_data;
@@ -2422,15 +2550,7 @@ final class MyAgilePrivacyFrontend {
 	    //get base directory, safe mode for multisite
 		$_plugin_url = MyAgilePrivacy::get_plugin_url( __FILE__ );
 
-	    $manifest_assoc = null;
-
-	    if( $rconfig &&
-	        isset( $rconfig['allow_manifest'] ) &&
-	        $rconfig['allow_manifest']
-	    )
-	    {
-	        $manifest_assoc = MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC, null );
-	    }
+	    $manifest_assoc = MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC, null );
 
 	    $minified_filename_add = "";
 	    $version_param = "";
@@ -2706,6 +2826,8 @@ final class MyAgilePrivacyFrontend {
 
 	    $map_stats_config = function_exists( 'map_call_advanced_get_stats_config' ) ? map_call_advanced_get_stats_config() : array( 'enabled' => false, 'variant' => 'default' );
 
+	    $map_bot_detect = ( function_exists( 'map_bot_detection_on' ) && map_bot_detection_on() );
+
 	    $map_split_config = MyAgilePrivacy::get_split_public_config();
 
 	    // a preview page neither counts nor notifies
@@ -2734,19 +2856,7 @@ final class MyAgilePrivacyFrontend {
 	        $allow_js_fast_callback = 1;
 	    }
 
-	    $cookie_domain = null;
-
-	    if( isset( $rconfig ) &&
-	        isset( $rconfig['cookie_domain'] ) &&
-	        $rconfig['cookie_domain'] )
-	    {
-	        $candidate = sanitize_text_field( $rconfig['cookie_domain'] );
-
-	        if( preg_match( '/^\.?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i', $candidate ) )
-	        {
-	            $cookie_domain = $candidate;
-	        }
-	    }
+	    $cookie_domain = MyAgilePrivacy::get_applied_cookie_domain( $rconfig );
 
 
 	    $mapx_ga4 = 0;
@@ -2786,6 +2896,9 @@ final class MyAgilePrivacyFrontend {
 	    );
 
 	    $head_script = '';
+	    $map_shield_tag = '';
+	    $map_shield_end = 0;
+	    $map_shield_index = null;
 
 	    if( isset( $the_settings['pa'] ) &&
 	        $the_settings['pa'] == 1 )
@@ -2805,8 +2918,11 @@ final class MyAgilePrivacyFrontend {
 	            {
 	                $the_script = plugin_dir_url(__FILE__).'../dev/dev.cookie-shield.js';
 
-	                $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                $map_shield_tag = '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                $head_script .= $map_shield_tag;
+	                $map_shield_end = strlen( $head_script );
 
+	                $map_shield_index = count( $blocks['enqueue'] );
 	                $blocks['enqueue'][] = $the_script;
 
 	                $js_shield_url = $the_script;
@@ -2841,7 +2957,16 @@ final class MyAgilePrivacyFrontend {
 	                    }
 	                }
 
-	                if( !$local_file_exists && isset( $base_ref ) && !(
+	                $shield_test_mode = ( isset( $rconfig ) &&
+	                    isset( $rconfig['js_shield_test_mode'] ) &&
+	                    $rconfig['js_shield_test_mode'] == 1 );
+
+	                $cdn_pack = MyAgilePrivacy::get_cdn_pack();
+
+	                $cdn_pack_used = !$shield_test_mode &&
+	                    MyAgilePrivacy::cdn_pack_shield_wins( $cdn_pack, MyAgilePrivacy::get_option( MAP_MANIFEST_ASSOC, null ), $local_caching_allowed );
+
+	                if( !$local_file_exists && !$cdn_pack_used && isset( $base_ref ) && !(
 	                    isset( $rconfig ) &&
 	                    isset( $rconfig['prevent_preconnect_prefetch'] ) &&
 	                    $rconfig['prevent_preconnect_prefetch'] == 1 ) )
@@ -2849,14 +2974,15 @@ final class MyAgilePrivacyFrontend {
 	                    $head_script .= '<link rel="preconnect" href="'.esc_url( $base_ref ).'" crossorigin />'.PHP_EOL.'<link rel="dns-prefetch" href="'.esc_url( $base_ref ).'" />'.PHP_EOL;
 	                }
 
-	                if( isset( $rconfig ) &&
-	                    isset( $rconfig['js_shield_test_mode'] ) &&
-	                    $rconfig['js_shield_test_mode'] == 1 )
+	                if( $shield_test_mode )
 	                {
 	                    $the_script = $base_ref.'test.cookie-shield.js';
 
-	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                    $map_shield_tag = '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                    $head_script .= $map_shield_tag;
+	                    $map_shield_end = strlen( $head_script );
 
+	                    $map_shield_index = count( $blocks['enqueue'] );
 	                    $blocks['enqueue'][] = $the_script;
 
 	                    $js_shield_url = $the_script;
@@ -2865,20 +2991,28 @@ final class MyAgilePrivacyFrontend {
 	                {
 	                    $script_filename = 'cookie-shield.js';
 
-	                    if( $manifest_assoc &&
-	                        isset( $manifest_assoc['files'][ $script_filename ]['filename'] ) &&
-	                        isset( $manifest_assoc['files'][ $script_filename ]['version'] ) &&
-	                        $manifest_assoc['files'][ $script_filename ]
-	                    )
+	                    if( $cdn_pack_used )
 	                    {
-	                        $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
+	                        $base_ref = MyAgilePrivacy::get_cdn_pack_base_url();
+	                        $script_filename = 'cookie-shield.js?v='.$cdn_pack['version'].'-'.$cdn_pack['build'];
+
+	                        $the_script = $base_ref.$script_filename;
+	                        $enqueue_item = $the_script;
+	                    }
+	                    else
+	                    {
+	                        $asset = $this->map_asset_version( $manifest_assoc, $script_filename, $local_caching_allowed );
+
+	                        $the_script = $base_ref.$asset['filename'].( '' !== $asset['version'] ? '?v='.$asset['version'] : '' );
+	                        $enqueue_item = ( '' !== $asset['version'] ) ? array( 'src' => $base_ref.$asset['filename'], 'ver' => $asset['version'] ) : $the_script;
 	                    }
 
-	                    $the_script = $base_ref.$script_filename;
+	                    $map_shield_tag = '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	                    $head_script .= $map_shield_tag;
+	                    $map_shield_end = strlen( $head_script );
 
-	                    $head_script .= '<script class="map_advanced_shield" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
-
-	                    $blocks['enqueue'][] = $the_script;
+	                    $map_shield_index = count( $blocks['enqueue'] );
+	                    $blocks['enqueue'][] = $enqueue_item;
 
 	                    $js_shield_url = $the_script;
 	                }
@@ -2901,8 +3035,9 @@ final class MyAgilePrivacyFrontend {
 	            {
 	                $local_file_exists = false;
 	                $base_ref = "";
+	                $iab_local_caching_allowed = !( isset( $rconfig['forbid_local_js_caching'] ) && $rconfig['forbid_local_js_caching'] == 1 );
 
-	                if( !( isset( $rconfig['forbid_local_js_caching'] ) && $rconfig['forbid_local_js_caching'] == 1 ) )
+	                if( $iab_local_caching_allowed )
 	                {
 	                    $local_file_exists = MyAgilePrivacy::cached_file_exists( 'MyAgilePrivacyIabTCF.js' );
 
@@ -2917,22 +3052,13 @@ final class MyAgilePrivacyFrontend {
 	                    $base_ref = "https://localcdn.myagileprivacy.com/MyAgilePrivacyIabTCF/";
 	                }
 
-	                $script_filename = 'MyAgilePrivacyIabTCF.js';
+	                $asset = $this->map_asset_version( $manifest_assoc, 'MyAgilePrivacyIabTCF.js', $iab_local_caching_allowed );
 
-	                if( $manifest_assoc &&
-	                    isset( $manifest_assoc['files'][ $script_filename ]['filename'] ) &&
-	                    isset( $manifest_assoc['files'][ $script_filename ]['version'] ) &&
-	                    $manifest_assoc['files'][ $script_filename ]
-	                )
-	                {
-	                    $script_filename = $manifest_assoc['files'][ $script_filename ]['filename'].'?v='.$manifest_assoc['files'][ $script_filename ]['version'];
-	                }
-
-	                $the_script = $base_ref.$script_filename;
+	                $the_script = $base_ref.$asset['filename'].( '' !== $asset['version'] ? '?v='.$asset['version'] : '' );
 
 	                $head_script .= '<script class="map_iab_tcf" type="text/javascript" src="'.esc_url( $the_script ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
 
-	                $blocks['enqueue'][] = $the_script;
+	                $blocks['enqueue'][] = ( '' !== $asset['version'] ) ? array( 'src' => $base_ref.$asset['filename'], 'ver' => $asset['version'] ) : $the_script;
 
 	                $iab_tcf_script_url = $the_script;
 	            }
@@ -2940,33 +3066,6 @@ final class MyAgilePrivacyFrontend {
 	    }
 
 	    $base_config_script = '';
-
-	    $manifest_assoc_public = array();
-
-	    if( $manifest_assoc && isset( $manifest_assoc['manifest_version_file'] ) && isset( $manifest_assoc['files'] ) && is_array( $manifest_assoc['files'] ) )
-	    {
-	        foreach( $manifest_assoc['files'] as $the_file => $the_item )
-	        {
-	            if( !is_array( $the_item ) || !isset( $the_item['filename'] ) || !isset( $the_item['version'] ) )
-	            {
-	                continue;
-	            }
-
-	            $new_item = array(
-	                'filename' => $the_item['filename'],
-	                'version'  => $the_item['version'],
-	            );
-
-	            if( isset( $the_item['iab'] ) && $the_item['iab'] && $iab_tcf_context )
-	            {
-	                $manifest_assoc_public[ $the_file ] = $new_item;
-	            }
-	            elseif( isset( $the_item['iab'] ) && $the_item['iab'] == false )
-	            {
-	                $manifest_assoc_public[ $the_file ] = $new_item;
-	            }
-	        }
-	    }
 
 	    $early_gcmode = true;
 
@@ -3053,7 +3152,7 @@ final class MyAgilePrivacyFrontend {
 	        'enforce_youtube_privacy_v2'                                => $enforce_youtube_privacy_v2,
 	        'video_advanced_privacy'                                    => 1,
 	        'video_privacy_mode'                                        => $video_privacy_mode,
-	        'manifest_assoc'                                            => $manifest_assoc_public,
+	        'img_srcset_restore'                                        => 1,
 	        'js_shield_url'                                             => $js_shield_url,
 	        'main_frontend_js'                                          => $main_frontend_js,
 	        'frontend_css'                                              => $frontend_css,
@@ -3078,12 +3177,18 @@ final class MyAgilePrivacyFrontend {
 	        'geo_force_optout'                                          => $geo_force_optout,
 	        'send_ga4_event_on_consent_change'                          => $send_ga4_event_on_consent_change,
 	        'stats_enabled'                                             => $map_stats_config['enabled'],
+	        'bot_detect'                                                => $map_bot_detect ? 1 : 0,
 	        'banner_variant_id'                                         => $map_stats_config['variant'],
 	        'allow_js_fast_callback'                                    => $allow_js_fast_callback,
 	        'cookie_domain'                                    			=> $cookie_domain,
 	        'iab_vendor_count'											=> $iab_vendor_count,
 	        'split_test'												=> $map_split_config,
 	    );
+
+	    if( null !== $cookie_domain && MyAgilePrivacy::cookie_cleanup_allowed() )
+	    {
+	        $map_full_config['cookie_domain_tracked'] = true;
+	    }
 
 	    if( $iab_tcf_context )
 	    {
@@ -3242,6 +3347,23 @@ final class MyAgilePrivacyFrontend {
 
 	    $blocks['inline'][] = $base_config_script;
 
+	    $map_early = $this->early_gcmode_inline( $map_full_config, $map_shield_tag );
+
+	    if( $map_early['tag'] !== '' )
+	    {
+	        if( $map_early['after_shield'] )
+	        {
+	            $head_script = substr_replace( $head_script, $map_early['tag'], $map_shield_end, 0 );
+	            $blocks['shield_index'] = $map_shield_index;
+	            $blocks['after_shield'] = $map_early['code'];
+	        }
+	        else
+	        {
+	            $head_script = $map_early['tag'].$head_script;
+	            $blocks['inline'][] = $map_early['code'];
+	        }
+	    }
+
 	    $start_config_script = '<script class="map_advanced_shield" type="text/javascript" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'>'.PHP_EOL.$base_config_script.PHP_EOL.'</script>'.PHP_EOL;
 
 	    // Load the advanced JS bundle when available.
@@ -3252,9 +3374,13 @@ final class MyAgilePrivacyFrontend {
 	    	$bundle_url = map_call_advanced_get_bundle_url();
 	    	if( '' !== $bundle_url )
 	    	{
-	    		$advanced_bundle_tag = '<script class="map_advanced_shield map_advanced_bundle" type="text/javascript" src="'.esc_url( $bundle_url.$version_param ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+	    		$bundle_version       = function_exists( 'map_call_advanced_get_bundle_version' ) ? map_call_advanced_get_bundle_version() : '';
+	    		$bundle_version       = ( is_string( $bundle_version ) && '' !== $bundle_version ) ? $bundle_version . '-a' : '';
+	    		$bundle_version_param = ( '' !== $bundle_version ) ? '?ver=' . $bundle_version : $version_param;
 
-	    		$blocks['enqueue'][] = $bundle_url;
+	    		$advanced_bundle_tag = '<script class="map_advanced_shield map_advanced_bundle" type="text/javascript" src="'.esc_url( $bundle_url.$bundle_version_param ).'" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'></script>'.PHP_EOL;
+
+	    		$blocks['enqueue'][] = ( '' !== $bundle_version ) ? array( 'src' => $bundle_url, 'ver' => $bundle_version ) : $bundle_url;
 	    	}
 	    }
 
@@ -3268,10 +3394,108 @@ final class MyAgilePrivacyFrontend {
 	    }
 	}
 
+	//f. early consent default tag, placed after the shield tag or in its place
+	private function early_gcmode_inline( $map_full_config, $shield_tag )
+	{
+		$out = array( 'tag' => '', 'code' => '', 'after_shield' => false );
+
+		if( !is_array( $map_full_config ) ||
+			empty( $map_full_config['early_gcmode'] ) ||
+			empty( $map_full_config['enable_cmode_v2'] ) ||
+			!isset( $map_full_config['cmode_v2_implementation_type'] ) ||
+			$map_full_config['cmode_v2_implementation_type'] !== 'native' )
+		{
+			return $out;
+		}
+
+		$code = implode( "\n", array(
+			'var early_starting_gconsent=early_starting_gconsent;',
+			'( function() {',
+			'	var c = ( typeof map_full_config !== "undefined" && map_full_config ) ? map_full_config : null;',
+			'	if( !c || !c.early_gcmode || !c.enable_cmode_v2 || c.cmode_v2_implementation_type != "native" ) return;',
+			'	if( typeof MAP_JSCOOKIE_SHIELD !== "undefined" && MAP_JSCOOKIE_SHIELD ) return;',
+			'	if( window.early_starting_gconsent ) return;',
+			'	window.dataLayer = window.dataLayer || [];',
+			'	if( typeof window.gtag !== "function" ) { window.gtag = function(){ window.dataLayer.push( arguments ); }; }',
+			'	window.gtag( "set", "developer_id.dY2ZhMm", true );',
+			'	if( c.enable_cmode_url_passthrough ) { window.gtag( "set", "url_passthrough", true ); }',
+			'	window.early_starting_gconsent = c.cmode_v2_default_consent_obj;',
+			'	if( window.early_starting_gconsent ) { try { window.gtag( "consent", "default", Object.assign( {}, window.early_starting_gconsent ) ); } catch( e ) {} }',
+			'} )();'
+		) );
+
+		$out['code'] = $code;
+		$out['tag'] = '<script class="map_early_gcmode" type="text/javascript" '.MAP_INLINE_SCRIPT_EXTRA_ATTRS.'>'."\n".$code."\n".'</script>'.PHP_EOL;
+		$out['after_shield'] = ( is_string( $shield_tag ) && $shield_tag !== '' );
+
+		return $out;
+	}
+
+	//f. code to attach after the queued shield, null when the blocks do not carry it
+	private function early_gcmode_block_target( $blocks, $enqueued )
+	{
+		if( !is_array( $blocks ) || !is_array( $enqueued ) ||
+			!isset( $blocks['shield_index'], $blocks['after_shield'], $blocks['enqueue'] ) ||
+			!is_array( $blocks['enqueue'] ) )
+		{
+			return null;
+		}
+
+		$index = $blocks['shield_index'];
+		$code  = $blocks['after_shield'];
+
+		if( !is_int( $index ) || $index < 0 || $index >= count( $blocks['enqueue'] ) || !in_array( $index, $enqueued, true ) )
+		{
+			return null;
+		}
+
+		if( !is_string( $code ) || trim( $code ) === '' )
+		{
+			return null;
+		}
+
+		return array( 'handle' => $this->plugin_name.'_enqueue_'.$index, 'code' => $code );
+	}
+
 	/**
 	 * Internal functin for detected keys save
 	 *
 	 */
+	//f. file name and version for a cached asset url
+	private function map_asset_version( $manifest_assoc, $script_filename, $local_caching_allowed )
+	{
+		$version  = ( defined( 'MAP_PLUGIN_VERSION' ) && is_string( MAP_PLUGIN_VERSION ) ) ? MAP_PLUGIN_VERSION : '';
+		$filename = $script_filename;
+
+		if( $local_caching_allowed &&
+			is_array( $manifest_assoc ) &&
+			isset( $manifest_assoc['files'] ) &&
+			is_array( $manifest_assoc['files'] ) &&
+			isset( $manifest_assoc['files'][ $script_filename ] ) &&
+			is_array( $manifest_assoc['files'][ $script_filename ] ) &&
+			isset( $manifest_assoc['files'][ $script_filename ]['filename'], $manifest_assoc['files'][ $script_filename ]['version'] ) )
+		{
+			$m_filename = $manifest_assoc['files'][ $script_filename ]['filename'];
+			$m_version  = $manifest_assoc['files'][ $script_filename ]['version'];
+
+			if( is_string( $m_filename ) &&
+				( is_string( $m_version ) || is_int( $m_version ) ) &&
+				preg_match( '/^[A-Za-z0-9._-]+\z/', $m_filename ) &&
+				preg_match( '/^[A-Za-z0-9._-]+\z/', (string) $m_version ) )
+			{
+				$filename = $m_filename;
+				$version  = (string) $m_version;
+			}
+		}
+
+		if( '' !== $version && !preg_match( '/^[A-Za-z0-9._-]+\z/', $version ) )
+		{
+			$version = '';
+		}
+
+		return array( 'filename' => $filename, 'version' => $version );
+	}
+
 	/**
 	 * Whether the site is currently scanning.
 	 *
@@ -3285,7 +3509,7 @@ final class MyAgilePrivacyFrontend {
 	{
 		$the_settings = MyAgilePrivacy::get_settings();
 
-		// Same two sources the frontend reads, and nothing more: the licence
+		// Same two sources the frontend reads, and nothing more: the license
 		// state is checked by the callers that depend on it, so adding it here
 		// would reject reports the frontend still considers valid.
 		if( isset( $the_settings['scan_mode'] ) && $the_settings['scan_mode'] == 'learning_mode' )
@@ -3596,7 +3820,7 @@ final class MyAgilePrivacyFrontend {
 				$error_code           = isset( $_POST['error_code'] ) ? intval( $_POST['error_code'] ) : 0;
 				$error_motivation     = ( isset( $_POST['error_motivation'] ) && is_string( $_POST['error_motivation'] ) ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
 
-				// Free text reaches the licence server verbatim; keep it bounded.
+				// Free text reaches the license server verbatim; keep it bounded.
 				// Counted in characters: cutting on a byte boundary would split a
 				// multibyte sequence and leave text that no longer encodes.
 				$max_len = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? (int) MAP_PLUGIN_JS_ERROR_TEXT_MAX : 255;
@@ -3696,11 +3920,485 @@ final class MyAgilePrivacyFrontend {
 	 * map_callback
 	 * @access   public
 	*/
-	public function map_callback( $output )
+	public function map_callback( $output, $phase = PHP_OUTPUT_HANDLER_FINAL )
+	{
+		// discarded output
+		if( ( $phase & PHP_OUTPUT_HANDLER_CLEAN ) || !is_string( $output ) || !$this->map_is_html_response() )
+		{
+			$this->map_restore_postdata();
+			return $output;
+		}
+
+		$scan_done_before = $this->scan_done;
+		$reason = null;
+		$info = '';
+		$result = $output;
+		$this->scan_saved_output = null;
+
+		if( strlen( $output ) > MAP_SHD_MAX_FILE_SIZE )
+		{
+			$reason = 'dimensione';
+			$info = (string) strlen( $output );
+		}
+		else
+		{
+			$this->map_html_scan_limits( strlen( $output ) );
+
+			try
+			{
+				$result = $this->map_callback_run( $output );
+			}
+			catch( MAP_Simple_Html_Dom_Abort $e )
+			{
+				$reason = $e->reason;
+				$info = $e->info;
+			}
+			catch( Exception $e )
+			{
+				$reason = 'errore';
+				$info = get_class( $e );
+			}
+			catch( Error $e )
+			{
+				$reason = 'errore';
+				$info = get_class( $e );
+			}
+
+			// the exception keeps its frames alive
+			unset( $e );
+
+			MAP_Simple_Html_Dom::$deadline = 0;
+			MAP_Simple_Html_Dom::$mem_limit = 0;
+		}
+
+		if( null === $reason )
+		{
+			$this->scan_saved_output = null;
+			return $result;
+		}
+
+		if( is_object( $this->scan_dom ) )
+		{
+			$this->scan_dom->clear();
+		}
+
+		$this->scan_dom = null;
+		$result = null;
+		$this->scan_done = $scan_done_before;
+		$this->scan_output = $this->scan_config;
+
+		if( function_exists( 'gc_mem_caches' ) )
+		{
+			gc_mem_caches();
+		}
+
+		$this->map_restore_postdata();
+
+		// the page was already saved: the error came after it
+		if( is_string( $this->scan_saved_output ) )
+		{
+			$saved = $this->scan_saved_output;
+			$this->scan_saved_output = null;
+
+			if( !$this->shutdown_passed )
+			{
+				$this->pending_html_scan_state = array(
+					'reason' => $reason,
+					'info'   => (string) substr( (string) $info, 0, 100 ),
+				);
+			}
+
+			return $saved;
+		}
+
+		return $this->map_html_fallback( $output, $phase, $reason, $info );
+	}
+
+	/**
+	 * Restores the post data in compatibility mode, as the full callback does.
+	 */
+	private function map_restore_postdata()
+	{
+		if( is_array( $this->saved_settings ) && !empty( $this->saved_settings['scanner_compatibility_mode'] ) )
+		{
+			global $post;
+			setup_postdata( $this->saved_post );
+		}
+	}
+
+	/**
+	 * Whether the response being buffered is an HTML page.
+	 */
+	private function map_is_html_response()
+	{
+		if( !function_exists( 'headers_list' ) )
+		{
+			return true;
+		}
+
+		foreach( headers_list() as $header )
+		{
+			if( is_string( $header ) && strncasecmp( $header, 'content-type:', 13 ) === 0 )
+			{
+				$type = strtolower( trim( substr( $header, 13 ) ) );
+
+				return ( strpos( $type, 'text/html' ) === 0 || strpos( $type, 'application/xhtml+xml' ) === 0 );
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Sets the time and memory limits of the HTML parser for this page.
+	 */
+	private function map_html_scan_limits( $page_len )
+	{
+		$budget = MAP_SHD_TIME_BUDGET;
+		$max_execution_time = function_exists( 'ini_get' ) ? (int) ini_get( 'max_execution_time' ) : 0;
+
+		if( $max_execution_time > 0 && $max_execution_time < 30 )
+		{
+			$budget = max( 2, $max_execution_time / 3 );
+		}
+
+		MAP_Simple_Html_Dom::$deadline = microtime( true ) + $budget;
+		MAP_Simple_Html_Dom::$mem_limit = $this->map_memory_limit_bytes();
+		MAP_Simple_Html_Dom::$page_len = $page_len;
+		MAP_Simple_Html_Dom::$depth = 0;
+	}
+
+	/**
+	 * The PHP memory limit in bytes, 0 when there is none or it cannot be read.
+	 */
+	private function map_memory_limit_bytes()
+	{
+		if( !function_exists( 'ini_get' ) )
+		{
+			return 0;
+		}
+
+		$value = ini_get( 'memory_limit' );
+
+		if( !is_string( $value ) || trim( $value ) === '' )
+		{
+			return 0;
+		}
+
+		if( function_exists( 'wp_convert_hr_to_bytes' ) )
+		{
+			$bytes = (float) wp_convert_hr_to_bytes( $value );
+		}
+		else
+		{
+			$value = strtolower( trim( $value ) );
+			$bytes = (float) $value;
+			$unit = substr( $value, -1 );
+
+			if( $unit === 'g' ) { $bytes *= 1073741824; }
+			elseif( $unit === 'm' ) { $bytes *= 1048576; }
+			elseif( $unit === 'k' ) { $bytes *= 1024; }
+		}
+
+		return ( $bytes > 0 ) ? $bytes : 0;
+	}
+
+	/**
+	 * Page left unparsed: adds the head script as plain text and records why.
+	 */
+	private function map_html_fallback( $page, $phase, $reason, $info )
+	{
+		$final = (bool) ( $phase & PHP_OUTPUT_HANDLER_FINAL );
+		$record = $reason;
+		$out = $page;
+
+		if( is_string( $this->head_script ) && $this->head_script !== '' && !$this->html_head_done )
+		{
+			$position = $this->map_head_insert_position( $page );
+
+			if( $position >= 0 )
+			{
+				$limit = $this->map_memory_limit_bytes();
+				$needed = strlen( $page ) + strlen( $this->head_script ) + 2097152;
+
+				if( $limit > 0 && memory_get_usage( true ) + $needed > $limit )
+				{
+					$record = 'memoria';
+				}
+				else
+				{
+					$out = substr_replace( $page, $this->head_script, $position, 0 );
+					$this->html_head_done = true;
+				}
+			}
+			elseif( $position === -2 )
+			{
+				$this->html_head_done = true;
+			}
+			elseif( $final )
+			{
+				$record = 'senza-head';
+			}
+		}
+
+		if( $record !== $reason )
+		{
+			$info = trim( $reason . ' ' . (string) $info );
+		}
+
+		if( !$this->shutdown_passed )
+		{
+			$this->pending_html_scan_state = array(
+				'reason' => $record,
+				'info'   => (string) substr( (string) $info, 0, 100 ),
+			);
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Where the head script goes: after the head start tag, -1 when there is no usable head, -2 when the shield is already there.
+	 */
+	private function map_head_insert_position( $page )
+	{
+		$length = strlen( $page );
+		$pos = 0;
+
+		while( $pos < $length )
+		{
+			$lt = strpos( $page, '<', $pos );
+
+			if( false === $lt )
+			{
+				return -1;
+			}
+
+			if( substr_compare( $page, '<!--', $lt, 4 ) === 0 )
+			{
+				// <!--> and <!---> are complete empty comments
+				if( substr( $page, $lt + 4, 1 ) === '>' || substr( $page, $lt + 4, 2 ) === '->' )
+				{
+					$pos = $lt + ( ( substr( $page, $lt + 4, 1 ) === '>' ) ? 5 : 6 );
+					continue;
+				}
+
+				$comment_end = strpos( $page, '-->', $lt + 4 );
+
+				if( false === $comment_end )
+				{
+					return -1;
+				}
+
+				$pos = $comment_end + 3;
+				continue;
+			}
+
+			$name_length = strspn( $page, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-', $lt + 1 );
+
+			if( 0 === $name_length )
+			{
+				$pos = $lt + 1;
+				continue;
+			}
+
+			$name = strtolower( substr( $page, $lt + 1, $name_length ) );
+			$after = $lt + 1 + $name_length;
+
+			if( $after < $length && strpos( " \t\r\n\f>/", $page[ $after ] ) === false )
+			{
+				$pos = $after;
+				continue;
+			}
+
+			if( $name === 'body' )
+			{
+				return -1;
+			}
+
+			$tag_end = $this->map_tag_end( $page, $after, ( $name === 'head' ) ? 4096 : 0 );
+
+			if( $tag_end < 0 )
+			{
+				return -1;
+			}
+
+			if( $name === 'head' )
+			{
+				$stop = $this->map_find_tag( $page, array( '</head', '<body' ), $tag_end + 1 );
+
+				if( $stop < 0 )
+				{
+					return -1;
+				}
+
+				$present = strpos( $page, 'class="map_advanced_shield"', $tag_end + 1 );
+
+				if( false !== $present && $present < $stop )
+				{
+					return -2;
+				}
+
+				return $tag_end + 1;
+			}
+
+			if( $name === 'script' || $name === 'style' )
+			{
+				$close = $this->map_find_tag( $page, array( '</' . $name ), $tag_end + 1 );
+
+				if( $close < 0 )
+				{
+					return -1;
+				}
+
+				$pos = $close + 2;
+				continue;
+			}
+
+			$pos = $tag_end + 1;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Position of the > closing a tag, skipping quoted attribute values; -1 when missing.
+	 */
+	private function map_tag_end( $page, $from, $max_chars )
+	{
+		$length = strlen( $page );
+		$end = ( $max_chars > 0 ) ? min( $length, $from + $max_chars ) : $length;
+		$quote = '';
+		$after_equals = false;
+
+		for( $i = $from; $i < $end; $i++ )
+		{
+			$char = $page[ $i ];
+
+			if( $quote !== '' )
+			{
+				if( $char === $quote )
+				{
+					$quote = '';
+				}
+
+				continue;
+			}
+
+			if( $char === '>' )
+			{
+				return $i;
+			}
+
+			if( ( $char === '"' || $char === "'" ) && $after_equals )
+			{
+				$quote = $char;
+				$after_equals = false;
+				continue;
+			}
+
+			if( $char === '=' )
+			{
+				$after_equals = true;
+			}
+			elseif( strpos( " \t\r\n\f", $char ) === false )
+			{
+				$after_equals = false;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * First position of one of the lowercase tag openings, case insensitive and followed by a delimiter; -1 when missing.
+	 */
+	private function map_find_tag( $page, $needles, $from )
+	{
+		$length = strlen( $page );
+		$pos = $from;
+
+		while( $pos < $length )
+		{
+			$lt = strpos( $page, '<', $pos );
+
+			if( false === $lt )
+			{
+				return -1;
+			}
+
+			foreach( $needles as $needle )
+			{
+				$needle_length = strlen( $needle );
+
+				if( strtolower( substr( $page, $lt, $needle_length ) ) === $needle )
+				{
+					$next = ( $lt + $needle_length < $length ) ? $page[ $lt + $needle_length ] : '>';
+
+					if( strpos( " \t\r\n\f>/", $next ) !== false )
+					{
+						return $lt;
+					}
+				}
+			}
+
+			$pos = $lt + 1;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Records pages left unparsed, at most once per six-hour window.
+	 */
+	private function map_write_html_scan_state( $state )
+	{
+		$now = time();
+		$window = 6 * HOUR_IN_SECONDS;
+		$current = MyAgilePrivacy::get_html_scan_state();
+
+		if( null !== $current &&
+			( floor( $now / $window ) == floor( $current['at'] / $window ) ||
+				( $current['at'] > $now && $current['at'] - $now < $window ) ) )
+		{
+			return;
+		}
+
+		$record = array(
+			'first'		=>	$now,
+			'at'		=>	$now,
+			'reason'	=>	( isset( $state['reason'] ) ) ? $state['reason'] : '',
+			'info'		=>	( isset( $state['info'] ) ) ? $state['info'] : '',
+			'n'			=>	1,
+		);
+
+		if( null !== $current &&
+			$now - $current['at'] <= MAP_HTML_SCAN_STATE_TTL )
+		{
+			$record['first'] = min( $current['first'], $now );
+			$record['n'] = min( $current['n'] + 1, 1000000 );
+		}
+
+		if( false === get_option( MAP_PLUGIN_HTML_SCAN_STATE, false ) )
+		{
+			add_option( MAP_PLUGIN_HTML_SCAN_STATE, $record, '', 'no' );
+		}
+		else
+		{
+			update_option( MAP_PLUGIN_HTML_SCAN_STATE, $record, false );
+		}
+	}
+
+	/**
+	 * map_callback_run
+	 * @access   private
+	*/
+	private function map_callback_run( $output )
 	{
 		$this->scan_log = "Scanner started.\n";
 
 		$something_done = false;
+		$head_injected = false;
 
 		$starting_output_save = $output;
 
@@ -3715,8 +4413,11 @@ final class MyAgilePrivacyFrontend {
 			{
 				if( isset( $map_video_entry['key'] ) && $map_video_entry['key'] === 'youtube' && !empty( $map_video_entry['src'] ) )
 				{
-					$map_video_entry['src'] = 'www.youtube-nocookie.com/embed/';
-					$parse_config['iframe_src_block'][] = $map_video_entry;
+					foreach( array( 'www.youtube-nocookie.com/embed/', '//youtube.com/embed/', '//youtube-nocookie.com/embed/' ) as $map_video_src )
+					{
+						$map_video_entry['src'] = $map_video_src;
+						$parse_config['iframe_src_block'][] = $map_video_entry;
+					}
 					break;
 				}
 			}
@@ -3727,13 +4428,15 @@ final class MyAgilePrivacyFrontend {
 		if( $this->saved_settings['scanner_compatibility_mode'] )
 		{
 			//init html parser (false to lowercase, forceTagsClosed, stripRN )
-			$dom = shd_str_get_html( $output, false, false, false, false );
+			$dom = map_shd_str_get_html( $output, false, false, false, false );
 		}
 		else
 		{
 			//init html parser
-			$dom = shd_str_get_html( $output, true, true, false, false );
+			$dom = map_shd_str_get_html( $output, true, true, false, false );
 		}
+		$this->scan_dom = $dom;
+		$parse_config = $this->map_drop_video_api_entries( $parse_config, $dom, $output );
 
 		if( is_object( $dom ) )
 		{
@@ -3742,6 +4445,8 @@ final class MyAgilePrivacyFrontend {
 
 			if( isset( $parse_config ) && isset( $parse_config['scripts_src_block'] ) )
 			{
+				$this->map_find_pixel_channels( $scripts );
+
 				foreach( $scripts as $k => $v )
 				{
 					//parent node check for skipping code inside map textarea
@@ -3761,7 +4466,7 @@ final class MyAgilePrivacyFrontend {
 					$innertext = $v->innertext;
 
 					//src
-					$src = $v->src;
+					$src = $this->map_script_src( $v );
 
 					if( strpos( $class, 'my_agile_privacy_activate' ) === false && strpos( $class, 'map_do_not_touch' ) === false )
 					{
@@ -3782,7 +4487,9 @@ final class MyAgilePrivacyFrontend {
 
 								if( isset( $action ) )
 								{
-									if( isset( $action['always_allowed'] ) && $action['always_allowed'] )
+									$action_state = $this->map_script_action_state( $action );
+
+									if( $action_state['state'] === 'always_allowed' )
 									{
 										$this->scan_log .= $action['key']." is always allowed\n";
 										$v->class = $v->class.' map_always_allowed';
@@ -3792,16 +4499,8 @@ final class MyAgilePrivacyFrontend {
 									$detected_pattern = $action['plain_js'];
 									$detected_key = $action['key'];
 
-									$action_active = $action['active'];
-
-									$no_action = false;
-
-									if( isset( $action['only_on_compatibility_mode'] ) &&
-										$action['only_on_compatibility_mode'] == true &&
-										$this->saved_settings['scanner_compatibility_mode'] == false )
-									{
-										$no_action = true;
-									}
+									$action_active = $action_state['active'];
+									$no_action = $action_state['no_action'];
 
 									if( MyAgilePrivacy::looseEqualsPhp8( $action['to_detect'], 1 ) )
 									{
@@ -3812,38 +4511,50 @@ final class MyAgilePrivacyFrontend {
 										$this->scan_done = true;
 									}
 
-									if( $action_active && !$no_action )
+									if( $action_state['state'] === 'block' )
 									{
-										if( MyAgilePrivacy::looseEqualsPhp8( $action['to_block'], 1 ) )
+										if( !( isset( $action['silent_blocking'] ) && $action['silent_blocking'] == true ) )
 										{
-											if( !( isset( $action['silent_blocking'] ) && $action['silent_blocking'] == true ) )
-											{
-												if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked plain_js script $detected_key $detected_pattern\n\n";
-												$v->class = $v->class .' '.'my_agile_privacy_activate autoscan_mode map_inline_script_blocked map_blocked_content';
-											}
-
-											if( isset( $action['on_block_add_classes'] ) )
-											{
-												$v->class = $v->class.' '.$action['on_block_add_classes'];
-											}
-
-											$v->type = 'text/plain';
-
-											$v->setAttribute( 'data-cookie-api-key', $detected_key );
-											$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
-
-											$scan_output['scripts_src_block'][ $return_key ]['blocked'] = 1;
-
-											$this->scan_done = true;
-
-											$something_done = true;
+											if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked plain_js script $detected_key $detected_pattern\n\n";
+											$v->class = $v->class .' '.'my_agile_privacy_activate autoscan_mode map_inline_script_blocked map_blocked_content';
 										}
-										else
+
+										if( isset( $action['on_block_add_classes'] ) )
 										{
-											$v->class = $v->class.' map_not_to_block';
+											$v->class = $v->class.' '.$action['on_block_add_classes'];
 										}
+
+										$v->type = 'text/plain';
+
+										$v->setAttribute( 'data-cookie-api-key', $detected_key );
+										$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
+
+										$scan_output['scripts_src_block'][ $return_key ]['blocked'] = 1;
+
+										$this->scan_done = true;
+
+										$something_done = true;
 									}
-									else
+									elseif( $action_state['state'] === 'no_block' )
+									{
+										$v->class = $v->class.' map_not_to_block';
+									}
+									elseif( !$src && !$v->hasAttribute( 'src' ) && $this->map_inline_held_twin( $action, $v ) )
+									{
+										$v->class = $v->class.' my_agile_privacy_activate autoscan_mode map_inline_script_blocked';
+
+										if( isset( $action['on_block_add_classes'] ) )
+										{
+											$v->class = $v->class.' '.$action['on_block_add_classes'];
+										}
+
+										$v->type = 'text/plain';
+
+										$v->setAttribute( 'data-cookie-api-key', $detected_key );
+
+										$something_done = true;
+									}
+									elseif( !$this->map_inline_held_silent( $action ) )
 									{
 										//add the map_do_not_touch class
 										$v->class = $v->class.' map_do_not_touch';
@@ -3858,98 +4569,70 @@ final class MyAgilePrivacyFrontend {
 						}
 						elseif( $src )
 						{
-							$found = array_filter( $parse_config['scripts_src_block'],  function( $e, $the_key ) use ( $src ){
+							$found = $this->map_find_src_entry( $parse_config['scripts_src_block'], array( $src ) );
 
-							// If 'src' is not set or empty, discard this element
-							if( empty( $e['src'] ) )
+							if( $found )
 							{
-								return false;
-							}
+								$action = $found['entry'];
+								$return_key = $found['index'];
 
-							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-							if( !empty( $e['added_src'] ) )
-							{
-								$match_src       = ( strpos( $src, $e['src'] ) !== false );
-								$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
+								$action_state = $this->map_script_action_state( $action );
 
-								return ( $match_src && $match_added_src );
-							}
-
-							// If 'added_src' is not set or is empty, use the normal check on 'src'
-							return ( strpos( $src, $e['src'] ) !== false );
-
-							}, ARRAY_FILTER_USE_BOTH );
-
-							if( !empty( $found ) )
-							{
-								$action = reset( $found );
-								$return_key = key( $found );
-
-								if( isset( $action ) )
+								if( $action_state['state'] === 'always_allowed' )
 								{
-									if( isset( $action['always_allowed'] ) && $action['always_allowed'] )
+									$this->scan_log .= $action['key']." is always allowed\n";
+									$v->class = $v->class.' map_always_allowed';
+									continue;
+								}
+
+								$detected_pattern = $action['src'];
+								$detected_key = $action['key'];
+
+								$action_active = $action_state['active'];
+								$no_action = $action_state['no_action'];
+
+								if( MyAgilePrivacy::looseEqualsPhp8( $action['to_detect'], 1 ) )
+								{
+									$this->scan_log .= "detected src script $detected_key $detected_pattern $detected_pattern, action_active=$action_active, no_action=$no_action\n";
+
+									$scan_output['scripts_src_block'][ $return_key ]['detected'] = 1;
+
+									$this->scan_done = true;
+								}
+								$something_done = $this->map_silence_optimized_tag( $v, $action ) || $something_done;
+
+								if( $action_state['state'] === 'block' )
+								{
+									if( !( isset( $action['silent_blocking'] ) && $action['silent_blocking'] == true ) )
 									{
-										$this->scan_log .= $action['key']." is always allowed\n";
-										$v->class = $v->class.' map_always_allowed';
-										continue;
+										if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked src script $detected_key $detected_pattern\n\n";
+										$v->class = $v->class .' '.'my_agile_privacy_activate autoscan_mode map_src_script_blocked map_blocked_content';
 									}
 
-									$detected_pattern = $action['src'];
-									$detected_key = $action['key'];
-
-									$action_active = $action['active'];
-
-									$no_action = false;
-
-									if( isset( $action['only_on_compatibility_mode'] ) &&
-										$action['only_on_compatibility_mode'] == true &&
-										$this->saved_settings['scanner_compatibility_mode'] == false )
+									if( isset( $action['on_block_add_classes'] ) )
 									{
-										$no_action = true;
+										$v->class = $v->class.' '.$action['on_block_add_classes'];
 									}
 
-									if( MyAgilePrivacy::looseEqualsPhp8( $action['to_detect'], 1 ) )
-									{
-										$this->scan_log .= "detected src script $detected_key $detected_pattern $detected_pattern, action_active=$action_active, no_action=$no_action\n";
+									$this->map_unwrap_rocket_tag( $v );
+									$v->unblocked_src = $src;
+									$v->removeAttribute( 'src' );
 
-										$scan_output['scripts_src_block'][ $return_key ]['detected'] = 1;
+									if( $this->map_src_needs_jquery( $v, $src ) ) { $v->class = $v->class.' map_needs_jquery'; }
 
-										$this->scan_done = true;
-									}
+									$v->setAttribute( 'data-cookie-api-key', $detected_key );
+									$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
 
-									if( $action_active && !$no_action )
-									{
-										if( MyAgilePrivacy::looseEqualsPhp8( $action['to_block'], 1 ) )
-										{
-											if( !( isset( $action['silent_blocking'] ) && $action['silent_blocking'] == true ) )
-											{
-												if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked src script $detected_key $detected_pattern\n\n";
-												$v->class = $v->class .' '.'my_agile_privacy_activate autoscan_mode map_src_script_blocked map_blocked_content';
-											}
+									$scan_output['scripts_src_block'][ $return_key ]['blocked'] = 1;
 
-											if( isset( $action['on_block_add_classes'] ) )
-											{
-												$v->class = $v->class.' '.$action['on_block_add_classes'];
-											}
+									$this->scan_done = true;
 
-											$v->unblocked_src = $v->src;
-											$v->removeAttribute( 'src' );
-
-											$v->setAttribute( 'data-cookie-api-key', $detected_key );
-											$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
-
-											$scan_output['scripts_src_block'][ $return_key ]['blocked'] = 1;
-
-											$this->scan_done = true;
-
-											$something_done = true;
-										}
-										else
-										{
-											$v->class = $v->class.' map_not_to_block';
-											$something_done = true;
-										}
-									}
+									$something_done = true;
+								}
+								elseif( $action_state['state'] === 'no_block' )
+								{
+									$v->class = $v->class.' map_not_to_block';
+									$something_done = true;
 								}
 							}
 							else
@@ -3969,208 +4652,31 @@ final class MyAgilePrivacyFrontend {
 			//search for iframes
 			$iframes = $dom->find( 'iframe' );
 
-			if( isset( $parse_config ) && isset( $parse_config['iframe_src_block'] ) )
+			if( isset( $parse_config['iframe_src_block'] ) && is_array( $parse_config['iframe_src_block'] ) )
 			{
 				foreach( $iframes as $k => $v )
 				{
-					//src
-					$src = $v->src;
-					$data_src = $v->getAttribute( 'data-src' );
-
-					$the_src = null;
-
-					$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $src ){
-
-						// If 'src' is not set or empty, discard this element
-						if( empty( $e['src'] ) )
-						{
-							return false;
-						}
-
-						// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-						if( !empty( $e['added_src'] ) )
-						{
-							$match_src       = ( strpos( $src, $e['src'] ) !== false );
-							$match_added_src = ( strpos( $src, $e['added_src'] ) !== false );
-
-							return ( $match_src && $match_added_src );
-						}
-
-						// If 'added_src' is not set or is empty, use the normal check on 'src'
-						return ( strpos( $src, $e['src'] ) !== false );
-
-
-					}, ARRAY_FILTER_USE_BOTH );
-
-
-					if( !$found && $data_src && $data_src != '' )
+					if( $this->map_process_iframe_node( $v, $parse_config['iframe_src_block'], $scan_output, $map_video_block_mode ) )
 					{
-						$found = array_filter( $parse_config['iframe_src_block'],  function( $e, $the_key ) use ( $data_src ){
-
-							// If 'src' is not set or empty, discard this element
-							if( empty( $e['src'] ) )
-							{
-								return false;
-							}
-
-							// If 'added_src' exists and is not empty, require a match with BOTH 'src' and 'added_src'
-							if( !empty( $e['added_src'] ) )
-							{
-								$match_src       = ( strpos( $data_src, $e['src'] ) !== false );
-								$match_added_src = ( strpos( $data_src, $e['added_src'] ) !== false );
-
-								return ( $match_src && $match_added_src );
-							}
-
-							// If 'added_src' is not set or is empty, use the normal check on 'src'
-							return ( strpos( $data_src, $e['src'] ) !== false );
-
-
-						}, ARRAY_FILTER_USE_BOTH );
+						$something_done = true;
 					}
+				}
 
-					if( !empty( $found ) )
+				foreach( $dom->find( 'div.rll-youtube-player' ) as $k => $v )
+				{
+					if( $this->map_process_rocket_youtube_facade( $v, $parse_config['iframe_src_block'] ) )
 					{
-						$action = reset( $found );
-						$return_key = key( $found );
+						$something_done = true;
+					}
+				}
 
-						if( isset( $action ) )
+				if( $map_video_block_mode )
+				{
+					foreach( $dom->find( 'div.container-lazyload' ) as $k => $v )
+					{
+						if( $this->map_process_lazy_video_link( $v, $parse_config['iframe_src_block'], $scan_output, $map_video_block_mode ) )
 						{
-							if( isset( $action['always_allowed'] ) && $action['always_allowed'] )
-							{
-								$this->scan_log .= $action['key']." is always allowed\n";
-								$v->class = $v->class.' map_always_allowed';
-								continue;
-							}
-
-							$detected_pattern = $action['src'];
-							$detected_key = $action['key'];
-
-							$action_active = $action['active'];
-
-							if( $map_video_block_mode &&
-								in_array( $detected_key, array( 'youtube', 'vimeo' ), true ) &&
-								empty( $action['map_key_not_blockable'] ) )
-							{
-								$action['to_fix'] = 0;
-								$action['to_block'] = 1;
-								$action['show_inline_notify'] = 1;
-								$action['on_block_add_classes'] = trim( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'on_block_add_classes', '' ).' map_video_block' );
-							}
-
-							$no_action = false;
-
-							if( isset( $action['only_on_compatibility_mode'] ) &&
-								$action['only_on_compatibility_mode'] == true &&
-								$this->saved_settings['scanner_compatibility_mode'] == false )
-							{
-								$no_action = true;
-							}
-
-							if( MyAgilePrivacy::looseEqualsPhp8( $action['to_detect'], 1 ) )
-							{
-								$this->scan_log .= "detected iframe $detected_key $detected_pattern, action_active=$action_active, no_action=$no_action\n";
-
-								$scan_output['iframe_src_block'][ $return_key ]['detected'] = 1;
-
-								$this->scan_done = true;
-							}
-
-							if( $action_active && !$no_action )
-							{
-								if( $data_src && $data_src != '' )
-								{
-									$the_src = $data_src;
-								}
-								else
-								{
-									$the_src = $src;
-								}
-
-								if( MyAgilePrivacy::looseEqualsPhp8( $action['to_block'], 1 ) )
-								{
-									if( strpos( $v->class, 'lazyload' ) !== false )
-									{
-										$v->class = str_replace( 'lazyload', '', $v->class );
-									}
-
-									if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked iframe $detected_key $detected_pattern\n\n";
-
-									$v->class = $v->class.' '.'my_agile_privacy_activate autoscan_mode iframe_src_blocked map_blocked_content';
-
-									if( isset( $action['show_inline_notify'] ) )
-									{
-										$v->class = $v->class.' map_show_inline_notify';
-									}
-
-									if( isset( $action['on_block_add_classes'] ) )
-									{
-										$v->class = $v->class.' '.$action['on_block_add_classes'];
-									}
-
-									if( $detected_key === 'google_maps' )
-									{
-										$v->class = $v->class.' map_maps_block';
-									}
-
-									$v->unblocked_src = $the_src;
-									$v->removeAttribute( 'src' );
-									$v->setAttribute( 'data-cookie-api-key', $detected_key );
-									$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
-
-									$scan_output['iframe_src_block'][ $return_key ]['blocked'] = 1;
-
-									$this->scan_done = true;
-
-									$something_done = true;
-								}
-
-								if( isset( $action['to_fix'] ) && $action['to_fix'] == 1 )
-								{
-									if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "fixed $detected_key $detected_pattern\n\n";
-
-									if( isset( $action['to_fix_search'] ) &&
-										isset( $action['to_fix_replace'] ) )
-									{
-										$v->class = $v->class.' '.'map_script_fixed';
-										$v->original_src = $the_src;
-										$v->src = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $the_src );
-									}
-
-									if( isset( $action['to_append_param'] ) )
-									{
-										$v->class = $v->class.' '.'map_script_fixed';
-										$v->original_src = $the_src;
-
-										if( strpos( $the_src, '?' ) !== false )
-										{
-											$v->src = $the_src.'&'.$action['to_append_param'];
-										}
-										else
-										{
-											$v->src = $the_src.'?'.$action['to_append_param'];
-										}
-
-										if( !empty( $action['to_fix_search'] ) && !empty( $action['to_fix_replace'] ) )
-										{
-											$v->src = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $v->src );
-										}
-									}
-
-									$scan_output['iframe_src_block'][ $return_key ]['fixed'] = 1;
-
-									$this->scan_done = true;
-
-									$something_done = true;
-								}
-							}
-							else
-							{
-								//add the map_do_not_touch class
-
-								$v->class = $v->class.' map_do_not_touch';
-								$something_done = true;
-							}
+							$something_done = true;
 						}
 					}
 				}
@@ -4487,125 +4993,13 @@ final class MyAgilePrivacyFrontend {
 			//search for images
 			$images = $dom->find( 'img' );
 
-			if( isset( $parse_config ) && isset( $parse_config['img_search_replace'] ) )
+			if( isset( $parse_config['img_search_replace'] ) && is_array( $parse_config['img_search_replace'] ) )
 			{
 				foreach( $images as $k => $v )
 				{
-					//src
-					$src = $v->src;
-					$srcset = $v->getAttribute( 'srcset' );
-
-					if( strpos( $v->class, 'lazyload' ) !== false )
+					if( $this->map_process_img_node( $v, $parse_config['img_search_replace'], $scan_output ) )
 					{
-						$src = $v->getAttribute( 'data-src' );
-					}
-
-					$found = array_filter( $parse_config['img_search_replace'],  function( $e, $the_key ) use ( $src ){
-
-						if( !$e['src'] ) return false;
-
-						return ( strpos(  $src, $e['src'] ) !== false );
-
-					}, ARRAY_FILTER_USE_BOTH );
-
-
-					$found_alt = array_filter( $parse_config['img_search_replace'],  function( $e, $the_key ) use ( $srcset ){
-
-						if( !$e['src'] ) return false;
-
-						return ( strpos(  $srcset, $e['src'] ) !== false );
-
-					}, ARRAY_FILTER_USE_BOTH );
-
-
-					// fallback to the srcset match when the src attribute did not match
-					if( empty( $found ) && !empty( $found_alt ) )
-					{
-						$found = $found_alt;
-					}
-
-					if( !empty( $found ) )
-					{
-						$action = reset( $found );
-						$return_key = key( $found );
-
-						if( isset( $action ) )
-						{
-							if( isset( $action['always_allowed'] ) && $action['always_allowed'] )
-							{
-								$this->scan_log .= $action['key']." is always allowed\n";
-								$v->class = $v->class.' map_always_allowed';
-								continue;
-							}
-
-							if( strpos( $v->class, 'lazyload' ) !== false )
-							{
-								$v->class = str_replace( 'lazyload', '', $v->class );
-							}
-
-							$detected_pattern = $action['src'];
-							$detected_key = $action['key'];
-
-							$action_active = $action['active'];
-
-							$no_action = false;
-
-							if( isset( $action['only_on_compatibility_mode'] ) &&
-								$action['only_on_compatibility_mode'] == true &&
-								$this->saved_settings['scanner_compatibility_mode'] == false )
-							{
-								$no_action = true;
-							}
-
-							if( MyAgilePrivacy::looseEqualsPhp8( $action['to_detect'], 1 ) )
-							{
-								$this->scan_log .= "detected img $detected_key $detected_pattern, action_active=$action_active, no_action=$no_action\n";
-
-								$scan_output['img_search_replace'][ $return_key ]['detected'] = 1;
-
-								$this->scan_done = true;
-							}
-
-							if( $action_active && !$no_action )
-							{
-								if( MyAgilePrivacy::looseEqualsPhp8( $action['to_block'], 1 ) )
-								{
-									if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked img $detected_key $detected_pattern\n";
-
-									$v->class = $v->class.' '.'my_agile_privacy_activate autoscan_mode img_src_blocked map_blocked_content';
-
-									if( isset( $action['show_inline_notify'] ) )
-									{
-										$v->class = $v->class.' map_show_inline_notify';
-									}
-
-									if( isset( $action['on_block_add_classes'] ) )
-									{
-										$v->class = $v->class.' '.$action['on_block_add_classes'];
-									}
-
-									$v->unblocked_src = $src;
-									//blank image
-									$v->src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-									$v->setAttribute( 'srcset', '' );
-									$v->setAttribute( 'data-cookie-api-key', $detected_key );
-									$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
-
-									$scan_output['img_search_replace'][ $return_key ]['blocked'] = 1;
-
-									$this->scan_done = true;
-
-									$something_done = true;
-								}
-							}
-							else
-							{
-								//add the map_do_not_touch class
-
-								$v->class = $v->class.' map_do_not_touch';
-								$something_done = true;
-							}
-						}
+						$something_done = true;
 					}
 				}
 			}
@@ -4626,6 +5020,7 @@ final class MyAgilePrivacyFrontend {
 				$head_object->innertext = $inject.$head_object->innertext;
 
 				$something_done = true;
+				$head_injected = true;
 			}
 		}
 
@@ -4650,23 +5045,9 @@ final class MyAgilePrivacyFrontend {
 		{
 		    $this->scan_log .= "Converting DOM object to HTML string\n";
 
-		    try {
-		        $final_output = $output->save();
-		        $this->scan_log .= "DOM conversion successful\n";
-		    }
-		    catch( Exception $e )
-		    {
-		        $this->scan_log .= "ERROR in save(): " . $e->getMessage() . "\n";
-		        try {
-		            $final_output = (string)$output;
-		            $this->scan_log .= "Fallback __toString successful, length=" . strlen( $final_output ) . "\n";
-		        }
-		        catch( Exception $e2 )
-		        {
-		            $this->scan_log .= "ERROR in __toString: " . $e2->getMessage() . "\n";
-		            $final_output = $starting_output_save;
-		        }
-		    }
+		    // errors reach map_callback(), which keeps the head script
+		    $final_output = $output->save();
+		    $this->scan_log .= "DOM conversion successful\n";
 		}
 		else
 		{
@@ -4676,8 +5057,22 @@ final class MyAgilePrivacyFrontend {
 
 		if( empty( $final_output ) )
 		{
+		    if( !empty( $starting_output_save ) )
+		    {
+		        MAP_Simple_Html_Dom::abort( 'errore', 'empty output' );
+		    }
+
 		    $this->scan_log .= "WARNING: Empty output, using original input\n";
 		    $final_output = $starting_output_save;
+		}
+
+		$this->scan_dom = null;
+		$this->scan_saved_output = $final_output;
+
+		// only a saved page carries the head script
+		if( $head_injected )
+		{
+			$this->html_head_done = true;
 		}
 
 		$starting_input_length = strlen( $starting_output_save );
@@ -4694,14 +5089,14 @@ final class MyAgilePrivacyFrontend {
 		$js_cookie_shield_detected_keys = explode( ',', MyAgilePrivacy::get_option( MAP_PLUGIN_JS_DETECTED_FIELDS, '' ) );
 		$js_cookie_shield_detected_keys = array_unique( array_filter( $js_cookie_shield_detected_keys ) );
 
-		if( $this->scan_done || count( $js_cookie_shield_detected_keys ) > 0 )
+		if( $this->scan_done || count( $js_cookie_shield_detected_keys ) > 0 || count( $this->optimizer_detected_keys ) > 0 )
 		{
 			if( $this->scan_log && defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $this->scan_log );
 
 			//auto activate
 			if( $this->scan_mode == 'learning_mode' )
 			{
-				$auto_activate_keys = array();
+				$auto_activate_keys = $this->optimizer_detected_keys;
 
 				foreach( $this->scan_output as $k => $v )
 				{
@@ -4725,7 +5120,7 @@ final class MyAgilePrivacyFrontend {
 				}
 
 				// published by the detection report
-				$this->pending_detected_fields = implode( ',', array_unique( $auto_activate_keys ) );
+				$this->pending_detected_fields = $this->map_detected_keys_string( $auto_activate_keys );
 
 				if( $this->shutdown_passed )
 				{
@@ -4743,5 +5138,2280 @@ final class MyAgilePrivacyFrontend {
 		}
 
 		return $final_output;
+	}
+
+	/**
+	 * Deferred source attributes of an iframe.
+	 */
+	private function map_iframe_lazy_attrs()
+	{
+		return array( 'data-lazy-src', 'data-src', 'data-litespeed-src', 'data-lazy-load' );
+	}
+
+	/**
+	 * Tells whether a source value carries no real url.
+	 */
+	private function map_is_placeholder_url( $value )
+	{
+		if( !is_string( $value ) )
+		{
+			return true;
+		}
+
+		$value = strtolower( trim( $value ) );
+
+		return ( $value === '' || $value === 'about:blank' || strpos( $value, 'data:' ) === 0 );
+	}
+
+	/**
+	 * Class tokens of a class attribute value.
+	 */
+	private function map_class_tokens( $class )
+	{
+		if( !is_string( $class ) )
+		{
+			return array();
+		}
+
+		return preg_split( '/\s+/', trim( $class ), -1, PREG_SPLIT_NO_EMPTY );
+	}
+
+	/**
+	 * Tells whether a class attribute value has a token.
+	 */
+	private function map_class_has( $class, $token )
+	{
+		return in_array( $token, $this->map_class_tokens( $class ), true );
+	}
+
+	/**
+	 * Class attribute value with some tokens removed.
+	 */
+	private function map_class_remove( $class, $remove )
+	{
+		return implode( ' ', array_diff( $this->map_class_tokens( $class ), $remove ) );
+	}
+
+	/**
+	 * Class attribute value with some tokens added.
+	 */
+	private function map_class_add( $class, $add )
+	{
+		$tokens = $this->map_class_tokens( $class );
+
+		foreach( $this->map_class_tokens( $add ) as $token )
+		{
+			if( !in_array( $token, $tokens, true ) )
+			{
+				$tokens[] = $token;
+			}
+		}
+
+		return implode( ' ', $tokens );
+	}
+
+	/**
+	 * Tells whether a node has at least one of the given attributes.
+	 */
+	private function map_has_any_attribute( $node, $attrs )
+	{
+		foreach( $attrs as $attr )
+		{
+			if( $node->hasAttribute( $attr ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Value for a new double quoted attribute.
+	 */
+	private function map_attr_value( $value )
+	{
+		return str_replace( '"', '&quot;', $value );
+	}
+
+	/**
+	 * Url forms compared against the block list.
+	 */
+	private function map_url_match_values( $value )
+	{
+		$values = array( $value );
+
+		if( strpos( $value, '//' ) === 0 )
+		{
+			$values[] = 'https:' . $value;
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Srcset forms compared against the block list.
+	 */
+	private function map_srcset_match_values( $value )
+	{
+		$values = array( $value );
+
+		$normalized = preg_replace( '#(^|[\s,])//#', '$1https://', $value );
+
+		if( is_string( $normalized ) && $normalized !== $value )
+		{
+			$values[] = $normalized;
+		}
+
+		return $values;
+	}
+
+	/**
+	 * First block list entry matching one of the values.
+	 */
+	private function map_find_src_entry( $entries, $values )
+	{
+		foreach( $entries as $index => $e )
+		{
+			if( !is_array( $e ) || empty( $e['src'] ) || !is_string( $e['src'] ) )
+			{
+				continue;
+			}
+
+			$added_src = '';
+
+			if( !empty( $e['added_src'] ) )
+			{
+				if( !is_string( $e['added_src'] ) )
+				{
+					continue;
+				}
+
+				$added_src = $e['added_src'];
+			}
+
+			foreach( $values as $value )
+			{
+				if( strpos( $value, $e['src'] ) !== false &&
+					( $added_src === '' || strpos( $value, $added_src ) !== false ) )
+				{
+					return array( 'index' => $index, 'entry' => $e );
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Source candidates of a node, deferred attributes first.
+	 */
+	private function map_get_url_candidates( $node, $attrs, $kind )
+	{
+		$candidates = array();
+
+		foreach( $attrs as $attr )
+		{
+			if( !$node->hasAttribute( $attr ) )
+			{
+				continue;
+			}
+
+			$value = $node->getAttribute( $attr );
+
+			if( $this->map_is_placeholder_url( $value ) )
+			{
+				continue;
+			}
+
+			$candidates[] = array( 'attr' => $attr, 'value' => $value, 'kind' => $kind );
+		}
+
+		return $candidates;
+	}
+
+	/**
+	 * Evaluates the candidates of a node against a block list.
+	 */
+	private function map_evaluate_candidates( $candidates, $entries, $section, $label, &$scan_output, $map_video_block_mode )
+	{
+		$result = array( 'block' => null, 'fix' => array(), 'matched' => 0, 'allowed' => 0, 'inactive' => 0 );
+
+		foreach( $candidates as $candidate )
+		{
+			$match_values = ( $candidate['kind'] === 'single' ) ? $this->map_url_match_values( $candidate['value'] ) : $this->map_srcset_match_values( $candidate['value'] );
+
+			$found = $this->map_find_src_entry( $entries, $match_values );
+
+			if( $found === null )
+			{
+				continue;
+			}
+
+			$result['matched']++;
+
+			$action = $found['entry'];
+			$return_key = $found['index'];
+
+			$detected_key = MyAgilePrivacy::nullCoalesceArrayItem( $action, 'key', '' );
+
+			if( isset( $action['always_allowed'] ) && $action['always_allowed'] )
+			{
+				$this->scan_log .= $detected_key." is always allowed\n";
+				$result['allowed']++;
+				continue;
+			}
+
+			$detected_pattern = $action['src'];
+
+			$action_active = MyAgilePrivacy::nullCoalesceArrayItem( $action, 'active', false );
+
+			if( $map_video_block_mode &&
+				in_array( $detected_key, array( 'youtube', 'vimeo' ), true ) &&
+				empty( $action['map_key_not_blockable'] ) )
+			{
+				$action['to_fix'] = 0;
+				$action['to_block'] = 1;
+				$action['show_inline_notify'] = 1;
+				$action['on_block_add_classes'] = trim( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'on_block_add_classes', '' ).' map_video_block' );
+			}
+
+			$no_action = false;
+
+			if( isset( $action['only_on_compatibility_mode'] ) &&
+				$action['only_on_compatibility_mode'] == true &&
+				$this->saved_settings['scanner_compatibility_mode'] == false )
+			{
+				$no_action = true;
+			}
+
+			if( MyAgilePrivacy::looseEqualsPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'to_detect', 0 ), 1 ) )
+			{
+				$this->scan_log .= "detected $label $detected_key $detected_pattern, action_active=$action_active, no_action=$no_action\n";
+
+				$scan_output[ $section ][ $return_key ]['detected'] = 1;
+
+				$this->scan_done = true;
+			}
+
+			if( !$action_active || $no_action )
+			{
+				$result['inactive']++;
+				continue;
+			}
+
+			$candidate['action'] = $action;
+			$candidate['return_key'] = $return_key;
+
+			if( MyAgilePrivacy::looseEqualsPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'to_block', 0 ), 1 ) )
+			{
+				if( $result['block'] === null )
+				{
+					$result['block'] = $candidate;
+				}
+			}
+			elseif( MyAgilePrivacy::looseEqualsPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $action, 'to_fix', 0 ), 1 ) )
+			{
+				$result['fix'][] = $candidate;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Marks a node whose matches are all allowed or all inactive.
+	 */
+	private function map_mark_untouched_node( $node, $result )
+	{
+		if( $result['matched'] > 0 && $result['allowed'] === $result['matched'] )
+		{
+			$node->class = $this->map_class_add( $node->class, 'map_always_allowed' );
+			return false;
+		}
+
+		if( $result['matched'] > 0 && $result['inactive'] === $result['matched'] )
+		{
+			$node->class = $this->map_class_add( $node->class, 'map_do_not_touch' );
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Fixed url for an iframe entry, or null when the entry has no fix.
+	 */
+	private function map_apply_iframe_fix( $action, $value )
+	{
+		$has_replace = isset( $action['to_fix_search'] ) && isset( $action['to_fix_replace'] );
+		$has_param = isset( $action['to_append_param'] ) && is_string( $action['to_append_param'] );
+
+		if( !$has_replace && !$has_param )
+		{
+			return null;
+		}
+
+		$fixed = $value;
+
+		if( $has_replace )
+		{
+			$fixed = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $value );
+		}
+
+		if( $has_param )
+		{
+			$fixed = $value . ( ( strpos( $value, '?' ) !== false ) ? '&' : '?' ) . $action['to_append_param'];
+
+			if( !empty( $action['to_fix_search'] ) && !empty( $action['to_fix_replace'] ) )
+			{
+				$fixed = str_replace( $action['to_fix_search'], $action['to_fix_replace'], $fixed );
+			}
+		}
+
+		return is_string( $fixed ) ? $fixed : null;
+	}
+
+	/**
+	 * Applies the iframe rules to one node.
+	 */
+	private function map_process_iframe_node( $v, $entries, &$scan_output, $map_video_block_mode )
+	{
+		$lazy_attrs = $this->map_iframe_lazy_attrs();
+
+		$candidates = $this->map_get_url_candidates( $v, array_merge( $lazy_attrs, array( 'src' ) ), 'single' );
+
+		if( empty( $candidates ) )
+		{
+			return false;
+		}
+
+		$result = $this->map_evaluate_candidates( $candidates, $entries, 'iframe_src_block', 'iframe', $scan_output, $map_video_block_mode );
+
+		if( $result['block'] !== null )
+		{
+			$this->map_block_iframe_node( $v, $result['block'], $this->map_has_any_attribute( $v, $lazy_attrs ), $scan_output );
+			return true;
+		}
+
+		if( !empty( $result['fix'] ) )
+		{
+			foreach( $result['fix'] as $candidate )
+			{
+				$action = $candidate['action'];
+
+				if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "fixed ".MyAgilePrivacy::nullCoalesceArrayItem( $action, 'key', '' )." ".$action['src']."\n\n";
+
+				$fixed = $this->map_apply_iframe_fix( $action, $candidate['value'] );
+
+				if( $fixed !== null )
+				{
+					if( !$v->hasAttribute( 'original_src' ) )
+					{
+						$v->setAttribute( 'original_src', $this->map_attr_value( $candidate['value'] ) );
+					}
+
+					$v->setAttribute( $candidate['attr'], $fixed );
+					$v->class = $this->map_class_add( $v->class, 'map_script_fixed' );
+				}
+
+				$scan_output['iframe_src_block'][ $candidate['return_key'] ]['fixed'] = 1;
+			}
+
+			$this->scan_done = true;
+
+			return true;
+		}
+
+		return $this->map_mark_untouched_node( $v, $result );
+	}
+
+	/**
+	 * Blocks an iframe and clears its deferred loading state.
+	 */
+	private function map_block_iframe_node( $v, $candidate, $had_lazy, &$scan_output )
+	{
+		$action = $candidate['action'];
+
+		$detected_key = MyAgilePrivacy::nullCoalesceArrayItem( $action, 'key', '' );
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked iframe $detected_key ".$action['src']."\n\n";
+
+		$classes = 'my_agile_privacy_activate autoscan_mode iframe_src_blocked map_blocked_content';
+
+		if( isset( $action['show_inline_notify'] ) )
+		{
+			$classes .= ' map_show_inline_notify';
+		}
+
+		if( isset( $action['on_block_add_classes'] ) && is_string( $action['on_block_add_classes'] ) )
+		{
+			$classes .= ' '.$action['on_block_add_classes'];
+		}
+
+		if( $detected_key === 'google_maps' )
+		{
+			$classes .= ' map_maps_block';
+		}
+
+		$class = $v->class;
+
+		if( $had_lazy )
+		{
+			$class = $this->map_class_remove( $class, array( 'lazyload', 'lazyloading', 'lazy-hidden' ) );
+		}
+
+		$v->class = $this->map_class_add( $class, $classes );
+
+		$v->unblocked_src = $this->map_attr_value( $candidate['value'] );
+
+		foreach( array_merge( array( 'src' ), $this->map_iframe_lazy_attrs() ) as $attr )
+		{
+			if( $v->hasAttribute( $attr ) )
+			{
+				$v->removeAttribute( $attr );
+			}
+		}
+
+		$v->setAttribute( 'data-cookie-api-key', $detected_key );
+		$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
+
+		if( $had_lazy && !$v->hasAttribute( 'loading' ) )
+		{
+			$v->setAttribute( 'loading', 'lazy' );
+		}
+
+		$parent = $v->parent();
+
+		if( $parent && $this->map_class_has( $parent->class, 'smush-lazyload-video' ) )
+		{
+			$parent->class = $this->map_class_add( $this->map_class_remove( $parent->class, array( 'lazyload', 'lazyloading' ) ), 'smush-lazyloaded-video' );
+
+			foreach( array( 'data-bg-image', 'data-bg', 'data-smush-webp-fallback', 'data-smush-avif-fallback' ) as $attr )
+			{
+				if( $parent->hasAttribute( $attr ) )
+				{
+					$parent->removeAttribute( $attr );
+				}
+			}
+		}
+
+		$scan_output['iframe_src_block'][ $candidate['return_key'] ]['blocked'] = 1;
+
+		$this->scan_done = true;
+	}
+
+	/**
+	 * Replaces a video facade with its blocked or fixed embed.
+	 */
+	private function map_process_rocket_youtube_facade( $div, $entries )
+	{
+		$noscript = $div->next_sibling();
+
+		if( $noscript && strtolower( $noscript->tag ) === 'p' )
+		{
+			$noscript = $noscript->first_child();
+		}
+
+		if( !$noscript || strtolower( $noscript->tag ) !== 'noscript' )
+		{
+			return false;
+		}
+
+		$iframe = $noscript->find( 'iframe', 0 );
+
+		if( !$iframe )
+		{
+			return false;
+		}
+
+		if( $this->map_class_has( $iframe->class, 'iframe_src_blocked' ) )
+		{
+			if( !$iframe->hasAttribute( 'loading' ) )
+			{
+				$iframe->setAttribute( 'loading', 'lazy' );
+			}
+
+			$div->outertext = $iframe->outertext;
+
+			return true;
+		}
+
+		if( !$this->map_class_has( $iframe->class, 'map_script_fixed' ) )
+		{
+			return false;
+		}
+
+		$data_src = $div->getAttribute( 'data-src' );
+
+		if( $this->map_is_placeholder_url( $data_src ) )
+		{
+			return false;
+		}
+
+		$found = $this->map_find_src_entry( $entries, $this->map_url_match_values( $data_src ) );
+
+		if( $found === null || !MyAgilePrivacy::looseEqualsPhp8( MyAgilePrivacy::nullCoalesceArrayItem( $found['entry'], 'to_fix', 0 ), 1 ) )
+		{
+			return false;
+		}
+
+		$fixed = $this->map_apply_iframe_fix( $found['entry'], $data_src );
+
+		if( $fixed === null || $fixed === $data_src )
+		{
+			return false;
+		}
+
+		$div->setAttribute( 'data-src', $fixed );
+
+		return true;
+	}
+
+	/**
+	 * Embed url of a video link, or null when it is not recognized.
+	 */
+	private function map_video_link_embed_url( $link, $provider )
+	{
+		$href = $link->getAttribute( 'href' );
+
+		if( !is_string( $href ) )
+		{
+			return null;
+		}
+
+		$href = html_entity_decode( $href, ENT_QUOTES, 'UTF-8' );
+
+		if( $provider === 'youtube' )
+		{
+			if( preg_match( '#(?:youtube(?:-nocookie)?\.com/(?:watch\?(?:[^\#]*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})#i', $href, $matches ) )
+			{
+				return 'https://www.youtube-nocookie.com/embed/'.$matches[1];
+			}
+
+			return null;
+		}
+
+		$video_id = $link->getAttribute( 'id' );
+
+		if( !is_string( $video_id ) || !preg_match( '/^\d+$/', $video_id ) )
+		{
+			if( !preg_match( '#vimeo\.com/(?:[^?\#]*/)?(\d+)#i', $href, $matches ) )
+			{
+				return null;
+			}
+
+			$video_id = $matches[1];
+		}
+
+		$query = 'dnt=1';
+
+		if( preg_match( '#vimeo\.com/(?:[^?\#]*/)?\d+/([0-9a-f]+)#i', $href, $matches ) ||
+			preg_match( '#[?&]h=([0-9a-f]+)#i', $href, $matches ) )
+		{
+			$query = 'h='.$matches[1].'&dnt=1';
+		}
+
+		return 'https://player.vimeo.com/video/'.$video_id.'?'.$query;
+	}
+
+	/**
+	 * Replaces a video link placeholder with a blocked embed.
+	 */
+	private function map_process_lazy_video_link( $div, $entries, &$scan_output, $map_video_block_mode )
+	{
+		$provider = 'youtube';
+		$link = $div->find( 'a.lazy-load-youtube', 0 );
+
+		if( !$link )
+		{
+			$provider = 'vimeo';
+			$link = $div->find( 'a.lazy-load-vimeo', 0 );
+		}
+
+		if( !$link )
+		{
+			return false;
+		}
+
+		$embed_url = $this->map_video_link_embed_url( $link, $provider );
+
+		if( $embed_url === null )
+		{
+			return false;
+		}
+
+		$title = $link->getAttribute( 'data-video-title' );
+
+		if( !is_string( $title ) )
+		{
+			$title = '';
+		}
+
+		$html = '<iframe src="'.esc_url( $embed_url ).'" title="'.esc_attr( $title ).'" width="560" height="315" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+
+		$fragment = map_shd_str_get_html( $html, true, true, false, false );
+
+		if( !is_object( $fragment ) )
+		{
+			return false;
+		}
+
+		$iframe = $fragment->find( 'iframe', 0 );
+
+		if( !$iframe )
+		{
+			return false;
+		}
+
+		$this->map_process_iframe_node( $iframe, $entries, $scan_output, $map_video_block_mode );
+
+		if( !$this->map_class_has( $iframe->class, 'iframe_src_blocked' ) )
+		{
+			return false;
+		}
+
+		$div->outertext = $iframe->outertext;
+
+		return true;
+	}
+
+	/**
+	 * Applies the image rules to one node.
+	 */
+	private function map_process_img_node( $v, $entries, &$scan_output )
+	{
+		$single_attrs = array( 'data-lazy-src', 'data-src', 'src' );
+		$set_attrs = array( 'data-lazy-srcset', 'data-srcset', 'srcset' );
+		$sizes_attrs = array( 'data-lazy-sizes', 'data-sizes', 'sizes' );
+
+		$sources = array();
+
+		$parent = $v->parent();
+
+		if( $parent && strtolower( $parent->tag ) === 'picture' )
+		{
+			foreach( $parent->children() as $child )
+			{
+				if( strtolower( $child->tag ) === 'source' )
+				{
+					$sources[] = $child;
+				}
+			}
+		}
+
+		$candidates = array_merge(
+			$this->map_get_url_candidates( $v, $single_attrs, 'single' ),
+			$this->map_get_url_candidates( $v, $set_attrs, 'set' )
+		);
+
+		foreach( $sources as $source )
+		{
+			$candidates = array_merge( $candidates, $this->map_get_url_candidates( $source, $set_attrs, 'source' ) );
+		}
+
+		if( empty( $candidates ) )
+		{
+			return false;
+		}
+
+		$result = $this->map_evaluate_candidates( $candidates, $entries, 'img_search_replace', 'img', $scan_output, false );
+
+		if( $result['block'] === null )
+		{
+			return $this->map_mark_untouched_node( $v, $result );
+		}
+
+		$candidate = $result['block'];
+		$action = $candidate['action'];
+
+		$detected_key = MyAgilePrivacy::nullCoalesceArrayItem( $action, 'key', '' );
+
+		if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) $this->scan_log .= "blocked img $detected_key ".$action['src']."\n";
+
+		$lazy_attrs = array( 'data-lazy-src', 'data-src', 'data-lazy-srcset', 'data-srcset' );
+
+		$had_lazy = $this->map_has_any_attribute( $v, $lazy_attrs );
+
+		foreach( $sources as $source )
+		{
+			if( $this->map_has_any_attribute( $source, $lazy_attrs ) )
+			{
+				$had_lazy = true;
+			}
+		}
+
+		$unblocked_src = null;
+
+		if( $candidate['kind'] === 'single' )
+		{
+			$unblocked_src = $candidate['value'];
+		}
+		else
+		{
+			$singles = $this->map_get_url_candidates( $v, $single_attrs, 'single' );
+
+			if( !empty( $singles ) )
+			{
+				$unblocked_src = $singles[0]['value'];
+			}
+		}
+
+		$sets = $this->map_get_url_candidates( $v, $set_attrs, 'set' );
+		$sizes = $this->map_get_img_sizes( $v, $sizes_attrs );
+
+		$classes = 'my_agile_privacy_activate autoscan_mode img_src_blocked map_blocked_content';
+
+		if( isset( $action['show_inline_notify'] ) )
+		{
+			$classes .= ' map_show_inline_notify';
+		}
+
+		if( isset( $action['on_block_add_classes'] ) && is_string( $action['on_block_add_classes'] ) )
+		{
+			$classes .= ' '.$action['on_block_add_classes'];
+		}
+
+		$class = $v->class;
+
+		if( $had_lazy )
+		{
+			$class = $this->map_class_remove( $class, array( 'lazyload', 'lazyloading', 'lazy-hidden' ) );
+		}
+
+		$v->class = $this->map_class_add( $class, $classes );
+
+		if( $unblocked_src !== null )
+		{
+			$v->unblocked_src = $this->map_attr_value( $unblocked_src );
+		}
+
+		if( !empty( $sets ) )
+		{
+			$v->setAttribute( 'unblocked_srcset', $this->map_attr_value( $sets[0]['value'] ) );
+		}
+
+		if( $sizes !== null )
+		{
+			$v->setAttribute( 'unblocked_sizes', $this->map_attr_value( $sizes ) );
+		}
+
+		foreach( array_merge( array( 'data-lazy-src', 'data-src' ), $set_attrs, array( 'data-lazy-sizes', 'data-sizes' ) ) as $attr )
+		{
+			if( $v->hasAttribute( $attr ) )
+			{
+				$v->removeAttribute( $attr );
+			}
+		}
+
+		//blank image
+		$v->src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+		$v->setAttribute( 'data-cookie-api-key', $detected_key );
+		$v->setAttribute( 'data-friendly_name', MyAgilePrivacy::nullCoalesceArrayItem( $action, 'friendly_name', '' ) );
+
+		if( $had_lazy && !$v->hasAttribute( 'loading' ) )
+		{
+			$v->setAttribute( 'loading', 'lazy' );
+		}
+
+		foreach( $sources as $source )
+		{
+			$source_sets = $this->map_get_url_candidates( $source, $set_attrs, 'source' );
+
+			if( !empty( $source_sets ) )
+			{
+				$source->setAttribute( 'unblocked_srcset', $this->map_attr_value( $source_sets[0]['value'] ) );
+			}
+
+			$source_sizes = $this->map_get_img_sizes( $source, $sizes_attrs );
+
+			if( $source_sizes !== null )
+			{
+				$source->setAttribute( 'unblocked_sizes', $this->map_attr_value( $source_sizes ) );
+			}
+
+			foreach( array_merge( $set_attrs, array( 'data-lazy-sizes', 'data-sizes' ) ) as $attr )
+			{
+				if( $source->hasAttribute( $attr ) )
+				{
+					$source->removeAttribute( $attr );
+				}
+			}
+		}
+
+		$scan_output['img_search_replace'][ $candidate['return_key'] ]['blocked'] = 1;
+
+		$this->scan_done = true;
+
+		return true;
+	}
+
+	/**
+	 * First explicit sizes value of a node.
+	 */
+	private function map_get_img_sizes( $node, $attrs )
+	{
+		foreach( $attrs as $attr )
+		{
+			if( !$node->hasAttribute( $attr ) )
+			{
+				continue;
+			}
+
+			$value = $node->getAttribute( $attr );
+
+			if( !is_string( $value ) )
+			{
+				continue;
+			}
+
+			$trimmed = strtolower( trim( $value ) );
+
+			if( $trimmed !== '' && $trimmed !== 'auto' )
+			{
+				return $value;
+			}
+		}
+
+		return null;
+	}
+
+	private $optimizer_exclusions = null;
+
+	/**
+	 * Registers the exclusion lists and the asset version filters for the page optimizers.
+	 * @access   public
+	 */
+	public function register_optimizer_exclusions()
+	{
+		foreach( array( 'litespeed_optm_js_defer_exc', 'litespeed_optm_gm_js_exc', 'litespeed_optimize_js_excludes' ) as $hook )
+		{
+			add_filter( $hook, array( $this, 'map_opt_exclusions_litespeed' ) );
+		}
+
+		add_filter( 'rocket_delay_js_exclusions', array( $this, 'map_opt_exclusions_rocket_delay' ) );
+		add_filter( 'rocket_exclude_defer_js', array( $this, 'map_opt_exclusions_rocket_paths' ) );
+		add_filter( 'rocket_exclude_js', array( $this, 'map_opt_exclusions_rocket_local' ) );
+		add_filter( 'rocket_minify_excluded_external_js', array( $this, 'map_opt_exclusions_host' ) );
+		add_filter( 'rocket_defer_inline_exclusions', array( $this, 'map_opt_exclusions_inline' ) );
+		add_filter( 'rocket_excluded_inline_js_content', array( $this, 'map_opt_exclusions_inline' ) );
+
+		// above 13: the callbacks Autoptimize adds on 12 and 13 flatten an array into a string
+		add_filter( 'autoptimize_filter_js_exclude', array( $this, 'map_opt_exclusions_autoptimize' ), 20 );
+
+		foreach( array( 'sgo_js_async_exclude', 'sgo_js_minify_exclude', 'sgo_javascript_combine_exclude' ) as $hook )
+		{
+			add_filter( $hook, array( $this, 'map_opt_exclusions_handles' ) );
+		}
+		add_filter( 'sgo_rqs_exclude', array( $this, 'map_opt_exclusions_sgo_rqs' ) );
+		add_filter( 'sgo_javascript_combine_excluded_internal_paths', array( $this, 'map_opt_exclusions_local' ) );
+		add_filter( 'sgo_javascript_combine_excluded_external_paths', array( $this, 'map_opt_exclusions_host' ) );
+		add_filter( 'sgo_javascript_combine_excluded_inline_content', array( $this, 'map_opt_exclusions_inline' ) );
+		add_filter( 'sgo_css_combine_exclude', array( $this, 'map_opt_exclusions_style_handles' ) );
+		add_filter( 'script_loader_src', array( $this, 'keep_asset_version' ), 10, 2 );
+		add_filter( 'style_loader_src', array( $this, 'keep_asset_version' ), 10, 2 );
+		add_action( 'wp', array( $this, 'warm_optimizer_exclusions' ) );
+	}
+
+	/**
+	 * Builds the lists once, outside any output buffer callback.
+	 * @access   public
+	 */
+	public function warm_optimizer_exclusions()
+	{
+		$this->get_optimizer_exclusions( 'paths' );
+	}
+
+	/**
+	 * Exclusion entries of one kind: base, local, paths, host, inline, tail.
+	 * @access   public
+	 */
+	public function get_optimizer_exclusions( $kind )
+	{
+		$lists = $this->optimizer_exclusions;
+
+		if( !is_array( $lists ) )
+		{
+			$lists = $this->build_optimizer_exclusions();
+
+			if( did_action( 'init' ) )
+			{
+				$this->optimizer_exclusions = $lists;
+			}
+		}
+
+		return ( is_string( $kind ) && isset( $lists[ $kind ] ) ) ? $lists[ $kind ] : array();
+	}
+
+	private function build_optimizer_exclusions()
+	{
+		$base = $this->optimizer_url_path( plugin_dir_url( MAP_PLUGIN_FILENAME ) );
+
+		if( basename( $base ) === '' )
+		{
+			$base = '';
+		}
+
+		$advanced = '';
+
+		if( function_exists( 'map_call_advanced_get_bundle_url' ) )
+		{
+			try
+			{
+				$advanced = $this->optimizer_url_path( map_call_advanced_get_bundle_url() );
+			}
+			catch( Exception $e )
+			{
+				$advanced = '';
+			}
+			catch( Error $e )
+			{
+				$advanced = '';
+			}
+		}
+
+		$host   = 'localcdn.myagileprivacy.com';
+		$inline = array( 'var map_full_config=', 'var map_cookiebar_settings = ', 'var map_ajax = ', 'var early_starting_gconsent=' );
+		$tail   = ( $base !== '' ) ? '/' . basename( $base ) . '/' : '';
+
+		return array(
+			'base'   => $this->clean_optimizer_entries( array( $base ) ),
+			'local'  => $this->clean_optimizer_entries( array( $base, $advanced ) ),
+			'paths'  => $this->clean_optimizer_entries( array( $base, $host, $advanced ) ),
+			'host'   => $this->clean_optimizer_entries( array( $host ) ),
+			'inline' => $this->clean_optimizer_entries( $inline ),
+			'tail'   => $this->clean_optimizer_entries( array( $tail ) ),
+		);
+	}
+
+	private function optimizer_url_path( $url )
+	{
+		if( !is_string( $url ) || $url === '' )
+		{
+			return '';
+		}
+
+		$parts = parse_url( $url );
+
+		return ( is_array( $parts ) && isset( $parts['path'] ) && is_string( $parts['path'] ) ) ? $parts['path'] : '';
+	}
+
+	private function clean_optimizer_entries( $entries )
+	{
+		$out = array();
+
+		foreach( $entries as $entry )
+		{
+			if( is_string( $entry ) && trim( $entry ) !== '' && !in_array( $entry, $out, true ) )
+			{
+				$out[] = $entry;
+			}
+		}
+
+		return $out;
+	}
+
+	// always an array, as the receiving plugins type their own callbacks; a string is split on | only where that form exists
+	private function merge_optimizer_list( $list, $entries, $split_string )
+	{
+		if( is_string( $list ) && $split_string )
+		{
+			$list = ( $list === '' ) ? array() : explode( '|', $list );
+		}
+
+		$list = ( $list === null || $list === '' ) ? array() : (array) $list;
+
+		return array_merge( $list, $entries );
+	}
+
+	private function regex_optimizer_entries( $entries )
+	{
+		$out = array();
+
+		foreach( $entries as $entry )
+		{
+			if( @preg_match( '#' . str_replace( '#', '\#', $entry ) . '#', '' ) !== false )
+			{
+				$out[] = $entry;
+			}
+		}
+
+		return $out;
+	}
+
+	private function plain_optimizer_entries( $entries )
+	{
+		$out = array();
+
+		foreach( $entries as $entry )
+		{
+			if( preg_match( '#^[A-Za-z0-9./_~%-]+$#', $entry ) )
+			{
+				$out[] = $entry;
+			}
+		}
+
+		return $out;
+	}
+
+	public function map_opt_exclusions_litespeed( $list )
+	{
+		return $this->merge_optimizer_list( $list, array_merge( $this->plain_optimizer_entries( $this->get_optimizer_exclusions( 'paths' ) ), $this->get_optimizer_exclusions( 'inline' ) ), false );
+	}
+
+	public function map_opt_exclusions_rocket_delay( $list )
+	{
+		$markers = array();
+
+		// matched as #…#i on the whole tag, after Rocket escapes + ?ver and # itself
+		foreach( $this->get_optimizer_exclusions( 'inline' ) as $marker )
+		{
+			$markers[] = str_replace( array( '\+', '\?ver', '\#' ), array( '+', '?ver', '#' ), preg_quote( $marker ) );
+		}
+
+		return $this->merge_optimizer_list( $list, array_merge( $this->regex_optimizer_entries( $this->get_optimizer_exclusions( 'paths' ) ), $markers ), false );
+	}
+
+	public function map_opt_exclusions_rocket_paths( $list )
+	{
+		return $this->merge_optimizer_list( $list, $this->regex_optimizer_entries( $this->get_optimizer_exclusions( 'paths' ) ), false );
+	}
+
+	public function map_opt_exclusions_rocket_local( $list )
+	{
+		return $this->merge_optimizer_list( $list, $this->regex_optimizer_entries( $this->get_optimizer_exclusions( 'local' ) ), false );
+	}
+
+	public function map_opt_exclusions_local( $list )
+	{
+		return $this->merge_optimizer_list( $list, $this->get_optimizer_exclusions( 'local' ), false );
+	}
+
+	public function map_opt_exclusions_host( $list )
+	{
+		return $this->merge_optimizer_list( $list, $this->get_optimizer_exclusions( 'host' ), false );
+	}
+
+	public function map_opt_exclusions_inline( $list )
+	{
+		return $this->merge_optimizer_list( $list, $this->get_optimizer_exclusions( 'inline' ), true );
+	}
+
+	public function map_opt_exclusions_autoptimize( $exclude )
+	{
+		$entries = array_merge( $this->get_optimizer_exclusions( 'paths' ), $this->get_optimizer_exclusions( 'tail' ), $this->get_optimizer_exclusions( 'inline' ) );
+
+		if( is_array( $exclude ) )
+		{
+			foreach( $entries as $entry )
+			{
+				if( !isset( $exclude[ $entry ] ) )
+				{
+					$exclude[ $entry ] = '';
+				}
+			}
+
+			return $exclude;
+		}
+
+		if( $exclude === null )
+		{
+			$exclude = '';
+		}
+
+		if( !is_string( $exclude ) || !$entries )
+		{
+			return $exclude;
+		}
+
+		return ( trim( $exclude ) === '' ? '' : $exclude . ', ' ) . implode( ', ', $entries );
+	}
+
+	public function map_opt_exclusions_handles( $handles )
+	{
+		$handles = ( $handles === null || $handles === '' ) ? array() : (array) $handles;
+
+		if( !isset( $GLOBALS['wp_scripts'] ) ||
+			!( $GLOBALS['wp_scripts'] instanceof WP_Scripts ) ||
+			!is_array( $GLOBALS['wp_scripts']->queue ) )
+		{
+			return $handles;
+		}
+
+		foreach( $GLOBALS['wp_scripts']->queue as $handle )
+		{
+			if( is_string( $handle ) && strpos( $handle, $this->plugin_name ) === 0 && !in_array( $handle, $handles, true ) )
+			{
+				$handles[] = $handle;
+			}
+		}
+
+		return $handles;
+	}
+
+	/**
+	 * Keeps the version query on the plugin assets served by this site.
+	 * @access   public
+	 */
+	public function keep_asset_version( $src, $handle = null )
+	{
+		if( !defined( 'LSCWP_V' ) ||
+			!is_string( $src ) ||
+			!is_string( $handle ) ||
+			strpos( $handle, $this->plugin_name ) !== 0 ||
+			strpos( $src, '?' ) === false ||
+			strpos( $src, '_litespeed_rm_qs=' ) !== false )
+		{
+			return $src;
+		}
+
+		$root_relative = substr( $src, 0, 1 ) === '/' && substr( $src, 0, 2 ) !== '//';
+
+		$parts = $root_relative ? null : parse_url( $src );
+
+		if( !$root_relative &&
+			( !is_array( $parts ) ||
+			!isset( $parts['host'] ) ||
+			!is_string( $parts['host'] ) ||
+			!in_array( strtolower( $parts['host'] ), $this->get_asset_hosts(), true ) ) )
+		{
+			return $src;
+		}
+
+		return add_query_arg( '_litespeed_rm_qs', '0', $src );
+	}
+
+	public function map_opt_exclusions_style_handles( $handles )
+	{
+		$handles = ( $handles === null || $handles === '' ) ? array() : (array) $handles;
+
+		if( !isset( $GLOBALS['wp_styles'] ) ||
+			!( $GLOBALS['wp_styles'] instanceof WP_Styles ) ||
+			!is_array( $GLOBALS['wp_styles']->registered ) )
+		{
+			return $handles;
+		}
+
+		$own = array();
+
+		foreach( array_keys( $GLOBALS['wp_styles']->registered ) as $handle )
+		{
+			if( is_string( $handle ) && strpos( $handle, $this->plugin_name ) === 0 && !in_array( $handle, $handles, true ) )
+			{
+				$own[] = $handle;
+			}
+		}
+
+		return $this->merge_optimizer_list( $handles, $this->clean_optimizer_entries( $own ), false );
+	}
+
+	//the plugin URL builders can differ in host on multisite
+	private function get_asset_hosts()
+	{
+		$hosts = array();
+
+		foreach( array( plugin_dir_url( MAP_PLUGIN_FILENAME ), MyAgilePrivacy::get_plugin_url( MAP_PLUGIN_FILENAME ), home_url( '/' ) ) as $url )
+		{
+			$parts = is_string( $url ) ? parse_url( $url ) : false;
+
+			if( is_array( $parts ) && isset( $parts['host'] ) && is_string( $parts['host'] ) && $parts['host'] !== '' )
+			{
+				$hosts[] = strtolower( $parts['host'] );
+			}
+		}
+
+		return $hosts;
+	}
+
+	// the receiving plugin joins the entries with | inside ~ delimiters, without escaping them
+	public function map_opt_exclusions_sgo_rqs( $list )
+	{
+		if( !doing_filter( 'script_loader_src' ) && !doing_filter( 'style_loader_src' ) )
+		{
+			return $list;
+		}
+
+		if( !is_array( $list ) )
+		{
+			$list = ( is_string( $list ) && $list !== '' ) ? array( $list ) : array();
+		}
+
+		$entries = array();
+
+		foreach( $this->get_optimizer_exclusions( 'local' ) as $path )
+		{
+			$entry = '^[^?#]*' . preg_quote( $path, '~' ) . ( substr( $path, -3 ) === '.js' ? '' : '[^?#]*\.js' ) . '(?:[?#]|$)';
+
+			if( !in_array( $entry, $list, true ) )
+			{
+				$entries[] = $entry;
+			}
+		}
+
+		return $this->merge_optimizer_list( $list, $entries, false );
+	}
+
+	private $blocked_silent_keys = null;
+	private $site_silent_keys = array();
+	private $rocket_catalog = null;
+	private $rocket_combined = null;
+	private $rocket_optimized = false;
+	private $optimizer_detected_keys = array();
+	private $ao_urls = array();
+	private $ao_excluded = array();
+	private $ao_blocked_silent = array();
+
+	/**
+	 * Keys of the entries held without notice, read once per request.
+	 * @access   private
+	 */
+	private function map_read_blocked_silent_keys()
+	{
+		if( is_array( $this->blocked_silent_keys ) )
+		{
+			return;
+		}
+
+		$this->blocked_silent_keys = array();
+
+		foreach( $this->get_cookie_categories_description( '__blocked' ) as $group )
+		{
+			foreach( $group as $item )
+			{
+				if( isset( $item['api_key'] ) && is_string( $item['api_key'] ) && $item['api_key'] !== '' )
+				{
+					$this->site_silent_keys[] = $item['api_key'];
+				}
+			}
+		}
+
+		if( defined( 'WP_ROCKET_VERSION' ) || defined( 'AUTOPTIMIZE_PLUGIN_VERSION' ) )
+		{
+			$this->blocked_silent_keys = $this->site_silent_keys;
+		}
+	}
+
+	private function map_is_blocked_silent_entry( $entry )
+	{
+		return is_array( $this->blocked_silent_keys ) &&
+			isset( $entry['key'] ) &&
+			is_string( $entry['key'] ) &&
+			in_array( $entry['key'], $this->blocked_silent_keys, true );
+	}
+
+	private function map_register_rocket_catalog()
+	{
+		add_filter( 'rocket_exclude_js', array( $this, 'map_rocket_catalog_paths' ) );
+		add_filter( 'rocket_minify_excluded_external_js', array( $this, 'map_rocket_catalog_external' ) );
+		add_filter( 'rocket_excluded_inline_js_content', array( $this, 'map_rocket_catalog_inline' ) );
+		add_filter( 'rocket_move_after_combine_js', array( $this, 'map_rocket_catalog_after' ) );
+
+		// below 22, where the plugin minifies and combines scripts
+		if( $this->scan_mode == 'learning_mode' )
+		{
+			add_filter( 'rocket_buffer', array( $this, 'map_detect_before_optimizer' ), 21 );
+		}
+	}
+
+	/**
+	 * Script node delayed by WP Rocket, with its address in data-rocket-src.
+	 */
+	private function map_is_rocket_delayed( $node )
+	{
+		if( $node->src )
+		{
+			return false;
+		}
+
+		$type = $node->type;
+		$rocket_src = $node->getAttribute( 'data-rocket-src' );
+
+		return $this->map_is_rocket_type( $type ) &&
+			is_string( $rocket_src ) &&
+			$rocket_src !== '';
+	}
+
+	private function map_script_src( $node )
+	{
+		return $this->map_is_rocket_delayed( $node ) ? $node->getAttribute( 'data-rocket-src' ) : $node->src;
+	}
+
+	private function map_remove_rocket_attributes( $node )
+	{
+		foreach( array( 'data-rocket-src', 'data-rocket-type' ) as $name )
+		{
+			if( $node->hasAttribute( $name ) )
+			{
+				$node->removeAttribute( $name );
+			}
+		}
+	}
+
+	/**
+	 * Gives a delayed node back its own type before it is blocked.
+	 */
+	private function map_unwrap_rocket_tag( $node )
+	{
+		if( !$this->map_is_rocket_delayed( $node ) )
+		{
+			return;
+		}
+
+		$type = $node->getAttribute( 'data-rocket-type' );
+
+		if( is_string( $type ) && $type !== '' )
+		{
+			$node->type = $type;
+		}
+		else
+		{
+			$node->removeAttribute( 'type' );
+		}
+
+		$this->map_remove_rocket_attributes( $node );
+	}
+
+	/**
+	 * Makes a script node of an entry held without notice inert, on pages the optimizer has touched.
+	 */
+	private function map_silence_optimized_tag( $node, $entry )
+	{
+		if( !$this->map_script_action_silent( $entry ) ||
+			!( $this->map_is_rocket_delayed( $node ) || $this->rocket_optimized || $this->ao_held_silent( $node ) ) )
+		{
+			return false;
+		}
+
+		$node->type = 'text/plain';
+		$node->removeAttribute( 'src' );
+		$this->map_remove_rocket_attributes( $node );
+
+		return true;
+	}
+
+	/**
+	 * State of a script block list entry: always_allowed, inactive, no_block or block.
+	 */
+	private function map_script_action_state( $entry )
+	{
+		$active = isset( $entry['active'] ) ? $entry['active'] : null;
+
+		$no_action = ( !empty( $entry['only_on_compatibility_mode'] ) &&
+			empty( $this->saved_settings['scanner_compatibility_mode'] ) );
+
+		if( !empty( $entry['always_allowed'] ) )
+		{
+			$state = 'always_allowed';
+		}
+		elseif( !$active || $no_action )
+		{
+			$state = 'inactive';
+		}
+		elseif( isset( $entry['to_block'] ) && MyAgilePrivacy::looseEqualsPhp8( $entry['to_block'], 1 ) )
+		{
+			$state = 'block';
+		}
+		else
+		{
+			$state = 'no_block';
+		}
+
+		return array( 'state' => $state, 'active' => $active, 'no_action' => $no_action );
+	}
+
+	private function map_script_action_blocks( $entry )
+	{
+		$state = $this->map_script_action_state( $entry );
+
+		return $state['state'] === 'block';
+	}
+
+	/**
+	 * Entry held without notice and not published.
+	 */
+	private function map_script_action_silent( $entry )
+	{
+		return !empty( $entry['blocked_without_notification'] ) &&
+			empty( $entry['active'] ) &&
+			empty( $entry['always_allowed'] );
+	}
+
+	/**
+	 * Block list entries kept out of the page optimizer, one list per filter.
+	 * @access   public
+	 */
+	public function map_rocket_catalog_paths( $list )
+	{
+		return $this->rocket_catalog_merge( $list, 'paths' );
+	}
+
+	public function map_rocket_catalog_external( $list )
+	{
+		return $this->rocket_catalog_merge( $list, 'external' );
+	}
+
+	public function map_rocket_catalog_inline( $list )
+	{
+		return $this->rocket_catalog_merge( $list, 'inline' );
+	}
+
+	public function map_rocket_catalog_after( $list )
+	{
+		return $this->rocket_catalog_merge( $list, 'after' );
+	}
+
+	private function rocket_catalog_merge( $list, $kind )
+	{
+		$entries = array();
+
+		try
+		{
+			if( is_array( $this->scan_config ) &&
+				isset( $this->scan_config['scripts_src_block'] ) &&
+				is_array( $this->scan_config['scripts_src_block'] ) &&
+				!$this->rocket_page_inert() )
+			{
+				if( !is_array( $this->rocket_catalog ) )
+				{
+					$this->rocket_catalog = $this->build_rocket_catalog( $this->scan_config['scripts_src_block'] );
+				}
+
+				$this->rocket_optimized = true;
+
+				$entries = $this->rocket_catalog[ $kind ];
+			}
+		}
+		catch( Exception $e )
+		{
+			$entries = array();
+		}
+		catch( Error $e )
+		{
+			$entries = array();
+		}
+
+		return $this->merge_optimizer_list( $list, $entries, false );
+	}
+
+	// read on the first call, when the plugin has already chosen for this page
+	private function rocket_page_combined()
+	{
+		if( $this->rocket_combined === null )
+		{
+			$this->rocket_combined = ( function_exists( 'get_rocket_option' ) &&
+				get_rocket_option( 'minify_js' ) &&
+				get_rocket_option( 'minify_concatenate_js' ) );
+		}
+
+		return $this->rocket_combined;
+	}
+
+	// catalog version check
+	private function rocket_catalog_current()
+	{
+		return isset( $this->saved_settings['parse_config_version_number'] ) &&
+			is_string( $this->saved_settings['parse_config_version_number'] ) &&
+			version_compare( $this->saved_settings['parse_config_version_number'], '1.3.61', '>=' );
+	}
+
+	private function rocket_page_inert()
+	{
+		return $this->rocket_page_combined() && !$this->rocket_catalog_current();
+	}
+
+	private function build_rocket_catalog( $entries )
+	{
+		$external = array();
+		$paths = array();
+		$inline = array();
+		$after = array();
+		$held_keys = array();
+		$call_forms = array();
+
+		foreach( $entries as $entry )
+		{
+			if( !is_array( $entry ) )
+			{
+				continue;
+			}
+
+			$blocks = $this->map_script_action_blocks( $entry );
+			$silent = $this->map_script_action_silent( $entry );
+			$held = ( $blocks || $silent );
+			$key = ( isset( $entry['key'] ) && is_string( $entry['key'] ) ) ? $entry['key'] : null;
+
+			if( $held && $key !== null )
+			{
+				$held_keys[ $key ] = true;
+			}
+
+			// the forms of a key are the union over all its entries
+			if( $key !== null && isset( $entry['call_forms'] ) && is_array( $entry['call_forms'] ) )
+			{
+				foreach( $entry['call_forms'] as $form )
+				{
+					$call_forms[ $key ][] = $form;
+				}
+			}
+
+			if( !empty( $entry['plain_js'] ) && is_string( $entry['plain_js'] ) )
+			{
+				if( $blocks )
+				{
+					$inline[] = $entry['plain_js'];
+				}
+				elseif( $silent )
+				{
+					$after[] = $entry['plain_js'];
+				}
+			}
+
+			if( empty( $entry['src'] ) || !is_string( $entry['src'] ) )
+			{
+				continue;
+			}
+
+			$pattern = $entry['src'];
+
+			if( $held ||
+				!empty( $entry['blocked_without_notification'] ) ||
+				( isset( $entry['to_detect'] ) && MyAgilePrivacy::looseEqualsPhp8( $entry['to_detect'], 1 ) ) )
+			{
+				$host = $this->rocket_catalog_host( $pattern );
+
+				if( $host !== '' )
+				{
+					$external[] = $host;
+				}
+				elseif( preg_match( '#^[A-Za-z0-9./_-]+$#', $pattern ) )
+				{
+					$external[] = $pattern;
+				}
+			}
+
+			// a # would be escaped twice and void the whole list
+			if( $held && strpos( $pattern, '#' ) === false )
+			{
+				$paths[] = preg_quote( $pattern );
+			}
+		}
+
+		foreach( array_keys( $held_keys ) as $key )
+		{
+			if( isset( $call_forms[ $key ] ) )
+			{
+				$after = array_merge( $after, $call_forms[ $key ] );
+			}
+		}
+
+		return array(
+			'external' => $this->clean_optimizer_entries( $external ),
+			'paths'    => $this->regex_optimizer_entries( $this->clean_optimizer_entries( $paths ) ),
+			'inline'   => $this->clean_optimizer_entries( $inline ),
+			'after'    => $this->clean_optimizer_entries( $after ),
+		);
+	}
+
+	private function rocket_catalog_host( $pattern )
+	{
+		if( preg_match( '#^[a-z][a-z0-9+.-]*://#i', $pattern ) )
+		{
+			$host = parse_url( $pattern, PHP_URL_HOST );
+		}
+		else
+		{
+			$rest = ltrim( $pattern, '/' );
+			$host = parse_url( '//' . $rest, PHP_URL_HOST );
+
+			if( !is_string( $host ) || $host === '' || strpos( $rest, $host ) !== 0 )
+			{
+				$host = null;
+			}
+		}
+
+		if( !is_string( $host ) ||
+			!preg_match( '#^[a-z0-9.-]+\.[a-z]{2,}$#i', $host ) ||
+			preg_match( '#\.(js|php)$#i', $host ) )
+		{
+			return '';
+		}
+
+		return $host;
+	}
+
+	/**
+	 * Reads the page before the optimizer rewrites it; the page is returned unchanged.
+	 * @access   public
+	 */
+	public function map_detect_before_optimizer( $buffer )
+	{
+		if( !is_string( $buffer ) ||
+			$buffer === '' ||
+			$this->scan_mode != 'learning_mode' ||
+			!is_array( $this->scan_config ) ||
+			!isset( $this->scan_config['scripts_src_block'] ) ||
+			!is_array( $this->scan_config['scripts_src_block'] ) ||
+			strlen( $buffer ) > MAP_SHD_MAX_FILE_SIZE ||
+			!$this->map_is_html_response() )
+		{
+			return $buffer;
+		}
+
+		$dom = null;
+
+		try
+		{
+			if( !$this->rocket_page_combined() )
+			{
+				return $buffer;
+			}
+
+			$this->map_html_scan_limits( strlen( $buffer ) );
+
+			// half of the time budget, the page scan keeps its own
+			MAP_Simple_Html_Dom::$deadline = ( microtime( true ) + MAP_Simple_Html_Dom::$deadline ) / 2;
+
+			if( empty( $this->saved_settings['scanner_compatibility_mode'] ) )
+			{
+				$dom = map_shd_str_get_html( $buffer, true, true, false, false );
+			}
+			else
+			{
+				$dom = map_shd_str_get_html( $buffer, false, false, false, false );
+			}
+
+			if( is_object( $dom ) )
+			{
+				foreach( $dom->find( 'script' ) as $node )
+				{
+					$key = $this->map_detected_script_key( $node );
+
+					if( $key !== null && !in_array( $key, $this->optimizer_detected_keys, true ) )
+					{
+						$this->optimizer_detected_keys[] = $key;
+					}
+				}
+			}
+		}
+		catch( MAP_Simple_Html_Dom_Abort $e )
+		{
+			// the page goes on unchanged
+		}
+		catch( Exception $e )
+		{
+		}
+		catch( Error $e )
+		{
+		}
+
+		unset( $e );
+
+		if( is_object( $dom ) )
+		{
+			$dom->clear();
+		}
+
+		MAP_Simple_Html_Dom::$deadline = 0;
+		MAP_Simple_Html_Dom::$mem_limit = 0;
+
+		return $buffer;
+	}
+
+	/**
+	 * Block list key of a script node, or null.
+	 */
+	private function map_detected_script_key( $node )
+	{
+		$parent = $node->parentNode();
+
+		if( $parent && $parent->tag == 'textarea' && $parent->hasClass( 'my_agile_privacy_activate' ) )
+		{
+			return null;
+		}
+
+		$class = is_string( $node->class ) ? $node->class : '';
+
+		if( strpos( $class, 'my_agile_privacy_activate' ) !== false || strpos( $class, 'map_do_not_touch' ) !== false )
+		{
+			return null;
+		}
+
+		$entries = $this->scan_config['scripts_src_block'];
+		$innertext = $node->innertext;
+		$entry = null;
+
+		if( !empty( $innertext ) )
+		{
+			foreach( $entries as $candidate )
+			{
+				if( is_array( $candidate ) &&
+					!empty( $candidate['plain_js'] ) &&
+					is_string( $candidate['plain_js'] ) &&
+					strpos( $innertext, $candidate['plain_js'] ) !== false )
+				{
+					$entry = $candidate;
+					break;
+				}
+			}
+		}
+		else
+		{
+			$src = $this->map_script_src( $node );
+
+			if( is_string( $src ) && $src !== '' )
+			{
+				$found = $this->map_find_src_entry( $entries, array( $src ) );
+				$entry = $found ? $found['entry'] : null;
+			}
+		}
+
+		if( !is_array( $entry ) ||
+			!empty( $entry['always_allowed'] ) ||
+			!isset( $entry['to_detect'] ) ||
+			!MyAgilePrivacy::looseEqualsPhp8( $entry['to_detect'], 1 ) ||
+			!isset( $entry['key'] ) ||
+			!is_string( $entry['key'] ) ||
+			$entry['key'] === '' )
+		{
+			return null;
+		}
+
+		return $entry['key'];
+	}
+
+	// sorted, so the same keys always give the same stored value
+	private function map_detected_keys_string( $keys )
+	{
+		$keys = array_values( array_unique( $keys ) );
+		sort( $keys, SORT_STRING );
+
+		return implode( ',', $keys );
+	}
+
+	private function map_register_ao_catalog()
+	{
+		add_filter( 'autoptimize_filter_cssjs_alter_url', array( $this, 'map_ao_catalog_alter_url' ), PHP_INT_MAX );
+		add_filter( 'autoptimize_filter_base_apply_cdn', array( $this, 'map_ao_catalog_apply_cdn' ), PHP_INT_MAX, 2 );
+		add_filter( 'autoptimize_filter_js_dontmove', array( $this, 'map_ao_catalog_js_dontmove' ), PHP_INT_MAX );
+	}
+
+	private function ao_catalog_ready()
+	{
+		return is_array( $this->scan_config ) &&
+			isset( $this->scan_config['scripts_src_block'] ) &&
+			is_array( $this->scan_config['scripts_src_block'] );
+	}
+
+	/**
+	 * Script addresses of block list entries kept away from the page optimizer.
+	 * @access   public
+	 */
+	public function map_ao_catalog_alter_url( $url )
+	{
+		try
+		{
+			if( !is_string( $url ) || $url === '' || !$this->ao_catalog_ready() )
+			{
+				return $url;
+			}
+
+			if( !isset( $this->ao_urls[ $url ] ) )
+			{
+				$this->ao_urls[ $url ] = $this->ao_catalog_url( $url );
+			}
+
+			return $this->ao_urls[ $url ];
+		}
+		catch( Exception $e )
+		{
+			return $url;
+		}
+		catch( Error $e )
+		{
+			return $url;
+		}
+	}
+
+	public function map_ao_catalog_apply_cdn( $apply, $url = '' )
+	{
+		$result = $apply;
+
+		try
+		{
+			if( is_string( $url ) &&
+				$this->ao_catalog_ready() &&
+				( isset( $this->ao_excluded[ $url ] ) || isset( $this->ao_blocked_silent[ $url ] ) ) )
+			{
+				$result = false;
+			}
+		}
+		catch( Exception $e )
+		{
+			$result = $apply;
+		}
+		catch( Error $e )
+		{
+			$result = $apply;
+		}
+
+		return $result;
+	}
+
+	public function map_ao_catalog_js_dontmove( $dontmove )
+	{
+		try
+		{
+			$entries = array( 'unblocked_src' );
+
+			if( $this->ao_catalog_ready() )
+			{
+				foreach( $this->scan_config['scripts_src_block'] as $entry )
+				{
+					if( is_array( $entry ) &&
+						!empty( $entry['plain_js'] ) &&
+						is_string( $entry['plain_js'] ) &&
+						( $this->map_script_action_silent( $entry ) || $this->map_script_action_blocks( $entry ) ) )
+					{
+						$entries[] = $entry['plain_js'];
+					}
+				}
+				$entries = array_merge( $entries, $this->ao_code_selected );
+			}
+
+			$list = $this->merge_optimizer_list( $dontmove, array(), false );
+			$new = array();
+
+			foreach( $this->clean_optimizer_entries( $entries ) as $value )
+			{
+				if( !preg_match( '/^\d+$/', $value ) && !in_array( $value, $list, true ) )
+				{
+					$new[] = $value;
+				}
+			}
+
+			return array_merge( $list, $new );
+		}
+		catch( Exception $e )
+		{
+			return $this->merge_optimizer_list( $dontmove, array( 'unblocked_src' ), false );
+		}
+		catch( Error $e )
+		{
+			return $this->merge_optimizer_list( $dontmove, array( 'unblocked_src' ), false );
+		}
+	}
+
+	private function ao_catalog_url( $url )
+	{
+		$parts = preg_split( '/[?#]/', $url, 2 );
+
+		if( !is_array( $parts ) || substr( $parts[0], -3 ) !== '.js' )
+		{
+			return $url;
+		}
+
+		$found = $this->map_find_src_entry( $this->scan_config['scripts_src_block'], array( $url ) );
+
+		if( !$found )
+		{
+			return $url;
+		}
+
+		if( $this->map_script_action_blocks( $found['entry'] ) )
+		{
+			$this->ao_excluded[ $url ] = true;
+		}
+		elseif( $this->map_script_action_silent( $found['entry'] ) )
+		{
+			$this->ao_blocked_silent[ $url ] = true;
+		}
+		else
+		{
+			return $url;
+		}
+
+		return '//map-excluded.invalid/' . md5( $url ) . '.js';
+	}
+
+	private function ao_held_silent( $node )
+	{
+		if( !$this->ao_blocked_silent )
+		{
+			return false;
+		}
+
+		$src = $this->map_script_src( $node );
+
+		if( !is_string( $src ) || $src === '' )
+		{
+			return false;
+		}
+
+		$parts = explode( '?', $src, 2 );
+
+		return isset( $this->ao_blocked_silent[ $parts[0] ] );
+	}
+
+	/**
+	 * Video player API script entries, in video block mode.
+	 */
+	private function map_add_video_api_entries( $parse_config )
+	{
+		if( !isset( $this->saved_settings['video_privacy_mode'] ) ||
+			$this->saved_settings['video_privacy_mode'] !== 'block' ||
+			!isset( $parse_config['scripts_src_block'] ) ||
+			!is_array( $parse_config['scripts_src_block'] ) )
+		{
+			return $parse_config;
+		}
+
+		foreach( array( array( '//www.youtube.com/iframe_api', null ), array( '//www.youtube.com/player_api', null ), array( '//www.youtube.com/s/', 'www-widgetapi.js' ) ) as $pattern )
+		{
+			$parse_config['scripts_src_block'][] = array(
+				'active'        => false,
+				'plain_js'      => null,
+				'src'           => $pattern[0],
+				'added_src'     => $pattern[1],
+				'key'           => 'youtube',
+				'to_detect'     => false,
+				'to_block'      => true,
+				'detected'      => null,
+				'blocked'       => null,
+				'map_video_api' => true,
+			);
+		}
+
+		return $parse_config;
+	}
+
+	/**
+	 * Leaves the video player API entries out on pages with a page builder video.
+	 */
+	private function map_drop_video_api_entries( $parse_config, $dom, $output )
+	{
+		if( !is_object( $dom ) ||
+			!isset( $parse_config['scripts_src_block'] ) ||
+			!is_array( $parse_config['scripts_src_block'] ) ||
+			!is_string( $output ) )
+		{
+			return $parse_config;
+		}
+
+		$indexes = array();
+
+		foreach( $parse_config['scripts_src_block'] as $index => $entry )
+		{
+			if( is_array( $entry ) && !empty( $entry['map_video_api'] ) )
+			{
+				$indexes[] = $index;
+			}
+		}
+
+		if( !$indexes ||
+			( strpos( $output, '//www.youtube.com/iframe_api' ) === false &&
+				strpos( $output, '//www.youtube.com/player_api' ) === false &&
+				strpos( $output, 'www-widgetapi.js' ) === false ) )
+		{
+			return $parse_config;
+		}
+
+		// same class list as the shield
+		$builder_classes = array( 'elementor-widget-video', 'elementor-background-video-container', 'elementor-lightbox', 'avia-video', 'av-video-tmpl', 'elementor-video-iframe', 'elementor-background-video-embed' );
+		$selectors = array();
+
+		foreach( $builder_classes as $builder_class )
+		{
+			if( strpos( $output, $builder_class ) !== false )
+			{
+				$selectors[] = '.' . $builder_class;
+			}
+		}
+
+		if( !$selectors || !$dom->find( implode( ', ', $selectors ), 0 ) )
+		{
+			return $parse_config;
+		}
+
+		// the player API tags of this page are left alone by the shield too
+		$tick = 0;
+
+		foreach( $dom->find( 'script[src]' ) as $node )
+		{
+			if( ( ++$tick & 255 ) === 0 ) { MAP_Simple_Html_Dom::guard(); }
+
+			$src = $node->getAttribute( 'src' );
+
+			if( !is_string( $src ) || $src === '' || $node->hasClass( 'map_not_to_block' ) ) continue;
+
+			foreach( $indexes as $index )
+			{
+				$entry = $parse_config['scripts_src_block'][ $index ];
+
+				if( strpos( $src, $entry['src'] ) !== false && ( empty( $entry['added_src'] ) || strpos( $src, $entry['added_src'] ) !== false ) )
+				{
+					$node->addClass( 'map_not_to_block' );
+					break;
+				}
+			}
+		}
+
+		foreach( $indexes as $index )
+		{
+			unset( $parse_config['scripts_src_block'][ $index ] );
+		}
+
+		return $parse_config;
+	}
+
+	//true when the registered handle that printed the tag depends on jQuery
+	private function map_src_needs_jquery( $node, $src )
+	{
+		global $wp_scripts;
+
+		static $by_path = null;
+
+		if( !is_object( $wp_scripts ) || !isset( $wp_scripts->registered ) || !is_array( $wp_scripts->registered ) ) return false;
+
+		$registered = $wp_scripts->registered;
+		$handle = null;
+
+		$id = $node->getAttribute( 'id' );
+
+		if( is_string( $id ) && strlen( $id ) > 3 && substr( $id, -3 ) === '-js' && isset( $registered[ substr( $id, 0, -3 ) ] ) )
+		{
+			$handle = substr( $id, 0, -3 );
+		}
+		elseif( is_string( $src ) && $src !== '' )
+		{
+			if( $by_path === null )
+			{
+				$by_path = array();
+
+				foreach( $registered as $h => $dep )
+				{
+					if( !is_object( $dep ) || !isset( $dep->src ) || !is_string( $dep->src ) || $dep->src === '' ) continue;
+
+					$p = parse_url( $dep->src );
+
+					if( is_array( $p ) && isset( $p['path'] ) && is_string( $p['path'] ) && !isset( $by_path[ $p['path'] ] ) )
+					{
+						$by_path[ $p['path'] ] = (string) $h;
+					}
+				}
+			}
+
+			$p = parse_url( $src );
+
+			if( is_array( $p ) && isset( $p['path'] ) && is_string( $p['path'] ) && isset( $by_path[ $p['path'] ] ) )
+			{
+				$handle = $by_path[ $p['path'] ];
+			}
+		}
+
+		if( $handle === null ) return false;
+
+		$jquery = array( 'jquery' => true, 'jquery-core' => true, 'jquery-migrate' => true );
+		$queue = array( $handle );
+		$seen = array();
+
+		while( !empty( $queue ) )
+		{
+			$h = array_shift( $queue );
+
+			if( isset( $seen[ $h ] ) ) continue;
+
+			$seen[ $h ] = true;
+
+			if( $h !== $handle && isset( $jquery[ $h ] ) ) return true;
+
+			if( !isset( $registered[ $h ] ) || !is_object( $registered[ $h ] ) || !isset( $registered[ $h ]->deps ) || !is_array( $registered[ $h ]->deps ) ) continue;
+
+			foreach( $registered[ $h ]->deps as $d )
+			{
+				if( is_string( $d ) && $d !== '' && !isset( $seen[ $d ] ) ) $queue[] = $d;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Inline script of an entry held without notice and not published.
+	 */
+	private function map_inline_held_silent( $entry )
+	{
+		return isset( $entry['key'] ) &&
+			is_string( $entry['key'] ) &&
+			in_array( $entry['key'], $this->site_silent_keys, true ) &&
+			empty( $entry['active'] ) &&
+			empty( $entry['always_allowed'] );
+	}
+
+	//services a My Agile Pixel channel stands in for
+	private static $map_pixel_twins = array( 'facebook_remarketing' => 'my_agile_pixel_fbq', 'google_analytics' => 'my_agile_pixel_ga', 'tik_tok' => 'my_agile_pixel_tiktok' );
+	private $pixel_channels_in_page = array();
+
+	/**
+	 * My Agile Pixel channels whose held script is on the page, read before the page is changed.
+	 */
+	private function map_find_pixel_channels( $scripts )
+	{
+		$this->pixel_channels_in_page = array();
+
+		if( !array_intersect( array_keys( self::$map_pixel_twins ), $this->site_silent_keys ) )
+		{
+			return;
+		}
+
+		$wanted = array_flip( self::$map_pixel_twins );
+		$tick = 0;
+
+		foreach( $scripts as $node )
+		{
+			if( ( ++$tick & 255 ) === 0 ) { MAP_Simple_Html_Dom::guard(); }
+
+			$key = $node->getAttribute( 'data-cookie-api-key' );
+
+			if( is_string( $key ) && isset( $wanted[ $key ] ) && !isset( $this->pixel_channels_in_page[ $key ] ) && $node->hasClass( 'map_inline_script_blocked' ) && !$this->map_inside_inert_tag( $node ) )
+			{
+				$this->pixel_channels_in_page[ $key ] = true;
+			}
+		}
+	}
+
+	/**
+	 * Node inside an element whose content is not run as markup.
+	 */
+	private function map_inside_inert_tag( $node )
+	{
+		$inert = array( 'noscript', 'template', 'textarea', 'iframe', 'noembed', 'noframes', 'xmp', 'title', 'script', 'style', 'plaintext' );
+
+		for( $p = $node->parentNode(); $p; $p = $p->parentNode() )
+		{
+			if( in_array( strtolower( (string) $p->tag ), $inert, true ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Script run as a classic script by the browser, also when an optimizer has delayed it.
+	 */
+	private function map_is_classic_script( $node )
+	{
+		$type = $node->type;
+
+		if( $this->map_is_rocket_type( $type ) )
+		{
+			$type = $node->getAttribute( 'data-rocket-type' );
+		}
+
+		if( $type === true )
+		{
+			$type = '';
+		}
+
+		if( !is_string( $type ) )
+		{
+			$language = $node->getAttribute( 'language' );
+
+			if( !is_string( $language ) || $language === '' )
+			{
+				return true;
+			}
+
+			$type = strtolower( 'text/' . $language );
+		}
+		else
+		{
+			$type = strtolower( trim( $type, " \t\n\r\f" ) );
+		}
+
+		return in_array( $type, array( '', 'application/ecmascript', 'application/javascript', 'application/x-ecmascript', 'application/x-javascript',
+			'text/ecmascript', 'text/javascript', 'text/javascript1.0', 'text/javascript1.1', 'text/javascript1.2', 'text/javascript1.3', 'text/javascript1.4',
+			'text/javascript1.5', 'text/jscript', 'text/livescript', 'text/x-ecmascript', 'text/x-javascript' ), true );
+	}
+
+	/**
+	 * Script node with an attribute name the parser kept in upper case.
+	 */
+	private function map_has_upper_attributes( $node )
+	{
+		$attributes = $node->getAllAttributes();
+
+		foreach( is_array( $attributes ) ? array_keys( $attributes ) : array() as $name )
+		{
+			if( is_string( $name ) && strtolower( $name ) !== $name &&
+				in_array( strtolower( $name ), array( 'type', 'language', 'src', 'class', 'data-cookie-api-key' ), true ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Script node the shield and the page filter leave alone.
+	 */
+	private function map_is_untouchable( $node )
+	{
+		$class = (string) $node->class;
+
+		foreach( array( 'my_agile_privacy_do_not_touch', 'map_do_not_touch', 'map_not_to_block' ) as $name )
+		{
+			if( strpos( $class, $name ) !== false )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function map_is_rocket_type( $type )
+	{
+		return is_string( $type ) && in_array( strtolower( trim( $type ) ), array( 'rocketlazyloadscript', 'text/rocketlazyloadscript' ), true );
+	}
+
+	/**
+	 * Inline script of a held service whose My Agile Pixel channel is on the page.
+	 */
+	private function map_inline_held_twin( $entry, $node )
+	{
+		return $this->map_inline_held_silent( $entry ) &&
+			isset( self::$map_pixel_twins[ $entry['key'] ] ) &&
+			isset( $this->pixel_channels_in_page[ self::$map_pixel_twins[ $entry['key'] ] ] ) &&
+			( empty( $entry['only_on_compatibility_mode'] ) || !empty( $this->saved_settings['scanner_compatibility_mode'] ) ) &&
+			!$this->map_is_untouchable( $node ) &&
+			!$this->map_has_upper_attributes( $node ) &&
+			$this->map_is_classic_script( $node );
+	}
+
+	private $ao_code_patterns = array();
+	private $ao_code_selected = array();
+
+	/** Code patterns of the dependencies of published entries to block. */
+	private function ao_select_code_patterns( $enabled, $not_block, $always_allow )
+	{
+		$selected = array();
+
+		foreach( $this->ao_code_patterns as $item )
+		{
+			if( is_string( $item[0] ) &&
+				is_string( $item[1] ) &&
+				in_array( $item[0], $enabled, true ) &&
+				!in_array( $item[0], $not_block, true ) &&
+				!in_array( $item[0], $always_allow, true ) )
+			{
+				$selected[] = $item[1];
+			}
+		}
+
+		$this->ao_code_selected = $selected;
+		$this->ao_code_patterns = array();
 	}
 }

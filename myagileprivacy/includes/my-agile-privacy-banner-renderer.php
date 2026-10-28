@@ -109,6 +109,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$html .= $this->render_banner();
 			$html .= $this->render_blocked_content_notification();
 			$html .= $this->render_modal();
+			$html .= $this->render_hidden_banner_help();
 			$html .= $this->render_custom_css();
 			$html .= '<!--googleon: all-->'.PHP_EOL;
 
@@ -570,7 +571,19 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$_s_txt_color           = ( preg_match( '/^#[0-9a-fA-F]{3,6}$/', $s['heading_text_color'] ) )        ? $s['heading_text_color']        : '';
 			$map_heading_style      = 'background-color:'.$_s_bg_color.'; color: '.$_s_txt_color.';';
 			$map_heading_class      = ( $s['title_is_on'] == true ) ? '' : 'map_displayNone';
-			$map_close_button_style = ( $s['title_is_on'] == true ) ? 'color: '.$_s_txt_color.'!important;' : 'color: '.esc_attr( $s['text'] ).'!important;';
+			$_s_text_color          = ( is_string( $s['text'] ) && preg_match( '/^#[0-9a-fA-F]{3,6}$/', $s['text'] ) ) ? $s['text'] : '';
+			$map_close_color        = ( $s['title_is_on'] == true ) ? $_s_txt_color : $_s_text_color;
+			$map_close_button_style = '';
+
+			if( $map_close_color != '' )
+			{
+				$map_close_button_style = 'color: '.$map_close_color.'!important; color: var(--map-close-color)!important; --map-close-color: '.$map_close_color.';';
+
+				if( $_s_text_color != '' )
+				{
+					$map_close_button_style .= ' --map-close-color-notitle: '.$_s_text_color.';';
+				}
+			}
 			$notify_logo_color      = ( $s['heading_background_color'] == '#ffffff' ) ? '#F93F00' : $_s_bg_color;
 			$banner_logo_color      = $_s_txt_color;
 			$banner_title           = esc_html( $t['banner_title'] );
@@ -591,7 +604,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 
 			$notify_close_button =
 				'<div class="map-closebutton-right">'.
-					'<a tabindex="0" role="button" class="map-button map-reject-button" data-map_action="reject" style="'.esc_attr( $map_close_button_style ).'">&#x2715;</a>'.
+					'<a tabindex="0" role="button" class="map-button map-reject-button" data-map_action="reject" aria-label="'.esc_attr( $t['close'] ).'" style="'.esc_attr( $map_close_button_style ).'">&#x2715;</a>'.
 				'</div>';
 
 			$html =
@@ -600,9 +613,9 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 					' aria-label="My Agile Privacy®"'.
 					' tabindex="0"'.
 					' id="my-agile-privacy-notification-area"'.
-					' class="'.esc_attr( $position_vars['composed_class'] ).' mapButtonsAside"'.
+					' class="'.esc_attr( $position_vars['composed_class'] ).' mapButtonsAside mapTitleCollapsible"'.
 					' data-nosnippet="true"'.
-					' style="'.esc_attr( $style_vars['composed_style'] ).'"'.
+					' style="'.esc_attr( $style_vars['composed_style'].';--map-radius:'.MyAgilePrivacy::intvalPhp8( $s['elements_border_radius'] ).'px' ).'"'.
 					' data-animation="'.esc_attr( $s['cookie_banner_animation'] ).'"'.
 					' data-wg-notranslate '.
 					'>'.
@@ -718,6 +731,40 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 		}
 
 		/**
+		 * Returns the help dialog shown when the banner cannot be displayed.
+		 *
+		 * @return string
+		 */
+		private function render_hidden_banner_help()
+		{
+			$t        = $this->the_translations[ $this->current_lang ];
+			$fallback = $this->the_translations['en_US'];
+			$keys     = array( 'hidden_banner_title', 'hidden_banner_text', 'hidden_banner_howto', 'close' );
+			$txt      = array();
+
+			foreach( $keys as $key )
+			{
+				$txt[ $key ] = isset( $t[ $key ] ) ? $t[ $key ] : ( isset( $fallback[ $key ] ) ? $fallback[ $key ] : '' );
+			}
+
+			return
+				'<div id="map-hidden-banner-help" class="map-hidden-banner-help" data-nosnippet="true" data-wg-notranslate>'.
+					'<div class="map-hidden-banner-help-backdrop"></div>'.
+					'<div class="map-hidden-banner-help-dialog" role="dialog" aria-modal="true" aria-labelledby="map-hidden-banner-help-title" aria-describedby="map-hidden-banner-help-text" tabindex="-1">'.
+						'<button type="button" class="map-hidden-banner-help-close map-hidden-banner-help-x" aria-label="'.esc_attr( $txt['close'] ).'">&#x2715;</button>'.
+						'<p class="map-hidden-banner-help-title" id="map-hidden-banner-help-title">'.esc_html( $txt['hidden_banner_title'] ).'</p>'.
+						'<div id="map-hidden-banner-help-text">'.
+							'<p>'.esc_html( $txt['hidden_banner_text'] ).'</p>'.
+							'<p>'.esc_html( $txt['hidden_banner_howto'] ).'</p>'.
+						'</div>'.
+						'<div class="map-hidden-banner-help-actions">'.
+							'<button type="button" class="map-hidden-banner-help-close map-hidden-banner-help-button">'.esc_html( $txt['close'] ).'</button>'.
+						'</div>'.
+					'</div>'.
+				'</div>';
+		}
+
+		/**
 		 * Returns the full cookie settings modal HTML.
 		 *
 		 * @return string
@@ -761,14 +808,14 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 
 			$with_no_cookies_class = ( $no_cookies && !$iab_tcf_context ) ? 'mapNoCookies' : '';
 
-			$html  = '<div class="map-modal '.esc_attr( $with_no_cookies_class ).'" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="0" aria-labelledby="mapSettingsPopup" data-wg-notranslate>';
+			$html  = '<div class="map-modal '.esc_attr( $with_no_cookies_class ).'" id="mapSettingsPopup" data-nosnippet="true" role="dialog" tabindex="-1" aria-labelledby="map-settings-title" data-wg-notranslate>';
 			$html .= '<div class="map-modal-dialog">';
 			$html .= '<div class="map-modal-content map-bar-popup '.esc_attr( $position_vars['with_css_effects_class'] ).'">';
 			$html .= '<div class="map-modal-body">';
 			$html .= '<div class="map-container-fluid map-tab-container">';
 
 			$html .= '<div class="map-privacy-overview">';
-			$html .= '<p class="map-h4-heading" data-nosnippet>'.esc_html( $t['privacy_settings'] ).'</p>';
+			$html .= '<p class="map-h4-heading" id="map-settings-title" data-nosnippet>'.esc_html( $t['privacy_settings'] ).'</p>';
 			$html .= '</div>';
 
 			$html .= '<p data-nosnippet style="'.esc_attr( $style_vars['composed_style_paragraph_second_layer'] ).'">';
@@ -817,7 +864,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$html .= $this->render_credits();
 
 			$html .= '</div>'; // map-modal-body
-			$html .= '<button type="button" tabindex="0" class="map-modal-close" id="mapModalClose">✕<span class="sr-only">'.esc_html( $t['close'] ).'</span></button>';
+			$html .= '<button type="button" tabindex="0" class="map-modal-close" id="mapModalClose" aria-label="'.esc_attr( $t['close'] ).'">✕</button>';
 			$html .= '</div>'; // map-modal-content
 			$html .= '</div>'; // map-modal-dialog
 			$html .= '</div>'; // map-modal
@@ -1045,7 +1092,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 				$html .=
 					'<div class="map-switch">'.
 						'<input data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" type="hidden" id="map-checkbox-'.esc_attr( $the_remote_id ).'" class="map-user-preference-checkbox MapDoNotTouch" value="0"/>'.
-						'<div class="map-slider map-for-map-checkbox-'.esc_attr( $the_remote_id ).'" role="checkbox" aria-label="'.esc_attr( $cookie_display_title ).'" tabindex="0" aria-checked="mixed" data-map-enable="'.esc_attr( $is_enabled_text ).'" data-map-disable="'.esc_attr( $is_disabled_text ).'">'.
+						'<div class="map-slider map-for-map-checkbox-'.esc_attr( $the_remote_id ).'" role="checkbox" aria-label="'.esc_attr( $cookie_display_title ).'" tabindex="0" aria-checked="false" data-map-enable="'.esc_attr( $is_enabled_text ).'" data-map-disable="'.esc_attr( $is_disabled_text ).'">'.
 							'<span class="sr-only">'.esc_html( $cookie_display_title ).'</span>'.
 						'</div>'.
 					'</div>';
@@ -1096,7 +1143,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			}
 			elseif( $the_post_is_readonly == false && $the_post_installation_type == 'raw_code' && $the_post_raw_code )
 			{
-				$html .= '<textarea aria-hidden="true" aria-label="'.esc_attr( $cleaned_cookie_name ).' raw script" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.htmlspecialchars_decode( stripslashes( $the_post_raw_code ), ENT_QUOTES ).'</textarea>';
+				$html .= '<textarea aria-hidden="true" aria-label="'.esc_attr( $cleaned_cookie_name ).' raw script" class="my_agile_privacy_activate _raw_type_mode" data-cookie-baseindex="'.esc_attr( $the_remote_id ).'" data-cookie-name="'.esc_attr( $cleaned_cookie_name ).'" data-cookie-api-key="'.esc_attr( $the_post_api_key ).'">'.esc_html( stripslashes( $the_post_raw_code ) ).'</textarea>';
 			}
 
 			$html .= '</div>'; // map_cookie_description_wrapper
@@ -1128,7 +1175,7 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 								' role="checkbox"'.
 								' aria-label="'.esc_attr( $vv['human_name'] ).'"'.
 								' tabindex="0"'.
-								' aria-checked="mixed">'.
+								' aria-checked="false">'.
 								'<span class="sr-only">'.esc_html( $vv['human_name'] ).'</span>'.
 							'</div>';
 						$html .= '</div>'; // map-switch
@@ -1171,10 +1218,10 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$anchor_text = $anchor_texts[$anchor_text_index];
 
 			$is_pro         = isset( $s['pa'] ) && $s['pa'] == 1;
-			$img_pro        = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
-			$img_basic      = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
-			$img_pro_wide   = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-pro.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
-			$img_basic_wide = '<img src="'.esc_attr( plugin_dir_url( __DIR__ ) ).'frontend/img/privacy-by-basic.png" alt="'.esc_attr( $anchor_text ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low">';
+			$img_pro        = $this->render_credits_image( 'privacy-by-pro', $anchor_text );
+			$img_basic      = $this->render_credits_image( 'privacy-by-basic', $anchor_text );
+			$img_pro_wide   = $img_pro;
+			$img_basic_wide = $img_basic;
 
 			$html = '<div data-nosnippet class="modal_credits">';
 
@@ -1206,6 +1253,25 @@ if( !class_exists( 'MyAgilePrivacyBannerRenderer' ) )
 			$html .= '</div>';
 
 			return $html;
+		}
+
+		/**
+		 * Returns the credits badge image, with a WebP source except on IIS.
+		 *
+		 * @param string $basename Image file name without extension.
+		 * @param string $alt      Alternative text.
+		 * @return string
+		 */
+		private function render_credits_image( $basename, $alt )
+		{
+			global $is_IIS;
+
+			$base = plugin_dir_url( __DIR__ ) . 'frontend/img/' . $basename;
+			$img  = '<img src="'.esc_url( $base . '.png' ).'" alt="'.esc_attr( $alt ).'" width="435" height="40" loading="lazy" decoding="async" fetchpriority="low" hidden>';
+
+			if( !empty( $is_IIS ) ) return $img;
+
+			return '<picture><source srcset="'.esc_url( $base . '.webp' ).'" type="image/webp">'.$img.'</picture>';
 		}
 
 		/**

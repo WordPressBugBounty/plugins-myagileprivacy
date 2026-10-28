@@ -697,14 +697,14 @@ final class MyAgilePrivacyAdmin {
 				array(
 					'ajax_url' 						=> admin_url( 'admin-ajax.php' ),
 					'security' 						=> wp_create_nonce( 'check_license_status' ),
-					// own nonce: the trial family writes and reaches the network, the licence check
+					// own nonce: the trial family writes and reaches the network, the license check
 					// only reads. ⚠️ wp_localize_script turns top level scalars into STRINGS: any
 					// value added here is compared in JS with == and never with ===
 					'trial_security' 				=> wp_create_nonce( 'map_request_trial' ),
 					'trial_b_security' 				=> wp_create_nonce( 'map_request_trial_b' ),
 			) );
 
-			// the outcome texts belong to the catalogue, not to the JavaScript
+			// the outcome texts belong to the catalog, not to the JavaScript
 			wp_localize_script( $this->plugin_name, 'map_trial_i18n',
 				array(
 					'invalid'     => __( 'Please fill in your name and a valid email address.', 'MAP_txt' ),
@@ -713,12 +713,12 @@ final class MyAgilePrivacyAdmin {
 					'pending'     => __( 'A request is already waiting for confirmation. Check your inbox.', 'MAP_txt' ),
 					'unreachable' => __( 'We could not reach the server. Please try again in a few minutes.', 'MAP_txt' ),
 					'granted'     => __( 'Done. The paid features are on for this site: the page is reloading.', 'MAP_txt' ),
-					'no_site'     => __( 'This site is not connected to your licence yet. Save your settings first, then ask again.', 'MAP_txt' ),
-					'no_licence'  => __( 'Enter your licence code first.', 'MAP_txt' ),
+					'no_site'     => __( 'This site is not connected to your license yet. Save your settings first, then ask again.', 'MAP_txt' ),
+					'no_licence'  => __( 'Enter your license code first.', 'MAP_txt' ),
 					'site_used'   => __( 'This site has already had its trial, and it cannot be reopened.', 'MAP_txt' ),
 					'family_used' => __( 'This site has already had its trial, and it cannot be reopened.', 'MAP_txt' ),
-					'cap_reached' => __( 'Your licence has used all of its trials. Contact us to try the paid features on another site.', 'MAP_txt' ),
-					'reseller'    => __( 'Your licence was sold to you by a reseller: ask them for the trial.', 'MAP_txt' ),
+					'cap_reached' => __( 'Your license has used all of its trials. Contact us to try the paid features on another site.', 'MAP_txt' ),
+					'reseller'    => __( 'Your license was sold to you by a reseller: ask them for the trial.', 'MAP_txt' ),
 			) );
 		}
 	}
@@ -1162,7 +1162,7 @@ final class MyAgilePrivacyAdmin {
 
 			$sync_result = $this->sync_cookies_and_fixed_texts( false );
 
-			// the new licence code gets its own sync: the raised flag stays
+			// the new license code gets its own sync: the raised flag stays
 			if( $sync_result === 'license_changed' )
 			{
 				$this->release_sync_lock();
@@ -1399,7 +1399,6 @@ final class MyAgilePrivacyAdmin {
 			'hash'				=>	$the_settings['license_code'],
 			'domain'			=>	$domain,
 			'locale'			=>	$locale,
-			// short fields first: a receiver that caps the number of fields drops the tail
 			'version'			=>	MAP_PLUGIN_VERSION,
 			'bypass_cache'		=>	$bypass_cache_check,
 			'options_summary'	=>	$this->get_options_summary(),
@@ -1418,7 +1417,7 @@ final class MyAgilePrivacyAdmin {
 
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $action_result );
 
-		// an answer about a licence code replaced during the call is discarded
+		// an answer about a license code replaced during the call is discarded
 		wp_cache_delete( MAP_PLUGIN_SETTINGS_FIELD, 'options' );
 		wp_cache_delete( 'alloptions', 'options' );
 
@@ -2181,6 +2180,10 @@ final class MyAgilePrivacyAdmin {
 					$timestamp = time();
 					$the_settings['cookie_reset_timestamp'] = $timestamp;
 					MyAgilePrivacy::update_option( MAP_PLUGIN_SETTINGS_FIELD, $the_settings );
+
+					// pages cached before the reset carry the earlier cookie names
+					MyAgilePrivacy::flush_json_cache();
+					MyAgilePrivacy::schedule_page_cache_flush();
 				}
 
 				if( isset( $autoconsume_options['added_cookies'] ) && is_array( $autoconsume_options['added_cookies'] ) && $autoconsume_options['added_cookies'] )
@@ -2257,7 +2260,8 @@ final class MyAgilePrivacyAdmin {
 					MyAgilePrivacy::flush_manifest_file_cache();
 					// Invalidate the JSON cache since cookie data has changed
 					MyAgilePrivacy::flush_json_cache();
-					MyAgilePrivacy::tryOtherPluginCacheClear();
+					// third-party page caches are cleared in a request of their own
+					MyAgilePrivacy::schedule_page_cache_flush();
 				}
 			}
 		}
@@ -2277,6 +2281,8 @@ final class MyAgilePrivacyAdmin {
 			$locale = $old_locale;
 		}
 
+		MyAgilePrivacy::track_applied_cookie_domain();
+
 		return $map_license_changed ? 'license_changed' : true;
 	}
 
@@ -2295,7 +2301,8 @@ final class MyAgilePrivacyAdmin {
 
 		$el  = 'post_' . $cpt;
 		$icl = $wpdb->prefix . 'icl_translations';
-		$has_wpml = ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $icl ) ) ) === $icl );
+		$icl_found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $icl ) ) );
+		$has_wpml  = ( is_string( $icl_found ) && strtolower( $icl_found ) === strtolower( $icl ) );
 
 		$needs_config = ( $cpt === MAP_POST_TYPE_COOKIES );
 		$config_col   = '';
@@ -2799,43 +2806,6 @@ final class MyAgilePrivacyAdmin {
 
 	}
 
-	//plugins_loaded further actions
-	public function map_plugins_loaded_action()
-	{
-		$rconfig = MyAgilePrivacy::get_rconfig();
-
-		if( isset( $rconfig ) &&
-			isset( $rconfig['enable_plugins_loaded_filter'] ) &&
-			$rconfig['enable_plugins_loaded_filter']
-		)
-		{
-			//WP Rocket check
-			if( function_exists( 'get_rocket_option' ) )
-			{
-				add_filter( 'rocket_defer_inline_exclusions', array( $this, 'map_rocket_defer_inline_exclusions' ) );
-			}
-		}
-	}
-
-	//WP Rocket deferred file esclusion
-	public function map_rocket_defer_inline_exclusions( $inline_exclusions_list )
-	{
-		if( !is_array( $inline_exclusions_list ) )
-		{
-			$inline_exclusions_list = array();
-		}
-
-		if( defined( 'MAP_ASSETS_EXCLUSION_PATTERNS' ) )
-		{
-			foreach( explode( ',', MAP_ASSETS_EXCLUSION_PATTERNS ) as $item )
-			{
-				$inline_exclusions_list[] = $item;
-			}
-		}
-
-		return $inline_exclusions_list;
-	}
-
 
 	/**
 	 * get options summary for remote validation
@@ -2932,7 +2902,20 @@ final class MyAgilePrivacyAdmin {
 
 			if( defined( 'MAPX_PLUGIN_SETTINGS_FIELD' ) )
 			{
-				$other_data['my_agile_pixel_options'] = MyAgilePrivacy::get_option( MAPX_PLUGIN_SETTINGS_FIELD, null );
+				$pixel_options = MyAgilePrivacy::get_option( MAPX_PLUGIN_SETTINGS_FIELD, null );
+
+				if( is_array( $pixel_options ) )
+				{
+					foreach( array( 'license_code', 'facebook_access_token', 'tiktok_access_token', 'blacklisted_ip' ) as $pixel_key )
+					{
+						if( array_key_exists( $pixel_key, $pixel_options ) )
+						{
+							$pixel_options[ $pixel_key ] = ( isset( $pixel_options[ $pixel_key ] ) ) ? '(set)' : '(not set)';
+						}
+					}
+
+					$other_data['my_agile_pixel_options'] = $pixel_options;
+				}
 			}
 		}
 		$other_data['with_my_agile_pixel'] = $with_my_agile_pixel;
@@ -2942,6 +2925,21 @@ final class MyAgilePrivacyAdmin {
 		// Get settings
 		$the_settings = array_merge( MyAgilePrivacy::get_settings(), MyAgilePrivacy::get_scan_runtime() );
 		$do_not_send_in_clear_settings_key = MyAgilePrivacy::get_do_not_send_in_clear_settings_key();
+
+		if( isset( $the_settings['pa'] ) &&
+			MyAgilePrivacy::looseEqualsPhp8( $the_settings['pa'], 1 ) &&
+			function_exists( 'map_bot_detection_on' ) &&
+			map_bot_detection_on() )
+		{
+			$other_data['bot_diag'] = $this->get_bot_diag();
+		}
+
+		$html_scan = $this->get_html_scan_diag();
+
+		if( $html_scan !== '' )
+		{
+			$other_data['html_scan'] = $html_scan;
+		}
 
 		//purge do_not_send fields
 
@@ -3186,6 +3184,8 @@ final class MyAgilePrivacyAdmin {
 			'advanced_usage'	=>	$advanced_usage,
 		);
 
+		$output = array( 'cf_nets_echo' => $this->get_cf_nets_echo() ) + $output;
+
 		$usage_extract = ( function_exists( 'map_call_advanced_get_usage_extract' ) ) ? map_call_advanced_get_usage_extract() : '';
 
 		if( $usage_extract !== '' )
@@ -3196,6 +3196,146 @@ final class MyAgilePrivacyAdmin {
 		//if( defined( 'MAP_DEBUGGER' ) && MAP_DEBUGGER ) MyAgilePrivacy::write_log( $output );
 
 		return $output;
+	}
+
+	/**
+	 * Diagnostic scalars for the summary; a field that cannot be read is null.
+	 *
+	 * @return array
+	 */
+	private function get_bot_diag()
+	{
+		$diag = array(
+			'd'		=>	null,
+			'dd'	=>	null,
+			'mig'	=>	null,
+			'migd'	=>	null,
+			'bs'	=>	null,
+			'seen'	=>	null,
+		);
+
+		if( !defined( 'MAP_PLUGIN_TRAFFIC_OUTCOME' ) ||
+			!defined( 'MAP_PLUGIN_STATS_MIG' ) ||
+			!defined( 'MAP_PLUGIN_STATS_BOT_SINCE' ) ||
+			!defined( 'MAP_PLUGIN_ADV_SEEN_VERSION' ) )
+		{
+			return $diag;
+		}
+
+		try
+		{
+			$now = time();
+
+			// all four first: each call also drops the autoloaded set
+			MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_TRAFFIC_OUTCOME );
+			MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_STATS_MIG );
+			MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_STATS_BOT_SINCE );
+			MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_ADV_SEEN_VERSION );
+
+			$outcome = get_option( MAP_PLUGIN_TRAFFIC_OUTCOME, null );
+			$mark = get_option( MAP_PLUGIN_STATS_MIG, null );
+			$since = get_option( MAP_PLUGIN_STATS_BOT_SINCE, null );
+			$seen = get_option( MAP_PLUGIN_ADV_SEEN_VERSION, null );
+
+			if( is_array( $outcome ) &&
+				isset( $outcome['d'], $outcome['td'] ) &&
+				is_int( $outcome['d'] ) &&
+				is_int( $outcome['td'] ) &&
+				in_array( $outcome['d'], array( 0, 1, 2 ), true ) )
+			{
+				$diag['d'] = $outcome['d'];
+				$diag['dd'] = self::diag_days( $now, $outcome['td'] );
+			}
+
+			if( is_array( $mark ) &&
+				isset( $mark['t'], $mark['state'] ) &&
+				is_string( $mark['t'] ) &&
+				preg_match( '/^(\d{1,10})(\.\d{6})?$/D', $mark['t'], $m ) &&
+				in_array( $mark['state'], array( 'run', 'fail' ), true ) )
+			{
+				$diag['mig'] = $mark['state'];
+				$diag['migd'] = self::diag_days( $now, (float) $m[1] );
+			}
+
+			if( is_string( $since ) &&
+				preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/D', $since, $m ) &&
+				checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) )
+			{
+				$diag['bs'] = $since;
+			}
+
+			if( is_string( $seen ) &&
+				preg_match( '/^([0-9A-Za-z.\-]{1,32})\|(hdr|const)\|(\d{1,10})$/D', $seen, $m ) )
+			{
+				$diag['seen'] = $m[1];
+			}
+		}
+		catch( Exception $e )
+		{
+			return $diag;
+		}
+		catch( Error $e )
+		{
+			return $diag;
+		}
+
+		return $diag;
+	}
+
+	/**
+	 * Last page served without the full analysis, as one JSON string; empty when none.
+	 *
+	 * @return string
+	 */
+	private function get_html_scan_diag()
+	{
+		if( !defined( 'MAP_PLUGIN_HTML_SCAN_STATE' ) )
+		{
+			return '';
+		}
+
+		try
+		{
+			$diag = MyAgilePrivacy::get_html_scan_state();
+
+			if( null === $diag )
+			{
+				return '';
+			}
+
+			if( time() - $diag['at'] > MAP_HTML_SCAN_STATE_TTL )
+			{
+				delete_option( MAP_PLUGIN_HTML_SCAN_STATE );
+
+				return '';
+			}
+
+			$json = wp_json_encode( $diag );
+
+			return ( is_string( $json ) ) ? $json : '';
+		}
+		catch( Exception $e )
+		{
+			return '';
+		}
+		catch( Error $e )
+		{
+			return '';
+		}
+	}
+
+	/**
+	 * Whole days from a past time to now, negative for a time ahead of the clock.
+	 *
+	 * @param int $now
+	 * @param int|float $then
+	 * @return int
+	 */
+	private static function diag_days( $now, $then )
+	{
+		$days = floor( ( (float) $now - (float) $then ) / 86400 );
+
+		return (int) max( -2147483647, min( 2147483647, $days ) );
 	}
 
 	/**
@@ -3320,6 +3460,7 @@ final class MyAgilePrivacyAdmin {
 
 		$do_clear_file_cache = false;
 		$do_revalidation = false;
+		$do_page_cache_flush = false;
 
 		$license_user_status = null;
 		$license_valid = null;
@@ -3367,6 +3508,20 @@ final class MyAgilePrivacyAdmin {
 				$map_locked_keys[] = 'stats_enabled';
 			}
 
+			$map_stats_migrating = false;
+
+			// the collection switch keeps its stored value while the stats rows are being updated
+			if( !$map_ab_locked &&
+				isset( $_POST['stats_enabled_field'] ) &&
+				is_string( $_POST['stats_enabled_field'] ) &&
+				( !empty( $the_settings['stats_enabled'] ) ) !== ( !empty( MyAgilePrivacy::sanitise_settings( 'stats_enabled', $_POST['stats_enabled_field'] ) ) ) &&
+				function_exists( 'map_call_advanced_stats_migrating' ) &&
+				map_call_advanced_stats_migrating() )
+			{
+				$map_locked_keys[] = 'stats_enabled';
+				$map_stats_migrating = true;
+			}
+
 			$map_default_settings = MyAgilePrivacy::get_default_settings();
 
 			foreach( $the_settings as $key => $value )
@@ -3396,19 +3551,19 @@ final class MyAgilePrivacyAdmin {
 						}
 					}
 
-					//store sanitised values only
+					//store sanitized values only
 					$the_settings[ $key ] = MyAgilePrivacy::sanitise_array_settings( $key, $map_posted_value );
 					$map_owned_fields[] = $key;
 				}
 				elseif( isset( $_POST[$key . '_field'] ) && !is_array( $_POST[$key . '_field'] ) && !is_array( $map_default_value ) )
 				{
-					//store sanitised values only
+					//store sanitized values only
 					$the_settings[ $key ] = MyAgilePrivacy::sanitise_settings( $key, $_POST[$key . '_field'] );
 					$map_owned_fields[] = $key;
 				}
 			};
 
-			//sanitise geo_force_optout (array of country_iso => bool)
+			//sanitize geo_force_optout (array of country_iso => bool)
 			if( isset( $the_settings['site_and_policy_settings']['geo_force_optout'] ) &&
 				is_array( $the_settings['site_and_policy_settings']['geo_force_optout'] ) )
 			{
@@ -3474,6 +3629,7 @@ final class MyAgilePrivacyAdmin {
 
 				$the_settings['cookie_reset_timestamp'] = $timestamp;
 				$map_owned_fields[] = 'cookie_reset_timestamp';
+				$do_page_cache_flush = true;
 			}
 
 			if( isset( $_POST['reset_cookie_settings'] ) )
@@ -3907,8 +4063,21 @@ final class MyAgilePrivacyAdmin {
 				}
 			}
 
+			if( $map_stats_migrating )
+			{
+				$answer['stats_migrating'] = true;
+			}
+
+			MyAgilePrivacy::track_applied_cookie_domain();
+
 		    // Invalidate the JSON cache since cookie data has changed
 		    MyAgilePrivacy::flush_json_cache();
+
+			// pages cached before a consent reset carry the earlier cookie names
+			if( $do_page_cache_flush )
+			{
+				MyAgilePrivacy::tryOtherPluginCacheClearScoped();
+			}
 
 			wp_send_json( $answer );
 
@@ -4383,6 +4552,7 @@ final class MyAgilePrivacyAdmin {
 		}
 
 		$this->map_render_upsell_page(
+			'stats',
 			__( 'My Agile Privacy®: Consent Statistics', 'MAP_txt' ),
 			array(
 				__( 'Consent Statistics is a premium feature. Measure how visitors interact with your cookie banner - interaction, consent and opt-in rates, with no personal data collected. Upgrade your license to unlock it.', 'MAP_txt' ),
@@ -4416,6 +4586,7 @@ final class MyAgilePrivacyAdmin {
 		}
 
 		$this->map_render_upsell_page(
+			'abtest',
 			__( 'My Agile Privacy®: Banner A/B Test', 'MAP_txt' ),
 			array(
 				__( 'Want to know which Banner configuration earns the most consent? Then activate the license: Banner A/B Test compares up to four configurations on real visitors and applies the winner with one click.', 'MAP_txt' ),
@@ -4424,7 +4595,7 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
-	 * Whether this site carries a paid licence. Read from the setting and not from the bridge, which
+	 * Whether this site carries a paid license. Read from the setting and not from the bridge, which
 	 * does not exist with MAP_ENABLE_ADVANCED_INTEGRATION off.
 	 */
 	private static function map_has_paid_license()
@@ -4446,8 +4617,8 @@ final class MyAgilePrivacyAdmin {
 			return true;
 		}
 
-		// 🔴 a paid licence with no trial to show has nothing on that page: what is left there is the
-		// form of the other trial, the one for sites without a licence, and the server refuses it on a
+		// 🔴 a paid license with no trial to show has nothing on that page: what is left there is the
+		// form of the other trial, the one for sites without a license, and the server refuses it on a
 		// domain that already carries a paying accreditation. Offering it invites a customer to fill in
 		// a form and be told no
 		if( self::map_has_paid_license() )
@@ -4545,7 +4716,7 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
-	 * True when the licence was sold through a reseller: the page then sends the customer there.
+	 * True when the license was sold through a reseller: the page then sends the customer there.
 	 */
 	public static function map_trial_is_reseller()
 	{
@@ -4573,7 +4744,7 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
-	 * End date of a running trial, or null. Comes from the licence server, never computed locally:
+	 * End date of a running trial, or null. Comes from the license server, never computed locally:
 	 * two clocks are the defect that bit the other trial.
 	 */
 	public static function map_trial_end()
@@ -4584,37 +4755,229 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
+	 * Link to the plans page; $page ( 'stats' or 'abtest' ) adds the campaign parameters.
+	 */
+	public static function map_trial_plans_url( $page = '' )
+	{
+		$url = ( MAP_Helpdesk_Links::get_language_key() === 'it' )
+				? 'https://www.myagileprivacy.com/'
+				: 'https://www.myagileprivacy.com/en/';
+
+		$campaigns = array(
+			'stats'  => 'upsell_stats',
+			'abtest' => 'upsell_abtest',
+		);
+
+		if( !is_string( $page ) || !isset( $campaigns[ $page ] ) )
+		{
+			return $url;
+		}
+
+		$args = array(
+			'utm_source'   => 'referral',
+			'utm_medium'   => self::map_has_paid_license() ? 'plugin-pro' : 'plugin-basic',
+			'utm_campaign' => $campaigns[ $page ],
+		);
+
+		if( self::map_trial_state() === 'active' )
+		{
+			$args['utm_content'] = 'trial';
+		}
+
+		return add_query_arg( $args, $url );
+	}
+
+	/**
+	 * Whether the license covers the feature of $page.
+	 */
+	private static function map_upsell_license_includes( $page )
+	{
+		if( !self::map_has_paid_license() )
+		{
+			return false;
+		}
+
+		$rconfig = MyAgilePrivacy::get_rconfig();
+
+		if( !is_array( $rconfig ) )
+		{
+			return false;
+		}
+
+		$keys = ( $page === 'abtest' ) ? array( 'advanced_authorized', 'stats_auth', 'abtest_auth' ) : array( 'advanced_authorized', 'stats_auth' );
+
+		foreach( $keys as $key )
+		{
+			if( !isset( $rconfig[ $key ] ) || $rconfig[ $key ] !== true )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether the automatic setup can switch the feature on by itself.
+	 */
+	private static function map_upsell_turns_on_by_itself()
+	{
+		if( !function_exists( 'map_is_advanced_active' ) || !class_exists( 'MAP_Package_Installer' ) )
+		{
+			return false;
+		}
+
+		$remote_version = map_advanced_get_remote_version();
+
+		if( $remote_version === '' || map_advanced_get_download_url() === '' )
+		{
+			return false;
+		}
+
+		$error = get_option( MAP_PLUGIN_ADVANCED_INSTALL_ERROR, array() );
+
+		if( is_array( $error ) && !empty( $error['timestamp'] ) && ( time() - (int) $error['timestamp'] ) < DAY_IN_SECONDS )
+		{
+			return false;
+		}
+
+		if( MAP_Admin_Notice_Manager::instance()->has( 'map_advanced_state' ) )
+		{
+			return false;
+		}
+
+		$installer = new MAP_Package_Installer();
+
+		if( $installer->auto_install_blocker() === '' )
+		{
+			return true;
+		}
+
+		// the setup on admin_init may have activated it earlier in this same request
+		return ( $installer->is_advanced_installed()
+					&& $installer->get_installed_advanced_version() === $remote_version
+					&& ( !$installer->is_advanced_active() || did_action( 'activate_' . MAP_Package_Installer::MAP_ADVANCED_BASENAME ) ) );
+	}
+
+	/**
+	 * State of the page of a feature that is not available.
+	 */
+	private static function map_upsell_state( $page )
+	{
+		if( self::map_upsell_license_includes( $page ) )
+		{
+			if( function_exists( 'map_is_advanced_active' ) && map_is_advanced_active() )
+			{
+				return '0d';
+			}
+
+			if( !current_user_can( 'manage_options' ) )
+			{
+				return '0c';
+			}
+
+			if( self::map_upsell_turns_on_by_itself() )
+			{
+				return '0a';
+			}
+
+			if( MAP_Admin_Notice_Manager::instance()->has( 'map_advanced_state' ) )
+			{
+				return '0b';
+			}
+
+			return '0d';
+		}
+
+		if( self::map_trial_b_state() === 'available' )
+		{
+			return 'trial_b';
+		}
+
+		if( self::map_trial_state() === 'active' )
+		{
+			return 'trial';
+		}
+
+		if( !self::map_has_paid_license() )
+		{
+			return 'plans';
+		}
+
+		return 'unavailable';
+	}
+
+	/**
+	 * Prints the "See the plans" button of the page of a feature that is not available.
+	 */
+	private static function map_print_plans_button( $page )
+	{
+		echo '<p class="mt-3"><a class="button-agile" href="' . esc_url( self::map_trial_plans_url( $page ) ) . '" target="_blank" rel="noopener">'
+			. esc_html__( 'See the plans', 'MAP_txt' )
+			. '<span class="screen-reader-text"> ' . esc_html__( 'opens in a new tab', 'MAP_txt' ) . '</span>'
+			. '</a></p>';
+	}
+
+	/**
 	 * Renders the page of a feature that is not available.
 	 */
-	private function map_render_upsell_page( $title, $paragraphs )
+	private function map_render_upsell_page( $page, $title, $paragraphs )
 	{
-		// same grid, box and type as the Free trial page, so the premium screens read as one family
+		$state = self::map_upsell_state( $page );
+
+		$included = array(
+			'0a' => __( 'Your license includes this feature. It switches on by itself within a few minutes: then reload this page and turn it on.', 'MAP_txt' ),
+			'0b' => __( 'Your license includes this feature: follow the My Agile Privacy® notice at the top of this page to activate it.', 'MAP_txt' ),
+			'0c' => __( 'Your license includes this feature: ask a site administrator to activate it.', 'MAP_txt' ),
+			'0d' => __( 'Your license includes this feature. If it is still off tomorrow, contact support.', 'MAP_txt' ),
+		);
+
 		echo '<div class="wrap dashboardOptionsWrapper" id="my_agile_privacy_backend">';
 		echo '<h1>' . esc_html( $title ) . '</h1>';
 		echo '<div class="container-fluid"><div class="row"><div class="col-md-9"><div class="consistent-box">';
 		echo '<p><span class="badge rounded-pill forbiddenWarning bg-danger"><small>' . esc_html__( 'Premium Feature', 'MAP_txt' ) . '</small></span></p>';
 
-		$map_first = true;
-
-		foreach( $paragraphs as $map_paragraph )
+		if( !isset( $included[ $state ] ) )
 		{
-			// the opening line carries the promise: same weight it has on the trial page
-			echo '<p' . ( $map_first ? ' class="lead"' : '' ) . '>' . esc_html( $map_paragraph ) . '</p>';
+			$map_first = true;
 
-			$map_first = false;
+			foreach( $paragraphs as $map_paragraph )
+			{
+				echo '<p' . ( $map_first ? ' class="lead"' : '' ) . '>' . esc_html( $map_paragraph ) . '</p>';
+
+				$map_first = false;
+			}
 		}
 
-		if( self::map_trial_invitable() )
+		if( isset( $included[ $state ] ) )
+		{
+			echo '<div class="alert alert-info mt-3 mb-0">' . esc_html( $included[ $state ] );
+
+			if( $state === '0d' )
+			{
+				echo ' <a href="' . esc_url( MAP_Helpdesk_Links::get( 'contact' ) ) . '" class="alert-link">' . esc_html__( 'Contact us', 'MAP_txt' ) . '</a>';
+			}
+
+			echo '</div>';
+		}
+		elseif( $state === 'trial_b' )
 		{
 			echo '<p class="mt-3"><a class="button-agile" href="' . esc_url( admin_url( 'edit.php?post_type=' . MAP_POST_TYPE_COOKIES . '&page=' . MAP_POST_TYPE_COOKIES . '_trial' ) ) . '">'
 			   . esc_html__( 'Request a free trial', 'MAP_txt' )
 			   . '</a></p>';
 		}
+		elseif( $state === 'trial' )
+		{
+			echo '<div class="alert alert-info mt-3 mb-0">' . esc_html__( 'This feature is not included in the free trial.', 'MAP_txt' ) . '</div>';
+			self::map_print_plans_button( $page );
+		}
+		elseif( $state === 'plans' )
+		{
+			self::map_print_plans_button( $page );
+		}
 		else
 		{
-			// inviting someone who is already on a trial to ask for one is the shortest path to a
-			// support ticket: say why the feature is off instead
-			echo '<div class="alert alert-info mt-3 mb-0">' . esc_html__( 'This feature is not available with your licence.', 'MAP_txt' ) . '</div>';
+			echo '<div class="alert alert-info mt-3 mb-0">' . esc_html__( 'This feature is not available with your license.', 'MAP_txt' ) . '</div>';
 		}
 
 		echo '</div></div></div></div>';
@@ -4639,7 +5002,7 @@ final class MyAgilePrivacyAdmin {
 	}
 
 	/**
-	 * Free trial request. Talks to the licence server; the trial is only created after the
+	 * Free trial request. Talks to the license server; the trial is only created after the
 	 * requester confirms by email.
 	 */
 	public function map_request_trial()
@@ -4649,7 +5012,7 @@ final class MyAgilePrivacyAdmin {
 			wp_send_json_error( array( 'code' => 'forbidden' ), 403 );
 		}
 
-		// own nonce: this family writes and reaches the network, the licence check only reads
+		// own nonce: this family writes and reaches the network, the license check only reads
 		check_ajax_referer( 'map_request_trial', 'security' );
 
 		$name  = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
@@ -4713,14 +5076,14 @@ final class MyAgilePrivacyAdmin {
 		}
 
 		// remembered locally so the page does not offer a second request while the first link is
-		// still valid: the licence server knows nothing until the requester confirms
+		// still valid: the license server knows nothing until the requester confirms
 		update_option( MAP_PLUGIN_TRIAL_REQUESTED, time() );
 
 		wp_send_json_success( array( 'email' => $email ) );
 	}
 
 	/**
-	 * Trial B request. The customer already holds a valid licence, so there is nothing to confirm by
+	 * Trial B request. The customer already holds a valid license, so there is nothing to confirm by
 	 * mail: the answer is the grant itself.
 	 */
 	public function map_request_trial_b()
@@ -7265,14 +7628,15 @@ final class MyAgilePrivacyAdmin {
 	public function map_check_post_update_transient()
 	{
 		$installed_version = MyAgilePrivacy::get_option( MAP_PLUGIN_INSTALLED_VERSION, false );
+		$effective_version = MyAgilePrivacy::get_effective_installed_version();
 
-		if( $installed_version === MAP_PLUGIN_VERSION )
+		if( $installed_version === $effective_version )
 		{
 			return;
 		}
 
 		// written before the routine, so the next requests do not repeat it
-		MyAgilePrivacy::update_option( MAP_PLUGIN_INSTALLED_VERSION, MAP_PLUGIN_VERSION );
+		MyAgilePrivacy::update_option( MAP_PLUGIN_INSTALLED_VERSION, $effective_version );
 
 		// a new installation has nothing to refresh
 		if( $installed_version === false && !is_array( MyAgilePrivacy::get_option( MAP_PLUGIN_SETTINGS_FIELD, false ) ) )
@@ -7294,7 +7658,8 @@ final class MyAgilePrivacyAdmin {
 		MyAgilePrivacy::flush_manifest_file_cache();
 		// Invalidate the JSON cache since cookie data has changed
 		MyAgilePrivacy::flush_json_cache();
-		MyAgilePrivacy::tryOtherPluginCacheClear();
+		// third-party page caches are cleared in a request of their own
+		MyAgilePrivacy::schedule_page_cache_flush();
 
         MyAgilePrivacy::update_option( MAP_PLUGIN_VALIDATION_TIMESTAMP, null );
         MyAgilePrivacy::update_option( MAP_PLUGIN_DO_SYNC_NOW, 1 );
@@ -7302,5 +7667,85 @@ final class MyAgilePrivacyAdmin {
 		// rows left by earlier versions
 		delete_option( MAP_PLUGIN_DB_KEY_PREFIX . 'sync_in_progress' );
 		delete_transient( 'map_just_updated' );
+	}
+
+	//refreshes the frontend cache when My Agile Pixel is switched on or off
+	public function map_on_pixel_toggled( $plugin )
+	{
+		if( $plugin === 'myagilepixel/myagilepixel.php' )
+		{
+			MyAgilePrivacy::flush_json_cache();
+		}
+	}
+
+	//watches My Agile Pixel activation and settings
+	public function map_watch_pixel_state()
+	{
+		add_action( 'activated_plugin', array( $this, 'map_on_pixel_toggled' ), 10, 1 );
+		add_action( 'deactivated_plugin', array( $this, 'map_on_pixel_toggled' ), 10, 1 );
+
+		if( defined( 'MAPX_PLUGIN_SETTINGS_FIELD' ) && is_string( MAPX_PLUGIN_SETTINGS_FIELD ) && MAPX_PLUGIN_SETTINGS_FIELD !== '' )
+		{
+			add_action( 'add_option_' . MAPX_PLUGIN_SETTINGS_FIELD, array( $this, 'map_on_pixel_settings_saved' ) );
+			add_action( 'update_option_' . MAPX_PLUGIN_SETTINGS_FIELD, array( $this, 'map_on_pixel_settings_saved' ) );
+		}
+	}
+
+	//refreshes the frontend cache after a My Agile Pixel settings write
+	public function map_on_pixel_settings_saved()
+	{
+		MyAgilePrivacy::flush_json_cache();
+	}
+
+	/**
+	 * Count and fingerprint of the stored Cloudflare list, as a JSON string for the summary.
+	 *
+	 * @return string
+	 */
+	private function get_cf_nets_echo()
+	{
+		$echo = array( 'n' => 0, 'h' => '' );
+
+		try
+		{
+			$rconfig = MyAgilePrivacy::get_rconfig();
+			$list = ( is_array( $rconfig ) && isset( $rconfig['cf_nets'] ) ) ? $rconfig['cf_nets'] : array();
+
+			if( !is_array( $list ) )
+			{
+				$echo['n'] = -1;
+			}
+			elseif( count( $list ) > 0 )
+			{
+				$echo['n'] = -1;
+				$plain = ( array_keys( $list ) === range( 0, count( $list ) - 1 ) );
+
+				foreach( $list as $item )
+				{
+					if( !$plain || !is_string( $item ) || false !== strpos( $item, "\n" ) )
+					{
+						$plain = false;
+						break;
+					}
+				}
+
+				if( $plain )
+				{
+					$echo = array( 'n' => count( $list ), 'h' => hash( 'sha256', implode( "\n", $list ) ) );
+				}
+			}
+		}
+		catch( Exception $e )
+		{
+			$echo = array( 'n' => -1, 'h' => '' );
+		}
+		catch( Error $e )
+		{
+			$echo = array( 'n' => -1, 'h' => '' );
+		}
+
+		$json = wp_json_encode( $echo );
+
+		return ( is_string( $json ) ) ? $json : '{"n":-1,"h":""}';
 	}
 }

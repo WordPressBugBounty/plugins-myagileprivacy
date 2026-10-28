@@ -130,6 +130,11 @@ function map_stats_enabled() {
     return map_is_advanced_active() && map_stats_authorized();
 }
 
+function map_bot_detection_on() {
+    if ( ! defined( 'MAP_BOT_DETECTION' ) ) { return false; }
+    return MAP_BOT_DETECTION === true;
+}
+
 /**
  * Availability check for the banner split feature.
  */
@@ -177,6 +182,24 @@ function map_call_advanced_get_bundle_url() {
     $advanced = map_advanced_instance();
     if ( ! is_object( $advanced ) || ! method_exists( $advanced, 'get_bundle_url' ) ) { return ''; }
     return $advanced->get_bundle_url();
+}
+
+/**
+ * Returns the version of the advanced JS bundle, or '' when unavailable.
+ *
+ * @return string
+ */
+function map_call_advanced_get_bundle_version() {
+    if ( ! map_is_advanced_active() )                                      { return ''; }
+
+    try {
+        if ( ! defined( 'MAP_ADVANCED_VERSION' ) || ! is_string( MAP_ADVANCED_VERSION ) ) { return ''; }
+        return MAP_ADVANCED_VERSION;
+    } catch ( Exception $e ) {
+        return '';
+    } catch ( Error $e ) {
+        return '';
+    }
 }
 
 /**
@@ -276,7 +299,7 @@ function map_call_advanced_get_banner_variant( $cookie_value, $preview, $warm ) 
         $ids[] = $id;
     }
 
-    // A malformed map is dropped, not fatal: the worst case is today's behaviour.
+    // A malformed map is dropped, not fatal: the worst case is today's behavior.
     $looks = array();
 
     if ( isset( $public['variant_looks'] ) && is_array( $public['variant_looks'] ) ) {
@@ -380,6 +403,51 @@ function map_call_advanced_prune_stats() {
 }
 
 /**
+ * Keeps the layout of the collected stats rows in sync.
+ *
+ * @param string $context 'screen' | 'cron'
+ * @return void
+ */
+function map_call_advanced_stats_migrate_schedule( $context ) {
+    if ( ! map_stats_enabled() )                                               { return; }
+    if ( ! map_bot_detection_on() )                                            { return; }
+    if ( $context !== 'screen' && $context !== 'cron' )                        { return; }
+    if ( ! function_exists( 'map_advanced_instance' ) )                        { return; }
+    $advanced = map_advanced_instance();
+    if ( ! is_object( $advanced ) || ! method_exists( $advanced, 'stats_migrate_schedule' ) ) { return; }
+
+    try {
+        $advanced->stats_migrate_schedule( $context );
+    } catch ( Exception $e ) {
+        return;
+    } catch ( Error $e ) {
+        return;
+    }
+}
+
+/**
+ * Whether the layout of the collected stats rows is being updated right now.
+ *
+ * @return bool
+ */
+function map_call_advanced_stats_migrating() {
+    if ( ! map_stats_enabled() )                                               { return false; }
+    if ( ! function_exists( 'map_advanced_instance' ) )                        { return false; }
+    $advanced = map_advanced_instance();
+    if ( ! is_object( $advanced ) || ! method_exists( $advanced, 'stats_migration_running' ) ) { return false; }
+
+    try {
+        $result = $advanced->stats_migration_running();
+    } catch ( Exception $e ) {
+        return false;
+    } catch ( Error $e ) {
+        return false;
+    }
+
+    return ( true === $result );
+}
+
+/**
  * Declares what this installation believes it is allowed to do.
  *
  * @return array
@@ -427,7 +495,7 @@ function map_call_advanced_get_usage_extract() {
     }
 
     if ( ! is_array( $result ) || ! isset( $result['v'] ) || $result['v'] !== 1 ) { return ''; }
-    if ( ! isset( $result['day'] ) || ! is_string( $result['day'] ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $result['day'] ) ) { return ''; }
+    if ( ! isset( $result['day'] ) || ! is_string( $result['day'] ) || ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/D', $result['day'], $day ) ) { return ''; }
 
     $out = array( 'v' => 1, 'day' => $result['day'] );
 
@@ -453,6 +521,43 @@ function map_call_advanced_get_usage_extract() {
 
                 $out['st'][ $device ] = $values;
             }
+
+            $extra = array();
+            $valid = isset( $st['db'], $st['mb'], $st['bs'] ) && map_bot_detection_on();
+
+            foreach ( array( 'd' => 'db', 'm' => 'mb' ) as $device => $key ) {
+                if ( ! $valid ) { break; }
+
+                $limit = $out['st'][ $device ];
+
+                if ( ! is_array( $st[ $key ] ) || count( $st[ $key ] ) !== 5 ) { $valid = false; break; }
+
+                $values = array();
+
+                for ( $n = 0; $n < 5 && $valid; $n++ ) {
+                    $value = isset( $st[ $key ][ $n ] ) ? $st[ $key ][ $n ] : null;
+
+                    if ( ! is_int( $value ) || $value < 0 || $value > $limit[ $n ] ) { $valid = false; }
+                    if ( $valid && $n > 0 && $limit[ $n ] - $value > $limit[0] - $values[0] ) { $valid = false; }
+
+                    $values[] = $value;
+                }
+
+                $extra[ $key ] = $values;
+            }
+
+            if ( $valid ) {
+                $bs       = $st['bs'];
+                $tomorrow = gmdate( 'Y-m-d', gmmktime( 0, 0, 0, (int) $day[2], (int) $day[3] + 1, (int) $day[1] ) );
+
+                $valid = is_string( $bs ) && preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/D', $bs, $date ) &&
+                    checkdate( (int) $date[2], (int) $date[3], (int) $date[1] ) &&
+                    strcmp( $bs, '2026-10-01' ) >= 0 && strcmp( $bs, $tomorrow ) <= 0;
+
+                $extra['bs'] = $bs;
+            }
+
+            if ( $valid ) { $out['st'] += $extra; }
         } elseif ( isset( $st['d'] ) || isset( $st['m'] ) ) {
             return '';
         }

@@ -53,7 +53,7 @@ $locale = MyAgilePrivacy::get_locale();
 		<div class="consistent-box <?php if( !$display_iab ){echo 'forbiddenAreaIAB';} ?>">
 
 			<h4 class="mb-4">
-				<i class="fa-regular fa-tablet-screen"></i>
+				<i class="fa-solid fa-tablet-screen-button"></i>
 				<?php echo wp_kses_post( __( 'Activate IAB Transparency and Consent Framework', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -130,7 +130,7 @@ $locale = MyAgilePrivacy::get_locale();
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-tablet-screen"></i>
+				<i class="fa-solid fa-tablet-screen-button"></i>
 				<?php echo wp_kses_post( __( 'Consent Widget', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -292,7 +292,7 @@ $locale = MyAgilePrivacy::get_locale();
 					<div class="row mb-4">
 						<label for="showagain_text" class="col-sm-5 col-form-label">
 							<?php echo wp_kses_post( __( 'Title for show again policy', 'MAP_txt' ) ); ?>
-							<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+							<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 						</label>
 
 						<div class="col-sm-7">
@@ -348,7 +348,7 @@ $locale = MyAgilePrivacy::get_locale();
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-tablet-screen"></i>
+				<i class="fa-solid fa-tablet-screen-button"></i>
 				<?php echo wp_kses_post( __( 'Reset given consent', 'MAP_txt' ) ); ?>
 			</h4>
 

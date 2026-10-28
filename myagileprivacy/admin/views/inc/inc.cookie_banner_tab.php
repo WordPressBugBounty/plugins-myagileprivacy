@@ -30,7 +30,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-browser"></i>
+				<i class="fa-regular fa-window-maximize"></i>
 				<?php echo wp_kses_post( __( 'Cookie Banner', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -373,7 +373,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<div class="row mb-4 show_banner_title">
 				<label for="bar_heading_text_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Banner title', 'MAP_txt' ) ); ?>
-					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 
 				</label>
 
@@ -392,7 +392,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<div class="row mb-4">
 				<label for="notify_message_v2_field" class="col-sm-5 col-form-label">
 					<?php echo wp_kses_post( __( 'Message', 'MAP_txt' ) ); ?>
-					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+					<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 				</label>
 
 				<div class="col-sm-7">
@@ -406,7 +406,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					<div class="form-text d-none">
 						<?php echo wp_kses_post( __( 'Example code:', 'MAP_txt' ) ); ?>
 						<br>
-						<textarea class="text_style form-control map-fs-12" rows="9" disabled aria-label="<?php echo esc_attr__( 'Example code:', 'MAP_txt' ); ?>"><?php echo wp_kses_post( __( 'This website uses technical and profiling cookies. Clicking on "Accept" authorises all profiling cookies. Clicking on "Refuse" or the X will refuse all profiling cookies. By clicking on "Customise" you can select which profiling cookies to activate.[myagileprivacy_extra_info]', 'MAP_txt' ) ); ?></textarea>
+						<textarea class="text_style form-control map-fs-12" rows="9" disabled aria-label="<?php echo esc_attr__( 'Example code:', 'MAP_txt' ); ?>"><?php echo wp_kses_post( __( 'This website uses technical and profiling cookies. Clicking on "Accept" authorizes all profiling cookies. Clicking on "Refuse" or the X will refuse all profiling cookies. By clicking on "Customize" you can select which profiling cookies to activate.[myagileprivacy_extra_info]', 'MAP_txt' ) ); ?></textarea>
 					</div>
 
 				</div> <!-- /.col-sm-6 -->
@@ -655,7 +655,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-browser"></i>
+				<i class="fa-regular fa-window-maximize"></i>
 				<?php echo wp_kses_post( __( 'Buttons Customization', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -775,7 +775,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_accept_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -789,7 +789,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 					<div class="col-sm-4 text-center">
 						<div>
-							<label for="button_accept_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
+							<label for="button_accept_link_color_field"><strong><?php echo wp_kses_post( __( 'Text Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_accept_link_color_field" name="button_accept_link_color_field" data-preview="accept-text-color" value="' . esc_attr( $the_settings['button_accept_link_color'] ) . '" data-default-color="#ffffff"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -797,7 +797,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div class="col-sm-4 text-center">
-						<div><label for="button_accept_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
+						<div><label for="button_accept_button_color_field"><strong><?php echo wp_kses_post( __( 'Background Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_accept_button_color_field" name="button_accept_button_color_field" data-preview="accept" value="' . esc_attr( $the_settings['button_accept_button_color'] ) . '" data-default-color="#34C759"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -820,7 +820,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_reject_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -832,7 +832,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div class="col-sm-4 text-center">
-						<div><label for="button_reject_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
+						<div><label for="button_reject_link_color_field"><strong><?php echo wp_kses_post( __( 'Text Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_reject_link_color_field" name="button_reject_link_color_field" data-preview="refuse-text-color" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_reject_link_color'] ) . '"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -840,7 +840,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div class="col-sm-4 text-center">
-						<div><label for="button_reject_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
+						<div><label for="button_reject_button_color_field"><strong><?php echo wp_kses_post( __( 'Background Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_reject_button_color_field" name="button_reject_button_color_field" data-preview="refuse" data-default-color="#636366" value="' . esc_attr( $the_settings['button_reject_button_color'] ) . '"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -861,7 +861,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 						<div>
 							<label for="button_customize_text_field">
 								<strong><?php echo wp_kses_post( __( 'Text', 'MAP_txt' ) ); ?></strong>
-								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-comment-pen" aria-hidden="true"></i></a>
+								<a href="<?php echo esc_url( $translation_menu_link ); ?>" aria-label="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>" data-bs-toggle="tooltip" title="<?php esc_attr_e('You can edit this text from the Texts and Translations section.', 'MAP_txt' ); ?>"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></a>
 							</label>
 						</div>
 						<input
@@ -874,7 +874,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div class="col-sm-4 text-center">
-						<div><label for="button_customize_link_color_field"><strong><?php echo wp_kses_post( __( 'Text colour', 'MAP_txt' ) ); ?></strong></label></div>
+						<div><label for="button_customize_link_color_field"><strong><?php echo wp_kses_post( __( 'Text Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_customize_link_color_field" name="button_customize_link_color_field" data-preview="customize-text-color" data-default-color="#ffffff" value="' . esc_attr( $the_settings['button_customize_link_color'] ) . '"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -882,7 +882,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 					</div>
 
 					<div class="col-sm-4 text-center">
-						<div><label for="button_customize_button_color_field"><strong><?php echo wp_kses_post( __( 'Background colour', 'MAP_txt' ) ); ?></strong></label></div>
+						<div><label for="button_customize_button_color_field"><strong><?php echo wp_kses_post( __( 'Background Color', 'MAP_txt' ) ); ?></strong></label></div>
 						<?php
 							$map_color_input = '<input type="color" id="button_customize_button_color_field" name="button_customize_button_color_field" data-default-color="#636366" data-preview="customize" value="' . esc_attr( $the_settings['button_customize_button_color'] ) . '"';
 							echo wp_kses( $map_color_input . $map_ab_lock_buttons . '>', $map_color_tags );
@@ -902,7 +902,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-circle-exclamation"></i>
+				<i class="fa-solid fa-circle-exclamation"></i>
 				<?php echo wp_kses_post( __( 'Notification bar', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -1027,14 +1027,14 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] != 1){echo 'forbiddenArea"';} ?>">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-square-t"></i>
+				<i class="fa-solid fa-font"></i>
 				<?php echo wp_kses_post( __( 'Blocked content widget', 'MAP_txt' ) ); ?>
 			</h4>
 
 			<!-- blocked content widget text color -->
 			<div class="row mb-4">
 				<label for="map_inline_notify_color_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Blocked Content Widget text colour', 'MAP_txt' ) ); ?>
+					<?php echo wp_kses_post( __( 'Blocked Content Widget text color', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
 					<?php
@@ -1050,7 +1050,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 			<!-- blocked content widget background color -->
 			<div class="row mb-4">
 				<label for="map_inline_notify_background_field" class="col-sm-5 col-form-label">
-					<?php echo wp_kses_post( __( 'Blocked Content Widget background colour', 'MAP_txt' ) ); ?>
+					<?php echo wp_kses_post( __( 'Blocked Content Widget background color', 'MAP_txt' ) ); ?>
 				</label>
 				<div class="col-sm-7">
 					<?php
@@ -1093,8 +1093,8 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 				<div class="col-5">
 					<div id="device-view-container" class="mb-2 text-center">
 						<div class="btn-group">
-							<button class="btn btn-outline-primary active" data-view="desktop" aria-label="<?php echo esc_attr__( 'Desktop preview', 'MAP_txt' ); ?>"><i class="fa-regular fa-desktop"></i></button>
-							<button class="btn btn-outline-primary" data-view="mobile" aria-label="<?php echo esc_attr__( 'Mobile preview', 'MAP_txt' ); ?>"><i class="fa-regular fa-mobile"></i></button>
+							<button class="btn btn-outline-primary active" data-view="desktop" aria-label="<?php echo esc_attr__( 'Desktop preview', 'MAP_txt' ); ?>"><i class="fa-solid fa-desktop"></i></button>
+							<button class="btn btn-outline-primary" data-view="mobile" aria-label="<?php echo esc_attr__( 'Mobile preview', 'MAP_txt' ); ?>"><i class="fa-solid fa-mobile"></i></button>
 						</div>
 					</div> <!-- device-view-container -->
 				</div>

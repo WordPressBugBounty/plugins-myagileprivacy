@@ -13,7 +13,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-cookie-bite"></i>
+				<i class="fa-solid fa-cookie-bite"></i>
 				<?php echo wp_kses_post( __( 'Cookie Policy', 'MAP_txt' ) ); ?>
 			</h4>
 
@@ -183,7 +183,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-user-secret"></i>
+				<i class="fa-solid fa-user-secret"></i>
 				<?php echo wp_kses_post( __( 'Personal Data Policy', 'MAP_txt' ) ); ?>
 			</h4>
 

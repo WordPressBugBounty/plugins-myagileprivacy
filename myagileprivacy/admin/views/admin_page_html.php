@@ -97,7 +97,7 @@ endif;
 			<div class="mb-3">
 				<button type="button" class="fake-save-button button-agile btn-md"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 				<span class="map_wait text-muted">
-					<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+					<i class="fas fa-circle-notch fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 				</span>
 			</div>
 
@@ -105,14 +105,14 @@ endif;
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link active position-relative" data-bs-toggle="pill" data-bs-target="#main_settings" type="button" role="tab">
-						<i class="fa-regular fa-browser"></i>
+						<i class="fa-regular fa-window-maximize"></i>
 						<?php echo wp_kses_post( __( 'Cookie Banner', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#license" type="button" role="tab">
-						<i class="fa-regular fa-key"></i>
+						<i class="fa-solid fa-key"></i>
 						<?php echo wp_kses_post( __( 'License', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
@@ -126,21 +126,21 @@ endif;
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#policies" type="button" role="tab">
-						<i class="fa-regular fa-files"></i>
+						<i class="fa-regular fa-copy"></i>
 						<?php echo wp_kses_post( __( 'Policies and Regulations', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#consent_widget" type="button" role="tab">
-						<i class="fa-regular fa-tablet-screen"></i>
+						<i class="fa-solid fa-tablet-screen-button"></i>
 						<?php echo wp_kses_post( __( 'Consent', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link position-relative premium" data-bs-toggle="pill" data-bs-target="#cookieshield" type="button" role="tab">
-						<i class="fa-regular fa-shield"></i>
+						<i class="fa-solid fa-shield"></i>
 						<?php echo wp_kses_post( __( 'Cookie Shield', 'MAP_txt' ) ); ?>
 
 						<span class="position-absolute top-0 end-0 translate-middle-y badge rounded-pill forbiddenWarning bg-danger  <?php if( isset( $the_settings['pa'] ) && $the_settings['pa'] == 1){echo 'd-none';} ?>">
@@ -151,7 +151,7 @@ endif;
 
 				<li class="nav-item" role="presentation">
 					<button class="nav-link position-relative" data-bs-toggle="pill" data-bs-target="#advanced" type="button" role="tab">
-						<i class="fa-solid fa-sliders-up"></i>
+						<i class="fa-solid fa-sliders"></i>
 						<?php echo wp_kses_post( __( 'Advanced', 'MAP_txt' ) ); ?>
 					</button>
 				</li>
@@ -192,7 +192,7 @@ endif;
 				<div class="col-12">
 					<button type="submit" name="update_admin_settings_form" value="1" class="button-agile btn-md" id="map-save-button"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> <?php echo wp_kses_post( __( 'Update Settings', 'MAP_txt' ) ); ?></button>
 					<span class="map_wait text-muted">
-						<i class="fas fa-spinner-third fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
+						<i class="fas fa-circle-notch fa-fw fa-spin"></i> <?php echo wp_kses_post( __( 'Saving in progress', 'MAP_txt' ) ); ?>...
 					</span>
 				</div>
 			</div>

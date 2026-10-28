@@ -39,6 +39,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['it_IT']['view_the_personal_data_policy'] = "Visualizza l'Informativa Privacy";
 		$default_txt['it_IT']['manage_consent'] = 'Consenso';
 		$default_txt['it_IT']['close'] = 'Chiudi';
+		$default_txt['it_IT']['hidden_banner_title'] = "L'avviso sui cookie è nascosto";
+		$default_txt['it_IT']['hidden_banner_text'] = "Un'estensione o un'impostazione del browser sembra nascondere il banner con cui questo sito ti chiede il consenso. Finché resta nascosto non puoi dare o cambiare il consenso.";
+		$default_txt['it_IT']['hidden_banner_howto'] = 'Per farlo, consenti questo sito nel blocco annunci o nelle impostazioni di privacy del browser, poi ricarica la pagina.';
 		$default_txt['it_IT']['privacy_settings'] = 'Impostazioni privacy';
 		$default_txt['it_IT']['this_website_uses_cookies'] = 'Questo sito utilizza i cookie per migliorare la tua esperienza di navigazione su questo sito.';
 		$default_txt['it_IT']['cookies_and_thirdy_part_software'] = 'Cookie e software di terze parti';
@@ -105,6 +108,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['en_US']['view_the_personal_data_policy'] = 'View the Personal Data Policy';
 		$default_txt['en_US']['manage_consent'] = 'Consent';
 		$default_txt['en_US']['close'] = 'Close';
+		$default_txt['en_US']['hidden_banner_title'] = 'The cookie notice is hidden';
+		$default_txt['en_US']['hidden_banner_text'] = 'A browser extension or setting seems to be hiding the banner this site uses to ask for your consent. While it stays hidden, you cannot give or change your consent.';
+		$default_txt['en_US']['hidden_banner_howto'] = "To do so, allow this site in your ad blocker or in your browser's privacy settings, then reload the page.";
 		$default_txt['en_US']['privacy_settings'] = 'Privacy Settings';
 		$default_txt['en_US']['this_website_uses_cookies'] = 'This website uses cookies to improve your experience while you navigate through the website.';
 		$default_txt['en_US']['cookies_and_thirdy_part_software'] = 'Cookies and third-party software';
@@ -171,6 +177,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fr_FR']['view_the_personal_data_policy'] = 'Consultez la politique de données personnelles';
 		$default_txt['fr_FR']['manage_consent'] = 'Consentement';
 		$default_txt['fr_FR']['close'] = 'Fermer';
+		$default_txt['fr_FR']['hidden_banner_title'] = "L'avis sur les cookies est masqué";
+		$default_txt['fr_FR']['hidden_banner_text'] = "Une extension ou un paramètre du navigateur semble masquer la bannière par laquelle ce site vous demande votre consentement. Tant qu'elle reste masquée, vous ne pouvez ni donner ni modifier votre consentement.";
+		$default_txt['fr_FR']['hidden_banner_howto'] = 'Pour cela, autorisez ce site dans votre bloqueur de publicités ou dans les paramètres de confidentialité de votre navigateur, puis rechargez la page.';
 		$default_txt['fr_FR']['privacy_settings'] = 'Paramètres de confidentialité';
 		$default_txt['fr_FR']['this_website_uses_cookies'] = 'Ce site utilise des cookies pour améliorer votre expérience de navigation.';
 		$default_txt['fr_FR']['cookies_and_thirdy_part_software'] = 'Cookies et logiciels tiers';
@@ -237,6 +246,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['es_ES']['view_the_personal_data_policy'] = 'Consulte la política de datos personales';
 		$default_txt['es_ES']['manage_consent'] = 'Consentimiento';
 		$default_txt['es_ES']['close'] = 'Cerrar';
+		$default_txt['es_ES']['hidden_banner_title'] = 'El aviso de cookies está oculto';
+		$default_txt['es_ES']['hidden_banner_text'] = 'Parece que una extensión o un ajuste del navegador está ocultando el banner con el que este sitio le pide su consentimiento. Mientras siga oculto, no puede dar ni modificar su consentimiento.';
+		$default_txt['es_ES']['hidden_banner_howto'] = 'Para hacerlo, permita este sitio en su bloqueador de anuncios o en la configuración de privacidad del navegador y, a continuación, vuelva a cargar la página.';
 		$default_txt['es_ES']['privacy_settings'] = 'Ajustes de privacidad';
 		$default_txt['es_ES']['this_website_uses_cookies'] = 'Este sitio utiliza cookies para mejorar su experiencia de navegación.';
 		$default_txt['es_ES']['cookies_and_thirdy_part_software'] = 'Cookies y software de terceros';
@@ -303,6 +315,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['de_DE']['view_the_personal_data_policy'] = 'Sehen Sie sich die Datenschutzrichtlinie an';
 		$default_txt['de_DE']['manage_consent'] = 'Zustimmung';
 		$default_txt['de_DE']['close'] = 'Schließen';
+		$default_txt['de_DE']['hidden_banner_title'] = 'Der Cookie-Hinweis ist ausgeblendet';
+		$default_txt['de_DE']['hidden_banner_text'] = 'Eine Browsererweiterung oder -einstellung scheint das Banner auszublenden, mit dem diese Website Sie um Ihre Einwilligung bittet. Solange es ausgeblendet ist, können Sie Ihre Einwilligung weder erteilen noch ändern.';
+		$default_txt['de_DE']['hidden_banner_howto'] = 'Erlauben Sie dazu diese Website in Ihrem Werbeblocker oder in den Datenschutzeinstellungen Ihres Browsers und laden Sie die Seite anschließend neu.';
 		$default_txt['de_DE']['privacy_settings'] = 'Datenschutzeinstellungen';
 		$default_txt['de_DE']['this_website_uses_cookies'] = 'Diese Website verwendet Cookies, um Ihr Surferlebnis zu verbessern.';
 		$default_txt['de_DE']['cookies_and_thirdy_part_software'] = 'Cookies und Software von Drittanbietern';
@@ -369,6 +384,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pt_PT']['view_the_personal_data_policy'] = 'Ver a Política de Dados Pessoais';
 		$default_txt['pt_PT']['manage_consent'] = 'Consentimento';
 		$default_txt['pt_PT']['close'] = 'Fechar';
+		$default_txt['pt_PT']['hidden_banner_title'] = 'O aviso de cookies está oculto';
+		$default_txt['pt_PT']['hidden_banner_text'] = 'Uma extensão ou definição do navegador parece estar a ocultar o banner com que este site lhe pede o consentimento. Enquanto estiver oculto, não pode dar nem alterar o seu consentimento.';
+		$default_txt['pt_PT']['hidden_banner_howto'] = 'Para o fazer, permita este site no seu bloqueador de anúncios ou nas definições de privacidade do navegador e, em seguida, recarregue a página.';
 		$default_txt['pt_PT']['privacy_settings'] = 'Definições de Privacidade';
 		$default_txt['pt_PT']['this_website_uses_cookies'] = 'Este site utiliza cookies para melhorar a sua experiência enquanto navega pelo site.';
 		$default_txt['pt_PT']['cookies_and_thirdy_part_software'] = 'Cookies e software de terceiros';
@@ -435,6 +453,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nl_NL']['view_the_personal_data_policy'] = 'Bekijk het Beleid voor Persoonsgegevens';
 		$default_txt['nl_NL']['manage_consent'] = 'Toestemming';
 		$default_txt['nl_NL']['close'] = 'Sluiten';
+		$default_txt['nl_NL']['hidden_banner_title'] = 'De cookiemelding is verborgen';
+		$default_txt['nl_NL']['hidden_banner_text'] = 'Een browserextensie of -instelling lijkt de banner te verbergen waarmee deze site om uw toestemming vraagt. Zolang die verborgen blijft, kunt u uw toestemming niet geven of wijzigen.';
+		$default_txt['nl_NL']['hidden_banner_howto'] = 'Sta deze site daarvoor toe in uw adblocker of in de privacyinstellingen van uw browser en laad de pagina daarna opnieuw.';
 		$default_txt['nl_NL']['privacy_settings'] = 'Privacy-instellingen';
 		$default_txt['nl_NL']['this_website_uses_cookies'] = 'Deze website maakt gebruik van cookies om uw ervaring te verbeteren terwijl u door de website navigeert.';
 		$default_txt['nl_NL']['cookies_and_thirdy_part_software'] = 'Cookies en software van derden';
@@ -501,6 +522,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['pl_PL']['view_the_personal_data_policy'] = 'Zobacz Politykę Danych Osobowych';
 		$default_txt['pl_PL']['manage_consent'] = 'Zgoda';
 		$default_txt['pl_PL']['close'] = 'Zamknij';
+		$default_txt['pl_PL']['hidden_banner_title'] = 'Powiadomienie o plikach cookie jest ukryte';
+		$default_txt['pl_PL']['hidden_banner_text'] = 'Wygląda na to, że rozszerzenie lub ustawienie przeglądarki ukrywa baner, za pomocą którego ta witryna prosi o Twoją zgodę. Dopóki pozostaje ukryty, nie możesz wyrazić ani zmienić zgody.';
+		$default_txt['pl_PL']['hidden_banner_howto'] = 'Aby to zrobić, zezwól na tę witrynę w blokerze reklam lub w ustawieniach prywatności przeglądarki, a następnie odśwież stronę.';
 		$default_txt['pl_PL']['privacy_settings'] = 'Ustawienia Prywatności';
 		$default_txt['pl_PL']['this_website_uses_cookies'] = 'Ta strona używa plików cookie, aby poprawić Twoje doświadczenie podczas przeglądania strony.';
 		$default_txt['pl_PL']['cookies_and_thirdy_part_software'] = 'Pliki cookie i oprogramowanie stron trzecich';
@@ -567,6 +591,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['el']['view_the_personal_data_policy'] = 'Δείτε την Πολιτική Προσωπικών Δεδομένων';
 		$default_txt['el']['manage_consent'] = 'Συναίνεση';
 		$default_txt['el']['close'] = 'Κλείσιμο';
+		$default_txt['el']['hidden_banner_title'] = 'Η ειδοποίηση για τα cookies είναι κρυφή';
+		$default_txt['el']['hidden_banner_text'] = 'Μια επέκταση ή μια ρύθμιση του προγράμματος περιήγησης φαίνεται να κρύβει το banner με το οποίο αυτός ο ιστότοπος σας ζητά τη συναίνεσή σας. Όσο παραμένει κρυφό, δεν μπορείτε να δώσετε ή να αλλάξετε τη συναίνεσή σας.';
+		$default_txt['el']['hidden_banner_howto'] = 'Για να το κάνετε, επιτρέψτε αυτόν τον ιστότοπο στο πρόγραμμα αποκλεισμού διαφημίσεων ή στις ρυθμίσεις απορρήτου του προγράμματος περιήγησης και, στη συνέχεια, φορτώστε ξανά τη σελίδα.';
 		$default_txt['el']['privacy_settings'] = 'Ρυθμίσεις απορρήτου';
 		$default_txt['el']['this_website_uses_cookies'] = 'Αυτός ο ιστότοπος χρησιμοποιεί cookies για να βελτιώσει την εμπειρία σας καθώς πλοηγείστε στον ιστότοπο.';
 		$default_txt['el']['cookies_and_thirdy_part_software'] = 'Cookies και λογισμικό τρίτων';
@@ -633,6 +660,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hu_HU']['view_the_personal_data_policy'] = 'Személyes adatok kezelésére vonatkozó tájékoztató megtekintése';
 		$default_txt['hu_HU']['manage_consent'] = 'Hozzájárulás';
 		$default_txt['hu_HU']['close'] = 'Bezárás';
+		$default_txt['hu_HU']['hidden_banner_title'] = 'A cookie-értesítés el van rejtve';
+		$default_txt['hu_HU']['hidden_banner_text'] = 'Úgy tűnik, egy böngészőbővítmény vagy -beállítás elrejti azt a sávot, amellyel ez a webhely a hozzájárulását kéri. Amíg rejtve marad, nem tudja megadni vagy módosítani a hozzájárulását.';
+		$default_txt['hu_HU']['hidden_banner_howto'] = 'Ehhez engedélyezze ezt a webhelyet a reklámblokkolóban vagy a böngésző adatvédelmi beállításaiban, majd töltse be újra az oldalt.';
 		$default_txt['hu_HU']['privacy_settings'] = 'Adatvédelmi beállítások';
 		$default_txt['hu_HU']['this_website_uses_cookies'] = 'Ez a webhely cookie-kat használ a felhasználói élmény javítása érdekében, miközben a webhelyen navigál.';
 		$default_txt['hu_HU']['cookies_and_thirdy_part_software'] = 'Cookie-k és harmadik féltől származó szoftverek';
@@ -699,6 +729,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['nb_NO']['view_the_personal_data_policy'] = 'Se personvernerklæringen';
 		$default_txt['nb_NO']['manage_consent'] = 'Samtykke';
 		$default_txt['nb_NO']['close'] = 'Lukk';
+		$default_txt['nb_NO']['hidden_banner_title'] = 'Varselet om informasjonskapsler er skjult';
+		$default_txt['nb_NO']['hidden_banner_text'] = 'En nettleserutvidelse eller -innstilling ser ut til å skjule banneret dette nettstedet bruker for å be om samtykket ditt. Så lenge det er skjult, kan du ikke gi eller endre samtykket ditt.';
+		$default_txt['nb_NO']['hidden_banner_howto'] = 'For å gjøre det, tillat dette nettstedet i annonseblokkeringen eller i personverninnstillingene i nettleseren, og last deretter inn siden på nytt.';
 		$default_txt['nb_NO']['privacy_settings'] = 'Personverninnstillinger';
 		$default_txt['nb_NO']['this_website_uses_cookies'] = 'Dette nettstedet bruker informasjonskapsler for å forbedre opplevelsen din mens du navigerer på nettstedet.';
 		$default_txt['nb_NO']['cookies_and_thirdy_part_software'] = 'Informasjonskapsler og tredjeparts programvare';
@@ -765,6 +798,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sv_SE']['view_the_personal_data_policy'] = 'Visa policyn för personuppgifter';
 		$default_txt['sv_SE']['manage_consent'] = 'Samtycke';
 		$default_txt['sv_SE']['close'] = 'Stäng';
+		$default_txt['sv_SE']['hidden_banner_title'] = 'Cookiemeddelandet är dolt';
+		$default_txt['sv_SE']['hidden_banner_text'] = 'Ett webbläsartillägg eller en webbläsarinställning verkar dölja bannern som den här webbplatsen använder för att be om ditt samtycke. Så länge den är dold kan du inte ge eller ändra ditt samtycke.';
+		$default_txt['sv_SE']['hidden_banner_howto'] = 'Tillåt den här webbplatsen i din annonsblockerare eller i webbläsarens sekretessinställningar och ladda sedan om sidan.';
 		$default_txt['sv_SE']['privacy_settings'] = 'Integritetsinställningar';
 		$default_txt['sv_SE']['this_website_uses_cookies'] = 'Denna webbplats använder cookies för att förbättra din upplevelse medan du navigerar på webbplatsen.';
 		$default_txt['sv_SE']['cookies_and_thirdy_part_software'] = 'Cookies och programvara från tredje part';
@@ -831,6 +867,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ru_RU']['view_the_personal_data_policy'] = 'Просмотреть Политику обработки персональных данных';
 		$default_txt['ru_RU']['manage_consent'] = 'Согласие';
 		$default_txt['ru_RU']['close'] = 'Закрыть';
+		$default_txt['ru_RU']['hidden_banner_title'] = 'Уведомление о файлах cookie скрыто';
+		$default_txt['ru_RU']['hidden_banner_text'] = 'Похоже, расширение или настройка браузера скрывает баннер, с помощью которого этот сайт запрашивает ваше согласие. Пока он скрыт, вы не можете дать или изменить своё согласие.';
+		$default_txt['ru_RU']['hidden_banner_howto'] = 'Для этого разрешите этот сайт в блокировщике рекламы или в настройках конфиденциальности браузера, а затем перезагрузите страницу.';
 		$default_txt['ru_RU']['privacy_settings'] = 'Настройки конфиденциальности';
 		$default_txt['ru_RU']['this_website_uses_cookies'] = 'Этот сайт использует файлы cookie, чтобы улучшить ваш опыт при навигации по сайту.';
 		$default_txt['ru_RU']['cookies_and_thirdy_part_software'] = 'Файлы cookie и программное обеспечение третьих лиц';
@@ -897,6 +936,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['fi']['view_the_personal_data_policy'] = 'Näytä henkilötietokäytäntö';
 		$default_txt['fi']['manage_consent'] = 'Suostumus';
 		$default_txt['fi']['close'] = 'Sulje';
+		$default_txt['fi']['hidden_banner_title'] = 'Evästeilmoitus on piilotettu';
+		$default_txt['fi']['hidden_banner_text'] = 'Selainlaajennus tai -asetus näyttää piilottavan bannerin, jolla tämä sivusto pyytää suostumustasi. Niin kauan kuin se on piilossa, et voi antaa tai muuttaa suostumustasi.';
+		$default_txt['fi']['hidden_banner_howto'] = 'Salli tämä sivusto mainostenesto-ohjelmassa tai selaimen tietosuoja-asetuksissa ja lataa sivu sitten uudelleen.';
 		$default_txt['fi']['privacy_settings'] = 'Tietosuoja-asetukset';
 		$default_txt['fi']['this_website_uses_cookies'] = 'Tämä sivusto käyttää evästeitä parantaakseen käyttökokemustasi, kun selaat sivustoa.';
 		$default_txt['fi']['cookies_and_thirdy_part_software'] = 'Evästeet ja kolmannen osapuolen ohjelmistot';
@@ -963,6 +1005,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['da_DK']['view_the_personal_data_policy'] = 'Se politikken for personoplysninger';
 		$default_txt['da_DK']['manage_consent'] = 'Samtykke';
 		$default_txt['da_DK']['close'] = 'Luk';
+		$default_txt['da_DK']['hidden_banner_title'] = 'Cookiemeddelelsen er skjult';
+		$default_txt['da_DK']['hidden_banner_text'] = 'En browserudvidelse eller -indstilling ser ud til at skjule det banner, som dette websted bruger til at bede om dit samtykke. Så længe det er skjult, kan du ikke give eller ændre dit samtykke.';
+		$default_txt['da_DK']['hidden_banner_howto'] = 'Tillad dette websted i din annonceblokering eller i browserens privatlivsindstillinger, og genindlæs derefter siden.';
 		$default_txt['da_DK']['privacy_settings'] = 'Privatlivsindstillinger';
 		$default_txt['da_DK']['this_website_uses_cookies'] = 'Dette websted bruger cookies til at forbedre din oplevelse, mens du navigerer på webstedet.';
 		$default_txt['da_DK']['cookies_and_thirdy_part_software'] = 'Cookies og tredjepartssoftware';
@@ -1030,6 +1075,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['tr_TR']['view_the_personal_data_policy'] = 'Kişisel Veriler Politikasını görüntüle';
 		$default_txt['tr_TR']['manage_consent'] = 'Onay';
 		$default_txt['tr_TR']['close'] = 'Kapat';
+		$default_txt['tr_TR']['hidden_banner_title'] = 'Çerez bildirimi gizlendi';
+		$default_txt['tr_TR']['hidden_banner_text'] = "Bir tarayıcı uzantısı veya ayarı, bu sitenin onayınızı istemek için kullandığı banner'ı gizliyor gibi görünüyor. Gizli kaldığı sürece onayınızı veremez veya değiştiremezsiniz.";
+		$default_txt['tr_TR']['hidden_banner_howto'] = 'Bunu yapmak için bu siteye reklam engelleyicinizde veya tarayıcınızın gizlilik ayarlarında izin verin, ardından sayfayı yeniden yükleyin.';
 		$default_txt['tr_TR']['privacy_settings'] = 'Gizlilik Ayarları';
 		$default_txt['tr_TR']['this_website_uses_cookies'] = 'Bu web sitesi, web sitesinde gezinirken deneyiminizi iyileştirmek için çerezler kullanır.';
 		$default_txt['tr_TR']['cookies_and_thirdy_part_software'] = 'Çerezler ve üçüncü taraf yazılımlar';
@@ -1096,6 +1144,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['cs_CZ']['view_the_personal_data_policy'] = 'Zobrazit zásady ochrany osobních údajů';
 		$default_txt['cs_CZ']['manage_consent'] = 'Souhlas';
 		$default_txt['cs_CZ']['close'] = 'Zavřít';
+		$default_txt['cs_CZ']['hidden_banner_title'] = 'Oznámení o souborech cookie je skryté';
+		$default_txt['cs_CZ']['hidden_banner_text'] = 'Zdá se, že rozšíření nebo nastavení prohlížeče skrývá banner, kterým vás tento web žádá o souhlas. Dokud zůstane skrytý, nemůžete souhlas udělit ani změnit.';
+		$default_txt['cs_CZ']['hidden_banner_howto'] = 'Povolte proto tento web v blokátoru reklam nebo v nastavení soukromí prohlížeče a poté stránku znovu načtěte.';
 		$default_txt['cs_CZ']['privacy_settings'] = 'Nastavení soukromí';
 		$default_txt['cs_CZ']['this_website_uses_cookies'] = 'Tento web používá soubory cookie ke zlepšení vašeho zážitku při procházení webu.';
 		$default_txt['cs_CZ']['cookies_and_thirdy_part_software'] = 'Soubory cookie a software třetích stran';
@@ -1162,6 +1213,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ro_RO']['view_the_personal_data_policy'] = 'Vezi Politica privind datele cu caracter personal';
 		$default_txt['ro_RO']['manage_consent'] = 'Consimțământ';
 		$default_txt['ro_RO']['close'] = 'Închide';
+		$default_txt['ro_RO']['hidden_banner_title'] = 'Notificarea privind cookie-urile este ascunsă';
+		$default_txt['ro_RO']['hidden_banner_text'] = 'Se pare că o extensie sau o setare a browserului ascunde bannerul prin care acest site vă solicită consimțământul. Cât timp rămâne ascuns, nu vă puteți da sau modifica consimțământul.';
+		$default_txt['ro_RO']['hidden_banner_howto'] = 'Pentru aceasta, permiteți acest site în blocantul de reclame sau în setările de confidențialitate ale browserului, apoi reîncărcați pagina.';
 		$default_txt['ro_RO']['privacy_settings'] = 'Setări de confidențialitate';
 		$default_txt['ro_RO']['this_website_uses_cookies'] = 'Acest site utilizează cookie-uri pentru a vă îmbunătăți experiența în timp ce navigați pe site.';
 		$default_txt['ro_RO']['cookies_and_thirdy_part_software'] = 'Cookie-uri și software de la terți';
@@ -1228,6 +1282,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sk_SK']['view_the_personal_data_policy'] = 'Zobraziť zásady spracúvania osobných údajov';
 		$default_txt['sk_SK']['manage_consent'] = 'Súhlas';
 		$default_txt['sk_SK']['close'] = 'Zavrieť';
+		$default_txt['sk_SK']['hidden_banner_title'] = 'Oznámenie o súboroch cookie je skryté';
+		$default_txt['sk_SK']['hidden_banner_text'] = 'Zdá sa, že rozšírenie alebo nastavenie prehliadača skrýva banner, ktorým vás táto stránka žiada o súhlas. Kým zostane skrytý, nemôžete súhlas udeliť ani zmeniť.';
+		$default_txt['sk_SK']['hidden_banner_howto'] = 'Povoľte preto túto stránku v blokovači reklám alebo v nastaveniach súkromia prehliadača a potom stránku znova načítajte.';
 		$default_txt['sk_SK']['privacy_settings'] = 'Nastavenia súkromia';
 		$default_txt['sk_SK']['this_website_uses_cookies'] = 'Táto webová stránka používa súbory cookie na zlepšenie vášho zážitku pri prehliadaní webu.';
 		$default_txt['sk_SK']['cookies_and_thirdy_part_software'] = 'Súbory cookie a softvér tretích strán';
@@ -1294,6 +1351,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sl_SI']['view_the_personal_data_policy'] = 'Ogled pravilnika o osebnih podatkih';
 		$default_txt['sl_SI']['manage_consent'] = 'Soglasje';
 		$default_txt['sl_SI']['close'] = 'Zapri';
+		$default_txt['sl_SI']['hidden_banner_title'] = 'Obvestilo o piškotkih je skrito';
+		$default_txt['sl_SI']['hidden_banner_text'] = 'Zdi se, da razširitev ali nastavitev brskalnika skriva pasico, s katero vas to spletno mesto prosi za privolitev. Dokler je skrita, privolitve ne morete dati ali spremeniti.';
+		$default_txt['sl_SI']['hidden_banner_howto'] = 'To storite tako, da to spletno mesto dovolite v blokatorju oglasov ali v nastavitvah zasebnosti brskalnika, nato pa znova naložite stran.';
 		$default_txt['sl_SI']['privacy_settings'] = 'Nastavitve zasebnosti';
 		$default_txt['sl_SI']['this_website_uses_cookies'] = 'Ta spletna stran uporablja piškotke za izboljšanje vaše izkušnje med brskanjem po spletni strani.';
 		$default_txt['sl_SI']['cookies_and_thirdy_part_software'] = 'Piškotki in programska oprema tretjih oseb';
@@ -1360,6 +1420,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['hr']['view_the_personal_data_policy'] = 'Pogledajte Politiku osobnih podataka';
 		$default_txt['hr']['manage_consent'] = 'Privola';
 		$default_txt['hr']['close'] = 'Zatvori';
+		$default_txt['hr']['hidden_banner_title'] = 'Obavijest o kolačićima je skrivena';
+		$default_txt['hr']['hidden_banner_text'] = 'Čini se da proširenje ili postavka preglednika skriva traku kojom vas ova stranica traži privolu. Dok je skrivena, ne možete dati ni promijeniti svoju privolu.';
+		$default_txt['hr']['hidden_banner_howto'] = 'Da biste to učinili, dopustite ovu stranicu u blokatoru oglasa ili u postavkama privatnosti preglednika, a zatim ponovno učitajte stranicu.';
 		$default_txt['hr']['privacy_settings'] = 'Postavke privatnosti';
 		$default_txt['hr']['this_website_uses_cookies'] = 'Ova web stranica koristi kolačiće kako bi poboljšala vaše iskustvo tijekom pregledavanja web stranice.';
 		$default_txt['hr']['cookies_and_thirdy_part_software'] = 'Kolačići i softver trećih strana';
@@ -1426,6 +1489,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lt_LT']['view_the_personal_data_policy'] = 'Peržiūrėti asmens duomenų politiką';
 		$default_txt['lt_LT']['manage_consent'] = 'Sutikimas';
 		$default_txt['lt_LT']['close'] = 'Uždaryti';
+		$default_txt['lt_LT']['hidden_banner_title'] = 'Pranešimas apie slapukus paslėptas';
+		$default_txt['lt_LT']['hidden_banner_text'] = 'Atrodo, kad naršyklės plėtinys arba nustatymas slepia reklamjuostę, kuria ši svetainė prašo jūsų sutikimo. Kol ji paslėpta, negalite duoti ar pakeisti savo sutikimo.';
+		$default_txt['lt_LT']['hidden_banner_howto'] = 'Norėdami tai padaryti, leiskite šią svetainę reklamų blokavimo priemonėje arba naršyklės privatumo nustatymuose, tada iš naujo įkelkite puslapį.';
 		$default_txt['lt_LT']['privacy_settings'] = 'Privatumo nustatymai';
 		$default_txt['lt_LT']['this_website_uses_cookies'] = 'Ši svetainė naudoja slapukus, kad pagerintų jūsų patirtį naršant svetainėje.';
 		$default_txt['lt_LT']['cookies_and_thirdy_part_software'] = 'Slapukai ir trečiųjų šalių programinė įranga';
@@ -1492,6 +1558,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['lv_LV']['view_the_personal_data_policy'] = 'Skatīt personas datu politiku';
 		$default_txt['lv_LV']['manage_consent'] = 'Piekrišana';
 		$default_txt['lv_LV']['close'] = 'Aizvērt';
+		$default_txt['lv_LV']['hidden_banner_title'] = 'Paziņojums par sīkdatnēm ir paslēpts';
+		$default_txt['lv_LV']['hidden_banner_text'] = 'Šķiet, ka pārlūka paplašinājums vai iestatījums slēpj reklāmkarogu, ar kuru šī vietne lūdz jūsu piekrišanu. Kamēr tas ir paslēpts, jūs nevarat sniegt vai mainīt savu piekrišanu.';
+		$default_txt['lv_LV']['hidden_banner_howto'] = 'Lai to izdarītu, atļaujiet šo vietni reklāmu bloķētājā vai pārlūka privātuma iestatījumos un pēc tam atkārtoti ielādējiet lapu.';
 		$default_txt['lv_LV']['privacy_settings'] = 'Privātuma iestatījumi';
 		$default_txt['lv_LV']['this_website_uses_cookies'] = 'Šī vietne izmanto sīkdatnes, lai uzlabotu jūsu pieredzi, pārlūkojot vietni.';
 		$default_txt['lv_LV']['cookies_and_thirdy_part_software'] = 'Sīkdatnes un trešo pušu programmatūra';
@@ -1558,6 +1627,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sq_AL']['view_the_personal_data_policy'] = 'Shiko Politikën e të Dhënave Personale';
 		$default_txt['sq_AL']['manage_consent'] = 'Pëlqimi';
 		$default_txt['sq_AL']['close'] = 'Mbyll';
+		$default_txt['sq_AL']['hidden_banner_title'] = 'Njoftimi për cookie-t është i fshehur';
+		$default_txt['sq_AL']['hidden_banner_text'] = 'Duket se një shtesë ose një cilësim i shfletuesit po fsheh banerin me të cilin kjo faqe ju kërkon pëlqimin. Për sa kohë mbetet i fshehur, nuk mund ta jepni ose ta ndryshoni pëlqimin tuaj.';
+		$default_txt['sq_AL']['hidden_banner_howto'] = 'Për ta bërë këtë, lejojeni këtë faqe në bllokuesin e reklamave ose në cilësimet e privatësisë së shfletuesit, pastaj ringarkoni faqen.';
 		$default_txt['sq_AL']['privacy_settings'] = 'Cilësimet e privatësisë';
 		$default_txt['sq_AL']['this_website_uses_cookies'] = 'Kjo faqe përdor cookie për të përmirësuar përvojën tuaj ndërsa lundroni në faqe.';
 		$default_txt['sq_AL']['cookies_and_thirdy_part_software'] = 'Cookie dhe softuer i palëve të treta';
@@ -1625,6 +1697,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['az']['view_the_personal_data_policy'] = 'Şəxsi Məlumatlar Siyasətinə baxın';
 		$default_txt['az']['manage_consent'] = 'Razılıq';
 		$default_txt['az']['close'] = 'Bağla';
+		$default_txt['az']['hidden_banner_title'] = 'Kuki bildirişi gizlədilib';
+		$default_txt['az']['hidden_banner_text'] = 'Görünür, brauzer genişlənməsi və ya ayarı bu saytın razılığınızı istədiyi banneri gizlədir. O gizli qaldıqca razılığınızı verə və ya dəyişə bilməzsiniz.';
+		$default_txt['az']['hidden_banner_howto'] = 'Bunun üçün bu sayta reklam bloklayıcınızda və ya brauzerin məxfilik ayarlarında icazə verin, sonra səhifəni yenidən yükləyin.';
 		$default_txt['az']['privacy_settings'] = 'Məxfilik ayarları';
 		$default_txt['az']['this_website_uses_cookies'] = 'Bu veb-sayt, saytda naviqasiya etdiyiniz zaman təcrübənizi yaxşılaşdırmaq üçün kukilərdən istifadə edir.';
 		$default_txt['az']['cookies_and_thirdy_part_software'] = 'Kukilər və üçüncü tərəf proqram təminatı';
@@ -1691,6 +1766,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bs_BA']['view_the_personal_data_policy'] = 'Pogledajte Politiku o ličnim podacima';
 		$default_txt['bs_BA']['manage_consent'] = 'Saglasnost';
 		$default_txt['bs_BA']['close'] = 'Zatvori';
+		$default_txt['bs_BA']['hidden_banner_title'] = 'Obavještenje o kolačićima je skriveno';
+		$default_txt['bs_BA']['hidden_banner_text'] = 'Čini se da proširenje ili postavka preglednika skriva traku kojom vas ova stranica traži saglasnost. Dok je skrivena, ne možete dati ni promijeniti svoju saglasnost.';
+		$default_txt['bs_BA']['hidden_banner_howto'] = 'Da biste to učinili, dozvolite ovu stranicu u blokatoru oglasa ili u postavkama privatnosti preglednika, a zatim ponovo učitajte stranicu.';
 		$default_txt['bs_BA']['privacy_settings'] = 'Postavke privatnosti';
 		$default_txt['bs_BA']['this_website_uses_cookies'] = 'Ova web stranica koristi kolačiće kako bi poboljšala vaše iskustvo dok pregledate web stranicu.';
 		$default_txt['bs_BA']['cookies_and_thirdy_part_software'] = 'Kolačići i softver trećih strana';
@@ -1757,6 +1835,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['bg_BG']['view_the_personal_data_policy'] = 'Виж Политиката за лични данни';
 		$default_txt['bg_BG']['manage_consent'] = 'Съгласие';
 		$default_txt['bg_BG']['close'] = 'Затвори';
+		$default_txt['bg_BG']['hidden_banner_title'] = 'Известието за бисквитки е скрито';
+		$default_txt['bg_BG']['hidden_banner_text'] = 'Изглежда, че разширение или настройка на браузъра скрива банера, с който този сайт ви иска съгласие. Докато той остава скрит, не можете да дадете или промените съгласието си.';
+		$default_txt['bg_BG']['hidden_banner_howto'] = 'За да го направите, разрешете този сайт в блокера на реклами или в настройките за поверителност на браузъра, след което презаредете страницата.';
 		$default_txt['bg_BG']['privacy_settings'] = 'Настройки за поверителност';
 		$default_txt['bg_BG']['this_website_uses_cookies'] = 'Този уебсайт използва бисквитки, за да подобри вашето изживяване, докато навигирате в сайта.';
 		$default_txt['bg_BG']['cookies_and_thirdy_part_software'] = 'Бисквитки и софтуер на трети страни';
@@ -1823,6 +1904,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['ca']['view_the_personal_data_policy'] = 'Veure la Política de dades personals';
 		$default_txt['ca']['manage_consent'] = 'Consentiment';
 		$default_txt['ca']['close'] = 'Tancar';
+		$default_txt['ca']['hidden_banner_title'] = "L'avís de galetes està amagat";
+		$default_txt['ca']['hidden_banner_text'] = 'Sembla que una extensió o un paràmetre del navegador amaga el bàner amb què aquest lloc us demana el consentiment. Mentre continuï amagat, no podeu donar ni modificar el vostre consentiment.';
+		$default_txt['ca']['hidden_banner_howto'] = "Per fer-ho, permeteu aquest lloc al bloquejador d'anuncis o a la configuració de privadesa del navegador i, després, torneu a carregar la pàgina.";
 		$default_txt['ca']['privacy_settings'] = 'Configuració de privacitat';
 		$default_txt['ca']['this_website_uses_cookies'] = 'Aquest lloc web utilitza galetes per millorar la vostra experiència mentre navegueu pel lloc web.';
 		$default_txt['ca']['cookies_and_thirdy_part_software'] = 'Galetes i programari de tercers';
@@ -1889,6 +1973,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['et']['view_the_personal_data_policy'] = 'Vaata isikuandmete poliitikat';
 		$default_txt['et']['manage_consent'] = 'Nõusolek';
 		$default_txt['et']['close'] = 'Sulge';
+		$default_txt['et']['hidden_banner_title'] = 'Küpsiseteade on peidetud';
+		$default_txt['et']['hidden_banner_text'] = 'Näib, et brauseri laiendus või seade peidab bänneri, millega see sait teie nõusolekut küsib. Seni, kuni see on peidetud, ei saa te nõusolekut anda ega muuta.';
+		$default_txt['et']['hidden_banner_howto'] = 'Selleks lubage see sait oma reklaamiblokeerijas või brauseri privaatsusseadetes ja laadige seejärel leht uuesti.';
 		$default_txt['et']['privacy_settings'] = 'Privaatsusseaded';
 		$default_txt['et']['this_website_uses_cookies'] = 'See veebisait kasutab küpsiseid, et parandada teie kasutuskogemust veebisaidil navigeerimisel.';
 		$default_txt['et']['cookies_and_thirdy_part_software'] = 'Küpsised ja kolmanda osapoole tarkvara';
@@ -1955,6 +2042,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['mk_MK']['view_the_personal_data_policy'] = 'Погледнете ја Политиката за лични податоци';
 		$default_txt['mk_MK']['manage_consent'] = 'Согласност';
 		$default_txt['mk_MK']['close'] = 'Затвори';
+		$default_txt['mk_MK']['hidden_banner_title'] = 'Известувањето за колачиња е скриено';
+		$default_txt['mk_MK']['hidden_banner_text'] = 'Се чини дека некој додаток или поставка на прелистувачот го крие банерот со кој оваа страница ја бара вашата согласност. Додека е скриен, не можете да дадете или да ја промените вашата согласност.';
+		$default_txt['mk_MK']['hidden_banner_howto'] = 'За да го направите тоа, дозволете ја оваа страница во блокаторот на реклами или во поставките за приватност на прелистувачот, а потоа повторно вчитајте ја страницата.';
 		$default_txt['mk_MK']['privacy_settings'] = 'Поставки за приватност';
 		$default_txt['mk_MK']['this_website_uses_cookies'] = 'Оваа веб-страница користи колачиња за да го подобри вашето искуство додека се движите низ страницата.';
 		$default_txt['mk_MK']['cookies_and_thirdy_part_software'] = 'Колачиња и софтвер од трети страни';
@@ -2021,6 +2111,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['sr_RS']['view_the_personal_data_policy'] = 'Погледајте Политику о личним подацима';
 		$default_txt['sr_RS']['manage_consent'] = 'Сагласност';
 		$default_txt['sr_RS']['close'] = 'Затвори';
+		$default_txt['sr_RS']['hidden_banner_title'] = 'Обавештење о колачићима је скривено';
+		$default_txt['sr_RS']['hidden_banner_text'] = 'Изгледа да проширење или подешавање прегледача скрива банер којим вас овај сајт тражи сагласност. Док је скривен, не можете дати ни променити своју сагласност.';
+		$default_txt['sr_RS']['hidden_banner_howto'] = 'Да бисте то урадили, дозволите овај сајт у блокатору огласа или у подешавањима приватности прегледача, а затим поново учитајте страницу.';
 		$default_txt['sr_RS']['privacy_settings'] = 'Подешавања приватности';
 		$default_txt['sr_RS']['this_website_uses_cookies'] = 'Ова веб-страница користи колачиће да побољша ваше искуство док се крећете кроз веб-сајт.';
 		$default_txt['sr_RS']['cookies_and_thirdy_part_software'] = 'Колачићи и софтвер трећих страна';
@@ -2087,6 +2180,9 @@ final class MyAgilePrivacyLangHelper
 		$default_txt['uk']['view_the_personal_data_policy'] = 'Переглянути Політику щодо персональних даних';
 		$default_txt['uk']['manage_consent'] = 'Згода';
 		$default_txt['uk']['close'] = 'Закрити';
+		$default_txt['uk']['hidden_banner_title'] = 'Сповіщення про файли cookie приховано';
+		$default_txt['uk']['hidden_banner_text'] = 'Схоже, розширення або налаштування браузера приховує банер, за допомогою якого цей сайт просить вашої згоди. Поки він прихований, ви не можете надати або змінити свою згоду.';
+		$default_txt['uk']['hidden_banner_howto'] = 'Для цього дозвольте цей сайт у блокувальнику реклами або в налаштуваннях конфіденційності браузера, а потім перезавантажте сторінку.';
 		$default_txt['uk']['privacy_settings'] = 'Налаштування конфіденційності';
 		$default_txt['uk']['this_website_uses_cookies'] = 'Цей вебсайт використовує cookie, щоб покращити ваш досвід під час навігації сайтом.';
 		$default_txt['uk']['cookies_and_thirdy_part_software'] = 'Cookie та програмне забезпечення третіх сторін';

@@ -415,7 +415,7 @@ function map_diagnostic_data()
 	$is_consent_valid       = isset( $_POST['is_consent_valid'] )       ? map_api_intval( $_POST['is_consent_valid'] )       : 0;
 	$error_motivation       = ( isset( $_POST['error_motivation'] ) && is_string( $_POST['error_motivation'] ) ) ? sanitize_text_field( $_POST['error_motivation'] ) : '';
 
-	// Free text reaches the licence server verbatim; keep it bounded. Counted in
+	// Free text reaches the license server verbatim; keep it bounded. Counted in
 	// characters: cutting on a byte boundary would split a multibyte sequence
 	// and leave text that no longer encodes.
 	$map_api_text_max = defined( 'MAP_PLUGIN_JS_ERROR_TEXT_MAX' ) ? map_api_intval( MAP_PLUGIN_JS_ERROR_TEXT_MAX ) : 255;
@@ -565,7 +565,7 @@ function map_api_report_gtm_gateway()
  */
 function map_api_is_scanning_mode( $the_settings )
 {
-	// Same two sources the frontend reads, and nothing more: the licence state
+	// Same two sources the frontend reads, and nothing more: the license state
 	// is checked by the callers that depend on it, so adding it here would
 	// reject reports the frontend still considers valid.
 	if( is_array( $the_settings ) &&
@@ -710,7 +710,7 @@ function map_api_auto_activate_cookie_posts( $keys )
 	}
 
 	// Clear post transient cache
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_posts_%'" );
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( '_transient_posts_' ) . '%' ) );
 
 	return $consumed_keys;
 }

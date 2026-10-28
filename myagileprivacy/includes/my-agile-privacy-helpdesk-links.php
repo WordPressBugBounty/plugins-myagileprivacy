@@ -60,6 +60,18 @@ final class MAP_Helpdesk_Links
 				'it' => $it . 'helpdesk/test-ab-del-banner/',
 				'en' => $en . 'helpdesk/banner-ab-test/',
 			),
+			'consent_stats' => array(
+				'it' => $it . 'helpdesk/come-usare-le-statistiche-di-consenso/',
+				'en' => $en . 'helpdesk/how-to-use-consent-statistics/',
+			),
+			'geolocation' => array(
+				'it' => $it . 'helpdesk/come-attivare-la-geolocalizzazione/',
+				'en' => $en . 'helpdesk/how-to-enable-geolocation/',
+			),
+			'js_events' => array(
+				'it' => $it . 'helpdesk/eventi-javascript-del-consenso-guida-per-sviluppatori/',
+				'en' => $en . 'helpdesk/javascript-consent-events-a-developers-guide/',
+			),
 			'post_install_faq' => array(
 				'it' => $it . 'helpdesk/domande-frequenti-post-installazione/',
 				'en' => $en . 'helpdesk/post-installation-frequently-asked-questions/',
@@ -376,12 +388,12 @@ if( !function_exists( 'map_render_helpdesk_link' ) )
 
 		$html = '<a href="' . esc_url( $url ) . '" class="map-help-link"'
 			. ( $is_external ? ' target="_blank" rel="noopener"' : '' ) . '>'
-			. '<i class="fa-regular fa-book-open" aria-hidden="true"></i>'
+			. '<i class="fa-solid fa-book-open" aria-hidden="true"></i>'
 			. $label_html;
 
 		if( $is_external )
 		{
-			$html .= '<i class="fa-regular fa-arrow-up-right-from-square map-help-ext" aria-hidden="true"></i>';
+			$html .= '<i class="fa-solid fa-arrow-up-right-from-square map-help-ext" aria-hidden="true"></i>';
 		}
 
 		$html .= '</a>';

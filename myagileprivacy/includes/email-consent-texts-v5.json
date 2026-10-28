@@ -1,0 +1,194 @@
+{
+	"az_azerbaijani": {
+		"newsletter": "Məxfilik bildirişinin c bəndində göstərildiyi kimi, reklam materialları almağa razılıq verirəm.",
+		"tracking_title": "Göndərişlərin effektivliyinin ölçülməsi (ixtiyari)",
+		"tracking": "Göstərdiyim ünvana göndərilən məlumatlandırıcı və ya kommersiya göndərişlərində, onları hansı cihazda oxumağımdan asılı olmayaraq, mesajların açılmasını və müvafiq texniki məlumatları (tarix, vaxt, cihaz və IP ünvanı) qeydə alan izləmə alətlərinin göndərişlərin effektivliyini qiymətləndirmək məqsədilə, məxfilik bildirişinin 4-cü bölməsində təsvir edildiyi kimi istifadə olunmasına razılıq verirəm.",
+		"tracking_clicks": "Göstərdiyim ünvana göndərilən məlumatlandırıcı və ya kommersiya göndərişlərində, onları hansı cihazda oxumağımdan asılı olmayaraq, mesajların açılmasını, keçidlərə edilən klikləri və müvafiq texniki məlumatları (tarix, vaxt, cihaz, IP ünvanı və klik edilən keçid) qeydə alan izləmə alətlərinin göndərişlərin effektivliyini qiymətləndirmək məqsədilə, məxfilik bildirişinin 4-cü bölməsində təsvir edildiyi kimi istifadə olunmasına razılıq verirəm."
+	},
+	"bg_bulgarian": {
+		"newsletter": "Давам съгласието си да получавам рекламни материали, както е посочено в точка c от политиката за поверителност.",
+		"tracking_title": "Измерване на ефективността на съобщенията (незадължително)",
+		"tracking": "Давам съгласието си за използването на инструменти за проследяване, които регистрират отварянето на съобщенията и свързаните с него технически данни (дата, час, устройство и IP адрес), в информативните или търговските съобщения, изпращани на посочения адрес, на всяко устройство, на което ги чета, с цел оценка на ефективността на съобщенията, както е описано в раздел 4 от политиката за поверителност.",
+		"tracking_clicks": "Давам съгласието си за използването на инструменти за проследяване, които регистрират отварянето на съобщенията, кликванията върху връзки и свързаните с тях технически данни (дата, час, устройство, IP адрес и връзката, върху която е кликнато), в информативните или търговските съобщения, изпращани на посочения адрес, на всяко устройство, на което ги чета, с цел оценка на ефективността на съобщенията, както е описано в раздел 4 от политиката за поверителност."
+	},
+	"bs_bosnian": {
+		"newsletter": "Dajem saglasnost za primanje promotivnih materijala, kako je navedeno u tački c obavijesti o privatnosti.",
+		"tracking_title": "Mjerenje efikasnosti komunikacija (neobavezno)",
+		"tracking": "Dajem saglasnost za korištenje, u informativnim ili komercijalnim komunikacijama poslanim na navedenu adresu i na bilo kojem uređaju na kojem ih čitam, alata za praćenje koji bilježe otvaranje poruka i povezane tehničke podatke (datum, vrijeme, uređaj i IP adresa), radi procjene efikasnosti komunikacija, kako je opisano u odjeljku 4 obavijesti o privatnosti.",
+		"tracking_clicks": "Dajem saglasnost za korištenje, u informativnim ili komercijalnim komunikacijama poslanim na navedenu adresu i na bilo kojem uređaju na kojem ih čitam, alata za praćenje koji bilježe otvaranje poruka, klikove na linkove i povezane tehničke podatke (datum, vrijeme, uređaj, IP adresa i link na koji je kliknuto), radi procjene efikasnosti komunikacija, kako je opisano u odjeljku 4 obavijesti o privatnosti."
+	},
+	"ca_catalan": {
+		"newsletter": "Dono el meu consentiment per rebre material promocional, tal com s’indica al punt c de la política de privacitat.",
+		"tracking_title": "Mesurament de l’eficàcia de les comunicacions (opcional)",
+		"tracking": "Dono el meu consentiment per a l’ús, en les comunicacions informatives o comercials enviades a l’adreça indicada i en qualsevol dispositiu en què les llegeixi, d’eines de seguiment que registren l’obertura dels missatges i les dades tècniques corresponents (data, hora, dispositiu i adreça IP), amb la finalitat d’avaluar l’eficàcia de les comunicacions, tal com es descriu a la secció 4 de la política de privacitat.",
+		"tracking_clicks": "Dono el meu consentiment per a l’ús, en les comunicacions informatives o comercials enviades a l’adreça indicada i en qualsevol dispositiu en què les llegeixi, d’eines de seguiment que registren l’obertura dels missatges, els clics en els enllaços i les dades tècniques corresponents (data, hora, dispositiu, adreça IP i enllaç en què s’ha fet clic), amb la finalitat d’avaluar l’eficàcia de les comunicacions, tal com es descriu a la secció 4 de la política de privacitat."
+	},
+	"cs_czech": {
+		"newsletter": "Souhlasím se zasíláním propagačních materiálů, jak je uvedeno v bodě c zásad ochrany osobních údajů.",
+		"tracking_title": "Měření účinnosti sdělení (nepovinné)",
+		"tracking": "Souhlasím s tím, aby v informativních nebo obchodních sděleních zasílaných na uvedenou adresu byly na jakémkoli zařízení, na kterém je čtu, používány sledovací nástroje, které zaznamenávají otevření zpráv a související technické údaje (datum, čas, zařízení a IP adresu), za účelem vyhodnocení účinnosti sdělení, jak je popsáno v oddílu 4 zásad ochrany osobních údajů.",
+		"tracking_clicks": "Souhlasím s tím, aby v informativních nebo obchodních sděleních zasílaných na uvedenou adresu byly na jakémkoli zařízení, na kterém je čtu, používány sledovací nástroje, které zaznamenávají otevření zpráv, kliknutí na odkazy a související technické údaje (datum, čas, zařízení, IP adresu a odkaz, na který bylo kliknuto), za účelem vyhodnocení účinnosti sdělení, jak je popsáno v oddílu 4 zásad ochrany osobních údajů."
+	},
+	"da_danish": {
+		"newsletter": "Jeg giver samtykke til at modtage markedsføringsmateriale, som angivet i punkt c i persondatapolitikken.",
+		"tracking_title": "Måling af meddelelsernes effektivitet (valgfrit)",
+		"tracking": "Jeg giver samtykke til, at der i de informative eller kommercielle meddelelser, der sendes til den angivne adresse, og på enhver enhed, hvor jeg læser dem, anvendes sporingsværktøjer, der registrerer åbningen af beskederne og de tilhørende tekniske data (dato, klokkeslæt, enhed og IP-adresse), med henblik på at vurdere meddelelsernes effektivitet, som beskrevet i afsnit 4 i persondatapolitikken.",
+		"tracking_clicks": "Jeg giver samtykke til, at der i de informative eller kommercielle meddelelser, der sendes til den angivne adresse, og på enhver enhed, hvor jeg læser dem, anvendes sporingsværktøjer, der registrerer åbningen af beskederne, klik på links og de tilhørende tekniske data (dato, klokkeslæt, enhed, IP-adresse og det link, der er klikket på), med henblik på at vurdere meddelelsernes effektivitet, som beskrevet i afsnit 4 i persondatapolitikken."
+	},
+	"de_german": {
+		"newsletter": "Ich willige ein, Werbematerial zu erhalten, wie in Punkt c der Datenschutzerklärung angegeben.",
+		"tracking_title": "Messung der Wirksamkeit der Mitteilungen (optional)",
+		"tracking": "Ich willige ein, dass in den Mitteilungen informativer oder kommerzieller Art, die an die angegebene Adresse gesendet werden, und auf jedem Gerät, auf dem ich sie lese, Tracking-Instrumente verwendet werden, die das Öffnen der Nachrichten und die zugehörigen technischen Daten (Datum, Uhrzeit, Gerät und IP-Adresse) erfassen, damit die Wirksamkeit der Mitteilungen bewertet werden kann, wie in Abschnitt 4 der Datenschutzerklärung beschrieben.",
+		"tracking_clicks": "Ich willige ein, dass in den Mitteilungen informativer oder kommerzieller Art, die an die angegebene Adresse gesendet werden, und auf jedem Gerät, auf dem ich sie lese, Tracking-Instrumente verwendet werden, die das Öffnen der Nachrichten, die Klicks auf Links und die zugehörigen technischen Daten (Datum, Uhrzeit, Gerät, IP-Adresse und angeklickter Link) erfassen, damit die Wirksamkeit der Mitteilungen bewertet werden kann, wie in Abschnitt 4 der Datenschutzerklärung beschrieben."
+	},
+	"el_greek": {
+		"newsletter": "Παρέχω τη συγκατάθεσή μου για τη λήψη διαφημιστικού υλικού, όπως αναφέρεται στο σημείο c της πολιτικής απορρήτου.",
+		"tracking_title": "Μέτρηση της αποτελεσματικότητας των επικοινωνιών (προαιρετικό)",
+		"tracking": "Παρέχω τη συγκατάθεσή μου για τη χρήση, στις ενημερωτικές ή εμπορικές επικοινωνίες που αποστέλλονται στη διεύθυνση που δήλωσα και σε οποιαδήποτε συσκευή στην οποία τις διαβάζω, εργαλείων παρακολούθησης που καταγράφουν το άνοιγμα των μηνυμάτων και τα σχετικά τεχνικά δεδομένα (ημερομηνία, ώρα, συσκευή και διεύθυνση IP), με σκοπό την αξιολόγηση της αποτελεσματικότητας των επικοινωνιών, όπως περιγράφεται στην ενότητα 4 της πολιτικής απορρήτου.",
+		"tracking_clicks": "Παρέχω τη συγκατάθεσή μου για τη χρήση, στις ενημερωτικές ή εμπορικές επικοινωνίες που αποστέλλονται στη διεύθυνση που δήλωσα και σε οποιαδήποτε συσκευή στην οποία τις διαβάζω, εργαλείων παρακολούθησης που καταγράφουν το άνοιγμα των μηνυμάτων, τα κλικ σε συνδέσμους και τα σχετικά τεχνικά δεδομένα (ημερομηνία, ώρα, συσκευή, διεύθυνση IP και σύνδεσμος στον οποίο έγινε κλικ), με σκοπό την αξιολόγηση της αποτελεσματικότητας των επικοινωνιών, όπως περιγράφεται στην ενότητα 4 της πολιτικής απορρήτου."
+	},
+	"en_english": {
+		"newsletter": "I consent to receiving promotional material, as described in point c of the privacy policy.",
+		"tracking_title": "Measuring the effectiveness of communications (optional)",
+		"tracking": "I consent to the use, in the informational or commercial communications sent to the address I provided and on any device on which I read them, of tracking tools that record the opening of messages and the related technical data (date, time, device and IP address), in order to assess the effectiveness of the communications, as described in section 4 of the privacy policy.",
+		"tracking_clicks": "I consent to the use, in the informational or commercial communications sent to the address I provided and on any device on which I read them, of tracking tools that record the opening of messages, clicks on links and the related technical data (date, time, device, IP address and link clicked), in order to assess the effectiveness of the communications, as described in section 4 of the privacy policy."
+	},
+	"es_spanish": {
+		"newsletter": "Doy mi consentimiento para recibir material promocional, como se indica en el punto c de la política de privacidad.",
+		"tracking_title": "Medición de la eficacia de las comunicaciones (opcional)",
+		"tracking": "Doy mi consentimiento para el uso, en las comunicaciones informativas o comerciales enviadas a la dirección indicada y en cualquier dispositivo en el que las lea, de herramientas de seguimiento que registran la apertura de los mensajes y los datos técnicos correspondientes (fecha, hora, dispositivo y dirección IP), con el fin de evaluar la eficacia de las comunicaciones, como se describe en la sección 4 de la política de privacidad.",
+		"tracking_clicks": "Doy mi consentimiento para el uso, en las comunicaciones informativas o comerciales enviadas a la dirección indicada y en cualquier dispositivo en el que las lea, de herramientas de seguimiento que registran la apertura de los mensajes, los clics en los enlaces y los datos técnicos correspondientes (fecha, hora, dispositivo, dirección IP y enlace en el que se ha hecho clic), con el fin de evaluar la eficacia de las comunicaciones, como se describe en la sección 4 de la política de privacidad."
+	},
+	"et_estonian": {
+		"newsletter": "Annan nõusoleku reklaammaterjalide saamiseks, nagu on kirjeldatud privaatsusteate punktis c.",
+		"tracking_title": "Teavituste tõhususe mõõtmine (vabatahtlik)",
+		"tracking": "Annan nõusoleku, et minu esitatud aadressile saadetavates info- või kaubandusliku iseloomuga teavitustes kasutatakse, olenemata seadmest, millel ma neid loen, jälgimisvahendeid, mis registreerivad kirjade avamise ja sellega seotud tehnilised andmed (kuupäev, kellaaeg, seade ja IP-aadress), et hinnata teavituste tõhusust, nagu on kirjeldatud privaatsusteate jaotises 4.",
+		"tracking_clicks": "Annan nõusoleku, et minu esitatud aadressile saadetavates info- või kaubandusliku iseloomuga teavitustes kasutatakse, olenemata seadmest, millel ma neid loen, jälgimisvahendeid, mis registreerivad kirjade avamise, linkidel klõpsamise ja nendega seotud tehnilised andmed (kuupäev, kellaaeg, seade, IP-aadress ja klõpsatud link), et hinnata teavituste tõhusust, nagu on kirjeldatud privaatsusteate jaotises 4."
+	},
+	"fi_finnish": {
+		"newsletter": "Annan suostumukseni markkinointimateriaalin vastaanottamiseen tietosuojaselosteen kohdassa c kuvatulla tavalla.",
+		"tracking_title": "Viestinnän tehokkuuden mittaaminen (vapaaehtoinen)",
+		"tracking": "Annan suostumukseni siihen, että antamaani osoitteeseen lähetetyissä tiedotus- tai markkinointiluonteisissa viesteissä, riippumatta siitä, millä laitteella luen niitä, käytetään seurantavälineitä, jotka tallentavat viestien avaamisen ja siihen liittyvät tekniset tiedot (päivämäärä, kellonaika, laite ja IP-osoite), viestinnän tehokkuuden arvioimiseksi, kuten tietosuojaselosteen osiossa 4 kuvataan.",
+		"tracking_clicks": "Annan suostumukseni siihen, että antamaani osoitteeseen lähetetyissä tiedotus- tai markkinointiluonteisissa viesteissä, riippumatta siitä, millä laitteella luen niitä, käytetään seurantavälineitä, jotka tallentavat viestien avaamisen, linkkien klikkaukset ja niihin liittyvät tekniset tiedot (päivämäärä, kellonaika, laite, IP-osoite ja klikattu linkki), viestinnän tehokkuuden arvioimiseksi, kuten tietosuojaselosteen osiossa 4 kuvataan."
+	},
+	"fr_french": {
+		"newsletter": "Je consens à recevoir des contenus promotionnels, comme indiqué au point c de la politique de confidentialité.",
+		"tracking_title": "Mesure de l’efficacité des communications (facultatif)",
+		"tracking": "Je consens à l’utilisation, dans les communications informatives ou commerciales envoyées à l’adresse indiquée et sur tout appareil sur lequel je les lis, de traceurs qui enregistrent l’ouverture des messages et les données techniques correspondantes (date, heure, appareil et adresse IP), afin d’évaluer l’efficacité des communications, comme décrit à la section 4 de la politique de confidentialité.",
+		"tracking_clicks": "Je consens à l’utilisation, dans les communications informatives ou commerciales envoyées à l’adresse indiquée et sur tout appareil sur lequel je les lis, de traceurs qui enregistrent l’ouverture des messages, les clics sur les liens et les données techniques correspondantes (date, heure, appareil, adresse IP et lien cliqué), afin d’évaluer l’efficacité des communications, comme décrit à la section 4 de la politique de confidentialité."
+	},
+	"hr_croatian": {
+		"newsletter": "Dajem privolu za primanje promotivnih materijala, kako je navedeno pod točkom c obavijesti o privatnosti.",
+		"tracking_title": "Mjerenje učinkovitosti komunikacija (neobvezno)",
+		"tracking": "Dajem privolu za upotrebu, u informativnim ili komercijalnim komunikacijama poslanima na navedenu adresu i na bilo kojem uređaju na kojem ih čitam, alata za praćenje koji bilježe otvaranje poruka i povezane tehničke podatke (datum, vrijeme, uređaj i IP adresa), radi procjene učinkovitosti komunikacija, kako je opisano u 4. odjeljku obavijesti o privatnosti.",
+		"tracking_clicks": "Dajem privolu za upotrebu, u informativnim ili komercijalnim komunikacijama poslanima na navedenu adresu i na bilo kojem uređaju na kojem ih čitam, alata za praćenje koji bilježe otvaranje poruka, klikove na poveznice i povezane tehničke podatke (datum, vrijeme, uređaj, IP adresa i poveznica na koju je kliknuto), radi procjene učinkovitosti komunikacija, kako je opisano u 4. odjeljku obavijesti o privatnosti."
+	},
+	"hu_hungarian": {
+		"newsletter": "Hozzájárulok promóciós anyagok fogadásához, az adatvédelmi tájékoztató c) pontjában foglaltak szerint.",
+		"tracking_title": "A közlemények hatékonyságának mérése (nem kötelező)",
+		"tracking": "Hozzájárulok ahhoz, hogy a megadott címre küldött tájékoztató vagy kereskedelmi jellegű közleményekben, bármely eszközön olvassam is azokat, olyan nyomon követési eszközöket alkalmazzanak, amelyek rögzítik az üzenetek megnyitását és a kapcsolódó technikai adatokat (dátum, időpont, eszköz és IP-cím), a közlemények hatékonyságának értékelése céljából, az adatvédelmi tájékoztató 4. szakaszában leírtak szerint.",
+		"tracking_clicks": "Hozzájárulok ahhoz, hogy a megadott címre küldött tájékoztató vagy kereskedelmi jellegű közleményekben, bármely eszközön olvassam is azokat, olyan nyomon követési eszközöket alkalmazzanak, amelyek rögzítik az üzenetek megnyitását, a linkekre való kattintásokat és a kapcsolódó technikai adatokat (dátum, időpont, eszköz, IP-cím és a link, amelyre kattintottam), a közlemények hatékonyságának értékelése céljából, az adatvédelmi tájékoztató 4. szakaszában leírtak szerint."
+	},
+	"it_italian": {
+		"newsletter": "Presto il consenso a ricevere materiale promozionale, come indicato al punto c dell’informativa privacy.",
+		"tracking_title": "Misurazione dell’efficacia delle comunicazioni (facoltativo)",
+		"tracking": "Presto il consenso all’utilizzo, nelle comunicazioni informative o commerciali inviate all’indirizzo indicato e su qualsiasi dispositivo io le legga, di strumenti di tracciamento che rilevano l’apertura dei messaggi e i relativi dati tecnici (data, ora, dispositivo e indirizzo IP), al fine di valutare l’efficacia delle comunicazioni, come descritto alla sezione 4 dell’informativa privacy.",
+		"tracking_clicks": "Presto il consenso all’utilizzo, nelle comunicazioni informative o commerciali inviate all’indirizzo indicato e su qualsiasi dispositivo io le legga, di strumenti di tracciamento che rilevano l’apertura dei messaggi, i clic sui link e i relativi dati tecnici (data, ora, dispositivo, indirizzo IP e collegamento cliccato), al fine di valutare l’efficacia delle comunicazioni, come descritto alla sezione 4 dell’informativa privacy."
+	},
+	"lt_lithuanian": {
+		"newsletter": "Sutinku gauti reklaminę medžiagą, kaip nurodyta privatumo pranešimo c punkte.",
+		"tracking_title": "Pranešimų veiksmingumo matavimas (neprivaloma)",
+		"tracking": "Sutinku, kad į nurodytą adresą siunčiamuose informaciniuose ar komerciniuose pranešimuose, kuriuos skaitau bet kuriame įrenginyje, būtų naudojamos sekimo priemonės, kurios registruoja laiškų atidarymą ir susijusius techninius duomenis (datą, laiką, įrenginį ir IP adresą), siekiant įvertinti pranešimų veiksmingumą, kaip aprašyta privatumo pranešimo 4 skyriuje.",
+		"tracking_clicks": "Sutinku, kad į nurodytą adresą siunčiamuose informaciniuose ar komerciniuose pranešimuose, kuriuos skaitau bet kuriame įrenginyje, būtų naudojamos sekimo priemonės, kurios registruoja laiškų atidarymą, nuorodų paspaudimus ir susijusius techninius duomenis (datą, laiką, įrenginį, IP adresą ir paspaustą nuorodą), siekiant įvertinti pranešimų veiksmingumą, kaip aprašyta privatumo pranešimo 4 skyriuje."
+	},
+	"lv_latvian": {
+		"newsletter": "Piekrītu saņemt reklāmas materiālus, kā norādīts privātuma paziņojuma c punktā.",
+		"tracking_title": "Paziņojumu efektivitātes mērīšana (nav obligāti)",
+		"tracking": "Piekrītu, ka informatīvajos vai komerciālajos paziņojumos, kas tiek sūtīti uz manis norādīto adresi un ko es lasu jebkurā ierīcē, tiek izmantoti izsekošanas rīki, kas reģistrē vēstuļu atvēršanu un ar to saistītos tehniskos datus (datumu, laiku, ierīci un IP adresi), lai novērtētu paziņojumu efektivitāti, kā aprakstīts privātuma paziņojuma 4. sadaļā.",
+		"tracking_clicks": "Piekrītu, ka informatīvajos vai komerciālajos paziņojumos, kas tiek sūtīti uz manis norādīto adresi un ko es lasu jebkurā ierīcē, tiek izmantoti izsekošanas rīki, kas reģistrē vēstuļu atvēršanu, klikšķus uz saitēm un ar tiem saistītos tehniskos datus (datumu, laiku, ierīci, IP adresi un saiti, uz kuras uzklikšķināts), lai novērtētu paziņojumu efektivitāti, kā aprakstīts privātuma paziņojuma 4. sadaļā."
+	},
+	"mk_macedonian": {
+		"newsletter": "Давам согласност за примање промотивни материјали, како што е наведено во точка c од известувањето за приватност.",
+		"tracking_title": "Мерење на ефикасноста на комуникациите (незадолжително)",
+		"tracking": "Давам согласност за користење, во информативните или комерцијалните комуникации испратени на наведената адреса и на кој било уред на кој ги читам, на алатки за следење што го бележат отворањето на пораките и поврзаните технички податоци (датум, време, уред и IP-адреса), за да се оцени ефикасноста на комуникациите, како што е опишано во делот 4 од известувањето за приватност.",
+		"tracking_clicks": "Давам согласност за користење, во информативните или комерцијалните комуникации испратени на наведената адреса и на кој било уред на кој ги читам, на алатки за следење што го бележат отворањето на пораките, кликовите на врските и поврзаните технички податоци (датум, време, уред, IP-адреса и кликната врска), за да се оцени ефикасноста на комуникациите, како што е опишано во делот 4 од известувањето за приватност."
+	},
+	"nl_dutch": {
+		"newsletter": "Ik geef toestemming om promotiemateriaal te ontvangen, zoals vermeld in punt c van de privacyverklaring.",
+		"tracking_title": "Meting van de doeltreffendheid van de mededelingen (optioneel)",
+		"tracking": "Ik geef toestemming voor het gebruik, in de informatieve of commerciële mededelingen die naar het opgegeven adres worden verzonden en op elk apparaat waarop ik ze lees, van trackinginstrumenten die het openen van de berichten en de bijbehorende technische gegevens (datum, tijdstip, apparaat en IP-adres) registreren, om de doeltreffendheid van de mededelingen te beoordelen, zoals beschreven in paragraaf 4 van de privacyverklaring.",
+		"tracking_clicks": "Ik geef toestemming voor het gebruik, in de informatieve of commerciële mededelingen die naar het opgegeven adres worden verzonden en op elk apparaat waarop ik ze lees, van trackinginstrumenten die het openen van de berichten, de klikken op links en de bijbehorende technische gegevens (datum, tijdstip, apparaat, IP-adres en aangeklikte link) registreren, om de doeltreffendheid van de mededelingen te beoordelen, zoals beschreven in paragraaf 4 van de privacyverklaring."
+	},
+	"no_norwegian": {
+		"newsletter": "Jeg samtykker til å motta markedsføringsmateriell, som angitt i punkt c i personvernerklæringen.",
+		"tracking_title": "Måling av hvor effektive henvendelsene er (valgfritt)",
+		"tracking": "Jeg samtykker til at det i informasjons- eller markedsføringshenvendelsene som sendes til adressen jeg har oppgitt, uansett hvilken enhet jeg leser dem på, brukes sporingsverktøy som registrerer åpningen av meldingene og tilhørende tekniske data (dato, klokkeslett, enhet og IP-adresse), for å vurdere hvor effektive henvendelsene er, som beskrevet i avsnitt 4 i personvernerklæringen.",
+		"tracking_clicks": "Jeg samtykker til at det i informasjons- eller markedsføringshenvendelsene som sendes til adressen jeg har oppgitt, uansett hvilken enhet jeg leser dem på, brukes sporingsverktøy som registrerer åpningen av meldingene, klikk på lenker og tilhørende tekniske data (dato, klokkeslett, enhet, IP-adresse og lenken det er klikket på), for å vurdere hvor effektive henvendelsene er, som beskrevet i avsnitt 4 i personvernerklæringen."
+	},
+	"pl_polish": {
+		"newsletter": "Wyrażam zgodę na otrzymywanie materiałów promocyjnych, jak wskazano w punkcie c polityki prywatności.",
+		"tracking_title": "Pomiar skuteczności komunikatów (opcjonalnie)",
+		"tracking": "Wyrażam zgodę na wykorzystywanie w komunikatach informacyjnych lub handlowych wysyłanych na podany adres, na każdym urządzeniu, na którym je odczytuję, narzędzi śledzących, które rejestrują otwarcie wiadomości oraz związane z nim dane techniczne (datę, godzinę, urządzenie i adres IP), w celu oceny skuteczności komunikatów, jak opisano w sekcji 4 polityki prywatności.",
+		"tracking_clicks": "Wyrażam zgodę na wykorzystywanie w komunikatach informacyjnych lub handlowych wysyłanych na podany adres, na każdym urządzeniu, na którym je odczytuję, narzędzi śledzących, które rejestrują otwarcie wiadomości, kliknięcia w linki oraz związane z nimi dane techniczne (datę, godzinę, urządzenie, adres IP i kliknięty link), w celu oceny skuteczności komunikatów, jak opisano w sekcji 4 polityki prywatności."
+	},
+	"pt_portuguese": {
+		"newsletter": "Dou o meu consentimento para receber material promocional, conforme indicado no ponto c da política de privacidade.",
+		"tracking_title": "Medição da eficácia das comunicações (facultativo)",
+		"tracking": "Dou o meu consentimento para a utilização, nas comunicações informativas ou comerciais enviadas para o endereço indicado e em qualquer dispositivo em que as leia, de instrumentos de rastreio que registam a abertura das mensagens e os respetivos dados técnicos (data, hora, dispositivo e endereço IP), a fim de avaliar a eficácia das comunicações, conforme descrito na secção 4 da política de privacidade.",
+		"tracking_clicks": "Dou o meu consentimento para a utilização, nas comunicações informativas ou comerciais enviadas para o endereço indicado e em qualquer dispositivo em que as leia, de instrumentos de rastreio que registam a abertura das mensagens, os cliques nas ligações e os respetivos dados técnicos (data, hora, dispositivo, endereço IP e ligação clicada), a fim de avaliar a eficácia das comunicações, conforme descrito na secção 4 da política de privacidade."
+	},
+	"ro_romanian": {
+		"newsletter": "Îmi exprim consimțământul de a primi materiale promoționale, conform celor indicate la punctul c din politica de confidențialitate.",
+		"tracking_title": "Măsurarea eficacității comunicărilor (opțional)",
+		"tracking": "Îmi exprim consimțământul pentru utilizarea, în comunicările informative sau comerciale trimise la adresa indicată și pe orice dispozitiv pe care le citesc, a unor instrumente de urmărire care înregistrează deschiderea mesajelor și datele tehnice aferente (data, ora, dispozitivul și adresa IP), în scopul evaluării eficacității comunicărilor, conform celor descrise în secțiunea 4 din politica de confidențialitate.",
+		"tracking_clicks": "Îmi exprim consimțământul pentru utilizarea, în comunicările informative sau comerciale trimise la adresa indicată și pe orice dispozitiv pe care le citesc, a unor instrumente de urmărire care înregistrează deschiderea mesajelor, clicurile pe linkuri și datele tehnice aferente (data, ora, dispozitivul, adresa IP și linkul accesat), în scopul evaluării eficacității comunicărilor, conform celor descrise în secțiunea 4 din politica de confidențialitate."
+	},
+	"ru_russian": {
+		"newsletter": "Я даю согласие на получение рекламных материалов, как указано в пункте c политики конфиденциальности.",
+		"tracking_title": "Измерение эффективности сообщений (необязательно)",
+		"tracking": "Я даю согласие на использование инструментов отслеживания, фиксирующих открытие сообщений и связанные с ним технические данные (дата, время, устройство и IP-адрес), в информационных или коммерческих сообщениях, направляемых на указанный адрес, на любом устройстве, на котором я их читаю, в целях оценки эффективности сообщений, как описано в разделе 4 политики конфиденциальности.",
+		"tracking_clicks": "Я даю согласие на использование инструментов отслеживания, фиксирующих открытие сообщений, переходы по ссылкам и связанные с ними технические данные (дата, время, устройство, IP-адрес и ссылка, по которой был выполнен переход), в информационных или коммерческих сообщениях, направляемых на указанный адрес, на любом устройстве, на котором я их читаю, в целях оценки эффективности сообщений, как описано в разделе 4 политики конфиденциальности."
+	},
+	"sk_slovak": {
+		"newsletter": "Súhlasím so zasielaním propagačných materiálov, ako je uvedené v bode c zásad ochrany osobných údajov.",
+		"tracking_title": "Meranie účinnosti oznámení (nepovinné)",
+		"tracking": "Súhlasím s tým, aby sa v informačných alebo obchodných oznámeniach, ktoré sa zasielajú na uvedenú adresu a ktoré čítam na akomkoľvek zariadení, používali sledovacie nástroje, ktoré zaznamenávajú otvorenie správ a súvisiace technické údaje (dátum, čas, zariadenie a IP adresu), s cieľom vyhodnotiť účinnosť oznámení, ako je opísané v oddiele 4 zásad ochrany osobných údajov.",
+		"tracking_clicks": "Súhlasím s tým, aby sa v informačných alebo obchodných oznámeniach, ktoré sa zasielajú na uvedenú adresu a ktoré čítam na akomkoľvek zariadení, používali sledovacie nástroje, ktoré zaznamenávajú otvorenie správ, kliknutia na odkazy a súvisiace technické údaje (dátum, čas, zariadenie, IP adresu a odkaz, na ktorý sa kliklo), s cieľom vyhodnotiť účinnosť oznámení, ako je opísané v oddiele 4 zásad ochrany osobných údajov."
+	},
+	"sl_slovenian": {
+		"newsletter": "Privolim v prejemanje promocijskega gradiva, kot je navedeno v točki c obvestila o zasebnosti.",
+		"tracking_title": "Merjenje učinkovitosti sporočil (neobvezno)",
+		"tracking": "Privolim, da se v informativnih ali komercialnih sporočilih, poslanih na navedeni naslov, na kateri koli napravi, na kateri jih berem, uporabljajo orodja za sledenje, ki beležijo odprtje sporočil in povezane tehnične podatke (datum, uro, napravo in naslov IP), z namenom ocenjevanja učinkovitosti sporočil, kot je opisano v razdelku 4 obvestila o zasebnosti.",
+		"tracking_clicks": "Privolim, da se v informativnih ali komercialnih sporočilih, poslanih na navedeni naslov, na kateri koli napravi, na kateri jih berem, uporabljajo orodja za sledenje, ki beležijo odprtje sporočil, klike na povezave in povezane tehnične podatke (datum, uro, napravo, naslov IP in kliknjeno povezavo), z namenom ocenjevanja učinkovitosti sporočil, kot je opisano v razdelku 4 obvestila o zasebnosti."
+	},
+	"sq_albanian": {
+		"newsletter": "Jap pëlqimin për të marrë materiale promocionale, siç tregohet në pikën c të njoftimit mbi privatësinë.",
+		"tracking_title": "Matja e efektivitetit të komunikimeve (fakultative)",
+		"tracking": "Jap pëlqimin për përdorimin, në komunikimet informative ose komerciale të dërguara në adresën e treguar dhe në çdo pajisje ku i lexoj, të mjeteve të gjurmimit që regjistrojnë hapjen e mesazheve dhe të dhënat teknike përkatëse (data, ora, pajisja dhe adresa IP), me qëllim vlerësimin e efektivitetit të komunikimeve, siç përshkruhet në seksionin 4 të njoftimit mbi privatësinë.",
+		"tracking_clicks": "Jap pëlqimin për përdorimin, në komunikimet informative ose komerciale të dërguara në adresën e treguar dhe në çdo pajisje ku i lexoj, të mjeteve të gjurmimit që regjistrojnë hapjen e mesazheve, klikimet mbi lidhjet dhe të dhënat teknike përkatëse (data, ora, pajisja, adresa IP dhe lidhja e klikuar), me qëllim vlerësimin e efektivitetit të komunikimeve, siç përshkruhet në seksionin 4 të njoftimit mbi privatësinë."
+	},
+	"sr_serbian": {
+		"newsletter": "Dajem pristanak na primanje promotivnih materijala, kako je navedeno u tački c obaveštenja o privatnosti.",
+		"tracking_title": "Merenje efikasnosti komunikacija (neobavezno)",
+		"tracking": "Dajem pristanak na korišćenje, u informativnim ili komercijalnim komunikacijama poslatim na navedenu adresu i na bilo kom uređaju na kom ih čitam, alata za praćenje koji beleže otvaranje poruka i povezane tehničke podatke (datum, vreme, uređaj i IP adresa), radi procene efikasnosti komunikacija, kako je opisano u odeljku 4 obaveštenja o privatnosti.",
+		"tracking_clicks": "Dajem pristanak na korišćenje, u informativnim ili komercijalnim komunikacijama poslatim na navedenu adresu i na bilo kom uređaju na kom ih čitam, alata za praćenje koji beleže otvaranje poruka, klikove na linkove i povezane tehničke podatke (datum, vreme, uređaj, IP adresa i link na koji je kliknuto), radi procene efikasnosti komunikacija, kako je opisano u odeljku 4 obaveštenja o privatnosti."
+	},
+	"sv_swedish": {
+		"newsletter": "Jag samtycker till att ta emot marknadsföringsmaterial, enligt vad som anges i punkt c i integritetspolicyn.",
+		"tracking_title": "Mätning av meddelandenas effektivitet (valfritt)",
+		"tracking": "Jag samtycker till att det i de informativa eller kommersiella meddelanden som skickas till den angivna adressen, och på varje enhet där jag läser dem, används spårningsverktyg som registrerar öppnandet av meddelandena och tillhörande tekniska uppgifter (datum, tid, enhet och IP-adress), i syfte att bedöma meddelandenas effektivitet, enligt beskrivningen i avsnitt 4 i integritetspolicyn.",
+		"tracking_clicks": "Jag samtycker till att det i de informativa eller kommersiella meddelanden som skickas till den angivna adressen, och på varje enhet där jag läser dem, används spårningsverktyg som registrerar öppnandet av meddelandena, klick på länkar och tillhörande tekniska uppgifter (datum, tid, enhet, IP-adress och klickad länk), i syfte att bedöma meddelandenas effektivitet, enligt beskrivningen i avsnitt 4 i integritetspolicyn."
+	},
+	"tr_turkish": {
+		"newsletter": "Aydınlatma metninin c bendinde belirtildiği şekilde tanıtım materyalleri almaya rıza veriyorum.",
+		"tracking_title": "İletişimlerin etkinliğinin ölçülmesi (isteğe bağlı)",
+		"tracking": "Belirttiğim adrese gönderilen bilgilendirici veya ticari iletişimlerde, bunları hangi cihazda okursam okuyayım, mesajların açılmasını ve ilgili teknik verileri (tarih, saat, cihaz ve IP adresi) kaydeden izleme araçlarının, iletişimlerin etkinliğini değerlendirmek amacıyla ve aydınlatma metninin 4. bölümünde açıklandığı şekilde kullanılmasına rıza veriyorum.",
+		"tracking_clicks": "Belirttiğim adrese gönderilen bilgilendirici veya ticari iletişimlerde, bunları hangi cihazda okursam okuyayım, mesajların açılmasını, bağlantılara yapılan tıklamaları ve ilgili teknik verileri (tarih, saat, cihaz, IP adresi ve tıklanan bağlantı) kaydeden izleme araçlarının, iletişimlerin etkinliğini değerlendirmek amacıyla ve aydınlatma metninin 4. bölümünde açıklandığı şekilde kullanılmasına rıza veriyorum."
+	},
+	"uk_ukrainian": {
+		"newsletter": "Я надаю згоду на отримання рекламних матеріалів, як зазначено в пункті c політики конфіденційності.",
+		"tracking_title": "Вимірювання ефективності повідомлень (необов’язково)",
+		"tracking": "Я надаю згоду на використання інструментів відстеження, які фіксують відкриття повідомлень і пов’язані з ним технічні дані (дата, час, пристрій та IP-адреса), в інформаційних або комерційних повідомленнях, що надсилаються на вказану адресу, на будь-якому пристрої, на якому я їх читаю, з метою оцінки ефективності повідомлень, як описано в розділі 4 політики конфіденційності.",
+		"tracking_clicks": "Я надаю згоду на використання інструментів відстеження, які фіксують відкриття повідомлень, переходи за посиланнями та пов’язані з ними технічні дані (дата, час, пристрій, IP-адреса та посилання, за яким здійснено перехід), в інформаційних або комерційних повідомленнях, що надсилаються на вказану адресу, на будь-якому пристрої, на якому я їх читаю, з метою оцінки ефективності повідомлень, як описано в розділі 4 політики конфіденційності."
+	}
+}

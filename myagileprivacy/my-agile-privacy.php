@@ -6,7 +6,7 @@ if( !defined( 'ABSPATH' ) ) { exit; }
  * Plugin Name:       My Agile Privacy®
  * Plugin URI:        https://www.myagileprivacy.com/
  * Description:       My Agile Privacy® - CMP, Cookie Consent & Privacy Tools
- * Version:           3.4.0
+ * Version:           3.4.1
  * Requires at least: 4.4.0
  * Requires PHP:      5.6
  * Author:            MyAgilePrivacy
@@ -52,7 +52,8 @@ if( defined( 'MAP_ENABLE_ADVANCED_INTEGRATION' ) && MAP_ENABLE_ADVANCED_INTEGRAT
  * Starts the plugin execution
  *
  */
-if( !function_exists( 'run_my_agile_privacy' ) ) {
+if( !function_exists( 'run_my_agile_privacy' ) )
+{
     function run_my_agile_privacy() {
     	if( function_exists( 'ini_set' ) )
     	{

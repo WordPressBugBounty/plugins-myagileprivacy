@@ -349,7 +349,7 @@ msgstr "Dépendances JavaScript personnalisées"
 #: admin/views/policy_assistant_html.php:2687
 #: admin/views/policy_assistant_html.php:2876
 msgid "Premium Feature"
-msgstr ""
+msgstr "Fonctionnalité premium"
 
 #: admin/my-agile-privacy-admin.php:4794
 msgid "Warning: this feature is intended for advanced users and developers."
@@ -1584,7 +1584,7 @@ msgid "Example code:"
 msgstr "Exemple de code :"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:387
-msgid "This website uses technical and profiling cookies. Clicking on \"Accept\" authorises all profiling cookies. Clicking on \"Refuse\" or the X will refuse all profiling cookies. By clicking on \"Customise\" you can select which profiling cookies to activate.[myagileprivacy_extra_info]"
+msgid "This website uses technical and profiling cookies. Clicking on \"Accept\" authorizes all profiling cookies. Clicking on \"Refuse\" or the X will refuse all profiling cookies. By clicking on \"Customize\" you can select which profiling cookies to activate.[myagileprivacy_extra_info]"
 msgstr "Ce site web utilise des cookies techniques et de profilage. En cliquant sur « Accepter », vous autorisez tous les cookies de profilage. En cliquant sur « Refuser » ou sur le X, vous refusez tous les cookies de profilage. En cliquant sur « Personnaliser », vous pouvez sélectionner les cookies de profilage à activer.[myagileprivacy_extra_info]"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:395
@@ -1708,6 +1708,9 @@ msgid "Select the text color of the cookie banner heading"
 msgstr "Sélectionnez la couleur du texte de l'en-tête de la bannière de cookies"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:605
+#: admin/views/inc/inc.cookie_banner_tab.php:754
+#: admin/views/inc/inc.cookie_banner_tab.php:795
+#: admin/views/inc/inc.cookie_banner_tab.php:835
 msgid "Text Color"
 msgstr "Couleur du texte"
 
@@ -1753,16 +1756,10 @@ msgstr "Bouton « Accepter »"
 msgid "Text"
 msgstr "Texte"
 
-#: admin/views/inc/inc.cookie_banner_tab.php:754
-#: admin/views/inc/inc.cookie_banner_tab.php:795
-#: admin/views/inc/inc.cookie_banner_tab.php:835
-msgid "Text colour"
-msgstr "Couleur du texte"
-
 #: admin/views/inc/inc.cookie_banner_tab.php:761
 #: admin/views/inc/inc.cookie_banner_tab.php:802
 #: admin/views/inc/inc.cookie_banner_tab.php:842
-msgid "Background colour"
+msgid "Background Color"
 msgstr "Couleur de fond"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:774
@@ -1823,7 +1820,7 @@ msgid "Blocked content widget"
 msgstr "Widget de contenu bloqué"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:993
-msgid "Blocked Content Widget text colour"
+msgid "Blocked Content Widget text color"
 msgstr "Couleur du texte du widget de contenu bloqué"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:1001
@@ -1831,7 +1828,7 @@ msgid "Select the text color of the blocked content inline widget"
 msgstr "Sélectionnez la couleur du texte du widget en ligne de contenu bloqué"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:1009
-msgid "Blocked Content Widget background colour"
+msgid "Blocked Content Widget background color"
 msgstr "Couleur de fond du widget de contenu bloqué"
 
 #: admin/views/inc/inc.cookie_banner_tab.php:1017
@@ -1972,12 +1969,12 @@ msgid "Go to the Helpdesk"
 msgstr "Accédez au centre d'assistance"
 
 #: admin/views/inc/inc.dashboard_tab.php:361
-#: admin/views/inc/inc.helpdesk_tab.php:199
+#: admin/views/inc/inc.helpdesk_tab.php:227
 msgid "or"
 msgstr "ou"
 
 #: admin/views/inc/inc.dashboard_tab.php:361
-#: admin/views/inc/inc.helpdesk_tab.php:199
+#: admin/views/inc/inc.helpdesk_tab.php:227
 msgid "Contact us"
 msgstr "Nous contacter"
 
@@ -2053,100 +2050,124 @@ msgstr "RGPD, CCPA, nLPD, PIPEDA, LGPD : quelles réglementations de confidentia
 msgid "Learn how to customize your Privacy Policies"
 msgstr "Découvrez comment personnaliser vos politiques de confidentialité"
 
+#: admin/views/inc/inc.helpdesk_tab.php:126
+msgid "Advanced features"
+msgstr "Fonctionnalités avancées"
+
 #: admin/views/inc/inc.helpdesk_tab.php:130
+msgid "My Agile Privacy® Consent Statistics: how to use them"
+msgstr "Les Statistiques de consentement de My Agile Privacy® : comment les utiliser"
+
+#: admin/views/inc/inc.helpdesk_tab.php:134
+msgid "Banner A/B Test: which cookie banner design converts better?"
+msgstr "Test A/B de la bannière : quel design de bannière cookie convainc le plus ?"
+
+#: admin/views/inc/inc.helpdesk_tab.php:138
+msgid "Geolocation in My Agile Privacy®: how to enable it"
+msgstr "La géolocalisation de My Agile Privacy® : comment l'activer"
+
+#: admin/views/inc/inc.helpdesk_tab.php:143
+msgid "For developers"
+msgstr "Pour les développeurs"
+
+#: admin/views/inc/inc.helpdesk_tab.php:147
+msgid "JavaScript Consent Events: A Developer's Guide"
+msgstr "Événements JavaScript du consentement : guide pour les développeurs"
+
+#: admin/views/inc/inc.helpdesk_tab.php:158
 msgid "Do you use a cache plugin?"
 msgstr "Utilisez-vous un plugin de cache ?"
 
-#: admin/views/inc/inc.helpdesk_tab.php:133
+#: admin/views/inc/inc.helpdesk_tab.php:161
 msgid "My Agile Privacy® works correctly with most cache plugins available on the market."
 msgstr "My Agile Privacy® fonctionne correctement avec la plupart des plugins de cache disponibles sur le marché."
 
-#: admin/views/inc/inc.helpdesk_tab.php:134
+#: admin/views/inc/inc.helpdesk_tab.php:162
 msgid "Below are the configuration guides for the most commonly used ones. Make sure to follow the instructions to ensure compliance and performance."
 msgstr "Vous trouverez ci-dessous les guides de configuration des plus couramment utilisés. Assurez-vous de suivre les instructions pour garantir la conformité et les performances."
 
-#: admin/views/inc/inc.helpdesk_tab.php:136
+#: admin/views/inc/inc.helpdesk_tab.php:164
 msgid "How to configure WP Rocket with My Agile Privacy®"
 msgstr "Comment configurer WP Rocket avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:137
+#: admin/views/inc/inc.helpdesk_tab.php:165
 msgid "How to configure Siteground Optimizer with My Agile Privacy®"
 msgstr "Comment configurer Siteground Optimizer avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:138
+#: admin/views/inc/inc.helpdesk_tab.php:166
 msgid "How to configure Optimize Press with My Agile Privacy®"
 msgstr "Comment configurer Optimize Press avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:139
+#: admin/views/inc/inc.helpdesk_tab.php:167
 msgid "How to configure W3 Total Cache with My Agile Privacy®"
 msgstr "Comment configurer W3 Total Cache avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:140
+#: admin/views/inc/inc.helpdesk_tab.php:168
 msgid "How to configure Speedy Cache with My Agile Privacy®"
 msgstr "Comment configurer Speedy Cache avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:141
+#: admin/views/inc/inc.helpdesk_tab.php:169
 msgid "How to configure LiteSpeed Cache with My Agile Privacy®"
 msgstr "Comment configurer LiteSpeed Cache avec My Agile Privacy®"
 
-#: admin/views/inc/inc.helpdesk_tab.php:142
+#: admin/views/inc/inc.helpdesk_tab.php:170
 msgid "Do you use another cache plugin?"
 msgstr "Utilisez-vous un autre plugin de cache ?"
 
-#: admin/views/inc/inc.helpdesk_tab.php:150
+#: admin/views/inc/inc.helpdesk_tab.php:178
 msgid "Do you have a multilingual website?"
 msgstr "Avez-vous un site web multilingue ?"
 
-#: admin/views/inc/inc.helpdesk_tab.php:153
+#: admin/views/inc/inc.helpdesk_tab.php:181
 msgid "My Agile Privacy® is compatible with the main multilingual plugins for WordPress and provides ready-made translations for elements such as the cookie banner, policies, and individual cookies in multiple languages."
 msgstr "My Agile Privacy® est compatible avec les principaux plugins multilingues pour WordPress et fournit des traductions prêtes à l'emploi pour des éléments tels que la bannière de cookies, les politiques et les cookies individuels dans plusieurs langues."
 
-#: admin/views/inc/inc.helpdesk_tab.php:154
+#: admin/views/inc/inc.helpdesk_tab.php:182
 msgid "Depending on the license you have purchased, you will have access to one or more languages."
 msgstr "Selon la licence que vous avez achetée, vous aurez accès à une ou plusieurs langues."
 
-#: admin/views/inc/inc.helpdesk_tab.php:155
+#: admin/views/inc/inc.helpdesk_tab.php:183
 #, php-format
 msgid "For the updated list and implementation instructions, please refer to the <a href=\"%s\" target=\"_blank\">technical sheet.</a>"
 msgstr "Pour la liste mise à jour et les instructions de mise en œuvre, veuillez consulter la <a href=\"%s\" target=\"_blank\">fiche technique.</a>"
 
-#: admin/views/inc/inc.helpdesk_tab.php:156
+#: admin/views/inc/inc.helpdesk_tab.php:184
 msgid "Follow these implementation guides for a correct display of textual content."
 msgstr "Suivez ces guides de mise en œuvre pour un affichage correct du contenu textuel."
 
-#: admin/views/inc/inc.helpdesk_tab.php:158
+#: admin/views/inc/inc.helpdesk_tab.php:186
 msgid "How to configure My Agile Privacy® for multilingual websites"
 msgstr "Comment configurer My Agile Privacy® pour les sites web multilingues"
 
-#: admin/views/inc/inc.helpdesk_tab.php:167
+#: admin/views/inc/inc.helpdesk_tab.php:195
 msgid "Questions?"
 msgstr "Des questions ?"
 
-#: admin/views/inc/inc.helpdesk_tab.php:168
+#: admin/views/inc/inc.helpdesk_tab.php:196
 msgid "Visit our FAQ section to view answers to the most common post-installation questions."
 msgstr "Visitez notre section FAQ pour consulter les réponses aux questions les plus courantes après l’installation."
 
-#: admin/views/inc/inc.helpdesk_tab.php:169
+#: admin/views/inc/inc.helpdesk_tab.php:197
 msgid "Go to the FAQ"
 msgstr "Accédez à la FAQ"
 
-#: admin/views/inc/inc.helpdesk_tab.php:177
+#: admin/views/inc/inc.helpdesk_tab.php:205
 msgid "Subscription management and bulk operations"
 msgstr "Gestion des abonnements et opérations en masse"
 
-#: admin/views/inc/inc.helpdesk_tab.php:178
+#: admin/views/inc/inc.helpdesk_tab.php:206
 msgid "Discover how to manage your subscription and multiple installations through the dedicated private area."
 msgstr "Découvrez comment gérer votre abonnement et plusieurs installations via l’espace privé dédié."
 
-#: admin/views/inc/inc.helpdesk_tab.php:179
+#: admin/views/inc/inc.helpdesk_tab.php:207
 msgid "Go to the guide related to the private area."
 msgstr "Accédez au guide relatif à la Zone privée."
 
-#: admin/views/inc/inc.helpdesk_tab.php:198
+#: admin/views/inc/inc.helpdesk_tab.php:226
 msgid "Need more help?"
 msgstr "Besoin d’aide supplémentaire ?"
 
-#: admin/views/inc/inc.helpdesk_tab.php:199
+#: admin/views/inc/inc.helpdesk_tab.php:227
 msgid "Go to the Helpdesk on the website"
 msgstr "Accédez au centre d’assistance sur le site web"
 
@@ -2478,7 +2499,7 @@ msgid "Select your audience location"
 msgstr "Sélectionnez la localisation de votre public"
 
 #: admin/views/policy_assistant_html.php:279
-msgid "Consider the countries of the people your site is aimed at or whose behaviour it monitors (for example through profiling or behavioural advertising), not every country from which it can be visited. If in doubt, select the country: the card of each regulation, below, explains when it applies, and only the regulations you confirm are added to your policies."
+msgid "Consider the countries of the people your site is aimed at or whose behavior it monitors (for example through profiling or behavioral advertising), not every country from which it can be visited. If in doubt, select the country: the card of each regulation, below, explains when it applies, and only the regulations you confirm are added to your policies."
 msgstr "Tenez compte des pays des personnes auxquelles votre site s'adresse ou dont il suit le comportement (par exemple par le profilage ou la publicité comportementale), et non de tous les pays depuis lesquels il peut être consulté. En cas de doute, sélectionnez le pays : la fiche de chaque réglementation, ci-dessous, explique quand elle s'applique, et seules les réglementations que vous confirmez sont ajoutées à vos politiques."
 
 #: admin/views/policy_assistant_html.php:279
@@ -2712,12 +2733,12 @@ msgid "(e.g., union enrollment, payroll dues/withholdings)"
 msgstr "(p. ex., adhésion syndicale, cotisations/retenues sur salaire)"
 
 #: admin/views/policy_assistant_html.php:853
-msgid "Banner behaviour by geographic area"
+msgid "Banner behavior by geographic area"
 msgstr "Comportement de la bannière par zone géographique"
 
 #: admin/views/policy_assistant_html.php:854
 msgid "Depending on your company location, the Cookie Banner may behave differently for visitors from different areas. The summary below shows the behavior for the selected areas. \"Other countries\" shows the behavior for visitors not in the list."
-msgstr "Selon la localisation de votre entreprise, la bannière de cookies peut se comporter différemment pour les visiteurs des différentes zones. Le résumé ci-dessous montre le comportement pour les zones sélectionnées. \"Autres pays\" montre le comportement pour les visiteurs non inclus dans la liste."
+msgstr "Selon la localisation de votre entreprise, le Cookie Banner peut se comporter différemment pour les visiteurs des différentes zones. Le résumé ci-dessous montre le comportement pour les zones sélectionnées. « Autres pays » montre le comportement pour les visiteurs non inclus dans la liste."
 
 #: admin/views/policy_assistant_html.php:864
 msgid "European Union"
@@ -3065,8 +3086,8 @@ msgid "No numerical thresholds."
 msgstr "Pas de seuils numériques."
 
 #: admin/views/policy_assistant_html.php:1540
-msgid "Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent."
-msgstr "Les entités qui correspondent à la définition de petite entreprise de la SBA (Small Business Administration) sont largement exemptées de la loi, mais ne peuvent pas vendre des catégories particulières de données personnelles sans consentement."
+msgid "Entities that qualify as a small business under the federal Small Business Act are largely exempt from the law, but may not sell sensitive data without the consumer's prior consent."
+msgstr "Les entités qui relèvent de la définition de « small business » du Small Business Act fédéral sont largement exemptées de la loi, mais ne peuvent pas vendre de données sensibles sans le consentement préalable du consommateur."
 
 #: admin/views/policy_assistant_html.php:1579
 msgid "NRS 603A (Nevada Privacy Law)"
@@ -3078,7 +3099,7 @@ msgstr "S'applique aux exploitants de sites web ou de services en ligne commerci
 
 #: admin/views/policy_assistant_html.php:1587
 msgid "No numerical thresholds. The law provides, among other things, disclosure obligations and an opt-out right with respect to the sale of such information, according to the specific and narrow definition of «sale» set out in the statute."
-msgstr "Pas de seuils numériques. La loi prévoit, entre autres, des obligations d'information et un droit d'opt-out concernant la vente de ces informations, selon la définition spécifique et restreinte de «sale» prévue par la loi."
+msgstr "Pas de seuils numériques. La loi prévoit, entre autres, des obligations d'information et un droit d'opt-out concernant la vente de ces informations, selon la définition spécifique et restreinte de « sale » prévue par la loi."
 
 #: admin/views/policy_assistant_html.php:1626
 msgid "NHPA (New Hampshire Privacy Act)"
@@ -3157,8 +3178,8 @@ msgid "Applies to those who do business in Texas or produce products/services co
 msgstr "S'applique à ceux qui font des affaires au Texas ou produisent des biens ou fournissent des services consommés par des résidents du Texas et traitent ou vendent des données personnelles."
 
 #: admin/views/policy_assistant_html.php:1887
-msgid "No numerical thresholds. Entities that fall within the SBA (Small Business Administration) definition of small business are largely exempt from the law, but may not sell special categories of personal data without consent."
-msgstr "Pas de seuils numériques. Les entités qui correspondent à la définition du SBA (Small Business Administration) des petites entreprises sont largement exemptées de la loi, mais ne peuvent pas vendre de catégories particulières de données personnelles sans consentement."
+msgid "No numerical thresholds. Entities that qualify as a small business under the U.S. Small Business Administration (SBA) definition are largely exempt from the law, but may not sell sensitive data without the consumer's prior consent."
+msgstr "Pas de seuils numériques. Les entités qui relèvent de la définition de « small business » de la Small Business Administration (SBA) des États-Unis sont largement exemptées de la loi, mais ne peuvent pas vendre de données sensibles sans le consentement préalable du consommateur."
 
 #: admin/views/policy_assistant_html.php:1925
 msgid "UCPA (Utah Consumer Privacy Act)"
@@ -3306,8 +3327,8 @@ msgid "I retain data for a maximum of 24 months from the last meaningful interac
 msgstr "Je conserve les données pendant un maximum de 24 mois à partir de la dernière interaction significative"
 
 #: admin/views/policy_assistant_html.php:2523
-msgid "By \"last meaningful interaction\" we mean, for example, opening a communication, clicking within a communication, or submitting a request through the website."
-msgstr "Par « dernière interaction significative », nous entendons, par exemple, l'ouverture d'une communication, un clic dans une communication ou l'envoi d'une demande via le site web."
+msgid "By \"last meaningful interaction\" we mean, for example, a request submitted through the website or a reply to a communication received that shows an interest in continuing to receive them. Email opens and clicks do not count."
+msgstr "Par « dernière interaction significative », nous entendons, par exemple, une demande effectuée depuis le site ou une réponse à une communication reçue qui manifeste l'intérêt de continuer à les recevoir. Les ouvertures et les clics des e-mails ne comptent pas."
 
 #: admin/views/policy_assistant_html.php:2541
 msgid "Reviews / Feedback collection"
@@ -3683,15 +3704,15 @@ msgstr "Certaines fonctionnalités de My Agile Privacy® sont actuellement indis
 msgid "Reactivate now"
 msgstr "Réactiver maintenant"
 
-#: includes/my-agile-privacy-helpdesk-links.php:294
+#: includes/my-agile-privacy-helpdesk-links.php:314
 msgid "Hey, I'm \"Agile\" and I'm here to help you!"
 msgstr "Bonjour, je suis « Agile » et je suis là pour vous aider !"
 
-#: includes/my-agile-privacy-helpdesk-links.php:295
+#: includes/my-agile-privacy-helpdesk-links.php:315
 msgid "If you want to know more about these features, just click on me."
 msgstr "Si vous souhaitez en savoir plus sur ces fonctionnalités, il vous suffit de cliquer sur moi."
 
-#: includes/my-agile-privacy-helpdesk-links.php:355
+#: includes/my-agile-privacy-helpdesk-links.php:377
 msgid "Online Help"
 msgstr "Aide en ligne"
 
@@ -3794,8 +3815,8 @@ msgid "Trial requests will be available soon."
 msgstr "La demande d'essai sera bientôt disponible."
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "Try every feature of the paid version of My Agile Privacy on this site for 15 days. No credit card required."
-msgstr "Essayez pendant 15 jours toutes les fonctions de la version payante de My Agile Privacy sur ce site. Aucune carte bancaire n'est requise."
+msgid "Try the paid version of My Agile Privacy® on this site for 15 days. Statistics, geolocation and the Banner A/B Test are not included. No credit card required."
+msgstr "Essayez la version payante de My Agile Privacy® sur ce site pendant 15 jours. Les statistiques, la géolocalisation et le Test A/B de la bannière ne sont pas inclus. Aucune carte bancaire n'est requise."
 
 #: myagileprivacy/admin/views/trial_html.php
 msgid "The trial is valid for this site:"
@@ -3890,8 +3911,32 @@ msgid "Questions about the trial?"
 msgstr "Des questions sur l'essai ?"
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "This feature is not available with your licence."
+msgid "This feature is not available with your license."
 msgstr "Cette fonction n'est pas disponible avec votre licence."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "This feature is not included in the free trial."
+msgstr "Cette fonction n'est pas incluse dans l'essai gratuit."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "Your license includes this feature. It switches on by itself within a few minutes: then reload this page and turn it on."
+msgstr "Votre licence comprend cette fonction. Elle s'activera d'elle-même d'ici quelques minutes : rechargez ensuite cette page et activez-la."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "Your license includes this feature: follow the My Agile Privacy® notice at the top of this page to activate it."
+msgstr "Votre licence comprend cette fonction : suivez l'avis de My Agile Privacy® en haut de cette page pour l'activer."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "Your license includes this feature: ask a site administrator to activate it."
+msgstr "Votre licence comprend cette fonction : demandez à un administrateur du site de l'activer."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "Your license includes this feature. If it is still off tomorrow, contact support."
+msgstr "Votre licence comprend cette fonction. Si elle est toujours désactivée demain, contactez l'assistance."
+
+#: myagileprivacy/admin/my-agile-privacy-admin.php
+msgid "opens in a new tab"
+msgstr "s'ouvre dans un nouvel onglet"
 
 #: myagileprivacy/admin/views/trial_html.php
 msgid "Your free trial has ended"
@@ -3914,7 +3959,7 @@ msgid "Try the paid features for 15 days"
 msgstr "Essayez les fonctions payantes pendant 15 jours"
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "Statistics, geolocation and the A/B test, switched on for 15 days. Your licence and your invoicing do not change: the trial is free."
+msgid "Statistics, geolocation and the A/B test, switched on for 15 days. Your license and your invoicing do not change: the trial is free."
 msgstr "Statistiques, géolocalisation et test A/B, activés pendant 15 jours. Votre licence et votre facturation ne changent pas : l'essai est gratuit."
 
 #: myagileprivacy/admin/views/trial_html.php
@@ -3930,7 +3975,7 @@ msgid "This site has already had its trial, and it cannot be reopened."
 msgstr "Ce site a déjà eu son essai, et il ne se rouvre pas."
 
 #: myagileprivacy/admin/my-agile-privacy-admin.php
-msgid "Your licence has used all of its trials. Contact us to try the paid features on another site."
+msgid "Your license has used all of its trials. Contact us to try the paid features on another site."
 msgstr "Votre licence a épuisé les essais disponibles. Écrivez-nous pour essayer les fonctions payantes sur un autre site."
 
 #: myagileprivacy/admin/views/trial_html.php
@@ -3938,7 +3983,7 @@ msgid "Start the free trial"
 msgstr "Démarrer l'essai gratuit"
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "Your licence was sold to you by a reseller: ask them for the trial."
+msgid "Your license was sold to you by a reseller: ask them for the trial."
 msgstr "Votre licence vous a été vendue par un revendeur : demandez-lui l'essai."
 
 #: myagileprivacy/admin/views/trial_html.php
@@ -3954,7 +3999,7 @@ msgid "Statistics, geolocation and the A/B test are active on this site."
 msgstr "Statistiques, géolocalisation et test A/B sont actifs sur ce site."
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "When it ends these three features switch off and your licence goes on as before, with nothing for you to do."
+msgid "When it ends these three features switch off and your license goes on as before, with nothing for you to do."
 msgstr "À la fin, ces trois fonctions s'éteignent et votre licence se poursuit comme avant, sans rien à faire de votre part."
 
 #: myagileprivacy/admin/views/trial_html.php
@@ -3982,9 +4027,254 @@ msgid "Done. The paid features are on for this site: the page is reloading."
 msgstr "C'est fait. Les fonctions payantes sont actives sur ce site : la page se recharge."
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "This site is not connected to your licence yet. Save your settings first, then ask again."
+msgid "This site is not connected to your license yet. Save your settings first, then ask again."
 msgstr "Ce site n'est pas encore relié à votre licence. Enregistrez d'abord vos réglages, puis redemandez-le."
 
 #: myagileprivacy/admin/views/trial_html.php
-msgid "Enter your licence code first."
+msgid "Enter your license code first."
 msgstr "Saisissez d'abord votre code de licence."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Newsletters contain a pixel that detects opens, only for recipients who give their optional consent"
+msgstr "Les newsletters contiennent un pixel qui détecte les ouvertures, uniquement pour les destinataires qui donnent leur consentement facultatif"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "A tiny, invisible image (tracking pixel) is downloaded when the message is opened and records the date, time, device and IP address of each recipient. The data is used only to measure how effective the communications are, not to profile, personalize content or change how often messages are sent."
+msgstr "Une image minuscule et invisible (pixel de suivi) est téléchargée à l'ouverture du message et enregistre la date, l'heure, l'appareil et l'adresse IP de chaque destinataire. Les données servent uniquement à mesurer l'efficacité des communications, et non à profiler, à personnaliser les contenus ou à modifier la fréquence des envois."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Consent is required even if you only look at overall campaign statistics, such as the open rate: platforms use a different pixel for each recipient, and this Privacy Policy applies to recipients in every country, including France, where the CNIL does not exempt aggregate statistics. Without consent the message must not contain the pixel."
+msgstr "Le consentement est nécessaire même si vous ne consultez que les statistiques globales de la campagne, comme le taux d'ouverture : les plateformes utilisent un pixel différent pour chaque destinataire, et cette politique de confidentialité s'applique aux destinataires de tous les pays, y compris la France, où la CNIL n'exempte pas les statistiques agrégées. Sans consentement, le message ne doit pas contenir le pixel."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "If your platform tracks clicks only, this setup is not supported: turn off click tracking."
+msgstr "Si la plateforme ne suit que les clics, cette configuration n'est pas prévue : désactivez le suivi des clics."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Newsletter links are tracked too (clicks)"
+msgstr "Les liens des newsletters sont également suivis (clics)"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Links in the messages go through tracked addresses that record which link each recipient clicked, with the date, time, browser and IP address."
+msgstr "Les liens des messages passent par des adresses de suivi qui enregistrent le lien sur lequel chaque destinataire a cliqué, avec la date, l'heure, le navigateur et l'adresse IP."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "You have not indicated pixels in the newsletters: your emails must contain neither pixels nor tracked links, not even for overall statistics only. Many platforms turn them on by themselves: in the platform, turn off open and click tracking, including in automated and transactional emails."
+msgstr "Vous n'avez pas indiqué de pixels dans les newsletters : vos e-mails ne doivent contenir ni pixels ni liens de suivi, pas même pour les seules statistiques globales. De nombreuses plateformes les activent d'elles-mêmes : désactivez dans la plateforme le suivi des ouvertures et des clics, y compris dans les e-mails automatiques et transactionnels."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "You have not indicated pixels in the newsletters: your emails must contain neither pixels nor tracked links, not even for overall statistics only. Many platforms turn them on by themselves: in the platform, turn off open and click tracking, including in automated and transactional emails, except for the date-only pixel in the service emails indicated below."
+msgstr "Vous n'avez pas indiqué de pixels dans les newsletters : vos e-mails ne doivent contenir ni pixels ni liens de suivi, pas même pour les seules statistiques globales. De nombreuses plateformes les activent d'elles-mêmes : désactivez dans la plateforme le suivi des ouvertures et des clics, y compris dans les e-mails automatiques et transactionnels, sauf le pixel qui ne conserve que la date dans les e-mails de service indiqués ci-dessous."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Texts for the sign-up form…"
+msgstr "Textes pour le formulaire d'inscription…"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Account authentication emails or legally required communications contain a pixel that stores only the date of the last open"
+msgstr "Les e-mails d'authentification du compte ou les communications imposées par la loi contiennent un pixel qui ne conserve que la date de la dernière ouverture"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Legally required communications contain a pixel that stores only the date of the last open"
+msgstr "Les communications imposées par la loi contiennent un pixel qui ne conserve que la date de la dernière ouverture"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Without consent only when strictly necessary: for account security (for example activation or password reset) or to help document the opening of a communication you are required by law to send for a requested service (for example a data breach notification). These emails contain no promotional messages. Time, IP address and device data must not be stored or used: if the pixel is used to recognize the device or the IP address (for example to flag logins from an unknown device), this option does not cover it and must not be turned on for those emails."
+msgstr "Sans consentement uniquement lorsque c'est strictement nécessaire : pour la sécurité du compte (par exemple l'activation ou la réinitialisation du mot de passe) ou pour contribuer à documenter l'ouverture d'une communication que vous êtes tenu par la loi d'envoyer pour un service demandé (par exemple la notification d'une violation de données). Ces e-mails ne contiennent pas de messages promotionnels. L'heure, l'adresse IP et les données de l'appareil ne doivent être ni conservées ni utilisées : si le pixel sert à reconnaître l'appareil ou l'adresse IP (par exemple pour signaler des connexions depuis un appareil inconnu), cette option ne le couvre pas et ne doit pas être activée pour ces e-mails."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Without consent only when strictly necessary to help document the opening of a communication you are required by law to send for a requested service (for example a data breach notification). These emails contain no promotional messages. Time, IP address and device data must not be stored or used. Authentication emails are included only if the site allows account registration (checkbox above)."
+msgstr "Sans consentement uniquement lorsque c'est strictement nécessaire pour contribuer à documenter l'ouverture d'une communication que vous êtes tenu par la loi d'envoyer pour un service demandé (par exemple la notification d'une violation de données). Ces e-mails ne contiennent pas de messages promotionnels. L'heure, l'adresse IP et les données de l'appareil ne doivent être ni conservées ni utilisées. Les e-mails d'authentification ne sont concernés que si le site permet de créer un compte (case ci-dessus)."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "In the United Kingdom the exemption for legally required communications applies only if the pixel is the only reasonable way to meet the obligation: as a rule, remove it from legal notices and keep it only in authentication emails."
+msgstr "Au Royaume-Uni, l'exemption pour les communications imposées par la loi ne s'applique que si le pixel est le seul moyen raisonnable de remplir l'obligation : en règle générale, retirez-le des notifications légales et gardez-le uniquement dans les e-mails d'authentification."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "In the United Kingdom the exemption for legally required communications applies only if the pixel is the only reasonable way to meet the obligation: as a rule, remove it and do not turn on this option."
+msgstr "Au Royaume-Uni, l'exemption pour les communications imposées par la loi ne s'applique que si le pixel est le seul moyen raisonnable de remplir l'obligation : en règle générale, retirez-le et n'activez pas cette option."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Before you continue, check that you and your sending platform meet these requirements:"
+msgstr "Avant de continuer, vérifiez que vous et votre plateforme d'envoi respectez ces exigences :"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Newsletter tracking"
+msgstr "Suivi des newsletters"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Recipients who have not given consent, or have withdrawn it, receive messages without pixels or tracked links, except for the personal links to unsubscribe or manage consents."
+msgstr "Les destinataires qui n'ont pas donné leur consentement, ou qui l'ont retiré, reçoivent des messages sans pixels ni liens de suivi, à l'exception des liens personnels pour se désabonner ou gérer leurs consentements."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Every message contains a link to withdraw only the tracking consent, without logging in or entering the address again."
+msgstr "Chaque message contient un lien pour retirer uniquement le consentement au suivi, sans connexion ni nouvelle saisie de l'adresse."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "After withdrawal, opens and clicks of messages already sent are no longer recorded (links still lead to their page) and the tracking data collected is deleted or anonymized."
+msgstr "Après le retrait, les ouvertures et les clics des messages déjà envoyés ne sont plus enregistrés (les liens continuent de mener à leur page) et les données de suivi collectées sont supprimées ou anonymisées."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "In the sends after withdrawal the pixel is actually removed from the message: turning off statistics is not enough."
+msgstr "Dans les envois qui suivent le retrait, le pixel est réellement retiré du message : désactiver les statistiques ne suffit pas."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Subscribers already on the list are not tracked until they consent: the consent request and the notice of the new Privacy Policy are sent without pixels or tracked links, except for the personal link to give consent, and no reply counts as a refusal."
+msgstr "Les abonnés déjà inscrits ne sont pas suivis tant qu'ils n'ont pas consenti : la demande de consentement et l'avis de la nouvelle politique de confidentialité sont envoyés sans pixels ni liens de suivi, à l'exception du lien personnel pour donner son consentement, et l'absence de réponse vaut refus."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Opens and clicks are not used to segment recipients, personalize content, change the frequency or timing of sends, suspend those who do not open or locate recipients from their IP address: in the platform, turn off automatic rules based on opens (inactive contact cleanup, best-time sending, re-engagement automations)."
+msgstr "Les ouvertures et les clics ne servent pas à segmenter les destinataires, à personnaliser les contenus, à modifier la fréquence ou l'heure des envois, à suspendre ceux qui n'ouvrent pas ni à localiser les destinataires à partir de l'adresse IP : désactivez dans la plateforme les règles automatiques basées sur les ouvertures (nettoyage des inactifs, envoi à la meilleure heure, automatisations de réactivation)."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The pixel and the tracked links use a random code instead of the email address: the address does not appear in the request."
+msgstr "Le pixel et les liens de suivi utilisent un code aléatoire à la place de l'adresse e-mail : l'adresse n'apparaît pas dans la requête."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Pixels in service emails"
+msgstr "Pixels dans les e-mails de service"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The pixel is only in the emails of a closed list you have defined, each with the reason why it is strictly necessary."
+msgstr "Le pixel ne figure que dans les e-mails d'une liste fermée que vous avez définie, chacun avec la raison pour laquelle il est strictement nécessaire."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "These emails contain no promotional messages."
+msgstr "Ces e-mails ne contiennent pas de messages promotionnels."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Only the date of the last open is stored, replaced at each new open; time, IP address and device data are not stored or used, not even in the logs and statistics of the platform. Have the platform confirm this in writing: if it does not guarantee it, do not put the pixel in these emails."
+msgstr "Seule la date de la dernière ouverture est conservée, remplacée à chaque nouvelle ouverture ; l'heure, l'adresse IP et les données de l'appareil ne sont ni conservées ni utilisées, pas même dans les journaux et les statistiques de la plateforme. Faites-le confirmer par écrit par la plateforme : si elle ne le garantit pas, ne mettez pas le pixel dans ces e-mails."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The date is deleted when it is no longer needed for account security or to help document the opening."
+msgstr "La date est supprimée lorsqu'elle n'est plus nécessaire à la sécurité du compte ou pour contribuer à documenter l'ouverture."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The date is deleted when it is no longer needed to help document the opening."
+msgstr "La date est supprimée lorsqu'elle n'est plus nécessaire pour contribuer à documenter l'ouverture."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "If a recipient objects, you no longer record the open date for them (remove the pixel or exclude them from the tracking), unless there are overriding legitimate grounds, to be documented."
+msgstr "Si un destinataire s'y oppose, vous n'enregistrez plus la date d'ouverture pour lui (retirez le pixel ou excluez-le du relevé), sauf motifs légitimes impérieux à documenter."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The platform processes the data collected by the pixels and the tracked links only on your behalf, as a processor under an agreement pursuant to Art. 28 GDPR."
+msgstr "La plateforme traite les données collectées par les pixels et les liens de suivi uniquement pour votre compte, en tant que sous-traitant, dans le cadre d'un accord conforme à l'art. 28 du RGPD."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "The platform processes the data collected by the pixels only on your behalf, as a processor under an agreement pursuant to Art. 28 GDPR."
+msgstr "La plateforme traite les données collectées par les pixels uniquement pour votre compte, en tant que sous-traitant, dans le cadre d'un accord conforme à l'art. 28 du RGPD."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "I confirm that my sending platform and I meet the requirements above"
+msgstr "Je confirme que ma plateforme d'envoi et moi respectons les exigences indiquées ci-dessus"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "To continue, confirm the requirements above."
+msgstr "Pour continuer, confirmez les exigences indiquées ci-dessus."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Texts for the sign-up form"
+msgstr "Textes pour le formulaire d'inscription"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Copy these checkboxes into the form people use to subscribe to the newsletter."
+msgstr "Copiez ces cases dans le formulaire par lequel les personnes s'abonnent à la newsletter."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Language of the texts:"
+msgstr "Langue des textes :"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "(in every language you have the form in)"
+msgstr "(dans chaque langue dans laquelle vous avez le formulaire)"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "These texts are not available in this language yet: the English version is shown."
+msgstr "Ces textes ne sont pas encore disponibles dans cette langue : la version anglaise est affichée."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Checkbox 1 · Newsletter (required to subscribe)"
+msgstr "Case 1 · Newsletter (obligatoire pour s'inscrire)"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+#, php-format
+msgid "Checkbox 2 · %s"
+msgstr "Case 2 · %s"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Version with opens and clicks (because you also turned on click tracking)."
+msgstr "Version avec ouvertures et clics (parce que vous avez aussi activé le suivi des clics)."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Version with opens only."
+msgstr "Version avec les seules ouvertures."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "You have not indicated pixels in the newsletters: checkbox 1 is enough. Your emails must contain neither pixels nor tracked links, not even for overall statistics only: many platforms turn them on by themselves, so in the platform turn off open and click tracking, including in automated and transactional emails."
+msgstr "Vous n'avez pas indiqué de pixels dans les newsletters : la case 1 suffit. Vos e-mails ne doivent contenir ni pixels ni liens de suivi, pas même pour les seules statistiques globales : de nombreuses plateformes les activent d'elles-mêmes, désactivez donc dans la plateforme le suivi des ouvertures et des clics, y compris dans les e-mails automatiques et transactionnels."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "You have not indicated pixels in the newsletters: checkbox 1 is enough. Your emails must contain neither pixels nor tracked links, not even for overall statistics only: many platforms turn them on by themselves, so in the platform turn off open and click tracking, including in automated and transactional emails, except for the date-only pixel in service emails."
+msgstr "Vous n'avez pas indiqué de pixels dans les newsletters : la case 1 suffit. Vos e-mails ne doivent contenir ni pixels ni liens de suivi, pas même pour les seules statistiques globales : de nombreuses plateformes les activent d'elles-mêmes, désactivez donc dans la plateforme le suivi des ouvertures et des clics, y compris dans les e-mails automatiques et transactionnels, sauf le pixel qui ne conserve que la date dans les e-mails de service."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Service emails: no checkbox in the form. The pixel goes only in the emails of your closed list, without promotional messages, and only the date of the last open is stored."
+msgstr "E-mails de service : aucune case dans le formulaire. Le pixel ne figure que dans les e-mails de votre liste fermée, sans messages promotionnels, et seule la date de la dernière ouverture est conservée."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Recommended in any case: double confirmation (double opt-in)"
+msgstr "Recommandé dans tous les cas : la double confirmation (double opt-in)"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "After sign-up, send an email with a confirmation link, without pixels, without promotional content and without tracked links other than the confirmation link. Activate the subscription, and any tracking, only when the person clicks the link. This way you know that the address really belongs to the person who signed up and you have stronger proof of consent. Also keep the date and time of the confirmation."
+msgstr "Après l'inscription, envoyez un e-mail avec un lien de confirmation, sans pixel, sans contenu promotionnel et sans autres liens de suivi que celui de confirmation. Activez l'inscription, et l'éventuel suivi, uniquement lorsque la personne clique sur le lien. Vous savez ainsi que l'adresse appartient vraiment à la personne qui s'est inscrite et vous disposez d'une preuve plus solide du consentement. Conservez aussi la date et l'heure de la confirmation."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "How to use them"
+msgstr "Comment les utiliser"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Two separate checkboxes, none of them pre-checked. The tracking checkbox is optional: the subscription works even if it is not checked."
+msgstr "Deux cases distinctes, aucune précochée. La case du suivi est facultative : l'inscription fonctionne même si elle n'est pas cochée."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Put the link to the Privacy Policy next to the checkboxes (point c for the newsletter, section 4 for tracking): it must be readable before subscribing."
+msgstr "Placez à côté des cases le lien vers la politique de confidentialité (point c pour la newsletter, section 4 pour le suivi) : elle doit pouvoir être lue avant l'inscription."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Send pixels and tracked links only to those who checked the tracking checkbox; send communications to everyone else without pixels or tracked links."
+msgstr "Envoyez les pixels et les liens de suivi uniquement à ceux qui ont coché la case du suivi ; aux autres, envoyez les communications sans pixels ni liens de suivi."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "In every email include a link to withdraw tracking only, without logging in or entering the address again."
+msgstr "Dans chaque e-mail, insérez un lien pour retirer uniquement le suivi, sans connexion ni nouvelle saisie de l'adresse."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Keep proof of every choice, including refusals and withdrawals: email address, checkbox checked or left empty, exact text of the sentence, form in which it was given, version or date of the Privacy Policy, date and time. Keep it as long as you use the data and, after a withdrawal, for the time needed to prove that the processing was lawful."
+msgstr "Conservez la preuve de chaque choix, y compris des refus et des retraits : adresse e-mail, case cochée ou laissée vide, texte exact de la phrase, formulaire dans lequel il a été donné, version ou date de la politique de confidentialité, date et heure. Conservez-la tant que vous utilisez les données et, après un retrait, pendant le temps nécessaire pour démontrer que le traitement était licite."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Subscribers already on the list: do not track them until they give consent; ask for it with an email without pixels or tracked links."
+msgstr "Abonnés déjà inscrits : ne les suivez pas tant qu'ils n'ont pas donné leur consentement ; demandez-le par un e-mail sans pixels ni liens de suivi."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Checkbox not pre-checked."
+msgstr "Case non précochée."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Put the link to the Privacy Policy next to the checkbox (point c): it must be readable before subscribing."
+msgstr "Placez à côté de la case le lien vers la politique de confidentialité (point c) : elle doit pouvoir être lue avant l'inscription."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Keep proof of every choice: email address, exact text of the sentence, form in which it was given, version or date of the Privacy Policy, date and time. Keep it as long as you use the data and, after a withdrawal, for the time needed to prove that the processing was lawful."
+msgstr "Conservez la preuve de chaque choix : adresse e-mail, texte exact de la phrase, formulaire dans lequel il a été donné, version ou date de la politique de confidentialité, date et heure. Conservez-la tant que vous utilisez les données et, après un retrait, pendant le temps nécessaire pour démontrer que le traitement était licite."
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "How to make contact forms compliant"
+msgstr "Comment mettre les formulaires de contact en conformité"
+
+#: myagileprivacy/admin/views/policy_assistant_html.php
+msgid "Copy failed: select the text and copy it manually."
+msgstr "Échec de la copie : sélectionnez le texte et copiez-le manuellement."

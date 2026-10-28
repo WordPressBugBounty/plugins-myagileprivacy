@@ -13,7 +13,36 @@
 
 .sr-only {
     display: none !important;
-    font-size: 16px;
+}
+
+/* Visually hidden but readable: text holders only, interactive elements keep the rule above */
+.sr-only:not(a):not(button):not(input):not(select):not(textarea):not(summary):not(details):not(iframe):not([tabindex]):not([contenteditable]):not(table):not(caption):not(thead):not(tbody):not(tfoot):not(tr):not(th):not(td):not(col):not(colgroup):not(:has(a, button, input, select, textarea, summary, iframe, [tabindex], [contenteditable])) {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.map-sr-only,
+.map-modal .sr-only {
+    display: block !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
 .mapShowItem {
@@ -45,7 +74,7 @@
 
 #my-agile-privacy-notification-area,
 #map-blocked-content-notification-area {
-    position: fixed;
+    position: fixed !important;
     box-sizing: border-box;
     display: none;
     z-index: 1000000000;
@@ -56,6 +85,8 @@
 #my-agile-privacy-notification-area {
     font-size: 18px;
     line-height: 35px;
+    margin: 0 !important;
+    z-index: 2147483647 !important;
 }
 
 #my-agile-privacy-notification-area:focus {
@@ -89,6 +120,8 @@
     background: rgb(228, 162, 29);
     display: flex;
     align-items: center;
+    box-sizing: border-box;
+    min-height: 44px !important;
 }
 
 #my-agile-privacy-notification-area .map_notify_title .banner-title-logo {
@@ -128,8 +161,51 @@
     padding: 0px !important;
 }
 
-#my-agile-privacy-notification-area .map_notification-message.extraNarrow {
-    overflow-y: scroll;
+#my-agile-privacy-notification-area .map_notification-message.extraNarrow,
+#my-agile-privacy-notification-area .map-area-container .map_notification-message.map-scroll {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    align-content: flex-start !important;
+    padding: 0 !important;
+    box-sizing: content-box !important;
+}
+
+#my-agile-privacy-notification-area .map_notification-message.map-scroll > :first-child {
+    margin-top: 0 !important;
+}
+
+#my-agile-privacy-notification-area .map_notification-message.map-scroll > :last-child {
+    margin-bottom: 0 !important;
+}
+
+/* more text below: the last line fades */
+#my-agile-privacy-notification-area .map_notification-message.map-scroll.map-more {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), rgba(0, 0, 0, 0.25));
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), rgba(0, 0, 0, 0.25));
+}
+
+#my-agile-privacy-notification-area .map_notification-message.map-scroll.map-more:focus-within {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+#my-agile-privacy-notification-area .map_notification-message.map-scroll:focus {
+    outline: 2px solid currentColor !important;
+    outline-offset: -2px !important;
+}
+
+#my-agile-privacy-notification-area .map_notification-message.map-scroll:focus:not(:focus-visible) {
+    outline: 0 !important;
+}
+
+@media (forced-colors: active) {
+
+    #my-agile-privacy-notification-area .map_notification-message.map-scroll.map-more {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
 }
 
 /* IAB context overrides */
@@ -284,7 +360,7 @@
    ============================================================ */
 
 #my-agile-privacy-notification-area .map_notification_container a {
-    padding: 8px 0px;
+    padding: 8px 0px !important;
     width: 100%;
     text-decoration: none;
     cursor: pointer !important;
@@ -398,16 +474,77 @@
 
 /* Close button X */
 #my-agile-privacy-notification-area .map-closebutton-right {
-    position: absolute;
-    top: 12px;
-    right: 40px;
+    display: block !important;
+    position: absolute !important;
+    top: 11px !important;
+    right: 32px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+    z-index: 2 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
     cursor: pointer;
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a {
-    color: #fff;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: static !important;
+    float: none !important;
+    box-sizing: border-box !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--map-close-color, #fff) !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: 18px !important;
+    font-size: clamp(14px, var(--map-text-size, 18px), 22px) !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-indent: 0 !important;
+    text-transform: none !important;
     text-decoration: none !important;
-    line-height: 30px !important;
+    text-shadow: none !important;
+    vertical-align: top !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+}
+
+#my-agile-privacy-notification-area .map-closebutton-right a:focus {
+    outline: 2px solid currentColor !important;
+    outline-offset: -2px !important;
+}
+
+#my-agile-privacy-notification-area .map-closebutton-right a:focus:not(:focus-visible) {
+    outline: 0 !important;
+}
+
+@media (min-width: 451px) {
+
+    /* without the title bar the content starts below the X */
+    #my-agile-privacy-notification-area .map_notify_title.map_displayNone ~ #my-agile-privacy-notification-content {
+        padding-top: 48px !important;
+    }
 }
 
 #my-agile-privacy-notification-area .map-closebutton-right a:hover {
@@ -944,6 +1081,117 @@
     text-decoration: underline;
 }
 
+/* Help dialog */
+#map-hidden-banner-help {
+    display: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 2147483647 !important;
+    box-sizing: border-box !important;
+    padding: 16px !important;
+    margin: 0 !important;
+    font-family: -apple-system, sans-serif !important;
+}
+
+#map-hidden-banner-help.map-show {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-backdrop {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-dialog {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 24px 24px 20px 24px !important;
+    background: #fff !important;
+    color: #333 !important;
+    border-radius: 15px !important;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    text-align: left !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-dialog:focus {
+    outline: 0 !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-title {
+    margin: 0 36px 12px 0 !important;
+    padding: 0 !important;
+    color: #212529 !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-dialog p {
+    margin: 0 0 12px 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-x {
+    all: unset !important;
+    position: absolute !important;
+    top: 14px !important;
+    right: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    color: #444 !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-actions {
+    margin: 8px 0 0 0 !important;
+    padding: 0 !important;
+    text-align: right !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-button {
+    all: unset !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    padding: 8px 20px !important;
+    border-radius: 8px !important;
+    background: #212529 !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    cursor: pointer !important;
+}
+
+#map-hidden-banner-help .map-hidden-banner-help-x:focus-visible,
+#map-hidden-banner-help .map-hidden-banner-help-button:focus-visible {
+    outline: 2px solid #212529 !important;
+    outline-offset: 2px !important;
+}
+
 
 /* ============================================================
    15. MODAL - BASE STRUCTURE
@@ -1225,6 +1473,16 @@
     justify-content: flex-end;
 }
 
+.map-modal-body .modal_credits picture {
+    display: contents;
+}
+
+/* The badge ships hidden and is shown once the modal has been opened */
+.map-modal.map-show .modal_credits img[hidden],
+.map-modal.map-blowup .modal_credits img[hidden] {
+    display: inline !important;
+}
+
 .map-modal-body .map-modal-cookie-policy-link a {
     font-size: inherit;
 }
@@ -1333,6 +1591,14 @@
 }
 
 .map-switch .map-slider-on.map-flags:before {
+    transform: translateX(9px);
+}
+
+.map-switch input.map-flags + .map-slider.map-slider-on {
+    background-color: #ffcc08;
+}
+
+.map-switch input.map-flags + .map-slider.map-slider-on:before {
     transform: translateX(9px);
 }
 
@@ -1932,7 +2198,7 @@ span.map-necessary-caption {
     }
 
     #my-agile-privacy-notification-area .map-closebutton-right {
-        right: 20px;
+        right: 12px !important;
     }
 
     #my-agile-privacy-notification-area.mapSizeWide.mapButtonsAside .map-area-container {
@@ -2076,14 +2342,134 @@ span.map-necessary-caption {
 
 @media (max-width: 450px) {
 
-    #my-agile-privacy-notification-area .map_notification_container {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 10px !important;
+    #my-agile-privacy-notification-area.mapSizeBoxed {
+        width: 100vw;
     }
 
-    #my-agile-privacy-notification-area .map_notification_container a {
-        width: 100% !important;
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {
+        width: 100vw;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed.map_floating_banner,
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig.map_floating_banner,
+    #my-agile-privacy-notification-area.mapSizeWide.map_floating_banner,
+    #my-agile-privacy-notification-area.mapSizeWideBranded.map_floating_banner {
+        width: calc(100vw - 6vw);
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 0px;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
+        max-width: none !important;
+        height: 40px !important;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box img {
+        width: auto !important;
+        max-width: none !important;
+        height: 40px !important;
+        max-height: 40px !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
+        padding-top: 0;
+    }
+
+    #my-agile-privacy-notification-area #my-agile-privacy-notification-content {
+        padding: 12px 16px !important;
+    }
+
+    #my-agile-privacy-notification-area .map_notify_title {
+        padding: 6px 48px 6px 16px;
+        padding-left: max(16px, calc(var(--map-radius, 0px) * 0.5));
+        font-size: clamp(14px, calc(var(--map-text-size, 18px) - 2px), 18px);
+        line-height: 22px;
+        min-height: 34px !important;
+    }
+
+    #my-agile-privacy-notification-area .map-closebutton-right {
+        top: 1px !important;
+        top: max(1px, calc(var(--map-radius, 0px) * 0.3 - 9px)) !important;
+        right: 8px !important;
+        right: max(8px, calc(var(--map-radius, 0px) * 0.3)) !important;
+    }
+
+    /* without the title bar the X sits in the corner and the text keeps clear of it */
+    #my-agile-privacy-notification-area .map_notify_title.map_displayNone ~ .map-closebutton-right {
+        top: 4px !important;
+        top: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+        right: 4px !important;
+        right: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+    }
+
+    #my-agile-privacy-notification-area .map_notify_title.map_displayNone ~ #my-agile-privacy-notification-content .map_notification-message {
+        margin-right: 24px !important;
+        margin-right: max(24px, calc(var(--map-radius, 0px) * 0.3 + 20px)) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container {
+        margin-top: 10px !important;
+    }
+
+    /* the policy links, moved out of the scrolling text by the script */
+    #my-agile-privacy-notification-area .map-area-container > .map-modal-cookie-policy-link {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0 16px;
+        margin-top: 6px;
+    }
+
+    /* consent buttons: equal cells, the script picks three, two or one per row */
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container,
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container.map-iab-context {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding-left: 0 !important;
+        flex-basis: auto !important;
+        width: 100%;
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container.map-buttons-two-rows {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container.map-buttons-two-rows > a {
+        grid-column: span 2;
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container.map-buttons-two-rows > a:nth-child(3) {
+        grid-column: 2 / span 2;
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container.map-buttons-stacked {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container > a {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: auto !important;
+        min-width: 0;
+        margin: 0 !important;
+        padding: 8px 6px !important;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    #my-agile-privacy-notification-area.mapButtonsAside .map_notification_container .map-button span {
+        display: none;
     }
 
     .map-tab-header a.map-nav-link {
@@ -2095,53 +2481,151 @@ span.map-necessary-caption {
     }
 }
 
-/* ------ max-width: 430px ------ */
+/* ------ max-height: 500px (phone landscape) ------ */
 
-@media (max-width: 430px) {
+@media (max-height: 500px) {
 
-    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content {
-        flex-direction: column;
-        align-items: center;
-        gap: 0px;
-        padding: 10px;
+    /* the policy links, moved out of the scrolling text by the script */
+    #my-agile-privacy-notification-area .map-area-container > .map-modal-cookie-policy-link {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0 16px;
+        margin-top: 6px;
+    }
+}
+
+@media (max-height: 500px) and (min-width: 451px) {
+
+    /* compact spacing, as below 450px */
+    #my-agile-privacy-notification-area .map_notify_title {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
     }
 
-    #my-agile-privacy-notification-area.mapSizeWideBranded #my-agile-privacy-notification-content .map_branded-box {
-        max-width: 50%;
-        display: flex;
-        align-items: center;
+    #my-agile-privacy-notification-area .map_notify_title:not(.map_displayNone) ~ #my-agile-privacy-notification-content {
+        padding-top: 12px !important;
+    }
+
+    #my-agile-privacy-notification-area #my-agile-privacy-notification-content {
+        padding-bottom: 12px !important;
+    }
+
+    #my-agile-privacy-notification-area .map_notification_container {
+        margin-top: 10px !important;
+    }
+
+    /* the X stays centered on the thinner title */
+    #my-agile-privacy-notification-area .map_notify_title:not(.map_displayNone) ~ .map-closebutton-right {
+        top: 6px !important;
+    }
+}
+
+@media (max-height: 500px) and (min-width: 451px) and (max-width: 1024px) {
+
+    /* no title on short screens, as at 320px */
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notify_title {
+        display: none !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notify_title ~ .map-closebutton-right {
+        top: 4px !important;
+        top: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+        right: 4px !important;
+        right: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map-closebutton-right a {
+        --map-close-color: var(--map-close-color-notitle) !important;
+    }
+
+    /* room for the whole X, even when a theme removes the content padding */
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notification-message {
+        margin-right: 36px !important;
+        margin-right: max(36px, calc(var(--map-radius, 0px) * 0.3 + 32px)) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notify_title ~ #my-agile-privacy-notification-content {
+        padding-top: 12px !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed {
+        width: 92vw !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {
+        width: 96vw !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig.map_floating_banner {
+        max-width: calc(100% - 4vw) !important;
+    }
+}
+
+@media (max-height: 500px) and (min-width: 740px) and (max-width: 1024px) {
+
+    /* buttons beside the text; they wrap below it when both do not fit */
+    #my-agile-privacy-notification-area.mapSizeBoxed .map-area-container,
+    #my-agile-privacy-notification-area.mapSizeWide .map-area-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        column-gap: 16px !important;
+        row-gap: 10px !important;
+        padding-bottom: 0 !important;
+        min-height: 0 !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible.mapSizeBoxed .map-area-container,
+    #my-agile-privacy-notification-area.mapTitleCollapsible.mapSizeWide .map-area-container {
+        padding-right: 36px !important;
+        padding-right: max(36px, calc(var(--map-radius, 0px) * 0.3 + 32px)) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed .map-area-container > .map_notification-message,
+    #my-agile-privacy-notification-area.mapSizeWide .map-area-container > .map_notification-message {
+        order: 1 !important;
+        flex: 1 1 20em !important;
+        min-width: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed .map-area-container > .map_notification_container,
+    #my-agile-privacy-notification-area.mapSizeWide .map-area-container > .map_notification_container,
+    #my-agile-privacy-notification-area.mapSizeWide .map-area-container > .map_notification_container.map-iab-context {
+        order: 2 !important;
+        flex: 0 1 auto !important;
+        max-width: 100% !important;
+        margin: 0 0 0 auto !important;
+        padding-left: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed .map-area-container > .map-modal-cookie-policy-link,
+    #my-agile-privacy-notification-area.mapSizeWide .map-area-container > .map-modal-cookie-policy-link {
+        order: 3 !important;
+        flex: 1 1 100% !important;
+    }
+
+    #my-agile-privacy-notification-area.mapSizeBoxed .map_notification_container > a,
+    #my-agile-privacy-notification-area.mapSizeWide .map_notification_container > a {
+        width: auto !important;
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
     }
 }
 
 /* ------ max-width: 425px ------ */
 
 @media (max-width: 425px) {
-
-    #my-agile-privacy-notification-area.mapSizeBoxed {
-        width: 100vw;
-    }
-
-    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig {
-        width: 100vw;
-    }
-
-    #my-agile-privacy-notification-area.mapSizeBoxed.map_floating_banner,
-    #my-agile-privacy-notification-area.mapSizeBoxed.mapSizeBig.map_floating_banner,
-    #my-agile-privacy-notification-area.mapSizeWide.map_floating_banner {
-        width: calc(100vw - 6vw);
-    }
-
-    #my-agile-privacy-notification-area .map_notification_container .map-button {
-        margin-right: 2px !important;
-    }
-
-    #my-agile-privacy-notification-area.mapSizeWideBranded.map_floating_banner {
-        width: calc(100vw - 6vw);
-    }
-
-    #my-agile-privacy-notification-area.mapSizeWideBranded.mapButtonsAside .map-area-container {
-        padding-top: 0;
-    }
 
     #map-info-overlay-inner {
         padding: 10px;
@@ -2162,17 +2646,28 @@ span.map-necessary-caption {
         line-height: 16px;
     }
 
-    #my-agile-privacy-notification-content {
-        padding: 20px;
-    }
-
-    #my-agile-privacy-notification-area .map_notify_title {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-
     #my-agile-privacy-notification-area .map_notification_container .map-button {
         font-size: 12px;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notify_title {
+        display: none !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map-closebutton-right {
+        top: 4px !important;
+        top: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+        right: 4px !important;
+        right: max(4px, calc(var(--map-radius, 0px) * 0.3)) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map-closebutton-right a {
+        --map-close-color: var(--map-close-color-notitle) !important;
+    }
+
+    #my-agile-privacy-notification-area.mapTitleCollapsible .map_notification-message {
+        margin-right: 24px !important;
+        margin-right: max(24px, calc(var(--map-radius, 0px) * 0.3 + 20px)) !important;
     }
 
     .map-modal .map-h4-heading {

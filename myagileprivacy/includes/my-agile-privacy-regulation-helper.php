@@ -681,6 +681,26 @@ final class MyAgilePrivacyRegulationHelper {
         						self::$site_and_policy_settings['site_features_advertising']
         					);
 
+        $map_email_tracking_area = ( in_array( 'gdpr', $selected_regulations, true ) || in_array( 'gdpr_gb', $selected_regulations, true ) );
+        $map_newsletter_tracking = (
+        								$map_using_newsletter &&
+        								$map_email_tracking_area &&
+        								isset( self::$site_and_policy_settings['site_features_newsletter_tracking'] ) &&
+        								self::$site_and_policy_settings['site_features_newsletter_tracking']
+        							);
+        $map_newsletter_click_tracking = (
+        									$map_newsletter_tracking &&
+        									isset( self::$site_and_policy_settings['site_features_newsletter_click_tracking'] ) &&
+        									self::$site_and_policy_settings['site_features_newsletter_click_tracking']
+        								);
+        $map_service_email_tracking = (
+        								$pa &&
+        								$map_email_tracking_area &&
+        								isset( self::$site_and_policy_settings['site_features_service_email_tracking'] ) &&
+        								self::$site_and_policy_settings['site_features_service_email_tracking']
+        							);
+        $map_using_email_tracking = ( $map_newsletter_tracking || $map_service_email_tracking );
+
 		$map_https = (
 						isset( self::$site_and_policy_settings['protection_system_https'] ) &&
 						self::$site_and_policy_settings['protection_system_https']
@@ -972,6 +992,10 @@ final class MyAgilePrivacyRegulationHelper {
             'map_sensitive_data' 					=>	$map_sensitive_data,
             'map_using_social_login'				=>	$map_using_social_login,
             'map_using_advertising'					=>	$map_using_advertising,
+            'map_newsletter_tracking'				=>	$map_newsletter_tracking,
+            'map_newsletter_click_tracking'			=>	$map_newsletter_click_tracking,
+            'map_service_email_tracking'			=>	$map_service_email_tracking,
+            'map_using_email_tracking'				=>	$map_using_email_tracking,
 
 			'map_https'								=>	$map_https,
 			'map_log_control'						=>	$map_log_control,

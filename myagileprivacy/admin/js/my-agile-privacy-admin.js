@@ -174,6 +174,30 @@
 					}
 
 
+					//copies text without the clipboard api, inside the given container if any
+					var map_widget_legacy_copy = function( the_text, on_done, on_fail, container )
+					{
+						var el = document.createElement( 'textarea' );
+						var parent = container || document.body;
+
+						el.value = the_text;
+						el.setAttribute( 'readonly', '' );
+						el.style.position = 'absolute';
+						el.style.left = '-9999px';
+
+						parent.appendChild( el );
+						el.select();
+
+						var ok = false;
+
+						try { ok = document.execCommand( 'copy' ); } catch( e ) { ok = false; }
+
+						parent.removeChild( el );
+
+						if( ok ) { on_done(); }
+						else if( on_fail ) { on_fail(); }
+					};
+
 					var init_generic_options = false;
 
 					if( $my_agile_privacy_backend.hasClass( 'MAP_policyWrapperEdit' ) || $my_agile_privacy_backend.hasClass( 'MAP_cookieWrapperEdit' ) )
@@ -207,28 +231,6 @@
 
 						if( $map_widget_generator.length )
 						{
-							//clipboard api needs a secure context, this covers its absence
-							var map_widget_legacy_copy = function( the_text, on_done )
-							{
-								var el = document.createElement( 'textarea' );
-
-								el.value = the_text;
-								el.setAttribute( 'readonly', '' );
-								el.style.position = 'absolute';
-								el.style.left = '-9999px';
-
-								document.body.appendChild( el );
-								el.select();
-
-								var ok = false;
-
-								try { ok = document.execCommand( 'copy' ); } catch( e ) { ok = false; }
-
-								document.body.removeChild( el );
-
-								if( ok ) { on_done(); }
-							};
-
 							$( '.map-widget-generate-btn', $map_widget_generator ).on( 'click', function(){
 
 								$( '.map-widget-panel', $map_widget_generator ).toggleClass( 'displayNone' );
@@ -1126,6 +1128,8 @@
 							{
 								$w.find( '.regulation_wrapper_error_message' ).removeClass( 'displayNone' );
 							}
+
+							mapPeRefresh();
 						}
 
 						// Wizard navigation functions
@@ -1208,6 +1212,15 @@
 							{
 								$( '.map-wizard-save-complete-btn', $my_agile_privacy_backend ).addClass(' displayNone' );
 							}
+
+							// the requirements confirmation holds for one pass through step 4
+							if( currentStep === 4 && mapPeLastStep !== 4 )
+							{
+								mapPeResetConfirm();
+							}
+
+							mapPeLastStep = currentStep;
+							mapPeRefresh();
 						}
 
 						//validation func
@@ -1290,6 +1303,13 @@
 								}
 							}
 
+							mapPeBlocked = false;
+
+							if( currentStep === 4 && !mapPeCheckLeave() )
+							{
+								isValid = false;
+							}
+
 							//console.debug( map_backend_prefix + 'isValid for currentStep=' + currentStep + ', status=' + isValid );
 
 							return isValid;
@@ -1332,6 +1352,227 @@
 								error: function()
 								{
 									map_pupup_notify.error( map_settings_connection_error );
+								}
+							});
+						}
+
+						//email pixels in step 4: visibility, children, requirements confirmation, texts window
+						const $mapPeStep = $( '#step-4', $my_agile_privacy_backend );
+						const $mapPeConfirm = $( '#map_pe_confirm', $my_agile_privacy_backend );
+						const $mapPeStatus = $( '#map_pe_status', $my_agile_privacy_backend );
+						const mapPeModalEl = document.getElementById( 'map_pe_texts_modal' );
+						let mapPeSignature = null;
+						let mapPeLastStep = null;
+						let mapPeOpener = null;
+						let mapPeBlocked = false;
+
+						function mapPeRegulationSelected( regKey )
+						{
+							const $wrap = $my_agile_privacy_backend.find( '.regulation_wrapper[data-regulation="' + regKey + '"]' );
+
+							return $wrap.length > 0 && !$wrap.hasClass( 'displayNone' ) && $wrap.find( '#' + regKey ).is( ':checked' );
+						}
+
+						function mapPeState()
+						{
+							const uk = mapPeRegulationSelected( 'regulation_gdpr_gb' );
+							const reg = mapPeRegulationSelected( 'regulation_gdpr_like' ) || uk;
+							const pa = $mapPeStep.attr( 'data-map-pa' ) === '1';
+							const newsletter = $( '#site_features_newsletter', $mapPeStep ).is( ':checked' );
+							const track = $( '#site_features_newsletter_tracking', $mapPeStep ).is( ':checked' );
+							const clicks = $( '#site_features_newsletter_click_tracking', $mapPeStep ).is( ':checked' );
+							const service = $( '#site_features_service_email_tracking', $mapPeStep ).is( ':checked' );
+							const account = $( '#site_features_account_reg', $mapPeStep ).is( ':checked' );
+							const effTrack = pa && reg && newsletter && track;
+							const effService = pa && reg && service;
+
+							return {
+								reg: reg,
+								uk: uk,
+								newsletter: newsletter,
+								track: track,
+								account: account,
+								effTrack: effTrack,
+								effClicks: effTrack && clicks,
+								effService: effService,
+								showReq: effTrack || effService,
+								noTrack: newsletter && reg && !effTrack
+							};
+						}
+
+						function mapPeResetConfirm()
+						{
+							$mapPeConfirm.prop( 'checked', false );
+							$mapPeStatus.text( '' );
+						}
+
+						function mapPeRefresh()
+						{
+							if( !$mapPeStep.length || !$mapPeConfirm.length )
+							{
+								return;
+							}
+
+							const s = mapPeState();
+							const signature = [ s.effTrack, s.effClicks, s.effService, s.account, s.uk ].join( '|' );
+
+							if( mapPeSignature !== null && signature !== mapPeSignature )
+							{
+								mapPeResetConfirm();
+							}
+
+							mapPeSignature = signature;
+
+							$( '#map_pe_row_tracking', $mapPeStep ).toggleClass( 'displayNone', !( s.newsletter && s.reg ) );
+							$( '#map_pe_row_clicks', $mapPeStep ).toggleClass( 'displayNone', !( s.newsletter && s.reg && s.track ) );
+							$( '#map_pe_no_tracking', $mapPeStep ).toggleClass( 'displayNone', !s.noTrack );
+							$( '#map_pe_texts_row', $mapPeStep ).toggleClass( 'displayNone', !s.newsletter );
+							$( '#map_pe_row_service', $mapPeStep ).toggleClass( 'displayNone', !s.reg );
+							$( '#map_pe_requirements', $mapPeStep ).toggleClass( 'displayNone', !s.showReq );
+
+							const $scope = $mapPeStep.add( mapPeModalEl ? $( mapPeModalEl ) : $() );
+
+							$scope.find( '.map-pe-if-account' ).toggleClass( 'displayNone', !s.account );
+							$scope.find( '.map-pe-if-noaccount' ).toggleClass( 'displayNone', s.account );
+							$scope.find( '.map-pe-if-uk' ).toggleClass( 'displayNone', !s.uk );
+							$scope.find( '.map-pe-if-track' ).toggleClass( 'displayNone', !s.effTrack );
+							$scope.find( '.map-pe-if-single' ).toggleClass( 'displayNone', s.effTrack );
+							$scope.find( '.map-pe-if-clicks' ).toggleClass( 'displayNone', !s.effClicks );
+							$scope.find( '.map-pe-if-noclicks' ).toggleClass( 'displayNone', s.effClicks );
+							$scope.find( '.map-pe-if-service' ).toggleClass( 'displayNone', !s.effService );
+							$scope.find( '.map-pe-if-service-on' ).toggleClass( 'displayNone', !s.effService );
+							$scope.find( '.map-pe-if-service-off' ).toggleClass( 'displayNone', s.effService );
+							$scope.find( '.map-pe-if-notrack' ).toggleClass( 'displayNone', !s.noTrack );
+
+							$( '.map-wizard-next-btn', $my_agile_privacy_backend ).toggleClass( 'map-pe-pending', currentStep === 4 && s.showReq && !$mapPeConfirm.is( ':checked' ) );
+						}
+
+						//blocks only the way forward out of step 4
+						function mapPeCheckLeave()
+						{
+							mapPeBlocked = false;
+
+							if( !$mapPeConfirm.length || !mapPeState().showReq || $mapPeConfirm.is( ':checked' ) )
+							{
+								$mapPeStatus.text( '' );
+								return true;
+							}
+
+							mapPeBlocked = true;
+							$mapPeStatus.text( $mapPeStatus.attr( 'data-map-pe-blocked' ) || '' );
+							$mapPeConfirm.trigger( 'focus' );
+
+							return false;
+						}
+
+						$( '#site_features_newsletter', $mapPeStep ).on( 'change', function(){
+
+							if( !this.checked )
+							{
+								$( '#site_features_newsletter_tracking', $mapPeStep ).prop( 'checked', false ).trigger( 'change' );
+							}
+						});
+
+						$( '#site_features_newsletter_tracking', $mapPeStep ).on( 'change', function(){
+
+							if( !this.checked )
+							{
+								$( '#site_features_newsletter_click_tracking', $mapPeStep ).prop( 'checked', false ).trigger( 'change' );
+							}
+						});
+
+						$mapPeStep.on( 'change', 'input', function(){
+
+							if( this === $mapPeConfirm.get( 0 ) && this.checked )
+							{
+								$mapPeStatus.text( '' );
+							}
+
+							mapPeRefresh();
+						});
+
+						if( mapPeModalEl && window.bootstrap && bootstrap.Modal )
+						{
+							const mapPeModal = new bootstrap.Modal( mapPeModalEl );
+							const $mapPeCopyStatus = $( '#map_pe_copy_status', mapPeModalEl );
+
+							const mapPeSay = function( text, ok )
+							{
+								$mapPeCopyStatus.text( '' ).toggleClass( 'map-pe-copy-ko', !ok );
+								window.setTimeout( function(){ $mapPeCopyStatus.text( text ); }, 50 );
+							};
+
+							$( '#map_pe_texts_btn', $mapPeStep ).on( 'click', function(){
+
+								mapPeOpener = this;
+								mapPeRefresh();
+								mapPeModal.show();
+							});
+
+							mapPeModalEl.addEventListener( 'hidden.bs.modal', function(){
+
+								$mapPeCopyStatus.text( '' );
+
+								if( mapPeOpener && document.body.contains( mapPeOpener ) )
+								{
+									mapPeOpener.focus();
+								}
+							});
+
+							$( '#map_pe_lang_select', mapPeModalEl ).on( 'change', function(){
+
+								const the_lang = $( this ).val();
+
+								$( '.map-pe-lang', mapPeModalEl ).each( function(){
+									$( this ).toggleClass( 'displayNone', $( this ).attr( 'data-map-pe-lang' ) !== the_lang );
+								});
+							});
+
+							$( '.map-pe-copy', mapPeModalEl ).on( 'click', function(){
+
+								const btn = this;
+								const $btn = $( btn );
+								const src = $btn.closest( '.map-pe-box' ).find( '.map-pe-copy-src' ).not( '.displayNone' ).get( 0 );
+
+								if( !src ) { return; }
+
+								const the_text = src.textContent;
+
+								const done = function()
+								{
+									const original_label = $btn.attr( 'data-map-pe-label' ) || $btn.text();
+
+									$btn.attr( 'data-map-pe-label', original_label ).text( $btn.attr( 'data-map-pe-copied' ) || original_label );
+									window.setTimeout( function(){ $btn.text( original_label ); }, 2000 );
+
+									mapPeSay( $btn.attr( 'data-map-pe-copied' ) || '', true );
+								};
+
+								const failed = function()
+								{
+									const range = document.createRange();
+									const selection = window.getSelection();
+
+									range.selectNodeContents( src );
+									selection.removeAllRanges();
+									selection.addRange( range );
+
+									mapPeSay( $mapPeCopyStatus.attr( 'data-map-pe-copy-failed' ) || '', false );
+								};
+
+								const legacy = function()
+								{
+									map_widget_legacy_copy( the_text, done, failed, $( '.modal-body', mapPeModalEl ).get( 0 ) );
+									btn.focus();
+								};
+
+								if( window.navigator && navigator.clipboard && navigator.clipboard.writeText )
+								{
+									navigator.clipboard.writeText( the_text ).then( done, legacy );
+								}
+								else
+								{
+									legacy();
 								}
 							});
 						}
@@ -1384,7 +1625,7 @@
 									});
 								}
 							}
-							else
+							else if( !mapPeBlocked )
 							{
 								// Show validation error
 								map_pupup_notify.warning( map_settings_need_validation_text );
@@ -1416,6 +1657,12 @@
 
 							e.preventDefault();
 
+							// Enter in a text field submits through this hidden button: it only finishes from the last step
+							if( currentStep !== totalSteps )
+							{
+								return;
+							}
+
 							if( validateCurrentStep() )
 							{
 								// Save final step data
@@ -1442,7 +1689,7 @@
 								});
 							} else {
 								// Show validation error
-								ap_pupup_notify.error( map_settings_error_message_text );
+								map_pupup_notify.error( map_settings_error_message_text );
 							}
 						});
 
@@ -1550,7 +1797,7 @@
 								button.setAttribute( 'aria-expanded', 'false' );
 								label.className = 'map-card-more-label';
 								label.textContent = mapMoreLabel;
-								icon.className = 'fa-regular fa-chevron-down';
+								icon.className = 'fa-solid fa-chevron-down';
 								icon.setAttribute( 'aria-hidden', 'true' );
 								button.appendChild( label );
 								button.appendChild( icon );
@@ -1719,16 +1966,6 @@
 											$( '#detail-preview-accept' ).css( 'color', this_value );
 											$( '.preview-button-icon','#detail-preview-accept' ).css( 'background-color', this_value );
 											$( '#preview-accept .preview-button-label', $preview_cookiebanner ).css( 'background', this_value );
-											break;
-
-										case 'accept-animation':
-											if( !autoInit || autoInit == undefined )
-											{
-												$( '#detail-preview-accept' ).addClass( 'animate__animated' ).addClass( 'animate__' + this_value );
-												setTimeout(function(){
-													$( '#detail-preview-accept' ).removeClass( 'animate__' + this_value);
-												}, 800 );
-											}
 											break;
 
 										case 'floating_banner':
@@ -2738,7 +2975,7 @@
 		});
 	});
 
-	// ── Trial B request: no form, the customer is already identified by the licence ──
+	// ── Trial B request: no form, the customer is already identified by the license ──
 	$(function() {
 		var $submit = $( '#map_trial_b_submit' );
 

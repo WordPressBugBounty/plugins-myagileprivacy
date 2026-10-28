@@ -54,9 +54,9 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 					</p>
 
-					<p><a target="_blank" href="<?php echo esc_attr( $installa_map_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Install and configure My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cookie_shied_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Detect and automatically block cookies with Cookie Shield', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $moduli_norma_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Adapt the contact forms to GDPR', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $installa_map_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Install and configure My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cookie_shied_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Detect and automatically block cookies with Cookie Shield', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $moduli_norma_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Adapt the contact forms to GDPR', 'MAP_txt' ) ); ?></a></p>
 
 					<hr>
 
@@ -66,7 +66,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $personalizzazione_cookie_banner ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Customize cookie banner, text and translations, and user notifications', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $personalizzazione_cookie_banner ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Customize cookie banner, text and translations, and user notifications', 'MAP_txt' ) ); ?></a>
 					</p>
 
 					<hr>
@@ -77,7 +77,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $consent_mode_v2 ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Google Consent Mode V2 on your website', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $consent_mode_v2 ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Google Consent Mode V2 on your website', 'MAP_txt' ) ); ?></a>
 					</p>
 
 					<p>
@@ -86,7 +86,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $cmode_uet ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Microsoft Consent Mode on your website', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $cmode_uet ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Microsoft Consent Mode on your website', 'MAP_txt' ) ); ?></a>
 					</p>
 
 					<p>
@@ -95,7 +95,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $cmode_clarity ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Clarity Consent Mode on your website', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $cmode_clarity ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to implement Clarity Consent Mode on your website', 'MAP_txt' ) ); ?></a>
 					</p>
 
 					<p>
@@ -104,7 +104,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $gtg_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Google Tag Gateway - integration guide', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $gtg_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Google Tag Gateway - integration guide', 'MAP_txt' ) ); ?></a>
 					</p>
 
 
@@ -116,7 +116,35 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 
 						<br>
 
-						<a target="_blank" href="<?php echo esc_attr( $policy_customization ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Learn how to customize your Privacy Policies', 'MAP_txt' ) ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( $policy_customization ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Learn how to customize your Privacy Policies', 'MAP_txt' ) ); ?></a>
+					</p>
+
+					<hr>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'Advanced features', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_url( MAP_Helpdesk_Links::get( 'consent_stats' ) ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'My Agile Privacy® Consent Statistics: how to use them', 'MAP_txt' ) ); ?></a>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_url( MAP_Helpdesk_Links::get( 'ab_test' ) ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Banner A/B Test: which cookie banner design converts better?', 'MAP_txt' ) ); ?></a>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_url( MAP_Helpdesk_Links::get( 'geolocation' ) ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Geolocation in My Agile Privacy®: how to enable it', 'MAP_txt' ) ); ?></a>
+					</p>
+
+					<p>
+
+						<?php echo wp_kses_post( __( 'For developers', 'MAP_txt' ) ); ?>
+
+						<br>
+
+						<a target="_blank" href="<?php echo esc_url( MAP_Helpdesk_Links::get( 'js_events' ) ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( "JavaScript Consent Events: A Developer's Guide", 'MAP_txt' ) ); ?></a>
 					</p>
 
 
@@ -133,13 +161,13 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 						<?php echo wp_kses_post( __( 'My Agile Privacy® works correctly with most cache plugins available on the market.', 'MAP_txt' ) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'Below are the configuration guides for the most commonly used ones. Make sure to follow the instructions to ensure compliance and performance.', 'MAP_txt' ) ); ?>
 					</p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_wprocket_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure WP Rocket with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_siteground_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Siteground Optimizer with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_optimizepress_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Optimize Press with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_w3totalcache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure W3 Total Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_speedycache_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Speedy Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_litespeed_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure LiteSpeed Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
-					<p><a target="_blank" href="<?php echo esc_attr( $cache_generic_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Do you use another cache plugin?', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_wprocket_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure WP Rocket with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_siteground_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Siteground Optimizer with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_optimizepress_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Optimize Press with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_w3totalcache_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure W3 Total Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_speedycache_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure Speedy Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_litespeed_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure LiteSpeed Cache with My Agile Privacy®', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $cache_generic_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'Do you use another cache plugin?', 'MAP_txt' ) ); ?></a></p>
 				</div>
 			</div>
 		</div>
@@ -155,7 +183,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 						<?php echo wp_kses_post( sprintf(__( 'For the updated list and implementation instructions, please refer to the <a href="%s" target="_blank">technical sheet.</a>', 'MAP_txt' ), esc_attr( $scheda_tecnica_url )) ); ?><br><br>
 						<?php echo wp_kses_post( __( 'Follow these implementation guides for a correct display of textual content.', 'MAP_txt' ) ); ?>
 					</p>
-					<p><a target="_blank" href="<?php echo esc_attr( $sito_multilingue_url ); ?>" ><i class="fa-regular fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure My Agile Privacy® for multilingual websites', 'MAP_txt' ) ); ?></a></p>
+					<p><a target="_blank" href="<?php echo esc_attr( $sito_multilingue_url ); ?>" ><i class="fa-solid fa-link orange-icon"></i> <?php echo wp_kses_post( __( 'How to configure My Agile Privacy® for multilingual websites', 'MAP_txt' ) ); ?></a></p>
 				</div>
 	
 			</div>
@@ -172,7 +200,7 @@ $policy_customization = MAP_Helpdesk_Links::get( 'policy_assistant' );
 				</div>
 				<div class="card rounded-3 mx-1">
 					<div class="row">
-						<div class="col-2 align-self-center"><i class="fa-regular fa-user-unlock fa-2xl orange-icon"></i></div>
+						<div class="col-2 align-self-center"><i class="fa-solid fa-user-lock fa-2xl orange-icon"></i></div>
 						<div class="col-10">
 							<h5><?php echo wp_kses_post( __( 'Subscription management and bulk operations', 'MAP_txt' ) ); ?></h5>
 							<p><?php echo wp_kses_post( __( "Discover how to manage your subscription and multiple installations through the dedicated private area.", 'MAP_txt' ) ); ?></p>

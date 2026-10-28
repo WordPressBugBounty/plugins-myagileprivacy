@@ -1,10 +1,10 @@
 === My Agile Privacy® - CMP, Cookie Consent & Privacy Tools ===
 Contributors: FormulaAgile
 Donate link: https://www.myagileprivacy.com/en/
-Tags: GDPR, DSGVO, CCPA/CPRA, E-Privacy, cookie banner
+Tags: cookie consent, google consent mode, cmp, consent management, cookie policy
 Requires at least: 4.4.0
 Tested up to: 7.1
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 Requires PHP: 5.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -14,7 +14,7 @@ Avoid fines by staying compliant with GDPR, nFADP, PIPEDA, LGPD, CCPA/CPRA and 1
 
 == Description ==
 
-**My Agile Privacy®** is a **self-hosted** plugin that provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR, Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, and VCDPA.
+**My Agile Privacy®** is a **self-hosted** plugin that provides tools to manage cookie consent and to help align with **data protection regulations**. It supports compliance efforts with GDPR (DSGVO), Swiss FADP (nLPD/nFADP), PIPEDA, LGPD, CCPA/CPRA, CPA, CTDPA, DPDPA, ICDPA, INCDPA, KCDPA, MCDPA, MODPA, MTCDPA, NDPA, NRS 603A, NHPA, NJDPA, OCPA, RIDTPPA, TIPA, TDPSA, UCPA, and VCDPA.
 My Agile Privacy® is available in **Albanian, Azerbaijani, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Macedonian, Norwegian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swedish, Turkish and Ukrainian**.  It supports **multilingual sites** using **WPML, Polylang, TranslatePress, Weglot**, or **Falang**.
 
 [youtube https://youtu.be/l7960ISPTBw]
@@ -67,7 +67,7 @@ Ad vendors stop guessing. My Agile Privacy® publishes the visitor's choice thro
 
 The string carries the **US National** section, and the European **TCF** section when IAB TCF is enabled. Our IAB CMP ID is **403**.
 
-The signal stays closed until the visitor answers, so vendors know when to wait, and it updates the moment they change their mind. A **Global Privacy Control** signal from the browser is honoured as an opt-out.
+The signal stays closed until the visitor answers, so vendors know when to wait, and it updates the moment they change their mind. A **Global Privacy Control** signal from the browser is honored as an opt-out.
 
 == Geolocation ==
 Different countries, different rules. My Agile Privacy® resolves where the visitor is and applies the consent regime you set for that country: opt-in where consent must come first, opt-out where the law allows it.
@@ -148,15 +148,40 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 
 == Screenshots ==
 
-1. Dashboard
-2. Policy Assistant
-3. Translations
-4. Cookie Banner settings
-5. Advanced settings
-6. Backup & Restore settings
-7. Help Desk
+1. Dashboard: banner status, detected cookies, active regulations and setup progress at a glance
+2. Policy Assistant: tell us where you are based and who your visitors are, then pick the regulations that apply (GDPR, UK GDPR, CCPA, nLPD and more)
+3. Geolocation: see how the banner behaves in each area – EU, UK, United States, Switzerland
+4. Cookie Banner: size, position, colors and buttons, with a live preview
+5. Consent: Google Consent Mode v2, Microsoft UET and Clarity consent modes, IAB TCF and the consent widget
+6. Cookie Shield: automatic detection and preventive blocking of third-party cookies and scripts
+7. Cookie List: every service on your site with its blocking status
+8. Texts and Translations: edit the banner texts right on the preview, in over 30 languages
+9. Consent Statistics: opt-in, rejection and interaction rates over time, by device and by country
+10. Banner A/B Test: compare up to four banner designs on real visitors and apply the winner
+11. Backup & Restore: export and import your cookies, policies and settings
+12. Help Desk: guides and answers for every setting
 
 == Changelog ==
+
+= 3.4.1
+* Consent Statistics now recognize bots, automated programs that visit the site such as search engines, SEO tools, AI crawlers and automated browsers: the page opens on “People” and keeps bots out of the rates, and the new “Traffic” menu shows them apart (“Bots”) or together with people (“All traffic”). The numbers change compared with the days before the update.
+* Policy Assistant: new options to declare email open and click tracking in newsletters and service emails for the EU and the UK, with consent texts ready for signup forms
+* Cookie Shield: faster, more reliable cookie blocking
+* Improved compatibility with WP Rocket (Delay JavaScript, Minify and Combine JavaScript), Autoptimize, LiteSpeed Cache, SiteGround Optimizer and Jetpack Boost
+* Improved handling of services that use jQuery
+* Banner A/B Tests, including those already running, now compare the variants on people only, so every variant reaches the 200 unique visitors needed for the verdict later. For tests already running, people-only counting applies from the day after the update; the days before stay counted on all visits.
+* Google Consent Mode: accepting or rejecting all now sends a single consent update
+* Improved compatibility with LiteSpeed Cache, page caching systems and in-app browsers
+* Mobile optimization: consent buttons side by side on small screens
+* Mobile optimization: shorter banner, the text scrolls after four lines
+* Accessibility: close button with a label and a larger touch area
+* Ad blocker optimizations: if the banner is hidden (e.g. by Brave), the consent widget stays visible and explains how to unblock it
+* Low-memory hosting optimization, with faster and safer HTML analysis on large pages
+* Geolocation optimizations
+* Consent Statistics: new “Rejections in areas with implicit consent” box
+* IAB TCF: faster and more robust startup and fixes to the second layer
+* Accessibility improvements
+* Improved Consent Statistics data collection on sites behind a reverse proxy or load balancer
 
 = 3.4.0
 * Consent statistics: banner views, opt-in and rejection rates, trends by country and device
@@ -182,7 +207,7 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 * Support for five additional US state privacy laws: Indiana, Iowa, Kentucky, Maryland and Rhode Island
 * Revised policy texts, with editorial updates and corrections for greater clarity and accuracy
 * New Video privacy mode: choose between anonymizing YouTube and Vimeo embeds or blocking them with a notice
-* Redesigned placeholders for blocked videos and maps, matching your banner colours
+* Redesigned placeholders for blocked videos and maps, matching your banner colors
 * New Policy Assistant options for social login and advertising/marketing partners
 * New Google Tag Gateway detection, warning you when tags load before the consent system
 * Better notice functionality
@@ -689,7 +714,7 @@ In the search field, type “My Agile Privacy”. Click Install, then Activate.
 * Minor fixings for Divi / Elementor
 * Minor internal link fix
 * added MAP.debugCookieScripts(); js frontend function
-* Improved licence updates on scheduled jobs
+* Improved license updates on scheduled jobs
 
 = 1.0.8 =
 * Fixes for custom cookie creation and cronjob updates

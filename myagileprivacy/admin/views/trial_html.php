@@ -15,9 +15,7 @@
 	$map_trial_policy = ( MAP_Helpdesk_Links::get_language_key() === 'it' )
 						? 'https://www.myagileprivacy.com/personal-data-policy/'
 						: 'https://www.myagileprivacy.com/en/personal-data-policy/';
-	$map_trial_plans = ( MAP_Helpdesk_Links::get_language_key() === 'it' )
-						? 'https://www.myagileprivacy.com/'
-						: 'https://www.myagileprivacy.com/en/';
+	$map_trial_plans = MyAgilePrivacyAdmin::map_trial_plans_url();
 
 ?>
 
@@ -54,7 +52,7 @@
 					<p><?php echo esc_html__( 'When it ends My Agile Privacy® goes back to the demo version, without any of the features included in the plans on the site.', 'MAP_txt' ); ?></p>
 
 					<p class="mt-3">
-						<a class="button-agile btn-md" href="<?php echo esc_url( $map_trial_plans ); ?>" target="_blank" rel="noopener"><?php echo esc_html__( 'See the plans', 'MAP_txt' ); ?></a>
+						<a class="button-agile btn-md" href="<?php echo esc_url( $map_trial_plans ); ?>" target="_blank" rel="noopener"><?php echo esc_html__( 'See the plans', 'MAP_txt' ); ?><span class="screen-reader-text"> <?php echo esc_html__( 'opens in a new tab', 'MAP_txt' ); ?></span></a>
 					</p>
 
 <?php elseif( $map_trial_b_state === 'active' ) : ?>
@@ -78,7 +76,7 @@
 ?>
 					</p>
 
-					<p><?php echo esc_html__( 'When it ends these three features switch off and your licence goes on as before, with nothing for you to do.', 'MAP_txt' ); ?></p>
+					<p><?php echo esc_html__( 'When it ends these three features switch off and your license goes on as before, with nothing for you to do.', 'MAP_txt' ); ?></p>
 
 					<p><?php echo esc_html__( 'An A/B test still running when the trial ends is closed and cannot be reopened. Its results are kept, but the page that shows them is no longer reachable: read them before the last day.', 'MAP_txt' ); ?></p>
 
@@ -104,7 +102,7 @@
 
 					<h2 class="alert-heading"><?php echo esc_html__( 'Try the paid features for 15 days', 'MAP_txt' ); ?></h2>
 
-					<p class="lead"><?php echo esc_html__( 'Statistics, geolocation and the A/B test, switched on for 15 days. Your licence and your invoicing do not change: the trial is free.', 'MAP_txt' ); ?></p>
+					<p class="lead"><?php echo esc_html__( 'Statistics, geolocation and the A/B test, switched on for 15 days. Your license and your invoicing do not change: the trial is free.', 'MAP_txt' ); ?></p>
 
 					<div class="bg-light p-2 mb-3">
 						<?php echo esc_html__( 'The trial applies to this site only:', 'MAP_txt' ); ?>
@@ -115,7 +113,7 @@
 
 <?php if( $map_trial_reseller ) : ?>
 
-					<p><?php echo esc_html__( 'Your licence was sold to you by a reseller: ask them for the trial.', 'MAP_txt' ); ?></p>
+					<p><?php echo esc_html__( 'Your license was sold to you by a reseller: ask them for the trial.', 'MAP_txt' ); ?></p>
 
 <?php else : ?>
 
@@ -151,7 +149,7 @@
 					<p><?php echo esc_html__( 'The trial is one per site and cannot be asked for again.', 'MAP_txt' ); ?></p>
 
 					<p class="mt-3">
-						<a class="button-agile btn-md" href="<?php echo esc_url( $map_trial_plans ); ?>" target="_blank" rel="noopener"><?php echo esc_html__( 'See the plans', 'MAP_txt' ); ?></a>
+						<a class="button-agile btn-md" href="<?php echo esc_url( $map_trial_plans ); ?>" target="_blank" rel="noopener"><?php echo esc_html__( 'See the plans', 'MAP_txt' ); ?><span class="screen-reader-text"> <?php echo esc_html__( 'opens in a new tab', 'MAP_txt' ); ?></span></a>
 					</p>
 
 <?php elseif( $map_trial_state === 'requested' ) : ?>
@@ -164,19 +162,14 @@
 
 <?php elseif( !$map_trial_invitable ) : ?>
 
-					<?php // 🔴 OGGI QUESTO RAMO NON E' RAGGIUNGIBILE, misurato il 2026-09-21: rende solo
-					      // quando map_trial_offered() e' falsa, e in quel caso add_submenu_page() non
-					      // registra la pagina, quindi WordPress risponde «Non hai il permesso» prima
-					      // che questa vista giri. Resta come guardia: torna viva il giorno in cui la
-					      // pagina venisse registrata sempre, ed e' li' che serve - senza, a una licenza
-					      // pagante si offrirebbe un modulo che il server rifiuta ?>
+					<?php // guard: the menu item is not registered in this state ?>
 					<h2 class="alert-heading"><?php echo esc_html__( 'Free trial', 'MAP_txt' ); ?></h2>
 
-					<p><?php echo esc_html__( 'This feature is not available with your licence.', 'MAP_txt' ); ?></p>
+					<p><?php echo esc_html__( 'This feature is not available with your license.', 'MAP_txt' ); ?></p>
 
 <?php else : ?>
 
-					<p class="lead"><?php echo esc_html__( 'Try every feature of the paid version of My Agile Privacy on this site for 15 days. No credit card required.', 'MAP_txt' ); ?></p>
+					<p class="lead"><?php echo esc_html__( 'Try the paid version of My Agile Privacy® on this site for 15 days. Statistics, geolocation and the Banner A/B Test are not included. No credit card required.', 'MAP_txt' ); ?></p>
 
 					<div class="bg-light p-2 mb-3">
 						<?php echo esc_html__( 'The trial is valid for this site:', 'MAP_txt' ); ?>

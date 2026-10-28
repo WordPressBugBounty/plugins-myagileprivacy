@@ -29,7 +29,7 @@ if( isset( $the_settings['pa'] ) &&
 
 	<div class="consistent-box">
 		<h4 class="mb-4">
-			<i class="fa-regular fa-shield"></i>
+			<i class="fa-solid fa-shield"></i>
 			<?php echo wp_kses_post( __( 'Cookie Shield', 'MAP_txt' ) ); ?>
 		</h4>
 
@@ -52,7 +52,7 @@ if( isset( $the_settings['pa'] ) &&
 
 	<div class="consistent-box">
 		<h4 class="mb-4">
-			<i class="fa-regular fa-shield"></i>
+			<i class="fa-solid fa-shield"></i>
 			<?php echo wp_kses_post( __( 'Cookie Shield', 'MAP_txt' ) ); ?>
 		</h4>
 

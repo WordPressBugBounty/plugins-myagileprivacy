@@ -15,7 +15,7 @@ $caller = 'genericOptionsWrapper';
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-regular fa-key"></i>
+				<i class="fa-solid fa-key"></i>
 				<?php echo wp_kses_post( __( 'Your license details', 'MAP_txt' ) ); ?>
 			</h4>
 

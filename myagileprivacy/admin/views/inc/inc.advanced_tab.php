@@ -13,7 +13,7 @@ if( !defined( 'MAP_PLUGIN_NAME' ) )
 
 		<div class="consistent-box">
 			<h4 class="mb-4">
-				<i class="fa-solid fa-sliders-up"></i>
+				<i class="fa-solid fa-sliders"></i>
 				<?php echo wp_kses_post( __( 'Advanced Settings', 'MAP_txt' ) ); ?>
 			</h4>
 

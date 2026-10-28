@@ -212,6 +212,11 @@ add_action( 'wp_ajax_map_install_advanced', 'map_ajax_install_advanced' );
 add_action( 'admin_init', 'map_sync_advanced_state_notice' );
 add_action( 'admin_init', 'map_reconcile_advanced_state', 20 );
 add_action( 'admin_post_map_advanced_download', 'map_advanced_download_redirect' );
+add_action( 'admin_init', 'map_note_advanced_version', 5 );
+add_action( 'upgrader_process_complete', 'map_note_advanced_version' );
+add_action( 'my_agile_privacy_do_cron_sync_twice_day_hook', 'map_advanced_cron_maintenance', 5 );
+add_action( 'current_screen', 'map_advanced_screen_maintenance' );
+add_action( 'map_delayed_cache_flush', 'map_run_delayed_cache_flush', 10, 1 );
 
 // ── Manual download ──────────────────────────────────────────────────────────
 
@@ -240,6 +245,224 @@ function map_advanced_download_redirect() {
 
     wp_redirect( $url );
     exit;
+}
+
+// ── Advanced version seen and stats layout ───────────────────────────────────
+
+/**
+ * Records the advanced version last seen on this site.
+ */
+function map_note_advanced_version() {
+    global $wpdb;
+
+    $on_upgrade = doing_action( 'upgrader_process_complete' );
+
+    if ( doing_action( 'admin_init' ) ) {
+        if ( ! is_user_logged_in() )                    { return; }
+        if ( defined( 'DOING_AJAX' ) && DOING_AJAX )    { return; }
+    }
+
+    if ( ! map_bot_detection_on() ) {
+        map_drop_stats_bot_since();
+    }
+
+    $version = '';
+    $source  = 'const';
+
+    if ( $on_upgrade ) {
+        if ( ! class_exists( 'MAP_Package_Installer' ) ) { return; }
+        $installer = new MAP_Package_Installer();
+        $version   = $installer->get_installed_advanced_version();
+        $source    = 'hdr';
+    } elseif ( defined( 'MAP_ADVANCED_VERSION' ) && is_string( MAP_ADVANCED_VERSION ) ) {
+        $version = MAP_ADVANCED_VERSION;
+    }
+
+    if ( ! is_string( $version ) || ! preg_match( '/^[0-9A-Za-z.\-]{1,32}$/D', $version ) ) { return; }
+
+    $now = time();
+    $raw = $wpdb->get_var( $wpdb->prepare(
+        "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+        MAP_PLUGIN_ADV_SEEN_VERSION
+    ) );
+
+    $seen = null;
+
+    if ( is_string( $raw ) && preg_match( '/^([0-9A-Za-z.\-]{1,32})\|(hdr|const)\|(\d{1,10})$/D', $raw, $m ) ) {
+        $seen = array( 'version' => $m[1], 'source' => $m[2], 't' => MyAgilePrivacy::intvalPhp8( $m[3] ) );
+    }
+
+    $value = $version . '|' . $source . '|' . $now;
+
+    if ( $seen !== null && $seen['version'] === $version ) {
+        // the header rewrite closes the race with a request that started before the files were copied
+        if ( $on_upgrade ) {
+            $wpdb->query( $wpdb->prepare(
+                "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+                $value,
+                MAP_PLUGIN_ADV_SEEN_VERSION,
+                $raw
+            ) );
+            MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_ADV_SEEN_VERSION );
+        }
+        return;
+    }
+
+    $lower = ( $seen !== null && version_compare( $version, $seen['version'], '<' ) );
+
+    // a request still running the old code reads the old constant after an update
+    if ( $lower && ! $on_upgrade ) {
+        if ( class_exists( 'MAP_Package_Installer' ) ) {
+            $installer = new MAP_Package_Installer();
+            if ( $installer->get_installed_advanced_version() !== $version ) { return; }
+        } elseif ( $seen['source'] === 'hdr' && ( $now - $seen['t'] ) < 600 ) {
+            return;
+        }
+    }
+
+    if ( is_string( $raw ) ) {
+        $won = $wpdb->query( $wpdb->prepare(
+            "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+            $value,
+            MAP_PLUGIN_ADV_SEEN_VERSION,
+            $raw
+        ) );
+    } else {
+        $won = $wpdb->query( $wpdb->prepare(
+            "INSERT IGNORE INTO {$wpdb->options} ( option_name, option_value, autoload ) VALUES ( %s, %s, 'no' )",
+            MAP_PLUGIN_ADV_SEEN_VERSION,
+            $value
+        ) );
+    }
+
+    MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_ADV_SEEN_VERSION );
+
+    if ( 1 !== $won ) { return; }
+
+    $rc = ( false !== strpos( $version, '-rc' ) ) || ( $seen !== null && false !== strpos( $seen['version'], '-rc' ) );
+
+    if ( $lower || $rc ) {
+        map_drop_stats_bot_since();
+    }
+
+    map_advanced_version_cache_flush( $version );
+}
+
+/**
+ * Clears the cached head once per network and books the delayed page purge.
+ *
+ * @param string $version Advanced version just recorded.
+ */
+function map_advanced_version_cache_flush( $version ) {
+    global $wpdb;
+
+    $table = $wpdb->base_prefix . 'options';
+
+    $raw = $wpdb->get_var( $wpdb->prepare(
+        "SELECT option_value FROM {$table} WHERE option_name = %s LIMIT 1",
+        'map_adv_cache_flushed_version'
+    ) );
+
+    $flushed = is_string( $raw ) ? preg_replace( '/\|d$/D', '', $raw ) : null;
+
+    if ( $flushed !== $version ) {
+        if ( is_string( $raw ) ) {
+            $won = $wpdb->query( $wpdb->prepare(
+                "UPDATE {$table} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+                $version,
+                'map_adv_cache_flushed_version',
+                $raw
+            ) );
+        } else {
+            $won = $wpdb->query( $wpdb->prepare(
+                "INSERT IGNORE INTO {$table} ( option_name, option_value, autoload ) VALUES ( %s, %s, 'no' )",
+                'map_adv_cache_flushed_version',
+                $version
+            ) );
+        }
+
+        if ( 1 === $won && class_exists( 'MyAgilePrivacy' ) ) {
+            MyAgilePrivacy::flush_json_cache();
+        }
+    }
+
+    wp_schedule_single_event( time() + 120, 'map_delayed_cache_flush', array( $version ) );
+}
+
+/**
+ * Delayed purge after an advanced version change: the pages of this site, and once per network the cached head.
+ *
+ * @param string $version Advanced version the event was booked for.
+ */
+function map_run_delayed_cache_flush( $version ) {
+    global $wpdb;
+
+    if ( ! is_string( $version ) || ! preg_match( '/^[0-9A-Za-z.\-]{1,32}$/D', $version ) ) { return; }
+    if ( ! class_exists( 'MyAgilePrivacy' ) )                                              { return; }
+
+    $table = $wpdb->base_prefix . 'options';
+
+    $won = $wpdb->query( $wpdb->prepare(
+        "UPDATE {$table} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+        $version . '|d',
+        'map_adv_cache_flushed_version',
+        $version
+    ) );
+
+    if ( 1 === $won ) {
+        MyAgilePrivacy::flush_json_cache();
+    }
+
+    // on a network every blog runs its own event and each plugin clears the blog of the request
+    if ( 1 === $won || is_multisite() ) {
+        MyAgilePrivacy::tryOtherPluginCacheClear( 'network' );
+    }
+
+    MyAgilePrivacy::tryOtherPluginCacheClear( 'blog' );
+}
+
+/**
+ * Removes a stored stats date, when present.
+ */
+function map_drop_stats_bot_since() {
+    global $wpdb;
+
+    $raw = $wpdb->get_var( $wpdb->prepare(
+        "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+        MAP_PLUGIN_STATS_BOT_SINCE
+    ) );
+
+    if ( ! is_string( $raw ) ) { return; }
+
+    $wpdb->query( $wpdb->prepare(
+        "DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
+        MAP_PLUGIN_STATS_BOT_SINCE,
+        $raw
+    ) );
+    MyAgilePrivacy::drop_option_cache( MAP_PLUGIN_STATS_BOT_SINCE );
+}
+
+/**
+ * Early step of the twice-daily sync event.
+ */
+function map_advanced_cron_maintenance() {
+    map_note_advanced_version();
+
+    if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) { return; }
+
+    map_call_advanced_stats_migrate_schedule( 'cron' );
+}
+
+/**
+ * Keeps the stats layout in sync from the plugin screens.
+ */
+function map_advanced_screen_maintenance() {
+    if ( defined( 'DOING_AJAX' ) && DOING_AJAX )                                       { return; }
+    if ( ! class_exists( 'MyAgilePrivacyAdmin' ) || ! MyAgilePrivacyAdmin::is_map_screen() ) { return; }
+    if ( ! class_exists( 'MyAgilePrivacy' ) || ! MyAgilePrivacy::map_can_edit() )     { return; }
+    if ( ! map_stats_enabled() )                                                       { return; }
+
+    map_call_advanced_stats_migrate_schedule( 'screen' );
 }
 
 // ── State reconciliation ─────────────────────────────────────────────────────
@@ -284,7 +507,7 @@ function map_advanced_install_error_message( $err_msg ) {
 }
 
 /**
- * Notice action that downloads the package, or none while the licence carries no package.
+ * Notice action that downloads the package, or none while the license carries no package.
  */
 function map_advanced_download_actions() {
     if ( '' === map_advanced_get_download_url() ) {
